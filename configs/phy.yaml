@@ -1,0 +1,310 @@
+# =============================================================================
+# AI-HARP -- PHY and MAC parameters for IEEE 802.11p / DSRC at 5.9 GHz.
+#
+# EVERY numeric constant used by sim/phy.py and sim/mac.py lives here. Nothing
+# is hardcoded in the simulator. Each block carries a `source:` field so the
+# paper can cite the provenance of each value.
+#
+# Provenance tags used in `source:` fields:
+#   [STD]      - fixed by a published standard (IEEE / ITU-R / ETSI).
+#   [MEAS]     - taken from a published measurement campaign.
+#   [DERIVED]  - computed from other values in this file (formula given).
+#   [ASSUMED]  - modelling choice by us; must be defended in the paper text.
+#   [VERIFY]   - numeric value recalled from a standard that MUST be checked
+#                against the primary document before submission.
+# =============================================================================
+
+radio:
+  carrier_frequency_hz: 5.9e9
+  # source: [STD] IEEE 802.11p / ITS-G5 control channel (CCH 178) centre
+  #         frequency 5.890 GHz; 5.9 GHz used as the nominal band centre.
+  bandwidth_hz: 10.0e6
+  # source: [STD] IEEE 802.11-2016 Clause 17 (OFDM) 10 MHz channel spacing
+  #         used by 802.11p, i.e. half-clocked 802.11a.
+  data_rate_mbps: 6.0
+  # source: [STD] QPSK, rate 1/2 in a 10 MHz channel = 6 Mb/s. The mandatory
+  #         rate for DSRC safety broadcast.
+  tx_power_dbm: 20.0
+  # source: [ASSUMED] Typical on-board-unit output power. FCC 47 CFR 90.377
+  #         permits up to 33 dBm EIRP for private OBUs; 20 dBm is the common
+  #         value in the V2X simulation literature.
+  tx_antenna_gain_dbi: 3.0
+  rx_antenna_gain_dbi: 3.0
+  # source: [ASSUMED] Roof-mounted omnidirectional monopole, 3 dBi is the
+  #         conventional value for vehicular OBU antennas.
+  noise_figure_db: 9.0
+  # source: [ASSUMED] Commodity 802.11p receiver front end (6-10 dB typical).
+  thermal_noise_density_dbm_hz: -174.0
+  # source: [STD] kTB at T0 = 290 K: 10*log10(1.38e-23 * 290 * 1e3) dBm/Hz.
+
+receiver:
+  sinr_threshold_db: 8.0
+  # source: [VERIFY] Required SINR for QPSK 1/2 OFDM at 10% PER. IEEE
+  #         802.11-2016 Table 17-18 gives a minimum sensitivity of -85 dBm for
+  #         QPSK 1/2 in a 10 MHz channel, which with the noise floor below
+  #         implies ~8-10 dB. Confirm against the standard's table before
+  #         publication.
+  sensitivity_dbm: -85.0
+  # source: [VERIFY] IEEE 802.11-2016 Table 17-18, 6 Mb/s, 10 MHz channel.
+  #         An absolute floor applied in addition to the SINR test.
+  capture_enabled: true
+  # source: [ASSUMED] Model a receiver as able to lock onto the strongest
+  #         frame (physical-layer capture) rather than losing every colliding
+  #         frame. Disabling this gives the pessimistic no-capture model.
+
+# -----------------------------------------------------------------------------
+# Large-scale path loss: DUAL-SLOPE (breakpoint) log-distance.
+#
+#   PL(d) = PL(d0) + 10*n1*log10(d/d0)                          d <= d_bp
+#   PL(d) = PL(d0) + 10*n1*log10(d_bp/d0) + 10*n2*log10(d/d_bp) d >  d_bp
+#
+# The breakpoint is NOT cosmetic. Below it the link is near free space
+# (n1 ~ 1.9); beyond it the ground-reflected ray arrives out of phase with the
+# direct ray and the decay steepens sharply (n2 ~ 3.8). A single-slope n = 1.9
+# model extrapolated over kilometres predicts a ~2 km DSRC range, which is
+# roughly 4x the measured value and would silently turn a sparse corridor into
+# a fully connected one -- i.e. it would delete the problem this paper studies.
+#
+# The theoretical two-ray breakpoint is 4*h_t*h_r/lambda; for 1.5 m antennas at
+# 5.9 GHz (lambda = 5.08 cm) that is ~177 m, consistent with the measured
+# 100-220 m range below.
+# -----------------------------------------------------------------------------
+path_loss:
+  model: dual_slope
+  reference_distance_m: 1.0
+  reference_loss_db: null
+  # source: [DERIVED] If null, PL(d0) is computed as free-space loss at d0:
+  #         20*log10(4*pi*d0*f/c). At 5.9 GHz and d0 = 1 m this is 47.86 dB.
+  #         Set a number here to override with a measured intercept.
+  breakpoint_distance_m:
+    rural_highway: 150.0
+    urban_grid: 100.0
+    # source: [MEAS] Cheng et al., "Mobile Vehicle-to-Vehicle Narrow-Band
+    #         Channel Measurement and Characterization of the 5.9 GHz DSRC
+    #         Frequency Band", IEEE JSAC 25(8), 2007 -- dual-slope fit with a
+    #         breakpoint near 100 m (highway; shorter in urban/suburban).
+    #         [VERIFY] the exact fitted breakpoint per environment.
+  exponent:
+    # n1: below the breakpoint.
+    rural_highway: 1.9
+    # source: [MEAS] Highway LOS V2V, near free space (Cheng et al. 2007;
+    #         Karedal et al., IEEE TWC 2011).
+    urban_grid: 2.0
+  exponent_far:
+    # n2: above the breakpoint, ground-reflection dominated.
+    rural_highway: 3.8
+    # source: [MEAS] Cheng et al. 2007 report n2 ~ 3.8 beyond the breakpoint on
+    #         highways, close to the two-ray asymptote of 4. [VERIFY] exact fit.
+    urban_grid: 4.2
+    # source: [MEAS] Urban adds building shadowing on top of the two-ray decay.
+  shadowing_std_db:
+    rural_highway: 3.0
+    urban_grid: 5.2
+    # source: [MEAS] Log-normal shadowing standard deviation, same references.
+    #         Held constant per link (not resampled per packet) in sim/phy.py.
+  shadowing_decorrelation_m: 25.0
+  # source: [ASSUMED] Gudmundson-style spatial correlation distance for
+  #         vehicular shadowing; the per-link shadowing value is redrawn once
+  #         a pair has moved this far. Keeps shadowing from being white noise.
+
+# -----------------------------------------------------------------------------
+# Small-scale fading: Nakagami-m. The received *power* gain is Gamma
+# distributed with shape m and unit mean.
+# -----------------------------------------------------------------------------
+fading:
+  model: nakagami
+  m:
+    rural_highway: 3.0
+    # source: [MEAS] Strong-LOS highway V2V. m in 3-5 is the usual fit for
+    #         open highway at short range (Cheng et al. 2007). m=3 is the
+    #         conservative end of that range.
+    urban_grid: 1.5
+    # source: [MEAS] Weaker LOS / more scattering in urban canyons; m -> 1
+    #         degenerates to Rayleigh.
+  resample_per_packet: true
+  # source: [ASSUMED] Fast fading is independent per transmitted frame
+  #         (coherence time at 5.9 GHz and highway speeds is ~1 ms, far below
+  #         the 100 ms simulation step).
+
+# -----------------------------------------------------------------------------
+# WEATHER
+#
+# READ THIS BEFORE USING THE WEATHER RESULTS IN THE PAPER.
+#
+# Two physically distinct effects are modelled separately and must not be
+# conflated:
+#
+#   (1) `itu_*` -- hydrometeor absorption/scattering, i.e. genuine ITU-R
+#       attenuation of the radio wave by rain drops or fog droplets. At 5.9 GHz
+#       this term is *very small*: heavy rain at 25 mm/h gives ~0.12 dB/km, so
+#       ~0.04 dB over a 300 m DSRC link. It is included for physical
+#       completeness and because the paper claims an ITU-R parameterisation --
+#       NOT because it explains the degradation we report.
+#
+#   (2) `excess_loss_db_per_km` and `exponent_delta` -- empirical excess loss
+#       from the *road environment* in bad weather: scattering and depolarisation
+#       off a wet road surface, spray plumes behind trucks, water films on the
+#       antenna radome, and reduced effective antenna height. These dominate at
+#       5.9 GHz and are the reason measured V2V range shrinks in rain.
+#
+# Reporting (2) as though it were ITU-R rain attenuation would be wrong. Keep
+# the two terms separate in every table and say which one is doing the work.
+# -----------------------------------------------------------------------------
+weather:
+  # ITU-R P.838-3 specific rain attenuation: gamma_R = k * R^alpha [dB/km],
+  # with R the rain rate in mm/h. Coefficients are frequency and polarisation
+  # dependent; the values below are the tabulated entries at the nearest
+  # tabulated frequency to 5.9 GHz.
+  itu_rain:
+    k: 0.0007056
+    alpha: 1.5900
+    # source: [VERIFY] ITU-R P.838-3 Table 1, horizontal polarisation, 6 GHz.
+    #         Recalled from the standard -- CHECK against the published table
+    #         (or recompute with the P.838-3 log-frequency interpolation
+    #         formula at exactly 5.9 GHz) before submission. The magnitude
+    #         (~0.1 dB/km at 25 mm/h) is the part that matters for our
+    #         conclusions and is robust to small errors in k and alpha.
+    polarisation: horizontal
+    # source: [ASSUMED] Vertical monopoles would argue for vertical
+    #         polarisation; horizontal is the conservative (larger k) choice
+    #         at this frequency.
+
+  # ITU-R P.840 cloud/fog attenuation: gamma_c = K_l(f,T) * M [dB/km], with M
+  # the liquid water density in g/m^3.
+  itu_fog:
+    kl_db_per_km_per_g_m3: 0.0017
+    # source: [VERIFY] ITU-R P.840-8 specific attenuation coefficient K_l at
+    #         ~6 GHz, 20 C. Recalled value; check the primary document. Again
+    #         the conclusion (fog RF attenuation is negligible at 5.9 GHz) is
+    #         robust to the exact figure.
+
+  conditions:
+    clear:
+      rain_rate_mm_h: 0.0
+      fog_liquid_water_g_m3: 0.0
+      excess_loss_db_per_km: 0.0
+      exponent_delta: 0.0
+      visibility_m: 10000.0
+      speed_factor: 1.00
+      headway_factor: 1.00
+
+    moderate_rain:
+      rain_rate_mm_h: 5.0
+      # source: [STD] WMO/AMS convention: moderate rain is 2.5-7.6 mm/h.
+      fog_liquid_water_g_m3: 0.0
+      excess_loss_db_per_km: 2.0
+      # source: [ASSUMED] Empirical excess loss placeholder -- REPLACE WITH A
+      #         CITED MEASUREMENT. See the block comment above.
+      exponent_delta: 0.10
+      # source: [ASSUMED] Wet-surface scattering steepens the distance decay.
+      #         Applied to the FAR slope (n2) only: the near-field LOS regime
+      #         below the breakpoint is not ground-reflection dominated, so
+      #         there is no physical reason for a wet surface to steepen it.
+      visibility_m: 2000.0
+      speed_factor: 0.93
+      # source: [MEAS] Rain reduces free-flow speed by ~5-10% (Highway
+      #         Capacity Manual weather adjustment factors; Rakha et al.
+      #         weather-speed models). Feeds the mobility layer, not the PHY.
+      headway_factor: 1.15
+
+    heavy_rain:
+      rain_rate_mm_h: 25.0
+      # source: [STD] WMO/AMS convention: heavy rain is > 7.6 mm/h; 25 mm/h
+      #         is a representative heavy-rain rate.
+      fog_liquid_water_g_m3: 0.0
+      excess_loss_db_per_km: 5.0
+      # source: [ASSUMED] Placeholder -- see block comment. Includes spray.
+      exponent_delta: 0.20
+      visibility_m: 500.0
+      speed_factor: 0.85
+      # source: [MEAS] HCM weather adjustment: heavy rain 10-15% speed drop.
+      headway_factor: 1.30
+
+    dense_fog:
+      rain_rate_mm_h: 0.0
+      fog_liquid_water_g_m3: 0.5
+      # source: [ASSUMED] Dense fog, visibility < 100 m, corresponds to a
+      #         liquid water content of roughly 0.1-0.5 g/m^3.
+      excess_loss_db_per_km: 1.0
+      # source: [ASSUMED] Placeholder; fog barely affects 5.9 GHz propagation.
+      #         Fog's real impact is on the DRIVER and on optical sensing,
+      #         which is exactly why V2X warning matters most in fog -- this
+      #         is a point the paper should make explicitly.
+      exponent_delta: 0.05
+      visibility_m: 80.0
+      speed_factor: 0.80
+      # source: [MEAS] HCM: low visibility produces the largest speed drops.
+      headway_factor: 1.40
+
+# -----------------------------------------------------------------------------
+# MAC: approximate CSMA/CA broadcast (IEEE 802.11p EDCA).
+# Broadcast frames are UNACKNOWLEDGED: no RTS/CTS, no retransmission, no
+# binary exponential backoff (the CW never grows because there is no ACK
+# timeout to trigger it).
+# -----------------------------------------------------------------------------
+mac:
+  slot_time_us: 13.0
+  sifs_us: 32.0
+  difs_us: 58.0
+  # source: [VERIFY] IEEE 802.11-2016 Table 17-21, 10 MHz OFDM PHY:
+  #         aSlotTime = 13 us, aSIFSTime = 32 us, DIFS = SIFS + 2*slot = 58 us.
+  access_category: AC_VI
+  cw_min: 7
+  cw_max: 15
+  # source: [VERIFY] ETSI EN 302 663 / IEEE 1609.4 EDCA parameter set.
+  #         AC_VI (video) is the usual mapping for DSRC event-driven safety
+  #         messages: CWmin = 7, CWmax = 15. For broadcast the CW stays at
+  #         cw_min (see above); cw_max is carried for completeness and for
+  #         config variants that model unicast relaying.
+  aifsn: 3
+  # source: [VERIFY] AIFSN for AC_VI in the same parameter set.
+  frame_bytes: 300
+  # source: [ASSUMED] An ETSI DENM hazard notification with security headers
+  #         is a few hundred bytes; 300 B is representative.
+  carrier_sense_threshold_dbm: -92.0
+  # source: [ASSUMED] Clear-channel-assessment energy-detect threshold. Sets
+  #         the contention neighbourhood: nodes that hear each other above
+  #         this level contend rather than collide.
+  interference_margin_db: 10.0
+  # source: [DERIVED] A concurrent transmitter is treated as a potential
+  #         interferer at a receiver if its received power is within this
+  #         margin of the noise floor, i.e. down to (noise + 0 dB). Used to
+  #         bound the interferer set cheaply; weaker signals are folded into
+  #         the noise term anyway.
+  channel_busy_suppression: true
+  # source: [ASSUMED] If the medium is sensed busy at the decision instant,
+  #         the frame is deferred to the next slot rather than dropped. This
+  #         is what CSMA does; disabling it models a pure ALOHA channel.
+
+  # Background beacon load. Hazard dissemination does NOT have the channel to
+  # itself: every vehicle also emits periodic CAM/BSM position beacons, and in
+  # dense traffic that is the dominant source of channel load and of frame
+  # loss. Omitting it would make every policy look better than it is, and
+  # would flatter flooding most of all, because flooding's cost is exactly the
+  # channel load it adds on top of this floor.
+  background_beacon_enabled: true
+  background_beacon_hz: 10.0
+  # source: [STD] SAE J2735 BSM / ETSI EN 302 637-2 CAM generation rate.
+  #         10 Hz is the standard maximum and the usual simulation default.
+  background_beacon_bytes: 300
+  # source: [ASSUMED] A signed CAM/BSM is ~200-400 B.
+
+  # Decentralised Congestion Control. Without DCC, a fixed 10 Hz beacon rate
+  # offers more than 100% channel load once a few hundred vehicles share a
+  # carrier-sense neighbourhood, the medium is permanently sensed busy, and NO
+  # hazard message is ever transmitted at all. That collapse is an artefact of
+  # omitting DCC, not a finding: every deployed DSRC/ITS-G5 stack adapts its
+  # beacon rate to keep channel load bounded.
+  dcc_enabled: true
+  dcc_target_cbr: 0.62
+  # source: [STD] ETSI TS 102 687 (Decentralized Congestion Control for
+  #         ITS-G5). The standard's state machine targets a channel busy ratio
+  #         around 0.6-0.68; we model the adaptive-rate limit directly rather
+  #         than simulating the full state machine. [VERIFY] exact threshold.
+  dcc_min_beacon_hz: 1.0
+  # source: [STD] ETSI TS 102 687 floors the message rate at 1 Hz; below this
+  #         the beacon service is no longer useful for cooperative awareness.
+  vulnerable_window_frames: 2.0
+  # source: [STD] For unslotted contention the vulnerable period of a frame is
+  #         twice its duration: an interferer starting anywhere in that window
+  #         overlaps it. Classic ALOHA/CSMA result.
