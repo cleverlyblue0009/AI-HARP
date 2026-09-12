@@ -84,7 +84,8 @@ def run_single(
         overrides = {"type": spec.hazard_type} if spec.hazard_type else None
         hazard = hazard_from_config(hz_cfg, trace.meta, overrides=overrides)
 
-    phy = build_phy(phy_cfg, scenario=scenario_cfg["name"], weather=spec.weather, seed=spec.seed)
+    phy = build_phy(phy_cfg, scenario=scenario_cfg["name"], weather=spec.weather,
+                    seed=spec.seed, trace_meta=trace.meta)
     mac = build_mac(phy_cfg, phy)
     risk = build_risk_field(hz_cfg, trace, hazard)
     policy = build_policy(spec.policy, **spec.policy_params)
@@ -200,7 +201,7 @@ def run_smoke(exp_cfg: dict[str, Any] | None = None) -> int:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="AI-HARP single-run driver")
     p.add_argument("--scenario", default="rural_highway",
-                   choices=["rural_highway", "urban_grid"])
+                   choices=["rural_highway", "urban_grid", "urban_nlos"])
     p.add_argument("--density", type=float, default=20.0, help="veh/km/lane")
     p.add_argument("--weather", default="clear",
                    choices=["clear", "moderate_rain", "heavy_rain", "dense_fog"])

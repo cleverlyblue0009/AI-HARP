@@ -25,6 +25,7 @@ TRACE_CACHE = PROJECT_ROOT / "cache" / "traces"
 _SCENARIO_FILES = {
     "rural_highway": "scenario_rural.yaml",
     "urban_grid": "scenario_urban.yaml",
+    "urban_nlos": "scenario_urban_nlos.yaml",
 }
 
 _BANNER_SHOWN: set[str] = set()

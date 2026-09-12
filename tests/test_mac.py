@@ -147,3 +147,30 @@ def mac_busy(phy_cfg, phy, n):
 def test_frame_and_beacon_durations_are_consistent(mac, phy):
     assert mac.frame_duration_s == pytest.approx(phy.frame_duration_s(mac.frame_bytes))
     assert mac.beacon_duration_s == pytest.approx(phy.frame_duration_s(mac.background_beacon_bytes))
+
+
+# --------------------------------------------------- inert parameter guard --
+def test_inert_mac_parameters_are_not_read_by_any_computation():
+    """configs/phy.yaml marks slot/SIFS/DIFS/CWmax/AIFSN as [INERT]: recorded
+    for the paper's parameter table but read by no computation, because at a
+    100 ms decision epoch interframe spacing is four orders of magnitude below
+    the timestep.
+
+    They are also [STD-UNVERIFIED] -- the primary IEEE/ETSI documents are
+    paywalled and were not accessed. That is acceptable only for as long as
+    they stay inert. This test fails the moment one is wired into a
+    computation, forcing verification before it can affect a result.
+    """
+    import inspect
+
+    import sim.mac as mac_module
+
+    src = inspect.getsource(mac_module)
+    body = src.split("def build_mac", 1)[0]        # ignore the constructor
+    for field in ("slot_time_s", "sifs_s", "difs_s", "cw_max", "aifsn"):
+        uses = [ln.strip() for ln in body.splitlines()
+                if f"self.{field}" in ln or f".{field}" in ln and "float" not in ln]
+        assert not uses, (
+            f"{field} is marked [INERT] in configs/phy.yaml but is now used: {uses}. "
+            "Verify it against the primary standard and retag it before relying on it."
+        )

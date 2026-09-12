@@ -249,6 +249,29 @@ reaching irrelevant vehicles does not raise the score at all.
   dissemination policy can affect. Either report it with that caveat or
   restrict it to vehicles that were still outside the reaction-time envelope at
   origination.
+- **The grid risk field makes urban RWCR uninterpretable. This currently blocks
+  `urban_nlos` as a primary scenario.** Measured on `urban_nlos` at
+  20 veh/km/lane: *100% of vehicles are informed*, yet RWCR is 0.291 and
+  at-risk coverage is 0.277. The cause is the route-unaware grid geometry in
+  `hazard/risk_field.py`: it marks a vehicle `APPROACHING` only if its
+  *instantaneous* heading reduces Manhattan distance to the hazard. Grid
+  vehicles turn constantly, so ~70% happen to be heading away at the moment
+  they receive the message, score relevance exactly 0, and are counted as "not
+  informed in time" despite being informed and later driving into the hazard.
+  The at-risk set also swells to 97.7% of the network. RWCR in the grid
+  therefore measures "was this vehicle pointing at the hazard when the packet
+  arrived", not "was an at-risk vehicle warned".
+  This is invariant to the radio model — sweeping NLOS corner loss over
+  8/12/20 dB (NLOS range 219/176/101 m) leaves RWCR pinned at 0.28-0.30.
+  **Fix before any urban result is reported:** define the grid at-risk set from
+  each vehicle's *realised* trajectory (does it actually enter the hazard span
+  during the run). That is legitimate for an evaluation-time ground-truth
+  quantity, and must stay unavailable to the policies, which see only local
+  observations. `Trace.routes` already records what is needed.
+- Weather no longer has a meaningful channel effect (by design, see above), so
+  the weather axis of the factorial now varies only through traffic behaviour.
+  Worst case is a 0.24% change in nominal range. The weather-degradation figure
+  will be flat on the channel axis and must be presented as such.
 - `reproduce.sh` is Phase 8 and does not exist yet.
 
 ## Reproducing each figure

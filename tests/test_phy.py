@@ -11,8 +11,6 @@ from sim.phy import (
     SPEED_OF_LIGHT,
     build_phy,
     free_space_loss_db,
-    itu_fog_attenuation_db_per_km,
-    itu_rain_attenuation_db_per_km,
 )
 
 
@@ -148,37 +146,10 @@ def test_shadowing_has_configured_standard_deviation(phy):
     assert np.mean(s) == pytest.approx(0.0, abs=0.1)
 
 
-# -------------------------------------------------------------------- ITU-R --
-def test_itu_rain_attenuation_is_negligible_at_5_9ghz(phy_cfg):
-    """The headline physical fact behind our weather modelling.
-
-    Heavy rain (25 mm/h) attenuates a 5.9 GHz link by ~0.1 dB/km, i.e. ~0.03 dB
-    over a 300 m DSRC hop. Any paper claiming multi-dB rain attenuation at this
-    frequency from ITU-R P.838 alone is wrong; the degradation has to come from
-    the road environment, which we model separately.
-    """
-    k = phy_cfg["weather"]["itu_rain"]["k"]
-    alpha = phy_cfg["weather"]["itu_rain"]["alpha"]
-    gamma = itu_rain_attenuation_db_per_km(25.0, k, alpha)
-    assert 0.01 < gamma < 1.0
-    assert gamma * 0.3 < 0.1  # over a 300 m hop
-
-
-def test_itu_rain_attenuation_monotonic_in_rain_rate(phy_cfg):
-    k = phy_cfg["weather"]["itu_rain"]["k"]
-    a = phy_cfg["weather"]["itu_rain"]["alpha"]
-    rates = [0.0, 1.0, 5.0, 25.0, 100.0]
-    vals = [itu_rain_attenuation_db_per_km(r, k, a) for r in rates]
-    assert vals == sorted(vals)
-    assert vals[0] == 0.0
-
-
-def test_itu_fog_attenuation_is_linear_in_liquid_water():
-    kl = 0.0017
-    assert itu_fog_attenuation_db_per_km(0.5, kl) == pytest.approx(2 * itu_fog_attenuation_db_per_km(0.25, kl))
-
-
 # ------------------------------------------------------------------ weather --
+# NOTE: the ITU-R hydrometeor models themselves are validated against the
+# Recommendations' own published tables in tests/test_itu.py. What is tested
+# here is only how build_phy() wires them into the link budget.
 @pytest.mark.parametrize("weather", ["clear", "moderate_rain", "heavy_rain", "dense_fog"])
 def test_weather_never_improves_the_link(phy_cfg, weather):
     clear = build_phy(phy_cfg, "rural_highway", "clear", seed=0)
@@ -187,10 +158,49 @@ def test_weather_never_improves_the_link(phy_cfg, weather):
     assert wx.weather.total_db_per_km >= 0.0
 
 
-def test_heavy_rain_shrinks_range_more_than_moderate(phy_cfg):
-    mod = build_phy(phy_cfg, "rural_highway", "moderate_rain", seed=0)
-    heavy = build_phy(phy_cfg, "rural_highway", "heavy_rain", seed=0)
-    assert heavy.nominal_range_m < mod.nominal_range_m
+def test_weather_has_no_measurable_channel_effect_at_5_9ghz(phy_cfg):
+    """The consequence of deleting the uncitable empirical excess-loss term.
+
+    With only genuine ITU-R hydrometeor attenuation in the model, the worst
+    weather in the config changes the nominal range by well under a metre.
+    Weather in this project degrades dissemination through TRAFFIC (speed and
+    headway), not through the radio channel -- and the paper must say so
+    rather than implying a channel effect it does not model.
+    """
+    clear = build_phy(phy_cfg, "rural_highway", "clear", seed=0)
+    for weather in ("moderate_rain", "heavy_rain", "dense_fog"):
+        wx = build_phy(phy_cfg, "rural_highway", weather, seed=0)
+        delta = clear.nominal_range_m - wx.nominal_range_m
+        frac = delta / clear.nominal_range_m
+        # Worst case is heavy rain: ~1.4 m off a 562 m range, i.e. 0.24%.
+        # Shadowing alone is 3 dB standard deviation, which moves the range by
+        # tens of metres -- weather is far below the noise of the channel.
+        assert 0.0 <= frac < 0.005, (
+            f"{weather}: range changed by {delta:.3f} m ({frac:.3%})"
+        )
+
+
+def test_empirical_excess_loss_is_disabled_by_default(phy_cfg):
+    """Guard on the deletion: those numbers were invented and must stay off
+    until a citable measurement replaces them."""
+    assert phy_cfg["weather"]["enable_empirical_excess_loss"] is False
+    for weather in ("clear", "moderate_rain", "heavy_rain", "dense_fog"):
+        wx = build_phy(phy_cfg, "rural_highway", weather, seed=0)
+        assert wx.weather.excess_db_per_km == 0.0
+        assert wx.weather.exponent_delta == 0.0
+
+
+def test_excess_loss_can_be_re_enabled_for_a_sensitivity_study(phy_cfg):
+    """The mechanism is retained so a cited value can be dropped in later."""
+    cfg = {**phy_cfg, "weather": {**phy_cfg["weather"], "enable_empirical_excess_loss": True}}
+    cfg["weather"]["conditions"] = {
+        k: {**v} for k, v in phy_cfg["weather"]["conditions"].items()
+    }
+    cfg["weather"]["conditions"]["heavy_rain"]["excess_loss_db_per_km"] = 5.0
+    wx = build_phy(cfg, "rural_highway", "heavy_rain", seed=0)
+    clear = build_phy(cfg, "rural_highway", "clear", seed=0)
+    assert wx.weather.excess_db_per_km == 5.0
+    assert wx.nominal_range_m < clear.nominal_range_m
 
 
 def test_weather_terms_stay_separable(phy_cfg):
@@ -199,10 +209,60 @@ def test_weather_terms_stay_separable(phy_cfg):
     w = heavy.weather
     assert w.itu_total_db_per_km == pytest.approx(w.itu_rain_db_per_km + w.itu_fog_db_per_km)
     assert w.total_db_per_km == pytest.approx(w.itu_total_db_per_km + w.excess_db_per_km)
-    # And the empirical term is the one doing the work at this frequency.
-    assert w.excess_db_per_km > 10 * w.itu_total_db_per_km
+
+
+def test_rain_attenuation_is_computed_at_the_actual_carrier(phy_cfg):
+    """Not read from a tabulated row at a neighbouring frequency."""
+    from sim.itu import rain_specific_attenuation_db_per_km
+
+    heavy = build_phy(phy_cfg, "rural_highway", "heavy_rain", seed=0)
+    expected = rain_specific_attenuation_db_per_km(
+        25.0, float(phy_cfg["radio"]["carrier_frequency_hz"]) / 1e9,
+        phy_cfg["weather"]["itu_rain_polarisation"],
+    )
+    assert heavy.weather.itu_rain_db_per_km == pytest.approx(expected)
+
+
+def test_weather_behavioural_factors_survive(phy_cfg):
+    """Deleting the channel term must not delete the traffic term, which is
+    the weather effect this project actually models."""
+    for weather, expect_slower in (("clear", False), ("heavy_rain", True), ("dense_fog", True)):
+        wx = build_phy(phy_cfg, "rural_highway", weather, seed=0)
+        assert (wx.weather.speed_factor < 1.0) is expect_slower
+        assert (wx.weather.headway_factor > 1.0) is expect_slower
 
 
 def test_frame_duration_matches_data_rate(phy):
     # 300 B at 6 Mb/s = 400 us of payload, plus a 40 us preamble/SIGNAL.
     assert phy.frame_duration_s(300) == pytest.approx(40e-6 + 300 * 8 / 6e6)
+
+
+# ----------------------------------------------------- derived breakpoint --
+def test_two_ray_breakpoint_matches_the_geometry():
+    """d_bp = 4 h_t h_r / lambda. At 1.5 m and 5.9 GHz this is 177 m."""
+    from sim.phy import two_ray_breakpoint_m
+
+    assert two_ray_breakpoint_m(1.5, 1.5, 5.9e9) == pytest.approx(177.1, abs=0.5)
+
+
+def test_breakpoint_scales_with_antenna_height():
+    """Truck-height antennas push the breakpoint out, which is why the model
+    notes its single fleet-average height as a limitation."""
+    from sim.phy import two_ray_breakpoint_m
+
+    car = two_ray_breakpoint_m(1.5, 1.5, 5.9e9)
+    truck = two_ray_breakpoint_m(3.0, 3.0, 5.9e9)
+    assert truck == pytest.approx(4 * car, rel=1e-9)
+
+
+def test_breakpoint_is_derived_not_configured(phy_cfg, phy):
+    """The config carries antenna height, not a recalled fitted breakpoint."""
+    assert phy_cfg["path_loss"]["breakpoint_distance_m"] is None
+    assert phy.breakpoint_distance_m == pytest.approx(177.1, abs=0.5)
+
+
+def test_breakpoint_can_still_be_overridden(phy_cfg):
+    cfg = {**phy_cfg, "path_loss": {**phy_cfg["path_loss"],
+                                    "breakpoint_distance_m": {"rural_highway": 100.0}}}
+    p = build_phy(cfg, "rural_highway", "clear", seed=0)
+    assert p.breakpoint_distance_m == pytest.approx(100.0)

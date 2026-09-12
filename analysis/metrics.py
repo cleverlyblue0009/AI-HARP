@@ -35,6 +35,7 @@ METRIC_DIRECTION: dict[str, int] = {
     "transmissions": -1,
     "collisions_per_delivered": -1,
     "deadline_miss_rate": -1,
+    "actionable_deadline_miss_rate": -1,
     "max_hops": +1,
     "spatial_reach_m": +1,
 }
@@ -189,6 +190,108 @@ def deadline_miss_rate(
     return float(1.0 - ok.sum() / n)
 
 
+def actionable_deadline_miss_rate(
+    ctx: MetricContext, res: RunResult, hazard: Hazard, hz_cfg: dict[str, Any]
+) -> dict[str, Any]:
+    """Deadline misses restricted to vehicles a policy could actually have saved.
+
+    ``deadline_miss_rate`` is dominated by vehicles that were *already* inside
+    the hazard span, or already within reaction time of it, at the instant the
+    hazard was first detected. No dissemination scheme can help those vehicles:
+    the message did not exist yet, and no relay decision changes that. Including
+    them adds a large policy-independent constant to every result, which is why
+    the plain metric sits at 0.27-0.39 for all nine baselines and discriminates
+    nothing.
+
+    The actionable set is the at-risk vehicles whose ETA to the hazard at
+    origination still exceeded the driver reaction time -- i.e. those for whom a
+    timely warning was physically possible. This is the metric to report as
+    primary; the unrestricted one is kept for comparability with prior work.
+    """
+    tr = res.trace
+    dl = hz_cfg.get("deadlines", {})
+    reaction = float(dl.get("reaction_time_s", 2.5))
+
+    if res.origin_step < 0 or not ctx.at_risk.any():
+        return {"actionable_deadline_miss_rate": float("nan"),
+                "n_actionable": 0, "n_unreachable_at_origin": 0}
+
+    # ETA of every vehicle at the moment the message came into existence.
+    s = res.origin_step
+    feats = res.risk.evaluate(
+        np.nan_to_num(tr.x[s]), np.nan_to_num(tr.y[s]), tr.vx[s], tr.vy[s],
+        tr.direction, hazard, s * tr.dt, active=tr.active[s],
+    )
+    eta_at_origin = feats["eta_s"]
+
+    # A vehicle counts as actionable if it was at risk and still had more than
+    # a reaction time in hand when the hazard was detected. Vehicles that enter
+    # the corridor later are actionable by construction (they were nowhere near
+    # the hazard at origination), so absent-at-origin counts as actionable.
+    present = tr.active[s]
+    had_time = (~present) | (eta_at_origin >= reaction)
+    actionable = ctx.at_risk & had_time
+    n_actionable = int(actionable.sum())
+    n_unreachable = int((ctx.at_risk & ~had_time).sum())
+
+    if n_actionable == 0:
+        return {"actionable_deadline_miss_rate": float("nan"),
+                "n_actionable": 0, "n_unreachable_at_origin": n_unreachable}
+
+    ok = ctx.informed_in_time & actionable
+    ok &= ctx.latency_s <= hazard.safety_deadline_s
+    if dl.get("require_actionable_eta", False):
+        idx = np.flatnonzero(ok)
+        if idx.size:
+            eta = np.array([_eta_at(res, int(st), int(v))
+                            for st, v in zip(res.informed_step[idx], idx)])
+            ok[idx] = eta >= reaction
+
+    return {
+        "actionable_deadline_miss_rate": float(1.0 - ok.sum() / n_actionable),
+        "n_actionable": n_actionable,
+        "n_unreachable_at_origin": n_unreachable,
+    }
+
+
+def traffic_regime(res: RunResult) -> dict[str, Any]:
+    """Label the traffic state from measured speed against free-flow speed.
+
+    At 120 veh/km/lane the rural corridor runs at ~2.5 m/s: that is a jam, not
+    high-density free flow, and presenting it as a density point without
+    saying so would misrepresent it. Every figure carries this label.
+
+    Thresholds follow the usual speed-ratio convention: above 0.85 of free-flow
+    speed is uncongested, below 0.5 is breakdown.
+    """
+    tr = res.trace
+    speed = np.hypot(tr.vx, tr.vy)
+    moving = speed[tr.active]
+    if moving.size == 0:
+        return {"mean_speed_ms": float("nan"), "free_flow_speed_ms": float("nan"),
+                "speed_ratio": float("nan"), "regime": "unknown"}
+    mean_speed = float(moving.mean())
+    # Free-flow reference: the 95th percentile of achieved speed, which is what
+    # unobstructed vehicles in this same trace manage. Using the trace itself
+    # keeps the reference consistent with the weather speed factor.
+    free_flow = float(np.percentile(moving, 95))
+    ratio = mean_speed / free_flow if free_flow > 0 else float("nan")
+    if not np.isfinite(ratio):
+        regime = "unknown"
+    elif ratio > 0.85:
+        regime = "free_flow"
+    elif ratio > 0.5:
+        regime = "congested"
+    else:
+        regime = "jammed"
+    return {
+        "mean_speed_ms": round(mean_speed, 3),
+        "free_flow_speed_ms": round(free_flow, 3),
+        "speed_ratio": round(ratio, 4),
+        "regime": regime,
+    }
+
+
 def _eta_at(res: RunResult, step: int, vehicle: int) -> float:
     tr, risk, hz = res.trace, res.risk, res.hazard
     f = risk.evaluate(
@@ -200,9 +303,35 @@ def _eta_at(res: RunResult, step: int, vehicle: int) -> float:
 
 
 def overhead_metrics(res: RunResult, ctx: MetricContext) -> dict[str, float]:
-    """Rebroadcast overhead and redundancy."""
+    """Rebroadcast overhead, redundancy and channel load.
+
+    ``tx_per_at_risk_informed`` is the cost axis of the Pareto front in
+    :mod:`analysis.pareto`: how many transmissions the network spent per
+    at-risk vehicle actually warned in time. It is the quantity the paper's
+    headline result minimises at matched RWCR.
+    """
     n_informed = int((res.informed_step >= 0).sum())
     n_at_risk_informed = int((ctx.informed_in_time & ctx.at_risk).sum())
+
+    # Channel occupancy contributed by the dissemination itself, in airtime.
+    frame_s = res.mac.frame_duration_s if res.mac is not None else float("nan")
+    airtime_ms = res.n_transmissions * frame_s * 1e3
+    duration_s = res.trace.duration_s if res.trace is not None else float("nan")
+
+    # Background load from CAM/BSM beaconing at the mean neighbourhood size,
+    # after DCC rate adaptation. This is the floor the dissemination sits on.
+    beacon_cbr = float("nan")
+    if res.mac is not None and res.trace is not None:
+        mean_concurrent = float(res.trace.active.sum(axis=1).mean())
+        # Neighbours within carrier sense, approximated by the share of the
+        # network inside one CS radius on a corridor of known length.
+        span = float(res.trace.meta.get("length_m", 0.0)) or float(
+            res.trace.meta.get("total_lane_km", 1.0) * 1000.0
+        )
+        cs_r = float(res.meta.get("cs_range_m", 0.0))
+        frac = min(1.0, (2 * cs_r / span) if span > 0 else 1.0)
+        beacon_cbr = res.mac.channel_busy_ratio(mean_concurrent * frac)
+
     return {
         "transmissions": float(res.n_transmissions),
         "redundancy_ratio": res.n_transmissions / n_informed if n_informed else float("nan"),
@@ -212,6 +341,12 @@ def overhead_metrics(res: RunResult, ctx: MetricContext) -> dict[str, float]:
         "collisions_per_delivered": (
             res.n_fail_sinr / res.n_rx_success if res.n_rx_success else float("nan")
         ),
+        "airtime_ms": airtime_ms,
+        "airtime_per_at_risk_informed_ms": (
+            airtime_ms / n_at_risk_informed if n_at_risk_informed else float("inf")
+        ),
+        "dissemination_cbr": airtime_ms / (duration_s * 1e3) if duration_s else float("nan"),
+        "beacon_cbr": beacon_cbr,
     }
 
 
@@ -261,6 +396,8 @@ def compute_metrics(res: RunResult, hz_cfg: dict[str, Any]) -> dict[str, Any]:
         "origin_step": int(res.origin_step),
         "origin_time_s": float(res.origin_step * tr.dt) if res.origin_step >= 0 else float("nan"),
     }
+    out.update(actionable_deadline_miss_rate(ctx, res, hazard, hz_cfg))
+    out.update(traffic_regime(res))
     out.update(time_to_informed_at_risk(ctx, risk))
     out.update(overhead_metrics(res, ctx))
     out.update(message_lifetime(res))
@@ -299,7 +436,8 @@ _LABELS: dict[str, tuple[str, str]] = {
     "transmissions": ("Transmissions", "{:.0f}"),
     "redundancy_ratio": ("Redundancy ratio (tx / informed)", "{:.3f}"),
     "collisions_per_delivered": ("Collisions per delivered frame", "{:.4f}"),
-    "deadline_miss_rate": ("Safety-deadline miss rate", "{:.4f}"),
+    "actionable_deadline_miss_rate": ("Deadline miss rate, actionable set", "{:.4f}"),
+    "deadline_miss_rate": ("Deadline miss rate, all at-risk", "{:.4f}"),
     "max_hops": ("Message lifetime (hops)", "{:.0f}"),
     "spatial_reach_m": ("Spatial reach (m)", "{:.0f}"),
 }

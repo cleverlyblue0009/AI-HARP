@@ -26,6 +26,7 @@ from typing import Any
 import numpy as np
 
 from common.logging_utils import get_logger
+from sim.buildings import BuildingGrid, build_building_grid
 
 logger = get_logger("sim.phy")
 
@@ -39,20 +40,32 @@ def free_space_loss_db(distance_m: float, frequency_hz: float) -> float:
     return 20.0 * math.log10(4.0 * math.pi * distance_m * frequency_hz / SPEED_OF_LIGHT)
 
 
-def itu_rain_attenuation_db_per_km(rain_rate_mm_h: float, k: float, alpha: float) -> float:
-    """ITU-R P.838 specific rain attenuation ``gamma_R = k * R^alpha`` [dB/km].
+def two_ray_breakpoint_m(
+    tx_height_m: float, rx_height_m: float, frequency_hz: float
+) -> float:
+    """Two-ray ground-reflection breakpoint, ``d_bp = 4 h_t h_r / lambda``.
 
-    At 5.9 GHz this is small (~0.12 dB/km at 25 mm/h). That is the physics,
-    not a bug: centimetre-wave links are barely attenuated by rain drops.
+    Beyond this distance the ground-reflected ray arrives in antiphase with the
+    direct ray and the received power decays as roughly ``d^-4`` instead of
+    ``d^-2``. Deriving the breakpoint from antenna geometry rather than reading
+    a fitted constant ties it to a quantity the paper states anyway, and
+    removes a recalled measurement value from the configuration.
+
+    With 1.5 m antennas at 5.9 GHz this gives 177 m.
     """
-    if rain_rate_mm_h <= 0:
-        return 0.0
-    return float(k * rain_rate_mm_h**alpha)
+    if min(tx_height_m, rx_height_m) <= 0:
+        raise ValueError("antenna heights must be positive")
+    wavelength = SPEED_OF_LIGHT / frequency_hz
+    return 4.0 * tx_height_m * rx_height_m / wavelength
 
 
-def itu_fog_attenuation_db_per_km(liquid_water_g_m3: float, kl: float) -> float:
-    """ITU-R P.840 cloud/fog specific attenuation ``gamma_c = K_l * M`` [dB/km]."""
-    return float(max(liquid_water_g_m3, 0.0) * kl)
+# The ITU-R hydrometeor models live in sim/itu.py and are evaluated at the
+# actual carrier frequency from the Recommendations' own equations. They are
+# re-exported here so existing callers keep working.
+from sim.itu import (  # noqa: E402
+    fog_specific_attenuation_db_per_km,
+    rain_specific_attenuation_db_per_km,
+)
 
 
 @dataclass
@@ -116,6 +129,9 @@ class PhyModel:
     weather: WeatherEffect
     scenario: str
     seed: int = 0
+    #: Building geometry for NLOS classification. None for open-road scenarios.
+    buildings: "BuildingGrid | None" = None
+    nlos_corner_loss_db: float = 0.0
     _shadow_salt: int = field(default=0, repr=False)
 
     # ------------------------------------------------------------------ noise --
@@ -202,6 +218,59 @@ class PhyModel:
             p = p + self.fading_db(np.shape(distance_m), rng)
         return p
 
+    # -------------------------------------------------------------- buildings --
+    @property
+    def has_buildings(self) -> bool:
+        return self.buildings is not None and self.nlos_corner_loss_db > 0.0
+
+    def nlos_excess_db(self, pos_tx: np.ndarray, pos_rx: np.ndarray) -> np.ndarray:
+        """``[n_tx, n_rx]`` additional loss for links blocked by a building.
+
+        Zero everywhere when the scenario has no buildings, so open-road
+        scenarios are completely unaffected. For blocked links the signal must
+        travel the Manhattan path around the corner and pay a knife-edge
+        diffraction loss; charging it as an *excess over the LOS model* leaves
+        path loss, shadowing and fading untouched.
+        """
+        shape = (pos_tx.shape[0], pos_rx.shape[0])
+        if not self.has_buildings:
+            return np.zeros(shape)
+        b = self.buildings
+        assert b is not None
+        nlos = b.is_nlos(pos_tx, pos_rx)
+        if not nlos.any():
+            return np.zeros(shape)
+        d_e = np.maximum(b.euclidean_distance(pos_tx, pos_rx), self.reference_distance_m)
+        d_m = np.maximum(b.manhattan_distance(pos_tx, pos_rx), self.reference_distance_m)
+        detour = self.path_loss_db(d_m) - self.path_loss_db(d_e)
+        return np.where(nlos, detour + self.nlos_corner_loss_db, 0.0)
+
+    def nlos_range_m(self) -> float:
+        """Median-link range for a *blocked* link, worst case (90-degree corner).
+
+        Reported alongside ``nominal_range_m`` because the gap between them is
+        what creates urban fragmentation.
+        """
+        if not self.has_buildings:
+            return self.nominal_range_m
+        # A symmetric corner: Manhattan path is sqrt(2) times the Euclidean.
+        lo, hi = self.reference_distance_m, 1e5
+
+        def f(d: float) -> float:
+            detour = float(self.path_loss_db(d * math.sqrt(2)) - self.path_loss_db(d))
+            return float(self.median_rx_power_dbm(d)) - detour - self.nlos_corner_loss_db \
+                - self.sensitivity_dbm
+
+        if f(hi) > 0:
+            return hi
+        for _ in range(200):
+            mid = 0.5 * (lo + hi)
+            if f(mid) > 0:
+                lo = mid
+            else:
+                hi = mid
+        return 0.5 * (lo + hi)
+
     # ------------------------------------------------------------------ range --
     def range_for_power_m(self, target_dbm: float) -> float:
         """Distance at which the *median* link budget falls to ``target_dbm``.
@@ -254,6 +323,8 @@ class PhyModel:
             "weather_excess_db_per_km": round(self.weather.excess_db_per_km, 2),
             "nominal_range_m": round(self.nominal_range_m, 1),
             "sinr_limited_range_m": round(self.sinr_limited_range_m, 1),
+            "nlos_range_m": round(self.nlos_range_m(), 1) if self.has_buildings else None,
+            "nlos_corner_loss_db": self.nlos_corner_loss_db if self.has_buildings else None,
         }
 
 
@@ -318,24 +389,44 @@ def _ndtri(u: np.ndarray) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # Construction from YAML
 # ---------------------------------------------------------------------------
-def resolve_weather(phy_cfg: dict[str, Any], weather: str) -> WeatherEffect:
+def resolve_weather(
+    phy_cfg: dict[str, Any], weather: str, frequency_hz: float | None = None
+) -> WeatherEffect:
+    """Resolve a weather condition into its separable attenuation terms.
+
+    Hydrometeor attenuation is computed at ``frequency_hz`` from ITU-R
+    P.838-3 / P.840-8 rather than read from config, so there are no k/alpha/K_l
+    constants that can drift from the standard.
+    """
     w = phy_cfg["weather"]
     try:
         c = w["conditions"][weather]
     except KeyError as exc:
         raise KeyError(f"Unknown weather {weather!r}; known: {list(w['conditions'])}") from exc
+
+    f_ghz = (frequency_hz if frequency_hz is not None
+             else float(phy_cfg["radio"]["carrier_frequency_hz"])) / 1e9
+    polarisation = w.get("itu_rain_polarisation", "vertical")
+    fog_temp_k = float(w.get("fog_temperature_k", 283.15))
+
+    # The empirical excess-loss term is disabled by default: the values that
+    # were there were not citable. See the block comment in configs/phy.yaml.
+    excess_enabled = bool(w.get("enable_empirical_excess_loss", False))
+    excess = float(c.get("excess_loss_db_per_km", 0.0)) if excess_enabled else 0.0
+    dn = float(c.get("exponent_delta", 0.0)) if excess_enabled else 0.0
+
     return WeatherEffect(
         name=weather,
         rain_rate_mm_h=float(c["rain_rate_mm_h"]),
         fog_liquid_water_g_m3=float(c["fog_liquid_water_g_m3"]),
-        itu_rain_db_per_km=itu_rain_attenuation_db_per_km(
-            float(c["rain_rate_mm_h"]), float(w["itu_rain"]["k"]), float(w["itu_rain"]["alpha"])
+        itu_rain_db_per_km=rain_specific_attenuation_db_per_km(
+            float(c["rain_rate_mm_h"]), f_ghz, polarisation
         ),
-        itu_fog_db_per_km=itu_fog_attenuation_db_per_km(
-            float(c["fog_liquid_water_g_m3"]), float(w["itu_fog"]["kl_db_per_km_per_g_m3"])
+        itu_fog_db_per_km=fog_specific_attenuation_db_per_km(
+            float(c["fog_liquid_water_g_m3"]), f_ghz, fog_temp_k
         ),
-        excess_db_per_km=float(c["excess_loss_db_per_km"]),
-        exponent_delta=float(c["exponent_delta"]),
+        excess_db_per_km=excess,
+        exponent_delta=dn,
         visibility_m=float(c["visibility_m"]),
         speed_factor=float(c.get("speed_factor", 1.0)),
         headway_factor=float(c.get("headway_factor", 1.0)),
@@ -343,11 +434,15 @@ def resolve_weather(phy_cfg: dict[str, Any], weather: str) -> WeatherEffect:
 
 
 def build_phy(
-    phy_cfg: dict[str, Any], scenario: str, weather: str = "clear", seed: int = 0
+    phy_cfg: dict[str, Any],
+    scenario: str,
+    weather: str = "clear",
+    seed: int = 0,
+    trace_meta: dict[str, Any] | None = None,
 ) -> PhyModel:
     """Resolve ``configs/phy.yaml`` into a :class:`PhyModel`."""
     r, rx, pl, fa = phy_cfg["radio"], phy_cfg["receiver"], phy_cfg["path_loss"], phy_cfg["fading"]
-    weff = resolve_weather(phy_cfg, weather)
+    weff = resolve_weather(phy_cfg, weather, float(r["carrier_frequency_hz"]))
 
     d0 = float(pl["reference_distance_m"])
     ref_loss = pl.get("reference_loss_db")
@@ -356,6 +451,23 @@ def build_phy(
 
     if scenario not in pl["exponent"]:
         raise KeyError(f"No path-loss exponent for scenario {scenario!r} in configs/phy.yaml")
+
+    # Breakpoint: derived from the two-ray geometry unless explicitly overridden.
+    bp_cfg = pl.get("breakpoint_distance_m")
+    if isinstance(bp_cfg, dict) and scenario in bp_cfg and bp_cfg[scenario] is not None:
+        breakpoint_m = float(bp_cfg[scenario])
+    else:
+        h = float(pl["antenna_height_m"][scenario])
+        breakpoint_m = two_ray_breakpoint_m(h, h, float(r["carrier_frequency_hz"]))
+
+    # Buildings: only for scenarios that declare an NLOS model.
+    nlos_cfg = phy_cfg.get("nlos", {})
+    corner_loss = float(nlos_cfg.get("corner_loss_db", {}).get(scenario, 0.0))
+    buildings = None
+    if corner_loss > 0.0 and trace_meta is not None:
+        buildings = build_building_grid(
+            trace_meta, float(nlos_cfg.get("street_half_width_m", 6.0))
+        )
 
     model = PhyModel(
         frequency_hz=float(r["carrier_frequency_hz"]),
@@ -376,7 +488,7 @@ def build_phy(
         # dominated, so a wet surface has no mechanism to steepen it.
         path_loss_exponent=float(pl["exponent"][scenario]),
         path_loss_exponent_far=float(pl["exponent_far"][scenario]) + weff.exponent_delta,
-        breakpoint_distance_m=float(pl["breakpoint_distance_m"][scenario]),
+        breakpoint_distance_m=breakpoint_m,
         shadowing_std_db=float(pl["shadowing_std_db"][scenario]),
         shadowing_decorrelation_m=float(pl["shadowing_decorrelation_m"]),
         nakagami_m=float(fa["m"][scenario]),
@@ -384,6 +496,8 @@ def build_phy(
         weather=weff,
         scenario=scenario,
         seed=seed,
+        buildings=buildings,
+        nlos_corner_loss_db=corner_loss,
         _shadow_salt=int(seed) & 0xFFFFFFFF,
     )
     logger.debug("PHY: %s", model.summary())

@@ -326,6 +326,9 @@ class DisseminationEngine:
         tx_ids = np.broadcast_to(tx[:, None], d.shape)
         rx_ids = np.broadcast_to(rx_idx[None, :], d.shape)
         p_dbm = phy.rx_power_dbm(tx_ids, rx_ids, d, rng_fade)
+        # Buildings: links that do not share a street pay the detour around the
+        # corner plus a diffraction loss. Zero for open-road scenarios.
+        p_dbm = p_dbm - phy.nlos_excess_db(pos_tx, pos_rx)
         # Out-of-range links are not simulated at all.
         in_prune = d <= self.rx_range_m
         p_lin = np.where(in_prune, 10.0 ** (p_dbm / 10.0), 0.0)
@@ -434,7 +437,9 @@ class DisseminationEngine:
 
         dtx = np.linalg.norm(pos_tx[:, None, :] - pos_tx[None, :, :], axis=2)
         dtx = np.maximum(dtx, self.phy.reference_distance_m)
-        sense = self.phy.median_rx_power_dbm(dtx) >= self.mac.carrier_sense_threshold_dbm
+        sense = (
+            self.phy.median_rx_power_dbm(dtx) - self.phy.nlos_excess_db(pos_tx, pos_tx)
+        ) >= self.mac.carrier_sense_threshold_dbm
         np.fill_diagonal(sense, False)
 
         slots = self.mac.draw_backoff_slots(n_tx, rng)
@@ -496,6 +501,26 @@ class DisseminationEngine:
         dy = tr.y[step, rx_idx] - tr.y[step, i]
         dist = np.hypot(dx, dy)
         near = (dist <= self.comm_range_m) & (rx_idx != i)
+
+        if self.phy.has_buildings:
+            # A neighbour behind a building is not a neighbour. The neighbour
+            # table comes from overheard beacons, so it can only contain
+            # vehicles whose beacons actually arrive -- which means the NLOS
+            # excess loss has to be applied here too, not only to the
+            # dissemination frames.
+            #
+            # Without this, policies in urban_nlos "see" vehicles across a
+            # street corner that they cannot reach: DV-CAST concludes it is
+            # well connected and never carries, and greedy forwarding
+            # designates relays that never hear the designation.
+            self_pos = np.array([[tr.x[step, i], tr.y[step, i]]])
+            nb_pos = np.stack([tr.x[step, rx_idx], tr.y[step, rx_idx]], axis=1)
+            budget = (
+                self.phy.median_rx_power_dbm(np.maximum(dist, self.phy.reference_distance_m))
+                - self.phy.nlos_excess_db(self_pos, nb_pos)[0]
+            )
+            near &= budget >= self.phy.sensitivity_dbm
+
         nb = rx_idx[near]
 
         sender_dx = sender_dy = 0.0
