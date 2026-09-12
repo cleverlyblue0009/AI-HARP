@@ -59,6 +59,13 @@ sweep:
   # 1, 2 and 3 are therefore prepended. The brief's six densities are retained
   # so the dense/congested regime is still covered.
   weather: [clear, moderate_rain, heavy_rain, dense_fog]
+  # SECONDARY, TOPOLOGY-MEDIATED result. Weather has no meaningful effect on
+  # the 5.9 GHz channel in this model (worst case: 0.24% change in nominal
+  # range) because the invented empirical excess-loss term was deleted for want
+  # of a citation. What weather does change is DRIVER BEHAVIOUR -- speed_factor
+  # and headway_factor -- which alters spacing, density and therefore network
+  # topology. Every weather figure caption must say "traffic-mediated"; no
+  # figure or table may claim channel degradation.
   hazard_types: [fog_bank, landslide, waterlogging, crash, black_ice]
   policies:
     # The seven Phase 4 schemes; p-persistence contributes three variants.
@@ -115,3 +122,23 @@ compare:
   seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
   headline_metrics: [rwcr, tir_median_s, tir_p95_s, deadline_miss_rate,
                      transmissions, pdr, redundancy_ratio, at_risk_coverage]
+
+# -----------------------------------------------------------------------------
+# Headline comparator (analysis/comparator.py). The cells over which the two
+# reference points -- per-cell oracle-best and best single fixed baseline --
+# are computed. Kept deliberately small and spread: one sparse corridor cell,
+# one connected corridor cell, one congested corridor cell, and the NLOS urban
+# topology, so a "fixed best" has to cope with genuinely different regimes.
+# -----------------------------------------------------------------------------
+comparator:
+  target_rwcr: 0.95
+  cells:
+    - {scenario: rural_highway, density: 2,  weather: clear, hazard_type: fog_bank}
+    - {scenario: rural_highway, density: 20, weather: clear, hazard_type: fog_bank}
+    - {scenario: rural_highway, density: 80, weather: clear, hazard_type: fog_bank}
+    - {scenario: urban_nlos,    density: 20, weather: clear, hazard_type: fog_bank}
+  # Co-primary cost axes. RWCR saturates in every scenario once measured
+  # against the ORACLE at-risk set (rural 0.93, urban_nlos 0.97-0.98), so
+  # overhead alone would under-report differences that show up in latency:
+  # on urban_nlos TIR spreads 2.4x across policies where RWCR spreads 4 points.
+  cost_axes: [cost, tir_median_s, tir_p95_s]

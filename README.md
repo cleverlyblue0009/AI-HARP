@@ -268,10 +268,16 @@ reaching irrelevant vehicles does not raise the score at all.
   during the run). That is legitimate for an evaluation-time ground-truth
   quantity, and must stay unavailable to the policies, which see only local
   observations. `Trace.routes` already records what is needed.
-- Weather no longer has a meaningful channel effect (by design, see above), so
-  the weather axis of the factorial now varies only through traffic behaviour.
-  Worst case is a 0.24% change in nominal range. The weather-degradation figure
-  will be flat on the channel axis and must be presented as such.
+- **Weather is a traffic-mediated effect only, and is a SECONDARY result.**
+  There is no channel-degradation claim anywhere in this project: the ITU-R
+  hydrometeor terms are real but negligible at 5.9 GHz (worst case 0.24% change
+  in nominal range), and the empirical excess-loss term was deleted for want of
+  a citation. Weather changes dissemination by changing how people drive
+  (`speed_factor`, `headway_factor`), which changes spacing and topology.
+  Every weather figure caption must say "traffic-mediated"; no figure, table or
+  caption may imply the radio channel degrades. The strongest honest framing is
+  that fog destroys *optical* sensing while leaving 5.9 GHz untouched, which is
+  exactly why V2X warning matters most in fog.
 - `reproduce.sh` is Phase 8 and does not exist yet.
 
 ## Reproducing each figure

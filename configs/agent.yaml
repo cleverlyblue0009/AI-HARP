@@ -1,0 +1,196 @@
+# =============================================================================
+# AI-HARP -- learned agent: graph, encoder, action space, reward, training.
+#
+# Phase 5. Requires torch + torch-geometric; nothing in Phases 1-4 imports this
+# file, so the existing test suite runs without them.
+# =============================================================================
+
+graph:
+  neighbour_cap_k: 12
+  # source: [ASSUMED] Nearest-k neighbours kept per decision graph, so batches
+  #         have bounded size. Swept in the ablations over {4, 8, 12, 20}.
+  include_rsus: true
+  radius_source: nominal_range
+  # Neighbourhood radius comes from the PHY's own nominal range rather than a
+  # separate constant, so it tracks weather and scenario automatically.
+
+  node_features:
+    # Everything here must be obtainable at decision time from CAM/BSM beacons
+    # plus the vehicle's own state. tests/test_oracle_isolation.py enforces
+    # that the ORACLE risk field never reaches this list.
+    - rel_x                 # position relative to the holder (m)
+    - rel_y
+    - rel_vx                # velocity relative to the holder (m/s)
+    - rel_vy
+    - heading_sin
+    - heading_cos
+    - eta_to_hazard_s       # from hazard/risk_field.py -- the CAUSAL estimate
+    - relevance_causal      # likewise causal; never the oracle
+    - is_informed           # only what this vehicle has actually overheard
+    - neighbour_count
+    - hop_count
+    - message_age_s
+    - ttl_remaining_s
+    - is_rsu
+
+  edge_features:
+    - distance_m
+    - relative_speed_ms
+    - link_lifetime_s       # estimated from closing rate
+    - predicted_rssi_dbm    # from sim/phy.py median link budget
+    - heading_difference_rad
+
+  normalisation:
+    mode: frozen
+    stats_path: results/feature_stats.json
+    holdout_seeds: [900, 901, 902, 903, 904]
+    # source: [ASSUMED] Feature statistics are computed once on held-out traces
+    #         and FROZEN. Per-batch normalisation would make a vehicle's
+    #         features depend on its batch-mates, which is impossible to
+    #         reproduce in per-vehicle decentralised execution.
+
+encoder:
+  type: gatv2               # ablated against: gcn, mlp
+  layers: 3
+  heads: 4                  # ablated over {1, 4, 8}
+  hidden_dim: 64
+  edge_dim: 5
+  residual: true
+  layer_norm: true
+  dropout: 0.1
+  attention_as_relay_logits: true
+  # The attention weights over neighbours ARE the relay-selection logits, not a
+  # by-product read out for visualisation. This is what makes the architecture
+  # interpretable and what produces the attention-heatmap figure.
+
+action_space:
+  # Deliberately small and discrete; identical in structure to what the Phase 4
+  # baselines already express, so the comparison is like-for-like.
+  actions:
+    - suppress
+    - broadcast_now
+    - defer_1
+    - defer_2
+    - defer_3
+    - relay_top_1
+    - relay_top_2
+    - relay_top_3
+    - carry_and_forward
+  defer_epochs: [1, 2, 3]
+  # 100 ms per epoch. Note the README limitation: this granularity inflates the
+  # absolute latency of every deferring scheme, baselines and agent alike.
+
+confidence_gate:
+  enabled: true
+  method: entropy           # entropy | ensemble
+  tau: 0.5                  # swept over {0, 0.1, 0.3, 0.5, 0.7} in the ablations
+  fallback_policy: weighted_p
+  ensemble_size: 5
+  # source: [ASSUMED] Above tau the learned action executes; below it the
+  #         policy defers to a known-good analytic scheme. This is a named
+  #         contribution: the safety claim is that a learned policy never
+  #         silently fails in a safety-critical broadcast, and the gate is
+  #         where that claim is earned. The fallback rate is logged as a
+  #         first-class metric, not as a diagnostic.
+
+# -----------------------------------------------------------------------------
+# REWARD
+#
+#   r = w1 * d(relevance-weighted informed)
+#     - w2 * (transmission cost)
+#     - w3 * (collisions caused)
+#     - w4 * (actionable deadline miss)
+#     + w5 * (at-risk set covered before hazard arrival)
+#
+# w1 and w2 are CALIBRATED, not chosen -- see analysis/reward_calibration.py.
+# A transmission is reward-neutral when w2/w1 = mean_relevance / target_cost.
+# The measured baseline front puts the deployable cluster at 0.41 transmissions
+# per at-risk vehicle informed and flooding at 2.11, with mean at-risk
+# relevance ~0.75, giving:
+#
+#     target 0.41-class : w2/w1 = 0.75 / 0.41 = 1.83   <-- configured
+#     flooding-class    : w2/w1 = 0.75 / 2.11 = 0.36
+#
+# Any ratio below ~0.36 makes blind flooding reward-optimal. The configured
+# ratio sits 5.15x above that boundary. Reported as a sensitivity over
+# {0.25, 0.5, 1.0, 1.83, 3.0, 6.0} rather than asserted to be correct.
+# -----------------------------------------------------------------------------
+reward:
+  w1_relevance_informed: 1.0
+  w2_transmission_cost: 1.83
+  # source: [DERIVED] calibrated against the measured baseline front; see above.
+  w3_collision: 0.5
+  # source: [ASSUMED] A collision destroys a frame for every receiver in range,
+  #         so it costs more than the transmission that caused it, but it is
+  #         already partly reflected in w1 (nothing gets informed).
+  w4_deadline_miss: 4.0
+  # source: [ASSUMED] A safety-deadline miss is the outcome the system exists
+  #         to prevent; it must dominate a handful of wasted transmissions.
+  #         Uses the ACTIONABLE miss rate -- penalising the agent for vehicles
+  #         that were already unreachable at origination would be rewarding
+  #         noise.
+  w5_coverage_bonus: 2.0
+  # source: [ASSUMED] Terminal bonus for the fraction of the at-risk set warned
+  #         before it reaches the hazard. Shapes toward the end goal rather
+  #         than per-step credit alone.
+  normalise_by_at_risk_set: true
+  # Rewards are divided by the size of the at-risk set so cells with 50 and
+  # 500 at-risk vehicles contribute comparable gradient magnitudes.
+
+  sensitivity_w2_over_w1: [0.25, 0.5, 1.0, 1.83, 3.0, 6.0]
+
+algorithm:
+  name: ppo                 # ppo | dueling_dqn (config flag, secondary result)
+  shared_policy: true       # one policy for all vehicles
+  centralised_training: true
+  ppo:
+    gamma: 0.99
+    gae_lambda: 0.95
+    clip_ratio: 0.2
+    value_coef: 0.5
+    entropy_coef: 0.01
+    # Entropy matters doubly here: it regularises exploration AND it is the
+    # quantity the confidence gate thresholds, so it must not be annealed to
+    # zero or the gate loses its signal.
+    lr: 3.0e-4
+    epochs_per_update: 4
+    minibatch_size: 256
+    max_grad_norm: 0.5
+  dueling_dqn:
+    lr: 1.0e-4
+    buffer_size: 100000
+    batch_size: 128
+    target_update_interval: 1000
+    epsilon_start: 1.0
+    epsilon_end: 0.05
+    epsilon_decay_updates: 500
+    double_q: true
+
+training:
+  total_updates: 2000
+  rollout_episodes_per_update: 8
+  checkpoint_every_updates: 100
+  checkpoint_dir: checkpoints/
+  tensorboard_dir: tb_logs/
+  seed: 0
+  deterministic: true
+
+  curriculum:
+    # Start connected, anneal toward sparse: credit assignment is tractable
+    # when a relay decision has an immediate visible consequence, and becomes
+    # hard when the message must be carried across a gap.
+    mode: density_anneal
+    stages:
+      - {until_frac: 0.25, densities: [40, 80]}
+      - {until_frac: 0.50, densities: [10, 20, 40]}
+      - {until_frac: 0.75, densities: [3, 5, 10, 20]}
+      - {until_frac: 1.00, densities: [1, 2, 3, 5, 10, 20, 40, 80]}
+
+  train_scenarios: [rural_highway, urban_nlos]
+  held_out_scenarios: [urban_grid]
+  # urban_grid is NEVER trained on: it is the unseen-topology generalisation
+  # test. It is also the well-connected control.
+  train_hazards: [fog_bank, landslide, crash]
+  held_out_hazards: [waterlogging, black_ice]
+  train_weather: [clear, heavy_rain]
+  held_out_weather: [moderate_rain, dense_fog]

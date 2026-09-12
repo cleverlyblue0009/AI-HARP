@@ -165,7 +165,9 @@ def sweep_policy(
     cfgs: dict[str, Any] | None = None,
     extra_metrics: Sequence[str] = ("collisions_per_delivered", "airtime_ms",
                                     "dissemination_cbr", "tir_median_s",
-                                    "actionable_deadline_miss_rate"),
+                                    "tir_p95_s", "tir_uninformed_frac",
+                                    "actionable_deadline_miss_rate",
+                                    "risk_est_precision", "risk_peak_corr"),
 ) -> PolicyCurve:
     """Trace one policy's operating curve by sweeping its suppression knob."""
     cfgs = cfgs or {}
@@ -213,6 +215,38 @@ def sweep_all(
         logger.info("Pareto sweep: %s on %s @ %g veh/km/lane", pol, scenario, density)
         curves[pol] = sweep_policy(pol, seeds, scenario=scenario, density=density, **kw)
     return curves
+
+
+def build_cells(
+    cell_specs: Sequence[dict[str, Any]],
+    seeds: Iterable[int],
+    *,
+    policies: Sequence[str] = tuple(POLICY_SWEEPS),
+    cfgs: dict[str, Any] | None = None,
+):
+    """Run the operating-curve sweep over several factorial cells.
+
+    Each spec is ``{scenario, density, weather, hazard_type}``. Returns
+    ``analysis.comparator.Cell`` objects, which is what the headline comparator
+    consumes.
+    """
+    from analysis.comparator import Cell, CellKey
+
+    seeds = list(seeds)
+    cells = []
+    for spec in cell_specs:
+        key = CellKey(
+            scenario=spec["scenario"], density=float(spec["density"]),
+            weather=spec.get("weather", "clear"),
+            hazard_type=spec.get("hazard_type", "fog_bank"),
+        )
+        logger.info("=== cell %s (%d seeds) ===", key, len(seeds))
+        curves = sweep_all(
+            seeds, scenario=key.scenario, density=key.density, policies=policies,
+            weather=key.weather, hazard_type=key.hazard_type, cfgs=cfgs,
+        )
+        cells.append(Cell(key=key, curves=curves))
+    return cells
 
 
 def overhead_at_matched_rwcr(
