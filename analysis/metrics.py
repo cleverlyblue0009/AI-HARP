@@ -16,6 +16,7 @@ from typing import Any
 import numpy as np
 
 from hazard.model import Hazard
+from hazard.oracle import OracleRiskField, build_oracle_risk_field, estimation_agreement
 from hazard.risk_field import RiskField
 from sim.engine import NO_STEP, RunResult
 
@@ -47,19 +48,29 @@ def _percentile(values: np.ndarray, q: float) -> float:
 
 @dataclass
 class MetricContext:
-    """Precomputed quantities shared by several metrics."""
+    """Precomputed quantities shared by several metrics.
 
-    relevance: np.ndarray        # [T, N] relevance over the whole run
+    The relevance here is the **oracle** field: the at-risk set, RWCR and TIR
+    are evaluation-time judgements about who actually needed the warning, and
+    answering that from a vehicle's instantaneous heading was what made grid
+    RWCR meaningless. The causal field is never used for scoring, and the
+    oracle is never used for deciding -- see hazard/oracle.py and
+    tests/test_oracle_isolation.py.
+    """
+
+    relevance: np.ndarray        # [T, N] ORACLE relevance over the whole run
     peak_relevance: np.ndarray   # [N]
     at_risk: np.ndarray          # [N] bool
     informed_in_time: np.ndarray # [N] bool
     latency_s: np.ndarray        # [N] seconds from hazard onset, inf if never
+    oracle: OracleRiskField | None = None
 
 
 def _build_context(res: RunResult, risk: RiskField, hazard: Hazard) -> MetricContext:
     tr = res.trace
-    rel = risk.relevance_matrix(tr, hazard)
-    peak, at_risk = risk.at_risk_set(rel)
+    oracle = build_oracle_risk_field(risk, hazard)
+    rel = oracle.relevance_matrix(tr, hazard)
+    peak, at_risk = oracle.at_risk_set(rel)
 
     informed = res.informed_step >= 0
     idx = np.flatnonzero(informed)
@@ -76,7 +87,7 @@ def _build_context(res: RunResult, risk: RiskField, hazard: Hazard) -> MetricCon
 
     return MetricContext(
         relevance=rel, peak_relevance=peak, at_risk=at_risk,
-        informed_in_time=informed_in_time, latency_s=latency,
+        informed_in_time=informed_in_time, latency_s=latency, oracle=oracle,
     )
 
 
@@ -396,6 +407,7 @@ def compute_metrics(res: RunResult, hz_cfg: dict[str, Any]) -> dict[str, Any]:
         "origin_step": int(res.origin_step),
         "origin_time_s": float(res.origin_step * tr.dt) if res.origin_step >= 0 else float("nan"),
     }
+    out.update(estimation_agreement(tr, hazard, risk, ctx.oracle))
     out.update(actionable_deadline_miss_rate(ctx, res, hazard, hz_cfg))
     out.update(traffic_regime(res))
     out.update(time_to_informed_at_risk(ctx, risk))
