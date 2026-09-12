@@ -1,0 +1,117 @@
+# =============================================================================
+# AI-HARP -- engine settings and experiment sweeps (Phases 2 and 7).
+# =============================================================================
+
+simulation:
+  max_hops: 32
+  # source: [ASSUMED] Hop limit on the hazard message. Generous: a 10 km
+  #         corridor at ~400 m per hop needs ~25 hops end to end.
+  message_ttl_s: 60.0
+  # source: [ASSUMED] A hazard warning is stale after a minute; beyond that the
+  #         at-risk set has turned over completely at highway speeds.
+  max_busy_deferrals: 5
+  # source: [ASSUMED] CSMA defers on a busy medium; after this many 100 ms
+  #         deferrals the frame is dropped rather than queued forever.
+  carry_recheck_steps: 10
+  # Store-carry-forward re-evaluation interval, in 100 ms epochs (= 1 s).
+  max_originators: 1
+  # One vehicle detects the hazard and originates the message. Raising this
+  # models redundant sensing and makes every policy look better.
+  rx_prune_margin_db: 15.0
+  # Candidate receivers are pruned at (sensitivity - this); fading can lift a
+  # link this far above its median, so pruning any tighter would silently
+  # discard successful receptions.
+  record_transmissions: true
+
+# -----------------------------------------------------------------------------
+# Single-run defaults (experiments/run_sim.py with no overrides).
+# -----------------------------------------------------------------------------
+defaults:
+  scenario: rural_highway
+  density_veh_km_lane: 20
+  weather: clear
+  policy: flooding
+  seed: 0
+  hazard_type: fog_bank
+
+# -----------------------------------------------------------------------------
+# Phase 7 full factorial. 10 seeds per cell; every cell writes one row to
+# results/runs.csv keyed by config hash.
+# -----------------------------------------------------------------------------
+sweep:
+  scenarios: [rural_highway, urban_grid]
+  densities_veh_km_lane: [1, 2, 3, 5, 10, 20, 40, 80, 120]
+  # MEASURED, not assumed. The brief's sweep starts at 5 veh/km/lane, but with
+  # a 562 m nominal range on a two-way corridor that is already a CONNECTED
+  # network: instrumenting the policies' action counts shows DV-CAST's
+  # store-carry-forward branch firing 0.0 times per run at 5, 10, 20, 40, 80
+  # and 120 veh/km/lane. Every scheme therefore degenerates to slotted
+  # persistence and RWCR saturates at 0.92-1.00 for all of them -- the headline
+  # metric stops discriminating.
+  #
+  # The disconnected regime the paper is about begins below ~3 veh/km/lane. At
+  # 2 veh/km/lane the carry branch finally fires and DV-CAST's RWCR rises to
+  # 0.666 against 0.607 for flooding and 0.589 for slotted 1-persistence, with
+  # fewer transmissions than either. At 1 veh/km/lane every scheme collapses
+  # (RWCR < 0.23) because the corridor is fragmented beyond what a 120 s window
+  # can bridge.
+  #
+  # 1, 2 and 3 are therefore prepended. The brief's six densities are retained
+  # so the dense/congested regime is still covered.
+  weather: [clear, moderate_rain, heavy_rain, dense_fog]
+  hazard_types: [fog_bank, landslide, waterlogging, crash, black_ice]
+  policies:
+    # The seven Phase 4 schemes; p-persistence contributes three variants.
+    - flooding
+    - p_persistence_03
+    - p_persistence_05
+    - p_persistence_07
+    - slotted_1p
+    - weighted_p
+    - counter_based
+    - greedy_farthest
+    - dvcast
+    # Phase 5 adds: ai_harp
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  # source: [ASSUMED] 10 seeds per cell. Paired across policies: seed k gives
+  #         every policy the same mobility, hazard and fading realisation, so
+  #         the Wilcoxon signed-rank test operates on genuinely paired samples.
+
+statistics:
+  test: wilcoxon_signed_rank
+  alpha: 0.05
+  correction: holm
+  # source: [ASSUMED] Holm-Bonferroni across the metric family, to control the
+  #         family-wise error rate over the multiple metrics compared per cell.
+
+# -----------------------------------------------------------------------------
+# --smoke: whole pipeline end to end in well under two minutes.
+# -----------------------------------------------------------------------------
+smoke:
+  # Covers both scenarios, the sparse and dense ends of the density sweep, all
+  # four weather conditions, a decaying and a persistent hazard, and two seeds.
+  # Small enough to finish in seconds, broad enough that a broken axis of the
+  # factorial cannot slip through.
+  scenarios: [rural_highway, urban_grid]
+  densities_veh_km_lane: [5, 40]
+  weather: [clear, moderate_rain, heavy_rain, dense_fog]
+  hazard_types: [fog_bank, crash]
+  policies: [flooding, slotted_1p, greedy_farthest, dvcast]
+  seeds: [0, 1]
+  duration_s: 20.0
+  corridor_length_m: 2000.0
+
+# -----------------------------------------------------------------------------
+# Baseline comparison (experiments/compare.py): one cell of the factorial,
+# every policy, many seeds. This is the Phase 4 results table.
+# -----------------------------------------------------------------------------
+compare:
+  scenario: rural_highway
+  weather: clear
+  hazard_type: fog_bank
+  densities_veh_km_lane: [2, 5, 20, 80]
+  # 2 is included because it is the only one of these that exercises the
+  # disconnected regime -- see the note on `sweep.densities_veh_km_lane`.
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  headline_metrics: [rwcr, tir_median_s, tir_p95_s, deadline_miss_rate,
+                     transmissions, pdr, redundancy_ratio, at_risk_coverage]
