@@ -1,286 +1,296 @@
 # AI-HARP
 
-Simulation framework for hazard-message dissemination in sparse, weather-degraded
+Simulation framework for hazard-message dissemination in sparse, NLOS-degraded
 vehicular networks.
-
-**Build status: Phases 1, 2, 3, 4 and 6 are implemented and tested. Phases 5, 7
-and 8 are not started.**
 
 | Phase | Scope | State |
 |---|---|---|
-| 1 | Mobility: SUMO scenarios, FCD parsing, cached `.npz` traces, pure-Python fallback | done (SUMO path untested — see below) |
+| 1 | Mobility: SUMO scenarios, FCD parsing, cached `.npz` traces, pure-Python fallback | done (SUMO path never executed — see below) |
 | 2 | Network simulator: 802.11p PHY, CSMA/CA MAC, dissemination engine | done |
-| 3 | Hazard model + risk field | done |
-| 4 | Seven baseline policies | done (9 registered variants) |
-| 5 | GAT-DRL agent (PPO / Dueling DQN) | not started |
-| 6 | Metrics (PDR, RWCR, TIR, overhead, deadlines, lifetime) | done |
-| 7 | Full factorial sweep, Wilcoxon tests, ablations | partial — paired runner + `results/runs.csv` exist |
-| 8 | IEEE figures, LaTeX tables, `reproduce.sh` | not started |
+| 3 | Hazard model + causal risk field + oracle risk field | done |
+| 4 | Seven baseline policies (9 registered variants) | done |
+| 5 | GATv2 agent, PPO / Dueling DQN, confidence gate, curriculum training | code done; **not yet trained to convergence** |
+| 6 | Metrics (PDR, RWCR, TIR, overhead, deadlines, channel load) | done |
+| 7 | Paired sweeps, Wilcoxon + Holm + effect sizes | runner + stats done; **ablations not run** |
+| 7b | Simulator validation (live SUMO, published-curve reproduction) | **not started** |
+| 8 | IEEE figures, LaTeX tables, `reproduce.sh` | pipeline done; agent-dependent figures pending |
 
----
-
-## Quick start
-
-```bash
-pip install -r requirements.txt          # numpy, pandas, pyyaml, scipy, matplotlib
-python -m pytest tests/ -q               # 201 tests, ~4 s
-python -m experiments.run_sim --smoke    # whole pipeline, 256 runs, ~60 s
-python -m experiments.compare --quiet    # Phase 4 baseline table, 10 seeds
-```
-
-The headline single run:
+**Read `ENVIRONMENT.md` first** — the Python environment lives on `D:`, not `C:`.
 
 ```bash
-python -m experiments.run_sim --scenario rural_highway --density 20 \
-    --weather clear --policy flooding --seed 0
+D:/aiharp-env/python.exe -m pytest tests/ -q          # 325 tests, ~17 s
+D:/aiharp-env/python.exe -m experiments.run_sim --smoke
+./reproduce.sh --smoke                                 # whole pipeline
 ```
 
-Options: `--scenario {rural_highway,urban_grid}`, `--density <veh/km/lane>`,
-`--weather {clear,moderate_rain,heavy_rain,dense_fog}`, `--policy`, `--seed`,
-`--hazard <type>`, `--sample-hazard`, `--backend {auto,sumo,fallback}`, `--json`.
-
 ---
 
-## Repository layout
+## What the paper claims, and where each claim is earned
 
-```
-configs/     phy.yaml (PHY+MAC), scenario_rural.yaml, scenario_urban.yaml,
-             hazard.yaml, experiment.yaml     <- every constant lives here
-common/      config loading, config hashing, seeding, logging
-mobility/    SUMO generation + FCD parsing + pure-Python fallback + trace cache
-sim/         phy.py (link budget), mac.py (CSMA/CA), engine.py (dissemination)
-hazard/      model.py (the hazard object), risk_field.py (relevance)
-agents/      base.py (policy interface), flooding.py, registry.py
-analysis/    metrics.py
-experiments/ run_sim.py (single run + --smoke)
-tests/       111 unit + integration tests
-cache/       generated traces (git-ignored)
-results/     CSV, figures, LaTeX (git-ignored)
-```
+### The headline is overhead at matched coverage, not RWCR
 
-`common/` is not in the original layout sketch; it exists so `mobility`, `sim`,
-`hazard` and `agents` can share config/seeding without importing each other.
+RWCR **saturates**. Measured against the oracle at-risk set, every baseline
+lands within a few points of every other at most densities. A result of the
+form "0.98 versus 0.976" is not a contribution.
 
----
+What does not saturate is *cost at matched coverage*. Each scheme's suppression
+knob is swept to trace an operating curve in (RWCR, transmissions per at-risk
+vehicle informed), and the question becomes who reaches a given coverage most
+cheaply. `analysis/pareto.py` computes those curves;
+`analysis/comparator.py` turns them into the two reference points.
 
-## Which mobility backend is running
+### "Versus flooding" is dead
 
-**No SUMO is installed in the current environment, so every number produced so
-far comes from the pure-Python fallback generator.** The backend is printed as a
-banner on every run and stamped into `trace.backend` and every metrics row.
+Flooding needs 2.11 transmissions per at-risk vehicle informed where the
+deployable cluster needs 0.41. Beating it 5× restates that nobody deploys
+flooding. Four baselines already sit within 6% of each other, and **that
+cluster is the bar**.
 
-The fallback is a real microscopic model — Krauss (1998) car-following with
-SUMO-style dawdling, per-driver desired speeds, a mixed car/truck fleet, and
-density regulated to the commanded value. It is **not** SUMO. It has:
+The comparator reports two things instead:
 
-- no lane changing and therefore **no overtaking** — on a single-lane
-  carriageway every car behind a slow truck is stuck there, which depresses
-  mean speed and creates platoons that *help* connectivity;
-- no OSM geometry, no junction gap acceptance, no calibrated demand.
-
-`mobility/sumo_runner.py` implements the SUMO path (network build via
-`netconvert`/`netgenerate` or an OSM extract, demand sized from
-`q = k·v·lanes`, FCD export, parse). **It has never been executed against a live
-SUMO install.** Treat the first real SUMO run as an integration test.
-
-To switch: install SUMO, set `SUMO_HOME`, and point
-`configs/scenario_rural.yaml → sumo.osm_extract` at a real OSM extract of the
-target corridor. `--backend sumo` then fails loudly rather than silently
-falling back.
-
----
-
-## Reproducing a number
-
-Everything is seed-controlled. One master seed per run derives independent
-named RNG streams (`mobility`, `hazard`, `shadowing`, `fading`, `mac`,
-`policy`), so seed *k* gives **every** policy identical mobility, identical
-hazard placement and identical fading — which is what makes the Phase 7
-Wilcoxon signed-rank test operate on genuinely paired samples.
-
-Traces are cached to `cache/traces/*.npz` under a hash of everything that
-affects them; SUMO is never re-invoked. Delete `cache/` to force regeneration.
-Every metrics row carries `config_hash` over the run spec, the PHY config, the
-hazard config and the engine settings.
-
----
-
-## Where the constants come from
-
-Every numeric constant is in a YAML file with a `source:` field tagged
-`[STD]` (a published standard), `[MEAS]` (a measurement campaign), `[DERIVED]`,
-`[ASSUMED]` (our modelling choice, must be defended in the text), or
-`[VERIFY]` (recalled from a standard — **must be checked against the primary
-document before submission**). Grep for `[VERIFY]` before writing the paper:
-
-```bash
-grep -rn "VERIFY" configs/
-```
-
-### Two modelling points that affect what the paper may claim
-
-**1. Rain does not meaningfully attenuate 5.9 GHz.** ITU-R P.838 gives
-~0.12 dB/km at 25 mm/h, i.e. ~0.04 dB over a 300 m DSRC hop — negligible.
-`configs/phy.yaml` therefore keeps two *separate* weather terms: `itu_rain`/
-`itu_fog` (real hydrometeor physics, tiny) and `excess_loss_db_per_km` +
-`exponent_delta` (empirical road-environment loss — wet-surface scattering,
-spray, antenna wetting — which is what actually shrinks measured V2V range).
-The empirical terms are currently **placeholders marked `[ASSUMED]`** and need
-a citation. Reporting them as ITU-R rain attenuation would be wrong.
-
-Weather also changes driver behaviour (`speed_factor`, `headway_factor`), which
-changes network topology independently of the channel.
-
-**2. Path loss is dual-slope, not single-slope.** A single *n* = 1.9 highway
-exponent extrapolated over kilometres predicts a ~2.1 km DSRC range, ~4× the
-measured value — which would make a 10 km corridor fully connected and delete
-the sparse regime this paper is about. The model uses a ground-reflection
-breakpoint (*n*₁ = 1.9 below 150 m, *n*₂ = 3.8 above), giving a nominal range of
-**562 m**. `tests/test_phy.py::test_single_slope_would_overestimate_range`
-guards this.
-
----
-
-## The baselines (Phase 4)
-
-Nine registered policies covering the brief's seven schemes (p-persistence
-contributes three). Parameters and references are in `configs/policies.yaml`;
-suppression logic is pinned by `tests/test_policies.py`.
-
-| name | scheme |
+| | question it answers |
 |---|---|
-| `flooding` | blind flooding |
-| `p_persistence_03/05/07` | probabilistic p-persistence |
-| `slotted_1p` | slotted 1-persistence (distance-ranked slots) |
-| `weighted_p` | weighted p-persistence, `p = D/R` |
-| `counter_based` | distance-based counter scheme |
-| `greedy_farthest` | sender-side greedy relay designation |
-| `dvcast` | DV-CAST-style store-carry-forward |
+| **(a) per-cell oracle-best** | the best baseline in each cell *with its knob tuned for that cell*. Not deployable — that is why it is the right upper bound. The agent's **regret** against it measures how much of hindsight tuning a single learned policy recovers. |
+| **(b) best single fixed baseline** | one setting held constant across every cell — what an engineer would ship. The agent's **margin** over it measures whether the learned policy earns its complexity. |
 
-Two were deliberately implemented at full strength rather than as straw men:
-`greedy_farthest` seeds both propagation directions and has an implicit-ACK
-fallback (a designation over unacknowledged broadcast can simply be lost, and
-without recovery the baseline would fail for a reason unrelated to relay
-selection); `dvcast` uses oncoming traffic as carriers.
+Measured headroom (10 seeds, matched at 95% of each cell's own ceiling):
 
-`python -m experiments.compare` runs them **paired** — seed *k* gives every
-policy byte-identical mobility, hazard placement, shadowing and fading — and
-appends to `results/runs.csv`. Paired samples are what Phase 7's Wilcoxon
-signed-rank test requires.
+| cell | ceiling | oracle-best | fixed-best | penalty |
+|---|---|---|---|---|
+| rural d=2 | 0.689 | slotted_1p 1.78 | 1.79 | 1.00× |
+| rural d=20 | 0.925 | dvcast 0.70 | 0.90 | 1.29× |
+| rural d=80 | 0.915 | weighted_p 0.91 | 1.88 | 2.06× |
+| urban_nlos d=20 | 0.980 | counter_based 0.47 | 0.62 | 1.33× |
 
-### The density sweep in the brief misses the paper's own regime
+**The best baseline is a different policy in every cell.** The best fixed
+choice — `slotted_1p(n_slots=5)`, the only one that reaches the target
+everywhere — costs 42% more than per-cell hindsight tuning on average and 106%
+more at d=80. That gap is exactly what a learned policy has to earn.
 
-Measured, not assumed. The engine records which action each policy chose
-(`n_action_carry`, `n_action_defer`, …). DV-CAST's store-carry-forward branch
-fires **0.0 times per run at 5, 10, 20, 40, 80 and 120 veh/km/lane**: with a
-562 m nominal range on a two-way corridor, every one of the brief's densities
-is a *connected* network. All schemes degenerate to slotted persistence and
-RWCR saturates at 0.92–1.00 across the board, so the headline metric stops
-discriminating.
+On the **latency** axis the picture inverts: flooding is oracle-best in 3 of 4
+cells. Reporting overhead alone would hide that, so both axes are primary.
 
-The disconnected regime starts below ~3 veh/km/lane. At 2 veh/km/lane the carry
-branch finally fires and DV-CAST reaches RWCR 0.666 ± 0.156 against flooding's
-0.607 ± 0.190 and slotted 1-persistence's 0.589 ± 0.144 — with fewer
-transmissions than either. At 1 veh/km/lane everything collapses (RWCR < 0.23):
-the corridor is fragmented beyond what a 120 s window can bridge.
+### Matched quality is resolved per cell, not absolutely
 
-`configs/experiment.yaml` therefore prepends densities 1, 2 and 3 to the sweep
-and keeps the brief's six. **If the paper claims a sparse-network contribution,
-the evidence has to come from ≤3 veh/km/lane**, or from a configuration with a
-shorter effective range.
+Ceilings differ enormously by cell (0.689 sparse rural, 0.980 urban_nlos), so a
+fixed absolute target is unreachable in three cells out of four and reports
+`n/a` everywhere. The target is a fraction of each cell's own achievable
+ceiling, computed excluding the policy being scored so a stronger agent cannot
+raise its own bar. `--mode absolute` remains for comparability with prior work.
 
 ---
 
-## The risk field (Phase 3)
+## The oracle/causal split (the most important design decision here)
 
-`relevance(v, h, t) = g_dir · g_geom · w_η(η) · severity(t)^γ`, all parameters in
-`configs/hazard.yaml`. A vehicle driving away from a landslide scores 0; a truck
-40 s upstream of a fog bank scores 1. Full equation in the
-`hazard/risk_field.py` module docstring; the behavioural claims are pinned by
-`tests/test_risk_field.py`.
+Two relevance fields, with a hard boundary between them:
 
-Grid scenarios use an **approximate** route-unaware geometry (Manhattan distance
-+ bearing gate), because a vehicle's future turns are unknown. It errs toward
-counting vehicles as at-risk, so grid RWCR is under-stated. Labelled wherever
-grid results appear.
+| | module | used by | sees |
+|---|---|---|---|
+| **causal** | `hazard/risk_field.py` | agent features, reward, all policies | only information available at time *t* |
+| **oracle** | `hazard/oracle.py` | `analysis/metrics.py` only | realised trajectories — ground truth |
+
+Why: on `urban_nlos` the causal field reported RWCR 0.291 while **100% of
+vehicles were informed**, because it marks a vehicle at-risk only if its
+*instantaneous* heading points at the hazard, and grid vehicles turn. RWCR was
+measuring vehicle heading, not warning effectiveness.
+
+The oracle's lookahead is derived, not chosen:
+`H = eta_full + tau·ln(severity/threshold)`, capped by hazard lifetime — the
+ETA at which the risk field's own kernel falls below its own at-risk threshold,
+so both definitions ask the same question over the same window.
+
+**`tests/test_oracle_isolation.py` enforces the boundary by parsing the import
+graph.** `agents/`, `sim/` and `mobility/` may not import the oracle or mention
+its symbols; `hazard/__init__` may not re-export it; `sim/engine.py` may not
+mention ground truth. A comment cannot satisfy those tests.
+
+### Risk estimation difficulty is itself a result
+
+`estimation_agreement()` reports how well the causal field recovers the oracle:
+
+| scenario | precision | recall | peak-relevance correlation |
+|---|---|---|---|
+| rural_highway | 0.78 | 1.00 | **0.81** |
+| urban_nlos | 0.57 | 1.00 | **0.13** |
+
+On a corridor heading determines destiny. In a grid it does not. That gap
+quantifies the difficulty the learned policy is being asked to overcome, and
+belongs in the paper *before* any policy result.
 
 ---
 
-## Metrics (Phase 6)
+## Constants and their provenance
 
-`pdr`, **`rwcr`**, **`tir_median_s` / `tir_p95_s` / `tir_uninformed_frac`**,
-`latency_mean_s`/`p95`, `redundancy_ratio`, `collisions_per_delivered`,
-`deadline_miss_rate`, `max_hops`, `spatial_reach_m`, plus channel diagnostics.
+```bash
+D:/aiharp-env/python.exe -m analysis.constants_table          # console
+D:/aiharp-env/python.exe -m analysis.constants_table --latex  # paper table
+```
 
-RWCR and TIR are defined with their equations in `analysis/metrics.py`
-docstrings. Two properties of RWCR worth knowing: informing a vehicle
-*contributes nothing* if the message arrives after it has passed the hazard, and
-reaching irrelevant vehicles does not raise the score at all.
+Tags: `STD-COMPUTED` (computed from a standard's own equations and validated
+against its published table) → `STD` → `DERIVED` → `MEAS` → `STD-UNVERIFIED` /
+`MEAS-UNVERIFIED` (attributable but we could not open the primary document) →
+`ASSUMED` → `INERT` (recorded but read by no computation).
+
+Three things worth knowing:
+
+**Rain and fog are computed, not recalled.** ITU-R P.838-3 and P.840-8 are
+implemented from their governing equations and evaluated at 5.9 GHz. The
+reconstructed P.838-3 closed form reproduces the Recommendation's own Table 5
+to within 0.11% across 1–10 GHz, which is what confirms the coefficient signs
+(the published PDF's text layer drops minus signs). Computing K_l rather than
+recalling it **changed the fog coefficient by 14×**.
+
+**There is no weather-channel claim.** Heavy rain attenuates a 562 m DSRC hop
+by 0.04 dB; thick fog by 0.007 dB. The empirical excess-loss term that earlier
+revisions carried was invented, no citable V2V measurement campaign exists at
+this frequency, so it was deleted (`enable_empirical_excess_loss: false`).
+**Weather in this project acts through traffic, not the radio** — drivers slow
+and increase headway, which changes topology. Every weather figure caption must
+say "traffic-mediated"; worst-case channel effect is a 0.24% range change.
+
+**The path-loss breakpoint is derived**, `d_bp = 4·h_t·h_r/λ` = 177 m at 1.5 m
+antennas, giving a 610 m nominal range. A single-slope model would predict
+~2.1 km and delete the sparse regime this paper is about.
+
+`cw_min` remains `[STD-UNVERIFIED]` and is **load-bearing** — it sets the
+contention window that drives the whole collision model. IEEE 802.11-2020 is
+paywalled and ETSI blocks automated download. Report it as a sensitivity across
+access categories until verified.
+
+---
+
+## Scenarios
+
+| name | what it is | role |
+|---|---|---|
+| `rural_highway` | 10 km two-lane corridor | primary; sparse regime below ~3 veh/km/lane |
+| `urban_nlos` | 6×6 grid with building-blocked links | realistic fragmentation (NLOS range 101 m vs 480 m LOS) |
+| `urban_grid` | same grid, no NLOS | well-connected control, and **held out** from training |
+
+The brief's density sweep started at 5 veh/km/lane, but instrumenting the
+policies' action counts showed DV-CAST's store-carry-forward branch firing
+**0.0 times per run** at every density from 5 to 120: with a 610 m range on a
+two-way corridor those are all *connected* networks. Densities 1, 2 and 3 are
+prepended. At 120 veh/km/lane the corridor is **jammed** (mean speed ~2.5 m/s),
+so every run carries a `regime` column (`free_flow`/`congested`/`jammed`)
+derived from measured speed.
+
+---
+
+## The agent (Phase 5)
+
+- `agents/graph.py` — per-holder decision graph, NumPy-only so it is testable
+  without torch. Neighbour-to-neighbour edges are included deliberately: a star
+  graph would make GATv2 degenerate to attention pooling and render the
+  GAT-vs-MLP ablation vacuous. Normalisation statistics are **frozen** and
+  schema-checked on load — per-batch normalisation would make a vehicle's
+  features depend on its batch-mates, which a real OBU cannot reproduce.
+- `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
+  attention on `neighbour → holder` edges *is* the relay ranking**;
+  `relay_top_k` designates the k-th most attended neighbour, so the heatmap
+  figure shows the quantity that drove the decision.
+- `agents/confidence.py` — the gate. Ensemble disagreement uses the **maximum**
+  per-action spread, not the mean: with nine actions and an ensemble split
+  between two of them, the mean reports confidence 0.78 for maximal
+  disagreement. `tau = 0` is exactly the gate-off ablation.
+- `agents/train.py` — PPO, density curriculum, TensorBoard, checkpoints. GAE
+  runs along **each vehicle's own decision sequence**; the flat transition list
+  is not one trajectory.
+
+### The reward is calibrated, not chosen
+
+A transmission is reward-neutral when its total price equals
+`mean_relevance / target_cost`. The measured front fixes that: 0.41 for the
+deployable cluster, 2.11 for flooding, mean at-risk relevance ~0.75, so the
+total price is 1.83 and anything below 0.36 makes **flooding reward-optimal**.
+
+The collision term is part of that price and must enter the calibration:
+
+```
+w2 = mean_relevance/target_cost − w3·E[collisions caused]
+   = 1.83 − 0.25×2.0 = 1.33
+```
+
+Excluding it (w3 = 0.5, collisions un-attributed) made the effective price
+10.03 — 5.5× too high — putting the break-even at 0.075 against a 0.41 target.
+The agent would have learned near-silence and it would have looked like a
+finding. Collisions are now attributed **per transmitter** by the engine
+(`RunResult.collisions_caused`), summing exactly to `n_fail_sinr`.
+
+---
+
+## Reproducing
+
+```bash
+./reproduce.sh --smoke      # minutes
+./reproduce.sh              # hours
+./reproduce.sh --no-train   # reuse the committed checkpoint
+```
+
+Every run is seed-controlled: one master seed derives independent named RNG
+streams, so seed *k* gives every policy identical mobility, hazard placement,
+shadowing and fading. That is what makes the Wilcoxon signed-rank test
+legitimate.
+
+Every results row carries a `config_hash` **and** a `metrics_version`.
+`metrics_version` is part of the de-duplication key, not a label: the same
+config under a changed metric definition is a different result. 360 pre-oracle
+rows are quarantined in `results/archive/` with a README explaining why they
+must not be plotted alongside current ones.
+
+`analysis/report.py` builds figures and tables from committed results only —
+it never re-runs the simulator, and it **states what it could not build**
+rather than omitting it silently.
+
+### Figures
+
+Generated by `analysis/figures.py`; 300 dpi, serif, vector PDF + PNG,
+single-column (3.5 in) and double-column (7.16 in).
+
+The categorical palette is Okabe-Ito, validated with a checker rather than by
+eye. **Panels are capped at four series**: seven simultaneous series cannot be
+coloured legally (a seventh hue put indigo against blue at ΔE 11.7 for normal
+vision, below the 15 floor), so figures facet by policy family instead of
+cycling hues. Cycling is what silently gave `flooding` and `p_persistence_03`
+the same orange square in the first draft. `style_for()` now raises rather than
+cycles. Flooding is drawn as a neutral reference mark, not a categorical
+series — it has no knob, so its curve is a single point.
+
+Every series carries a distinct marker *and* line style. That is not
+decoration: it is what makes the palette legal at ΔE 7.6 all-pairs, and what
+keeps the figures readable in greyscale, since Okabe-Ito sits in a narrow
+lightness band.
 
 ---
 
 ## Known limitations
 
-- All current results use the fallback mobility backend (see above).
-- `[VERIFY]` constants are recalled, not looked up: 802.11p EDCA/timing values,
-  the ITU-R P.838/P.840 coefficients, the dual-slope fit, the DCC target CBR.
-- Empirical weather excess-loss values are placeholders needing citations.
-- At 120 veh/km/lane the corridor is **jammed**, not free-flowing (mean speed
-  ~2.5 m/s): that density is at/above jam density for a fleet with 22% trucks.
-  It is a legitimate congested regime but must be labelled as one, not
-  presented as high-density free flow.
-- Background CAM/BSM load is modelled as a Poisson arrival process at the
-  receiver with ETSI-style DCC rate adaptation, not as individually simulated
-  beacon frames.
-- One originator per hazard (`max_originators: 1`); redundant sensing would
-  flatter every policy.
-- **Deferring schemes pay a 100 ms slot granularity.** The engine's decision
-  epoch is 100 ms, but a real slotted scheme uses an estimated one-hop delay of
-  a few milliseconds. This inflates absolute TIR for every scheme that defers
-  (`slotted_1p`, `counter_based`, `greedy_farthest`, `dvcast`) and gives them
-  more time to overhear duplicates, so better suppression. It applies equally
-  to the baselines and to the agent's defer action, so internal comparisons
-  stay fair — but absolute latencies for deferring schemes are pessimistic and
-  the paper must say so. `slot_epochs` in `configs/policies.yaml` is exposed
-  for a sensitivity check.
-- **The deadline-miss rate barely discriminates** (0.27–0.39 across all
-  policies at most densities). It is dominated by vehicles already inside or
-  within reaction time of the hazard when it is first detected, which no
-  dissemination policy can affect. Either report it with that caveat or
-  restrict it to vehicles that were still outside the reaction-time envelope at
-  origination.
-- **The grid risk field makes urban RWCR uninterpretable. This currently blocks
-  `urban_nlos` as a primary scenario.** Measured on `urban_nlos` at
-  20 veh/km/lane: *100% of vehicles are informed*, yet RWCR is 0.291 and
-  at-risk coverage is 0.277. The cause is the route-unaware grid geometry in
-  `hazard/risk_field.py`: it marks a vehicle `APPROACHING` only if its
-  *instantaneous* heading reduces Manhattan distance to the hazard. Grid
-  vehicles turn constantly, so ~70% happen to be heading away at the moment
-  they receive the message, score relevance exactly 0, and are counted as "not
-  informed in time" despite being informed and later driving into the hazard.
-  The at-risk set also swells to 97.7% of the network. RWCR in the grid
-  therefore measures "was this vehicle pointing at the hazard when the packet
-  arrived", not "was an at-risk vehicle warned".
-  This is invariant to the radio model — sweeping NLOS corner loss over
-  8/12/20 dB (NLOS range 219/176/101 m) leaves RWCR pinned at 0.28-0.30.
-  **Fix before any urban result is reported:** define the grid at-risk set from
-  each vehicle's *realised* trajectory (does it actually enter the hazard span
-  during the run). That is legitimate for an evaluation-time ground-truth
-  quantity, and must stay unavailable to the policies, which see only local
-  observations. `Trace.routes` already records what is needed.
-- **Weather is a traffic-mediated effect only, and is a SECONDARY result.**
-  There is no channel-degradation claim anywhere in this project: the ITU-R
-  hydrometeor terms are real but negligible at 5.9 GHz (worst case 0.24% change
-  in nominal range), and the empirical excess-loss term was deleted for want of
-  a citation. Weather changes dissemination by changing how people drive
-  (`speed_factor`, `headway_factor`), which changes spacing and topology.
-  Every weather figure caption must say "traffic-mediated"; no figure, table or
-  caption may imply the radio channel degrades. The strongest honest framing is
-  that fog destroys *optical* sensing while leaving 5.9 GHz untouched, which is
-  exactly why V2X warning matters most in fog.
-- `reproduce.sh` is Phase 8 and does not exist yet.
+These are the paper's limitations section, pre-written. They are the most
+valuable thing in this repository.
 
-## Reproducing each figure
-
-Pending Phase 8. Each figure will be listed here with the exact command that
-regenerates it from `results/runs.csv`.
+- **All results use the pure-Python fallback mobility backend.** No SUMO is
+  installed. It is a real Krauss microscopic model, but it has no lane
+  changing (hence no overtaking), no OSM geometry and no junction gap
+  acceptance. `mobility/sumo_runner.py` has **never been executed against a
+  live SUMO install**. Every trace is stamped `backend=fallback`.
+- **Phase 7b has not been done.** The network layer is custom Python rather
+  than NS-3 or Veins, and no published curve has been reproduced. This is the
+  single biggest reviewer risk and it is currently unaddressed.
+- **The agent is not trained to convergence.** The pipeline runs end to end;
+  no performance claim is supported yet.
+- **Grid risk estimation is approximate.** The causal field in a grid is
+  route-unaware (Manhattan distance + bearing gate), which is why its
+  correlation with ground truth is 0.13 there. The oracle fixes *evaluation*;
+  the agent still has to work from the weak causal estimate, which is the
+  honest problem statement.
+- **Deferring schemes pay a 100 ms slot granularity.** A real slotted scheme
+  uses millisecond slots. This inflates absolute TIR for every deferring scheme
+  equally, so internal comparisons hold, but absolute latencies are pessimistic.
+  `slot_epochs` is exposed for a sensitivity check.
+- **`cw_min` is unverified and load-bearing** (see Constants).
+- **Weather is traffic-mediated only.** No channel-degradation claim anywhere.
+- **One originator per hazard.** Redundant sensing would flatter every policy.
+- **Background CAM/BSM load is a Poisson arrival process** at the receiver with
+  ETSI-style DCC rate adaptation, not individually simulated beacon frames.
+- **Ensemble confidence costs N forward passes** per 100 ms decision; only the
+  entropy gate is realistic at that budget.

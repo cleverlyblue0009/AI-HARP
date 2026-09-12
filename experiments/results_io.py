@@ -21,7 +21,11 @@ logger = get_logger("experiments.results")
 RUNS_CSV = RESULTS_DIR / "runs.csv"
 
 #: Identity of a run. Two rows agreeing on all of these are the same run.
-KEY_COLUMNS = ("config_hash",)
+#:
+#: `metrics_version` is part of the key, not just a label: the same config run
+#: under a changed metric definition is a DIFFERENT result, and de-duplicating
+#: on config alone would keep the stale row and silently discard the new one.
+KEY_COLUMNS = ("config_hash", "metrics_version")
 
 
 def load_runs(path: Path = RUNS_CSV) -> pd.DataFrame:
@@ -46,6 +50,21 @@ def append_runs(
     missing = [c for c in KEY_COLUMNS if c not in new.columns]
     if missing:
         raise ValueError(f"Result rows are missing key column(s): {missing}")
+
+    old_all = load_runs(path)
+    if not old_all.empty and "metrics_version" in old_all.columns:
+        stale = old_all[old_all["metrics_version"] != new["metrics_version"].iloc[0]]
+        if len(stale):
+            logger.warning(
+                "%d existing row(s) carry a different metrics_version; they are "
+                "kept but must not be mixed with these in a figure or table.",
+                len(stale),
+            )
+    elif not old_all.empty:
+        logger.warning(
+            "%d existing row(s) predate metrics versioning (metrics_version < %d) "
+            "and are NOT comparable with current rows.", len(old_all), 2,
+        )
 
     old = load_runs(path)
     if old.empty:

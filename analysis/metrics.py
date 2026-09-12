@@ -20,6 +20,17 @@ from hazard.oracle import OracleRiskField, build_oracle_risk_field, estimation_a
 from hazard.risk_field import RiskField
 from sim.engine import NO_STEP, RunResult
 
+#: Bumped whenever a metric DEFINITION changes, and stamped into every results
+#: row. `config_hash` covers the configuration but not the code, so without
+#: this a row computed under an older definition is indistinguishable from a
+#: current one -- which is how 360 pre-oracle rows survived in results/runs.csv
+#: and were nearly used to draw a figure.
+#:
+#: 1  original causal at-risk set
+#: 2  oracle at-risk set for RWCR/TIR; actionable_deadline_miss_rate; regime;
+#:    risk-estimation agreement; per-transmitter collision attribution
+METRICS_VERSION = 2
+
 #: +1 = higher is better, -1 = lower is better. Used for significance markers
 #: and for picking the "strongest baseline" in Phase 7.
 METRIC_DIRECTION: dict[str, int] = {
@@ -391,6 +402,7 @@ def compute_metrics(res: RunResult, hz_cfg: dict[str, Any]) -> dict[str, Any]:
     lat_all = ctx.latency_s[np.isfinite(ctx.latency_s)]
 
     out: dict[str, Any] = {
+        "metrics_version": METRICS_VERSION,
         "pdr": packet_delivery_ratio(res),
         "rwcr": risk_weighted_coverage_ratio(ctx),
         "coverage": float(informed.sum() / n_active_ever) if n_active_ever else float("nan"),
