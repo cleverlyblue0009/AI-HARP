@@ -1,0 +1,157 @@
+# =============================================================================
+# AI-HARP -- Hazard model and risk field (Phase 3).
+#
+# A hazard is a SPATIALLY EXTENDED, DIRECTIONAL, TIME-VARYING object, not a
+# point. The risk field turns (vehicle, hazard, time) into a relevance score
+# in [0, 1] which drives both the reward and the headline metric (RWCR).
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Per-type defaults. `decay` selects how severity evolves after onset:
+#   none        - severity is constant forever (a landslide does not clear)
+#   exponential - severity(t) = severity_0 * exp(-(t - onset) / tau)
+#   linear_ttl  - severity decays linearly to 0 over ttl_s, then the hazard
+#                 is gone
+# -----------------------------------------------------------------------------
+types:
+  fog_bank:
+    severity_range: [0.5, 0.9]
+    spatial_extent_m: [300.0, 1500.0]
+    # source: [ASSUMED] Radiation-fog banks on rural highways are commonly a
+    #         few hundred metres to ~1.5 km along the road.
+    decay: exponential
+    tau_s: 900.0
+    # source: [ASSUMED] Fog burns off / drifts on a ~15 min timescale.
+    direction_relevance: both
+    # A fog bank sits across both carriageways.
+    blocks_road: false
+    safety_deadline_s: 12.0
+    # Time from hazard onset within which an at-risk vehicle must be warned
+    # for the warning to count as useful. See `deadlines` below.
+
+  landslide:
+    severity_range: [0.8, 1.0]
+    spatial_extent_m: [30.0, 150.0]
+    # source: [ASSUMED] A debris field covering part or all of the carriageway.
+    decay: none
+    # A landslide does not dissipate; it is cleared by an external agent.
+    direction_relevance: both
+    blocks_road: true
+    safety_deadline_s: 6.0
+
+  waterlogging:
+    severity_range: [0.4, 0.8]
+    spatial_extent_m: [50.0, 400.0]
+    # source: [ASSUMED] Ponding in a road sag curve or underpass.
+    decay: linear_ttl
+    ttl_s: 3600.0
+    # source: [ASSUMED] Drains over ~1 h once rainfall stops.
+    direction_relevance: both
+    blocks_road: false
+    safety_deadline_s: 10.0
+
+  crash:
+    severity_range: [0.6, 1.0]
+    spatial_extent_m: [20.0, 120.0]
+    # source: [ASSUMED] The crash site plus the queue immediately upstream.
+    decay: linear_ttl
+    ttl_s: 1800.0
+    # source: [ASSUMED] Cleared in ~30 min by emergency services.
+    direction_relevance: directional
+    # A crash blocks ONE carriageway. Vehicles on the opposing carriageway are
+    # rubbernecking risks but are not the at-risk set; relevance -> 0 for them.
+    blocks_road: true
+    safety_deadline_s: 5.0
+
+  black_ice:
+    severity_range: [0.7, 1.0]
+    spatial_extent_m: [100.0, 800.0]
+    # source: [ASSUMED] Shaded stretches, bridge decks.
+    decay: exponential
+    tau_s: 7200.0
+    # source: [ASSUMED] Persists for hours until the surface warms.
+    direction_relevance: both
+    blocks_road: false
+    safety_deadline_s: 8.0
+
+# -----------------------------------------------------------------------------
+# RISK FIELD -- see hazard/risk_field.py for the equation and its unit tests.
+#
+#   relevance(v, h, t) = gate_dir * gate_geom * w_eta(eta) * severity(h,t)^gamma
+#
+# The ETA kernel is a plateau followed by exponential decay: a vehicle with a
+# comfortable but finite time-to-hazard is maximally relevant; a vehicle that
+# is hours away is real but not urgent; a vehicle that has passed the hazard,
+# or is travelling away from it, is irrelevant.
+# -----------------------------------------------------------------------------
+risk_field:
+  eta_full_s: 60.0
+  # source: [ASSUMED] Any at-risk vehicle within 60 s of the hazard has
+  #         relevance 1.0 (before severity scaling). Comfortably longer than
+  #         a driver reaction + braking manoeuvre, so the warning is
+  #         actionable anywhere inside this window.
+  eta_decay_tau_s: 60.0
+  # source: [ASSUMED] Beyond eta_full_s, relevance decays with an e-folding
+  #         time of 60 s: a vehicle 3 min out scores exp(-2) = 0.14.
+  inside_span_weight: 1.0
+  # source: [ASSUMED] A vehicle already inside the hazard span is maximally
+  #         at risk even though the warning is late. Set < 1 to model
+  #         "a warning you cannot act on is worth less".
+  min_speed_ms: 1.0
+  # Guard: ETA for a near-stationary vehicle is computed with this floor,
+  # otherwise ETA -> infinity and a stopped vehicle looks irrelevant.
+  severity_gamma: 1.0
+  # relevance scales as severity^gamma. gamma = 1 is linear.
+  at_risk_threshold: 0.05
+  # A vehicle is in the "at-risk set" for RWCR if its peak relevance over the
+  # evaluation window exceeds this.
+  high_relevance_threshold: 0.5
+  # TIR (Time-to-Informed-at-Risk) is reported over vehicles above this.
+  opposing_direction_relevance: 0.0
+  # source: [ASSUMED] For a `directional` hazard, the relevance floor for
+  #         vehicles on the unaffected carriageway. Non-zero would model them
+  #         as useful *relays* -- note that the engine already lets them relay
+  #         regardless; this is only about whether they count as at-risk.
+
+# -----------------------------------------------------------------------------
+# Safety deadlines. A warning that arrives after the deadline is a miss.
+# Per-type deadlines are above; these severity bands override them when
+# `deadlines.mode` is `severity`.
+# -----------------------------------------------------------------------------
+deadlines:
+  mode: severity          # severity | type
+  bands:
+    - {min_severity: 0.9, deadline_s: 4.0}
+    - {min_severity: 0.7, deadline_s: 6.0}
+    - {min_severity: 0.5, deadline_s: 10.0}
+    - {min_severity: 0.0, deadline_s: 15.0}
+  # source: [ASSUMED] Tighter deadlines for more severe hazards. These are
+  #         modelling choices, not standards; the sensitivity of the
+  #         deadline-miss-rate metric to these bands must be reported.
+  require_actionable_eta: true
+  reaction_time_s: 2.5
+  # source: [MEAS] AASHTO brake-reaction time 2.5 s for design purposes.
+  #         With require_actionable_eta, a warning also counts as a miss if it
+  #         arrives when the vehicle's ETA to the hazard is already below this
+  #         -- i.e. too late to do anything about it. This is the stricter and
+  #         more honest safety criterion.
+
+# -----------------------------------------------------------------------------
+# Default hazard instance used by single runs (experiments/run_sim.py).
+# Experiment sweeps override type/severity/placement from configs/experiment.yaml.
+# -----------------------------------------------------------------------------
+default_instance:
+  type: fog_bank
+  severity: 0.8
+  onset_time_s: 5.0
+  # Placement along the corridor as a fraction of its length. 0.6 puts the
+  # hazard downstream of most +x traffic, leaving a populated upstream set.
+  position_frac: 0.6
+  extent_m: 800.0
+  affected_direction: 1        # +1, -1, or 0 for both (overridden to 0 when
+                               # the type's direction_relevance is `both`)
+  detection_range_m: 150.0
+  # source: [ASSUMED] A vehicle originates the hazard message when it first
+  #         comes within this distance of the hazard span (on-board sensing
+  #         range in degraded visibility). In dense fog this is optimistic for
+  #         camera-only sensing and pessimistic for radar.
