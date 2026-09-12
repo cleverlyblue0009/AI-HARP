@@ -91,6 +91,15 @@ class RunResult:
     # Event log (for figures and the Phase 5 attention heatmap)
     transmissions: list[dict[str, Any]] = field(default_factory=list)
 
+    #: Per-vehicle share of the blame for receptions lost to interference.
+    #: A reception that failed the SINR test is blamed on the concurrent
+    #: transmitters that actually overlapped it, split equally between
+    #: them, so the total equals n_fail_sinr. Needed by the Phase 5 reward:
+    #: charging every transmitter the NETWORK-MEAN collision rate instead
+    #: carries no per-vehicle signal and silently multiplies the
+    #: calibrated transmission cost.
+    collisions_caused: np.ndarray | None = None
+
     #: How many times each action type was chosen. This is what shows *why* a
     #: policy behaved as it did -- e.g. whether DV-CAST's store-carry-forward
     #: branch ever actually fired, or whether the network was connected enough
@@ -165,6 +174,7 @@ class DisseminationEngine:
         forced_broadcast = np.zeros(N, dtype=bool)
         busy_defers = np.zeros(N, dtype=np.int16)
         tx_count = np.zeros(N, dtype=np.int32)
+        collisions_caused = np.zeros(N, dtype=np.float64)
 
         origin_index = NO_STEP
         origin_step = NO_STEP
@@ -224,7 +234,7 @@ class DisseminationEngine:
                     pending, step, act, holds, informed_step, informed_by, hops, dup_count,
                     max_sender_dist, tx_sched, timer_sched, cancel_at_dups, forced_broadcast,
                     tx_count, counters, transmissions, origin_step, rng_mac, rng_fade, rng_pol,
-                    notify_dups,
+                    notify_dups, collisions_caused,
                 )
 
             # -- 5. deferred re-decisions (carry / store-carry-forward) -------
@@ -244,6 +254,7 @@ class DisseminationEngine:
             informed_step=informed_step, hops=hops, informed_by=informed_by,
             tx_count=tx_count, origin_index=int(origin_index), origin_step=int(origin_step),
             transmissions=transmissions, action_counts=action_counts,
+            collisions_caused=collisions_caused,
             trace=tr, hazard=self.hazard, risk=self.risk,
             phy=self.phy, mac=self.mac,
             meta={
@@ -304,6 +315,7 @@ class DisseminationEngine:
         hops, dup_count, max_sender_dist, tx_sched, timer_sched, cancel_at_dups,
         forced_broadcast, tx_count, counters, transmissions, origin_step,
         rng_mac, rng_fade, rng_pol, notify_dups: bool,
+        collisions_caused: np.ndarray | None = None,
     ) -> None:
         tr, phy, mac = self.trace, self.phy, self.mac
         n_tx = tx.size
@@ -360,6 +372,15 @@ class DisseminationEngine:
         counters["n_fail_beacon"] += int(
             (in_nominal & above_sens & above_sinr & ~beacon_ok).sum()
         )
+
+        # Blame each interference loss on the transmitters that overlapped
+        # it, split equally, so the attributed total equals n_fail_sinr.
+        if collisions_caused is not None and n_tx > 1:
+            lost = (in_nominal & above_sens & ~above_sinr).sum(axis=1).astype(float)
+            n_interferers = overlap.sum(axis=1).astype(float)
+            share = np.divide(lost, np.maximum(n_interferers, 1.0),
+                              out=np.zeros_like(lost), where=n_interferers > 0)
+            np.add.at(collisions_caused, tx, overlap.T.astype(float) @ share)
 
         # --- deliver ---------------------------------------------------------
         any_decoded = decoded.any(axis=0)

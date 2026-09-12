@@ -44,6 +44,22 @@ _REGISTRY: dict[str, Callable[..., Policy]] = {
     "dvcast": DvCast,
 }
 
+
+def _build_ai_harp(**params: Any) -> Policy:
+    """Phase 5 agent, constructed lazily.
+
+    Imported inside the factory rather than at module scope for two reasons:
+    it breaks the cycle (agents.ai_harp needs build_policy for its analytic
+    fallback), and it keeps `import agents.registry` working on an interpreter
+    with no torch, so the Phase 1-4 suite is unaffected by Phase 5.
+    """
+    from agents.ai_harp import AiHarpPolicy
+
+    return AiHarpPolicy(**params)
+
+
+_REGISTRY["ai_harp"] = _build_ai_harp
+
 #: The seven baselines of Phase 4, in the order the brief lists them. Used as
 #: the default policy set for sweeps and comparison tables.
 BASELINE_POLICIES: tuple[str, ...] = (

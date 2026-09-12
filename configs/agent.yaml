@@ -102,27 +102,45 @@ confidence_gate:
 #     - w4 * (actionable deadline miss)
 #     + w5 * (at-risk set covered before hazard arrival)
 #
-# w1 and w2 are CALIBRATED, not chosen -- see analysis/reward_calibration.py.
-# A transmission is reward-neutral when w2/w1 = mean_relevance / target_cost.
-# The measured baseline front puts the deployable cluster at 0.41 transmissions
-# per at-risk vehicle informed and flooding at 2.11, with mean at-risk
-# relevance ~0.75, giving:
+# w1, w2 and w3 are CALIBRATED, not chosen -- see analysis/reward_calibration.py.
 #
-#     target 0.41-class : w2/w1 = 0.75 / 0.41 = 1.83   <-- configured
-#     flooding-class    : w2/w1 = 0.75 / 2.11 = 0.36
+# The TOTAL price of one transmission is w2 + w3 * E[collisions it causes], and
+# that total is what must equal mean_relevance / target_cost. The measured
+# baseline front puts the deployable cluster at 0.41 transmissions per at-risk
+# vehicle informed and flooding at 2.11; with mean at-risk relevance ~0.75:
 #
-# Any ratio below ~0.36 makes blind flooding reward-optimal. The configured
-# ratio sits 5.15x above that boundary. Reported as a sensitivity over
-# {0.25, 0.5, 1.0, 1.83, 3.0, 6.0} rather than asserted to be correct.
+#     total price, target 0.41-class : 0.75 / 0.41 = 1.83   <-- configured
+#     total price, flooding-class    : 0.75 / 2.11 = 0.36
+#
+# Any total below ~0.36 makes blind flooding reward-optimal; the configured
+# total sits 5.15x above that boundary. Split as w2 = 1.33 and
+# w3 * 2.0 coll/tx = 0.50, using the collision rate measured at the target.
+#
+# Reported as a sensitivity over {0.25, 0.5, 1.0, 1.83, 3.0, 6.0} rather than
+# asserted to be correct.
 # -----------------------------------------------------------------------------
 reward:
   w1_relevance_informed: 1.0
-  w2_transmission_cost: 1.83
-  # source: [DERIVED] calibrated against the measured baseline front; see above.
-  w3_collision: 0.5
-  # source: [ASSUMED] A collision destroys a frame for every receiver in range,
-  #         so it costs more than the transmission that caused it, but it is
-  #         already partly reflected in w1 (nothing gets informed).
+  w2_transmission_cost: 1.33
+  # source: [DERIVED] Solved so that the TOTAL price of a transmission --
+  #         w2 + w3 * E[collisions it causes] -- equals mean_relevance /
+  #         target_cost = 0.75 / 0.41 = 1.83. With w3 = 0.25 and a measured
+  #         2.0 collisions per transmission at the target operating point,
+  #         w2 = 1.83 - 0.50 = 1.33.
+  w3_collision: 0.25
+  # source: [DERIVED] Sized so the collision term is ~27% of the price of a
+  #         transmission at the target, and 2.2x the price under flooding
+  #         (16.3 collisions/tx measured vs 2.0 at the target) -- a strong
+  #         gradient away from storming without dominating the calibration.
+  #
+  #         It was 0.5 with the collision term EXCLUDED from the calibration.
+  #         That made the effective cost 1.83 + 0.5*16.3 = 10.03, i.e. 5.5x
+  #         the intended value, putting the break-even at 0.075 tx per at-risk
+  #         vehicle informed against a 0.41 target. The agent would have
+  #         learned near-silence and it would have looked like a result.
+  #         Collisions are now attributed PER TRANSMITTER by the engine
+  #         (sim/engine.py -> RunResult.collisions_caused) rather than as a
+  #         network mean, which is what gives the term any per-vehicle signal.
   w4_deadline_miss: 4.0
   # source: [ASSUMED] A safety-deadline miss is the outcome the system exists
   #         to prevent; it must dominate a handful of wasted transmissions.

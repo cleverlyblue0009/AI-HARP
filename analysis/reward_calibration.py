@@ -65,6 +65,9 @@ class RewardCalibration:
     w2_over_w1: float
     flooding_cost: float | None = None
     flooding_w2_over_w1: float | None = None
+    w3_collision: float = 0.0
+    collisions_per_tx_at_target: float = 0.0
+    effective_cost: float = 0.0
 
     @property
     def margin_over_flooding(self) -> float:
@@ -82,6 +85,9 @@ class RewardCalibration:
         lines = [
             f"target operating cost      : {self.target_cost:.3f} tx per at-risk informed",
             f"mean at-risk relevance     : {self.mean_relevance:.3f}",
+            f"total price of a tx        : {self.effective_cost:.3f}",
+            f"  of which collision term  : {self.w3_collision * self.collisions_per_tx_at_target:.3f}"
+            f"  (w3={self.w3_collision} x {self.collisions_per_tx_at_target:.2f} coll/tx)",
             f"=> calibrated w2/w1        : {self.w2_over_w1:.3f}",
         ]
         if self.flooding_w2_over_w1:
@@ -94,16 +100,46 @@ class RewardCalibration:
 
 
 def calibrate(
-    target_cost: float, mean_relevance: float, flooding_cost: float | None = None
+    target_cost: float,
+    mean_relevance: float,
+    flooding_cost: float | None = None,
+    w3_collision: float = 0.0,
+    collisions_per_tx_at_target: float = 0.0,
 ) -> RewardCalibration:
-    """Ratio at which a transmission is reward-neutral at ``target_cost``."""
+    """Ratio at which a transmission is reward-neutral at ``target_cost``.
+
+    The collision term is part of the price of transmitting, so it must enter
+    the calibration. A transmission costs ``w2 + w3 * E[collisions it causes]``,
+    not ``w2`` -- and the difference is not small: measured at rural d=20, a
+    transmission is blamed for ~2.0 lost receptions at the target operating
+    point and ~16.3 under flooding. Calibrating w2 alone and then adding a
+    collision term silently multiplies the effective cost (by 5.5x at the
+    originally configured w3 = 0.5), pushing the break-even to 0.075 tx per
+    at-risk vehicle informed against a target of 0.41. The agent would learn
+    near-silence, and that would look like a finding.
+
+    So ``w2`` is solved for, given ``w3`` and the collision rate expected at
+    the target:
+
+        w2 = mean_relevance / target_cost - w3 * collisions_per_tx_at_target
+    """
     if target_cost <= 0:
         raise ValueError("target_cost must be positive")
-    ratio = mean_relevance / target_cost
+    total = mean_relevance / target_cost
+    collision_share = w3_collision * collisions_per_tx_at_target
+    ratio = total - collision_share
+    if ratio <= 0:
+        raise ValueError(
+            f"w3 * collisions ({collision_share:.2f}) already exceeds the total "
+            f"transmission price ({total:.2f}); lower w3."
+        )
     flood_ratio = (mean_relevance / flooding_cost) if flooding_cost else None
     return RewardCalibration(
         target_cost=target_cost, mean_relevance=mean_relevance, w2_over_w1=ratio,
         flooding_cost=flooding_cost, flooding_w2_over_w1=flood_ratio,
+        w3_collision=w3_collision,
+        collisions_per_tx_at_target=collisions_per_tx_at_target,
+        effective_cost=total,
     )
 
 
