@@ -1,0 +1,32 @@
+# --- AI-HARP ---
+# Simulation outputs: regenerate with reproduce.sh, never commit.
+results/**/*.csv
+results/**/*.npz
+results/**/*.png
+results/**/*.pdf
+results/runs.csv
+cache/
+mobility/_sumo_build/
+runs/
+checkpoints/
+tb_logs/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,19 @@
+# Phase 1-4 (mobility, network simulator, hazard model, baseline policies)
+numpy>=1.26
+pandas>=2.0
+pyyaml>=6.0
+scipy>=1.11          # Wilcoxon signed-rank tests (Phase 7)
+matplotlib>=3.8      # IEEE figures (Phase 8)
+
+# Phase 5 (AI-HARP agent) -- not imported by Phases 1-4, install when needed.
+# torch>=2.2
+# torch-geometric>=2.5
+# tensorboard>=2.15
+
+# Phase 1 optional: real SUMO mobility. Install SUMO separately (https://eclipse.dev/sumo)
+# and set SUMO_HOME; the Python bindings then come from $SUMO_HOME/tools.
+# traci>=1.19
+# sumolib>=1.19
+
+# Dev
+pytest>=8.0
