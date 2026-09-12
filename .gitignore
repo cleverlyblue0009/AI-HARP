@@ -30,3 +30,8 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+
+# --- Phase 5 training artefacts ---
+checkpoints/
+tb_logs/
+results/feature_stats.json

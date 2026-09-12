@@ -1,0 +1,3542 @@
+[
+ {
+  "key": {
+   "scenario": "rural_highway",
+   "density": 2.0,
+   "weather": "clear",
+   "hazard_type": "fog_bank"
+  },
+  "curves": {
+   "flooding": [
+    {
+     "policy": "flooding",
+     "param": "",
+     "value": null,
+     "quality": 0.6158170886499648,
+     "quality_std": 0.184342270863805,
+     "cost": 2.8033316356845766,
+     "cost_std": 0.5042362303918452,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.10491582491582492,
+      "airtime_ms": 12.364,
+      "dissemination_cbr": 0.00010303333333333334,
+      "tir_median_s": 0.38000000000000045,
+      "tir_p95_s": 0.7120000000000003,
+      "tir_uninformed_frac": 0.3342161514955633,
+      "actionable_deadline_miss_rate": 0.5582776571254832,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    }
+   ],
+   "p_persistence_03": [
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.05,
+     "quality": 0.053025156510923876,
+     "quality_std": 0.026968662292044095,
+     "cost": 1.25,
+     "cost_std": 0.4330127018922193,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0,
+      "airtime_ms": 0.5280000000000001,
+      "dissemination_cbr": 4.4e-06,
+      "tir_median_s": 0.10000000000000053,
+      "tir_p95_s": 0.10000000000000053,
+      "tir_uninformed_frac": 0.941655427905428,
+      "actionable_deadline_miss_rate": 0.9658175013392405,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.1,
+     "quality": 0.06098444464797802,
+     "quality_std": 0.04147748195427878,
+     "cost": 1.5,
+     "cost_std": 0.5,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0,
+      "airtime_ms": 0.66,
+      "dissemination_cbr": 5.5e-06,
+      "tir_median_s": 0.11250000000000054,
+      "tir_p95_s": 0.12375000000000055,
+      "tir_uninformed_frac": 0.9325645188145189,
+      "actionable_deadline_miss_rate": 0.9610555965773357,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.2,
+     "quality": 0.11680472834705298,
+     "quality_std": 0.09024096901078263,
+     "cost": 1.4814814814814816,
+     "cost_std": 0.6687211142691774,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0,
+      "airtime_ms": 1.012,
+      "dissemination_cbr": 8.433333333333333e-06,
+      "tir_median_s": 0.18333333333333388,
+      "tir_p95_s": 0.19944444444444492,
+      "tir_uninformed_frac": 0.8723314185814186,
+      "actionable_deadline_miss_rate": 0.9246543166977949,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.3,
+     "quality": 0.12664425445578975,
+     "quality_std": 0.07893431124164409,
+     "cost": 1.5333333333333334,
+     "cost_std": 0.6531972647421808,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0,
+      "airtime_ms": 1.144,
+      "dissemination_cbr": 9.533333333333334e-06,
+      "tir_median_s": 0.17000000000000046,
+      "tir_p95_s": 0.18900000000000042,
+      "tir_uninformed_frac": 0.8623766674501969,
+      "actionable_deadline_miss_rate": 0.9159586645238817,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.5,
+     "quality": 0.1958838855931888,
+     "quality_std": 0.10972279351774773,
+     "cost": 1.728333333333333,
+     "cost_std": 0.8328682035258906,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.030882352941176472,
+      "airtime_ms": 2.024,
+      "dissemination_cbr": 1.686666666666667e-05,
+      "tir_median_s": 0.18500000000000036,
+      "tir_p95_s": 0.2430000000000004,
+      "tir_uninformed_frac": 0.7830295439854262,
+      "actionable_deadline_miss_rate": 0.869679400309835,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.7,
+     "quality": 0.3275804021920519,
+     "quality_std": 0.17602723641431536,
+     "cost": 2.298484848484849,
+     "cost_std": 1.0135728214092765,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.08819444444444444,
+      "airtime_ms": 4.9719999999999995,
+      "dissemination_cbr": 4.1433333333333335e-05,
+      "tir_median_s": 0.27500000000000047,
+      "tir_p95_s": 0.46500000000000047,
+      "tir_uninformed_frac": 0.6370001322207205,
+      "actionable_deadline_miss_rate": 0.7682795320621407,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.9,
+     "quality": 0.5054318097577816,
+     "quality_std": 0.1624673942428105,
+     "cost": 2.393643578643579,
+     "cost_std": 0.3706318467650511,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.10920208932379319,
+      "airtime_ms": 8.491999999999999,
+      "dissemination_cbr": 7.076666666666667e-05,
+      "tir_median_s": 0.3500000000000005,
+      "tir_p95_s": 0.5930000000000003,
+      "tir_uninformed_frac": 0.45226019078960256,
+      "actionable_deadline_miss_rate": 0.6485752218795696,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 1.0,
+     "quality": 0.6158170886499648,
+     "quality_std": 0.184342270863805,
+     "cost": 2.8033316356845766,
+     "cost_std": 0.5042362303918452,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.10491582491582492,
+      "airtime_ms": 12.364,
+      "dissemination_cbr": 0.00010303333333333334,
+      "tir_median_s": 0.38000000000000045,
+      "tir_p95_s": 0.7120000000000003,
+      "tir_uninformed_frac": 0.3342161514955633,
+      "actionable_deadline_miss_rate": 0.5582776571254832,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    }
+   ],
+   "slotted_1p": [
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 1,
+     "quality": 0.6243731830660852,
+     "quality_std": 0.1912066379659401,
+     "cost": 2.7226593667770134,
+     "cost_std": 0.494638019385728,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.11807362995081294,
+      "airtime_ms": 12.232000000000003,
+      "dissemination_cbr": 0.00010193333333333335,
+      "tir_median_s": 0.38500000000000045,
+      "tir_p95_s": 0.7195000000000003,
+      "tir_uninformed_frac": 0.32754948482889656,
+      "actionable_deadline_miss_rate": 0.549186748034574,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 2,
+     "quality": 0.5594605253218885,
+     "quality_std": 0.22669880046796856,
+     "cost": 2.4482936507936506,
+     "cost_std": 1.1971823555347065,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.06036727321034534,
+      "airtime_ms": 8.624,
+      "dissemination_cbr": 7.186666666666666e-05,
+      "tir_median_s": 0.4200000000000005,
+      "tir_p95_s": 0.7080000000000003,
+      "tir_uninformed_frac": 0.3883639399815871,
+      "actionable_deadline_miss_rate": 0.5948572007702444,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 3,
+     "quality": 0.6609313443747998,
+     "quality_std": 0.16024031983483844,
+     "cost": 1.8541129785247432,
+     "cost_std": 0.4167597996331644,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.014502140030687232,
+      "airtime_ms": 8.976,
+      "dissemination_cbr": 7.48e-05,
+      "tir_median_s": 0.5450000000000005,
+      "tir_p95_s": 0.8865000000000002,
+      "tir_uninformed_frac": 0.2792801071477542,
+      "actionable_deadline_miss_rate": 0.5224479361218491,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 5,
+     "quality": 0.6617549117671767,
+     "quality_std": 0.17455009514114672,
+     "cost": 1.7926447245564894,
+     "cost_std": 0.38052861487944556,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.010342555994729908,
+      "airtime_ms": 8.536,
+      "dissemination_cbr": 7.113333333333335e-05,
+      "tir_median_s": 0.5700000000000003,
+      "tir_p95_s": 1.0830000000000006,
+      "tir_uninformed_frac": 0.2763148371236607,
+      "actionable_deadline_miss_rate": 0.5251164342903473,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 8,
+     "quality": 0.6102696779773513,
+     "quality_std": 0.16513876202606692,
+     "cost": 1.6505718954248365,
+     "cost_std": 0.2624334663586184,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.02679001031045939,
+      "airtime_ms": 7.480000000000001,
+      "dissemination_cbr": 6.233333333333332e-05,
+      "tir_median_s": 0.7700000000000002,
+      "tir_p95_s": 1.5310000000000001,
+      "tir_uninformed_frac": 0.3383022614640262,
+      "actionable_deadline_miss_rate": 0.5644338198033851,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 12,
+     "quality": 0.6264673064978542,
+     "quality_std": 0.24794690393436647,
+     "cost": 1.75015406162465,
+     "cost_std": 0.45788114424267307,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.017496598639455782,
+      "airtime_ms": 7.480000000000001,
+      "dissemination_cbr": 6.233333333333334e-05,
+      "tir_median_s": 0.9550000000000004,
+      "tir_p95_s": 1.7600000000000002,
+      "tir_uninformed_frac": 0.31364730857377915,
+      "actionable_deadline_miss_rate": 0.5460598314728748,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 20,
+     "quality": 0.6446874286291824,
+     "quality_std": 0.1722861864449535,
+     "cost": 1.6795891690009337,
+     "cost_std": 0.28081213151366385,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.02375533428165007,
+      "airtime_ms": 7.700000000000001,
+      "dissemination_cbr": 6.416666666666666e-05,
+      "tir_median_s": 1.4350000000000007,
+      "tir_p95_s": 3.128,
+      "tir_uninformed_frac": 0.29397675853558203,
+      "actionable_deadline_miss_rate": 0.5393876558224384,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    }
+   ],
+   "weighted_p": [
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.1,
+     "quality": 0.06098444464797802,
+     "quality_std": 0.04147748195427878,
+     "cost": 1.5,
+     "cost_std": 0.5,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0,
+      "airtime_ms": 0.66,
+      "dissemination_cbr": 5.5e-06,
+      "tir_median_s": 0.11250000000000054,
+      "tir_p95_s": 0.12375000000000055,
+      "tir_uninformed_frac": 0.9325645188145189,
+      "actionable_deadline_miss_rate": 0.9610555965773357,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.2,
+     "quality": 0.11680472834705298,
+     "quality_std": 0.09024096901078263,
+     "cost": 1.4814814814814816,
+     "cost_std": 0.6687211142691774,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0,
+      "airtime_ms": 1.012,
+      "dissemination_cbr": 8.433333333333333e-06,
+      "tir_median_s": 0.18333333333333388,
+      "tir_p95_s": 0.19944444444444492,
+      "tir_uninformed_frac": 0.8723314185814186,
+      "actionable_deadline_miss_rate": 0.9246543166977949,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.35,
+     "quality": 0.13333617848098006,
+     "quality_std": 0.08210437866293907,
+     "cost": 1.5,
+     "cost_std": 0.6708203932499369,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0058823529411764705,
+      "airtime_ms": 1.1880000000000002,
+      "dissemination_cbr": 9.9e-06,
+      "tir_median_s": 0.17500000000000043,
+      "tir_p95_s": 0.19850000000000045,
+      "tir_uninformed_frac": 0.8546843597578893,
+      "actionable_deadline_miss_rate": 0.9116108384369254,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.5,
+     "quality": 0.20883553744960817,
+     "quality_std": 0.12077234622082504,
+     "cost": 1.5500000000000003,
+     "cost_std": 0.9076832536126734,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0058823529411764705,
+      "airtime_ms": 1.848,
+      "dissemination_cbr": 1.54e-05,
+      "tir_median_s": 0.21500000000000039,
+      "tir_p95_s": 0.2660000000000003,
+      "tir_uninformed_frac": 0.7658349738496797,
+      "actionable_deadline_miss_rate": 0.86248876485833,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.7,
+     "quality": 0.30595773003461,
+     "quality_std": 0.16685513329143006,
+     "cost": 1.795555555555556,
+     "cost_std": 1.1452688508558768,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.012,
+      "airtime_ms": 3.2560000000000002,
+      "dissemination_cbr": 2.713333333333334e-05,
+      "tir_median_s": 0.2600000000000004,
+      "tir_p95_s": 0.3835000000000003,
+      "tir_uninformed_frac": 0.6629770964329789,
+      "actionable_deadline_miss_rate": 0.7913200784722523,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.85,
+     "quality": 0.4123950549485767,
+     "quality_std": 0.16994943236830845,
+     "cost": 1.5678282828282828,
+     "cost_std": 0.3241700452587137,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.027555555555555555,
+      "airtime_ms": 4.488000000000001,
+      "dissemination_cbr": 3.74e-05,
+      "tir_median_s": 0.3300000000000004,
+      "tir_p95_s": 0.5195000000000004,
+      "tir_uninformed_frac": 0.539762810718693,
+      "actionable_deadline_miss_rate": 0.7160664552838465,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 1.0,
+     "quality": 0.4007189188873651,
+     "quality_std": 0.15120792190927632,
+     "cost": 1.5905555555555555,
+     "cost_std": 0.32776883226964615,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.028081871345029243,
+      "airtime_ms": 4.444000000000001,
+      "dissemination_cbr": 3.7033333333333344e-05,
+      "tir_median_s": 0.3100000000000005,
+      "tir_p95_s": 0.4985000000000003,
+      "tir_uninformed_frac": 0.5540485250044074,
+      "actionable_deadline_miss_rate": 0.7243997886171798,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    }
+   ],
+   "counter_based": [
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 1,
+     "quality": 0.5047632333305347,
+     "quality_std": 0.22618217754254297,
+     "cost": 1.5309523809523808,
+     "cost_std": 0.25376703338109263,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0102291325695581,
+      "airtime_ms": 5.324000000000001,
+      "dissemination_cbr": 4.436666666666666e-05,
+      "tir_median_s": 0.7300000000000003,
+      "tir_p95_s": 1.3730000000000004,
+      "tir_uninformed_frac": 0.4433017472723355,
+      "actionable_deadline_miss_rate": 0.6397084075344945,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 2,
+     "quality": 0.5047632333305347,
+     "quality_std": 0.22618217754254297,
+     "cost": 1.5309523809523808,
+     "cost_std": 0.25376703338109263,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0102291325695581,
+      "airtime_ms": 5.324000000000001,
+      "dissemination_cbr": 4.436666666666666e-05,
+      "tir_median_s": 0.7300000000000003,
+      "tir_p95_s": 1.3730000000000004,
+      "tir_uninformed_frac": 0.4433017472723355,
+      "actionable_deadline_miss_rate": 0.6397084075344945,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 3,
+     "quality": 0.6892616829314973,
+     "quality_std": 0.16445887763870093,
+     "cost": 2.0142565359477125,
+     "cost_std": 0.3622191668870782,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.02191776302859806,
+      "airtime_ms": 10.208000000000002,
+      "dissemination_cbr": 8.506666666666668e-05,
+      "tir_median_s": 0.8800000000000004,
+      "tir_p95_s": 1.9175000000000004,
+      "tir_uninformed_frac": 0.24759688840571195,
+      "actionable_deadline_miss_rate": 0.49994577161968473,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 4,
+     "quality": 0.6580431734063283,
+     "quality_std": 0.16430353311739945,
+     "cost": 2.153839869281046,
+     "cost_std": 0.4267767804357543,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.025157828282828282,
+      "airtime_ms": 10.384000000000002,
+      "dissemination_cbr": 8.653333333333334e-05,
+      "tir_median_s": 0.8450000000000003,
+      "tir_p95_s": 1.7645000000000004,
+      "tir_uninformed_frac": 0.2828349836438072,
+      "actionable_deadline_miss_rate": 0.5257033473772605,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 6,
+     "quality": 0.6580431734063283,
+     "quality_std": 0.16430353311739945,
+     "cost": 2.147589869281046,
+     "cost_std": 0.4294333256573377,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.022898976023976024,
+      "airtime_ms": 10.34,
+      "dissemination_cbr": 8.616666666666666e-05,
+      "tir_median_s": 0.8450000000000003,
+      "tir_p95_s": 1.7645000000000004,
+      "tir_uninformed_frac": 0.2828349836438072,
+      "actionable_deadline_miss_rate": 0.5257033473772605,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 10,
+     "quality": 0.6580431734063283,
+     "quality_std": 0.16430353311739945,
+     "cost": 2.147589869281046,
+     "cost_std": 0.4294333256573377,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.022898976023976024,
+      "airtime_ms": 10.34,
+      "dissemination_cbr": 8.616666666666666e-05,
+      "tir_median_s": 0.8450000000000003,
+      "tir_p95_s": 1.7645000000000004,
+      "tir_uninformed_frac": 0.2828349836438072,
+      "actionable_deadline_miss_rate": 0.5257033473772605,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    }
+   ],
+   "greedy_farthest": [
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 1,
+     "quality": 0.5326238503136059,
+     "quality_std": 0.27658173679570736,
+     "cost": 2.051572871572872,
+     "cost_std": 0.5376249414790184,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.015215473929245299,
+      "airtime_ms": 7.919999999999999,
+      "dissemination_cbr": 6.6e-05,
+      "tir_median_s": 0.6400000000000003,
+      "tir_p95_s": 1.2280000000000004,
+      "tir_uninformed_frac": 0.40979469060351414,
+      "actionable_deadline_miss_rate": 0.6107671169410299,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 2,
+     "quality": 0.5369462948122784,
+     "quality_std": 0.22616171865823972,
+     "cost": 1.8563492063492064,
+     "cost_std": 0.47047589593633,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.01491325212255445,
+      "airtime_ms": 6.688000000000001,
+      "dissemination_cbr": 5.573333333333334e-05,
+      "tir_median_s": 0.6550000000000005,
+      "tir_p95_s": 1.1340000000000003,
+      "tir_uninformed_frac": 0.3989934085522321,
+      "actionable_deadline_miss_rate": 0.6216048299526561,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 4,
+     "quality": 0.6010232436358861,
+     "quality_std": 0.23659400264468033,
+     "cost": 1.9438041125541126,
+     "cost_std": 0.5005852008759178,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0,
+      "airtime_ms": 8.096,
+      "dissemination_cbr": 6.746666666666668e-05,
+      "tir_median_s": 0.7750000000000004,
+      "tir_p95_s": 1.3590000000000004,
+      "tir_uninformed_frac": 0.3410446906035141,
+      "actionable_deadline_miss_rate": 0.568491095860661,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 8,
+     "quality": 0.5545869088242379,
+     "quality_std": 0.2480817527045178,
+     "cost": 1.8067694805194805,
+     "cost_std": 0.5135590717846911,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.006756756756756757,
+      "airtime_ms": 6.688000000000001,
+      "dissemination_cbr": 5.573333333333335e-05,
+      "tir_median_s": 0.8450000000000004,
+      "tir_p95_s": 1.5135000000000003,
+      "tir_uninformed_frac": 0.3744100752188987,
+      "actionable_deadline_miss_rate": 0.5992704614226353,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 16,
+     "quality": 0.6235373077649761,
+     "quality_std": 0.2392926226090205,
+     "cost": 1.7425396825396828,
+     "cost_std": 0.5209758852536968,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.0024691358024691358,
+      "airtime_ms": 7.303999999999999,
+      "dissemination_cbr": 6.086666666666668e-05,
+      "tir_median_s": 0.9650000000000004,
+      "tir_p95_s": 1.9789999999999999,
+      "tir_uninformed_frac": 0.3076529108146755,
+      "actionable_deadline_miss_rate": 0.5552067352936918,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    }
+   ],
+   "dvcast": [
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 1,
+     "quality": 0.6243731830660852,
+     "quality_std": 0.1912066379659401,
+     "cost": 2.7351593667770135,
+     "cost_std": 0.48721816063485407,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.11703466891185191,
+      "airtime_ms": 12.276000000000002,
+      "dissemination_cbr": 0.00010230000000000002,
+      "tir_median_s": 0.38500000000000045,
+      "tir_p95_s": 0.7195000000000003,
+      "tir_uninformed_frac": 0.32754948482889656,
+      "actionable_deadline_miss_rate": 0.549186748034574,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 2,
+     "quality": 0.563301760474372,
+     "quality_std": 0.23181429759005012,
+     "cost": 2.468671802054155,
+     "cost_std": 1.1918621780577296,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.06160113651492962,
+      "airtime_ms": 8.8,
+      "dissemination_cbr": 7.333333333333333e-05,
+      "tir_median_s": 0.4200000000000005,
+      "tir_p95_s": 0.7110000000000002,
+      "tir_uninformed_frac": 0.38211393998158705,
+      "actionable_deadline_miss_rate": 0.5905093746832877,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 3,
+     "quality": 0.6734376619814257,
+     "quality_std": 0.14311960205824922,
+     "cost": 1.8643090569561156,
+     "cost_std": 0.40190235629123483,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.018449508451739864,
+      "airtime_ms": 9.196000000000002,
+      "dissemination_cbr": 7.663333333333334e-05,
+      "tir_median_s": 0.5500000000000004,
+      "tir_p95_s": 0.9360000000000003,
+      "tir_uninformed_frac": 0.2649943928620399,
+      "actionable_deadline_miss_rate": 0.5144479361218491,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 5,
+     "quality": 0.6544518894025264,
+     "quality_std": 0.16635484009245943,
+     "cost": 1.8146428571428572,
+     "cost_std": 0.4271922417966497,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.02287878787878788,
+      "airtime_ms": 8.492,
+      "dissemination_cbr": 7.076666666666667e-05,
+      "tir_median_s": 0.5700000000000003,
+      "tir_p95_s": 1.0100000000000005,
+      "tir_uninformed_frac": 0.2763148371236607,
+      "actionable_deadline_miss_rate": 0.5338120864642603,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 8,
+     "quality": 0.6060687922886591,
+     "quality_std": 0.15881366568148123,
+     "cost": 1.6307521726639376,
+     "cost_std": 0.22911345356588625,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.019647153167602245,
+      "airtime_ms": 7.260000000000001,
+      "dissemination_cbr": 6.050000000000001e-05,
+      "tir_median_s": 0.7500000000000003,
+      "tir_p95_s": 1.4160000000000001,
+      "tir_uninformed_frac": 0.3454451186068833,
+      "actionable_deadline_miss_rate": 0.5686004864700517,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 12,
+     "quality": 0.6121489665454494,
+     "quality_std": 0.2257478837721545,
+     "cost": 1.7423692810457516,
+     "cost_std": 0.4839490693078576,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.008163265306122448,
+      "airtime_ms": 7.0840000000000005,
+      "dissemination_cbr": 5.9033333333333336e-05,
+      "tir_median_s": 0.8500000000000003,
+      "tir_p95_s": 1.686,
+      "tir_uninformed_frac": 0.33269492762139824,
+      "actionable_deadline_miss_rate": 0.5607871042001477,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 20,
+     "quality": 0.6460296935955948,
+     "quality_std": 0.1815376959693586,
+     "cost": 1.7178828197945843,
+     "cost_std": 0.2550661202863995,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.02375533428165007,
+      "airtime_ms": 8.008,
+      "dissemination_cbr": 6.673333333333333e-05,
+      "tir_median_s": 1.4300000000000006,
+      "tir_p95_s": 2.8720000000000003,
+      "tir_uninformed_frac": 0.3011196156784392,
+      "actionable_deadline_miss_rate": 0.5346920036485254,
+      "risk_est_precision": 0.8701123321123321,
+      "risk_peak_corr": 0.8420840459501188
+     }
+    }
+   ]
+  }
+ },
+ {
+  "key": {
+   "scenario": "rural_highway",
+   "density": 20.0,
+   "weather": "clear",
+   "hazard_type": "fog_bank"
+  },
+  "curves": {
+   "flooding": [
+    {
+     "policy": "flooding",
+     "param": "",
+     "value": null,
+     "quality": 0.9238218566520915,
+     "quality_std": 0.022318582099589868,
+     "cost": 3.509714737157134,
+     "cost_std": 0.1821750940664031,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.7332563184846554,
+      "airtime_ms": 175.868,
+      "dissemination_cbr": 0.001465566666666667,
+      "tir_median_s": 0.4300000000000003,
+      "tir_p95_s": 0.6355000000000002,
+      "tir_uninformed_frac": 0.002988658514974307,
+      "actionable_deadline_miss_rate": 0.31490992792551903,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    }
+   ],
+   "p_persistence_03": [
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.05,
+     "quality": 0.1692502388202491,
+     "quality_std": 0.09631666121894127,
+     "cost": 0.21484342454930688,
+     "cost_std": 0.09526781958581519,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.050413223140495865,
+      "airtime_ms": 1.7600000000000002,
+      "dissemination_cbr": 1.4666666666666666e-05,
+      "tir_median_s": 0.2400000000000005,
+      "tir_p95_s": 0.4125000000000004,
+      "tir_uninformed_frac": 0.8136723717362312,
+      "actionable_deadline_miss_rate": 0.8950427894500951,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.1,
+     "quality": 0.3339210821160323,
+     "quality_std": 0.20594460755180957,
+     "cost": 0.2967334855076826,
+     "cost_std": 0.06594605898392433,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.12627472935741027,
+      "airtime_ms": 5.104000000000001,
+      "dissemination_cbr": 4.2533333333333335e-05,
+      "tir_median_s": 0.3700000000000002,
+      "tir_p95_s": 0.6585000000000003,
+      "tir_uninformed_frac": 0.6303985703827124,
+      "actionable_deadline_miss_rate": 0.7818452355129171,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.2,
+     "quality": 0.7692047572620796,
+     "quality_std": 0.1928472032133873,
+     "cost": 0.6501986771279741,
+     "cost_std": 0.09338238447829368,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.4522914002481125,
+      "airtime_ms": 27.631999999999998,
+      "dissemination_cbr": 0.0002302666666666667,
+      "tir_median_s": 0.5550000000000003,
+      "tir_p95_s": 1.0310000000000001,
+      "tir_uninformed_frac": 0.1702259016357051,
+      "actionable_deadline_miss_rate": 0.4371329259429417,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.3,
+     "quality": 0.8719974918161549,
+     "quality_std": 0.11031147046326673,
+     "cost": 1.0238737409110952,
+     "cost_std": 0.08224856225316392,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.5738351084256145,
+      "airtime_ms": 48.488,
+      "dissemination_cbr": 0.0004040666666666667,
+      "tir_median_s": 0.5100000000000002,
+      "tir_p95_s": 0.8120000000000003,
+      "tir_uninformed_frac": 0.060414310920031744,
+      "actionable_deadline_miss_rate": 0.35600410877935074,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.5,
+     "quality": 0.9238218566520915,
+     "quality_std": 0.022318582099589868,
+     "cost": 1.7199290657982638,
+     "cost_std": 0.07646811841704454,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.1965367416517185,
+      "airtime_ms": 86.28399999999999,
+      "dissemination_cbr": 0.0007190333333333334,
+      "tir_median_s": 0.43500000000000033,
+      "tir_p95_s": 0.7235000000000004,
+      "tir_uninformed_frac": 0.002988658514974307,
+      "actionable_deadline_miss_rate": 0.31490992792551903,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.7,
+     "quality": 0.9228529612590574,
+     "quality_std": 0.021602604777408406,
+     "cost": 2.4318087425369814,
+     "cost_std": 0.12266577761191741,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.7715802352569732,
+      "airtime_ms": 121.792,
+      "dissemination_cbr": 0.0010149333333333336,
+      "tir_median_s": 0.45000000000000034,
+      "tir_p95_s": 0.7400000000000004,
+      "tir_uninformed_frac": 0.003998759525075312,
+      "actionable_deadline_miss_rate": 0.31490992792551903,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.9,
+     "quality": 0.9234996257557135,
+     "quality_std": 0.022441024279549936,
+     "cost": 3.157885505332654,
+     "cost_std": 0.194489646098226,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.4087860937154,
+      "airtime_ms": 158.048,
+      "dissemination_cbr": 0.0013170666666666667,
+      "tir_median_s": 0.4200000000000005,
+      "tir_p95_s": 0.6540000000000001,
+      "tir_uninformed_frac": 0.002988658514974307,
+      "actionable_deadline_miss_rate": 0.3154879626075999,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 1.0,
+     "quality": 0.9238218566520915,
+     "quality_std": 0.022318582099589868,
+     "cost": 3.509714737157134,
+     "cost_std": 0.1821750940664031,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.7332563184846554,
+      "airtime_ms": 175.868,
+      "dissemination_cbr": 0.001465566666666667,
+      "tir_median_s": 0.4300000000000003,
+      "tir_p95_s": 0.6355000000000002,
+      "tir_uninformed_frac": 0.002988658514974307,
+      "actionable_deadline_miss_rate": 0.31490992792551903,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    }
+   ],
+   "slotted_1p": [
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 1,
+     "quality": 0.9234996257557135,
+     "quality_std": 0.022441024279549936,
+     "cost": 2.4958058634955096,
+     "cost_std": 0.1606214139000332,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.772796338566052,
+      "airtime_ms": 124.91599999999998,
+      "dissemination_cbr": 0.0010409666666666667,
+      "tir_median_s": 0.4300000000000003,
+      "tir_p95_s": 0.6400000000000003,
+      "tir_uninformed_frac": 0.002988658514974307,
+      "actionable_deadline_miss_rate": 0.3154879626075999,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 2,
+     "quality": 0.9217386450479867,
+     "quality_std": 0.021707772016844387,
+     "cost": 1.381783949860028,
+     "cost_std": 0.1072036774494043,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.1781990753783358,
+      "airtime_ms": 69.16799999999999,
+      "dissemination_cbr": 0.0005764,
+      "tir_median_s": 0.40000000000000047,
+      "tir_p95_s": 0.6400000000000003,
+      "tir_uninformed_frac": 0.004868324742466612,
+      "actionable_deadline_miss_rate": 0.31615021426322903,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 3,
+     "quality": 0.9234996257557135,
+     "quality_std": 0.022441024279549936,
+     "cost": 1.0865206490135297,
+     "cost_std": 0.08254334444498848,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.6825651182616937,
+      "airtime_ms": 54.428,
+      "dissemination_cbr": 0.0004535666666666667,
+      "tir_median_s": 0.45000000000000034,
+      "tir_p95_s": 0.7070000000000003,
+      "tir_uninformed_frac": 0.002988658514974307,
+      "actionable_deadline_miss_rate": 0.3154879626075999,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 5,
+     "quality": 0.9229294443200887,
+     "quality_std": 0.02308731581954255,
+     "cost": 0.8985308701889003,
+     "cost_std": 0.08567842667991382,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.4487437721167358,
+      "airtime_ms": 44.924,
+      "dissemination_cbr": 0.0003743666666666667,
+      "tir_median_s": 0.48000000000000026,
+      "tir_p95_s": 0.7405000000000006,
+      "tir_uninformed_frac": 0.004125022151337943,
+      "actionable_deadline_miss_rate": 0.316066151818585,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 8,
+     "quality": 0.9199931454698975,
+     "quality_std": 0.02149178297117741,
+     "cost": 0.7902904740615204,
+     "cost_std": 0.06214077590269755,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.2689956922061286,
+      "airtime_ms": 39.38000000000001,
+      "dissemination_cbr": 0.0003281666666666667,
+      "tir_median_s": 0.5150000000000003,
+      "tir_p95_s": 0.8535000000000001,
+      "tir_uninformed_frac": 0.006878425752567629,
+      "actionable_deadline_miss_rate": 0.31742222201641923,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 12,
+     "quality": 0.9216818843259273,
+     "quality_std": 0.02219765321683381,
+     "cost": 0.7481264805954406,
+     "cost_std": 0.04889866896432629,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.20841884710831388,
+      "airtime_ms": 37.4,
+      "dissemination_cbr": 0.0003116666666666667,
+      "tir_median_s": 0.5400000000000004,
+      "tir_p95_s": 0.9190000000000002,
+      "tir_uninformed_frac": 0.0048582237323656075,
+      "actionable_deadline_miss_rate": 0.3161819356787091,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 20,
+     "quality": 0.9216471937287427,
+     "quality_std": 0.022706973986118317,
+     "cost": 0.7151765806034691,
+     "cost_std": 0.06626941828830071,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.14936406587397827,
+      "airtime_ms": 35.728,
+      "dissemination_cbr": 0.0002977333333333334,
+      "tir_median_s": 0.5900000000000004,
+      "tir_p95_s": 1.0989999999999995,
+      "tir_uninformed_frac": 0.004727788949756917,
+      "actionable_deadline_miss_rate": 0.3161819356787091,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    }
+   ],
+   "weighted_p": [
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.1,
+     "quality": 0.3278742590795479,
+     "quality_std": 0.19891229748091221,
+     "cost": 0.28906413648752716,
+     "cost_std": 0.06623956012043296,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.14613721470173002,
+      "airtime_ms": 4.884,
+      "dissemination_cbr": 4.07e-05,
+      "tir_median_s": 0.3450000000000002,
+      "tir_p95_s": 0.6230000000000002,
+      "tir_uninformed_frac": 0.6365253646410857,
+      "actionable_deadline_miss_rate": 0.787914818071464,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.2,
+     "quality": 0.8179626618538196,
+     "quality_std": 0.12832789741474715,
+     "cost": 0.5458466462940381,
+     "cost_std": 0.1112955207138442,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.3686018927794934,
+      "airtime_ms": 24.112000000000002,
+      "dissemination_cbr": 0.00020093333333333336,
+      "tir_median_s": 0.5950000000000004,
+      "tir_p95_s": 1.0295,
+      "tir_uninformed_frac": 0.10749520124380582,
+      "actionable_deadline_miss_rate": 0.40846143153951886,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.35,
+     "quality": 0.9228753791971582,
+     "quality_std": 0.020066114125938443,
+     "cost": 0.9609876638391072,
+     "cost_std": 0.0794653538141418,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.5961928701603771,
+      "airtime_ms": 48.18000000000001,
+      "dissemination_cbr": 0.00040150000000000006,
+      "tir_median_s": 0.5000000000000002,
+      "tir_p95_s": 0.9000000000000006,
+      "tir_uninformed_frac": 0.003988658514974308,
+      "actionable_deadline_miss_rate": 0.31551968402307995,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.5,
+     "quality": 0.9238242755835421,
+     "quality_std": 0.02084616267851636,
+     "cost": 1.253860012889552,
+     "cost_std": 0.0897648125417828,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.9183310306616571,
+      "airtime_ms": 62.92,
+      "dissemination_cbr": 0.0005243333333333334,
+      "tir_median_s": 0.45000000000000034,
+      "tir_p95_s": 0.7655000000000001,
+      "tir_uninformed_frac": 0.0029785575048733026,
+      "actionable_deadline_miss_rate": 0.31551968402307995,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.7,
+     "quality": 0.9247253573428621,
+     "quality_std": 0.02046239856283372,
+     "cost": 1.4734681686958524,
+     "cost_std": 0.08536785809377744,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.0885484884967656,
+      "airtime_ms": 73.964,
+      "dissemination_cbr": 0.0006163666666666667,
+      "tir_median_s": 0.45000000000000034,
+      "tir_p95_s": 0.6805000000000005,
+      "tir_uninformed_frac": 0.0019785575048733017,
+      "actionable_deadline_miss_rate": 0.3154813564969476,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.85,
+     "quality": 0.9234996257557135,
+     "quality_std": 0.022441024279549936,
+     "cost": 1.5962898470016944,
+     "cost_std": 0.1292911672573865,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.1555481575376794,
+      "airtime_ms": 80.08,
+      "dissemination_cbr": 0.0006673333333333334,
+      "tir_median_s": 0.4000000000000005,
+      "tir_p95_s": 0.6700000000000005,
+      "tir_uninformed_frac": 0.002988658514974307,
+      "actionable_deadline_miss_rate": 0.3154879626075999,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 1.0,
+     "quality": 0.9226169520355855,
+     "quality_std": 0.021005079977154485,
+     "cost": 1.6698799801570245,
+     "cost_std": 0.11301105803913168,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.217543968085975,
+      "airtime_ms": 83.644,
+      "dissemination_cbr": 0.0006970333333333334,
+      "tir_median_s": 0.4000000000000005,
+      "tir_p95_s": 0.6815000000000002,
+      "tir_uninformed_frac": 0.0039232379542266434,
+      "actionable_deadline_miss_rate": 0.31609402321366054,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    }
+   ],
+   "counter_based": [
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 1,
+     "quality": 0.9208015696375398,
+     "quality_std": 0.01934257822719306,
+     "cost": 0.7006396695043405,
+     "cost_std": 0.044526065432096806,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.27434840358358215,
+      "airtime_ms": 35.024,
+      "dissemination_cbr": 0.0002918666666666667,
+      "tir_median_s": 0.5600000000000002,
+      "tir_p95_s": 0.9225000000000003,
+      "tir_uninformed_frac": 0.005704898957855609,
+      "actionable_deadline_miss_rate": 0.317983348985695,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 2,
+     "quality": 0.9208015696375398,
+     "quality_std": 0.01934257822719306,
+     "cost": 0.7006396695043405,
+     "cost_std": 0.044526065432096806,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.27434840358358215,
+      "airtime_ms": 35.024,
+      "dissemination_cbr": 0.0002918666666666667,
+      "tir_median_s": 0.5600000000000002,
+      "tir_p95_s": 0.9225000000000003,
+      "tir_uninformed_frac": 0.005704898957855609,
+      "actionable_deadline_miss_rate": 0.317983348985695,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 3,
+     "quality": 0.9247253573428621,
+     "quality_std": 0.02046239856283372,
+     "cost": 1.1835109886219615,
+     "cost_std": 0.07475257469114832,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.5496863999099065,
+      "airtime_ms": 59.35600000000001,
+      "dissemination_cbr": 0.0004946333333333333,
+      "tir_median_s": 0.5700000000000003,
+      "tir_p95_s": 0.8885000000000002,
+      "tir_uninformed_frac": 0.0019785575048733017,
+      "actionable_deadline_miss_rate": 0.31490992792551903,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 4,
+     "quality": 0.9247253573428621,
+     "quality_std": 0.02046239856283372,
+     "cost": 1.6833744076277282,
+     "cost_std": 0.1103760346524675,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.7191599060879602,
+      "airtime_ms": 84.43599999999999,
+      "dissemination_cbr": 0.0007036333333333333,
+      "tir_median_s": 0.5750000000000003,
+      "tir_p95_s": 0.8770000000000003,
+      "tir_uninformed_frac": 0.0019785575048733017,
+      "actionable_deadline_miss_rate": 0.31490992792551903,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 6,
+     "quality": 0.9247253573428621,
+     "quality_std": 0.02046239856283372,
+     "cost": 2.354402773321079,
+     "cost_std": 0.16927523316121895,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.8433849200529769,
+      "airtime_ms": 118.05199999999999,
+      "dissemination_cbr": 0.0009837666666666666,
+      "tir_median_s": 0.5700000000000003,
+      "tir_p95_s": 0.9115000000000004,
+      "tir_uninformed_frac": 0.0019785575048733017,
+      "actionable_deadline_miss_rate": 0.31490992792551903,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 10,
+     "quality": 0.9247253573428621,
+     "quality_std": 0.02046239856283372,
+     "cost": 2.51596830212691,
+     "cost_std": 0.21620708096870453,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.901093258748557,
+      "airtime_ms": 126.016,
+      "dissemination_cbr": 0.0010501333333333336,
+      "tir_median_s": 0.5700000000000003,
+      "tir_p95_s": 0.9315000000000003,
+      "tir_uninformed_frac": 0.0019785575048733017,
+      "actionable_deadline_miss_rate": 0.31490992792551903,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    }
+   ],
+   "greedy_farthest": [
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 1,
+     "quality": 0.9211700412081738,
+     "quality_std": 0.022385272713027194,
+     "cost": 1.621338132977905,
+     "cost_std": 0.21651510300114243,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.4396124165832183,
+      "airtime_ms": 81.4,
+      "dissemination_cbr": 0.0006783333333333334,
+      "tir_median_s": 0.805,
+      "tir_p95_s": 1.584,
+      "tir_uninformed_frac": 0.006607455177249222,
+      "actionable_deadline_miss_rate": 0.3155118446284124,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 2,
+     "quality": 0.9211638139502764,
+     "quality_std": 0.020675823530713285,
+     "cost": 1.110418262700963,
+     "cost_std": 0.11728664336595702,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.7666385836774043,
+      "airtime_ms": 55.528,
+      "dissemination_cbr": 0.0004627333333333334,
+      "tir_median_s": 0.8200000000000003,
+      "tir_p95_s": 1.4600000000000004,
+      "tir_uninformed_frac": 0.006830806704948578,
+      "actionable_deadline_miss_rate": 0.3148965611753102,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 4,
+     "quality": 0.9177939908830981,
+     "quality_std": 0.02423656125637052,
+     "cost": 0.8495368246582791,
+     "cost_std": 0.048229159819524185,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.3468330097682148,
+      "airtime_ms": 42.41600000000001,
+      "dissemination_cbr": 0.0003534666666666667,
+      "tir_median_s": 0.8700000000000003,
+      "tir_p95_s": 1.5710000000000002,
+      "tir_uninformed_frac": 0.009740378614520494,
+      "actionable_deadline_miss_rate": 0.3178764724853449,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 8,
+     "quality": 0.9200725735594693,
+     "quality_std": 0.0193645302319425,
+     "cost": 0.7385732978453421,
+     "cost_std": 0.046614953842338776,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.19552667173400423,
+      "airtime_ms": 37.004000000000005,
+      "dissemination_cbr": 0.00030836666666666666,
+      "tir_median_s": 0.8700000000000003,
+      "tir_p95_s": 1.6535000000000004,
+      "tir_uninformed_frac": 0.008681211060025817,
+      "actionable_deadline_miss_rate": 0.3160007870816025,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 16,
+     "quality": 0.9211262509198935,
+     "quality_std": 0.02031262088336324,
+     "cost": 0.7003959819768575,
+     "cost_std": 0.03858934748820048,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.12311307979360268,
+      "airtime_ms": 35.111999999999995,
+      "dissemination_cbr": 0.0002926,
+      "tir_median_s": 0.9800000000000004,
+      "tir_p95_s": 1.8310000000000002,
+      "tir_uninformed_frac": 0.006802904181718949,
+      "actionable_deadline_miss_rate": 0.3153232886389265,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    }
+   ],
+   "dvcast": [
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 1,
+     "quality": 0.9234996257557135,
+     "quality_std": 0.022441024279549936,
+     "cost": 2.4948714519950603,
+     "cost_std": 0.1595034232203088,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.7772379368639784,
+      "airtime_ms": 124.872,
+      "dissemination_cbr": 0.0010405999999999998,
+      "tir_median_s": 0.4300000000000003,
+      "tir_p95_s": 0.6400000000000003,
+      "tir_uninformed_frac": 0.002988658514974307,
+      "actionable_deadline_miss_rate": 0.3154879626075999,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 2,
+     "quality": 0.9217386450479867,
+     "quality_std": 0.021707772016844387,
+     "cost": 1.390134395033749,
+     "cost_std": 0.10703603041493787,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.238980091478919,
+      "airtime_ms": 69.52000000000001,
+      "dissemination_cbr": 0.0005793333333333334,
+      "tir_median_s": 0.40000000000000047,
+      "tir_p95_s": 0.6400000000000003,
+      "tir_uninformed_frac": 0.004868324742466612,
+      "actionable_deadline_miss_rate": 0.31615021426322903,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 3,
+     "quality": 0.9234996257557135,
+     "quality_std": 0.022441024279549936,
+     "cost": 1.083734411131208,
+     "cost_std": 0.07721082741894382,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.6885462194726164,
+      "airtime_ms": 54.29600000000001,
+      "dissemination_cbr": 0.00045246666666666664,
+      "tir_median_s": 0.45000000000000034,
+      "tir_p95_s": 0.7070000000000003,
+      "tir_uninformed_frac": 0.002988658514974307,
+      "actionable_deadline_miss_rate": 0.3154879626075999,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 5,
+     "quality": 0.9218039751892736,
+     "quality_std": 0.020280945576788605,
+     "cost": 0.8972704361861801,
+     "cost_std": 0.06874824899280225,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.4282159616862756,
+      "airtime_ms": 44.836000000000006,
+      "dissemination_cbr": 0.0003736333333333333,
+      "tir_median_s": 0.48000000000000026,
+      "tir_p95_s": 0.7535000000000005,
+      "tir_uninformed_frac": 0.004792803171617943,
+      "actionable_deadline_miss_rate": 0.3173557293646979,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 8,
+     "quality": 0.9185930830918675,
+     "quality_std": 0.019784073682774034,
+     "cost": 0.7875094089232955,
+     "cost_std": 0.060096044141254634,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.25891178798031805,
+      "airtime_ms": 39.20399999999999,
+      "dissemination_cbr": 0.00032669999999999997,
+      "tir_median_s": 0.5150000000000003,
+      "tir_p95_s": 0.8490000000000002,
+      "tir_uninformed_frac": 0.007813005191819966,
+      "actionable_deadline_miss_rate": 0.3185997111939084,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 12,
+     "quality": 0.9212666276639624,
+     "quality_std": 0.02312472482641618,
+     "cost": 0.7548226420882302,
+     "cost_std": 0.05360920176274821,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.19191496389842533,
+      "airtime_ms": 37.708000000000006,
+      "dissemination_cbr": 0.00031423333333333335,
+      "tir_median_s": 0.5400000000000004,
+      "tir_p95_s": 0.9180000000000004,
+      "tir_uninformed_frac": 0.005858223732365608,
+      "actionable_deadline_miss_rate": 0.316129440120641,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 20,
+     "quality": 0.9178085672509088,
+     "quality_std": 0.02444573933944661,
+     "cost": 0.6972852735760163,
+     "cost_std": 0.05576097138967767,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.14022823203467755,
+      "airtime_ms": 34.760000000000005,
+      "dissemination_cbr": 0.0002896666666666667,
+      "tir_median_s": 0.5900000000000004,
+      "tir_p95_s": 1.0729999999999997,
+      "tir_uninformed_frac": 0.009822462392256436,
+      "actionable_deadline_miss_rate": 0.3186508761468103,
+      "risk_est_precision": 0.7840435201722971,
+      "risk_peak_corr": 0.8133888531297645
+     }
+    }
+   ]
+  }
+ },
+ {
+  "key": {
+   "scenario": "rural_highway",
+   "density": 80.0,
+   "weather": "clear",
+   "hazard_type": "fog_bank"
+  },
+  "curves": {
+   "flooding": [
+    {
+     "policy": "flooding",
+     "param": "",
+     "value": null,
+     "quality": 0.914488795381358,
+     "quality_std": 0.009929724819667049,
+     "cost": 11.054177297908423,
+     "cost_std": 0.7994141417587958,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 14.453632252031301,
+      "airtime_ms": 655.336,
+      "dissemination_cbr": 0.005461133333333334,
+      "tir_median_s": 0.33000000000000035,
+      "tir_p95_s": 0.5705000000000002,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.3185450532836733,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    }
+   ],
+   "p_persistence_03": [
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.05,
+     "quality": 0.6491006538153387,
+     "quality_std": 0.24936253684047843,
+     "cost": 0.33769424924647035,
+     "cost_std": 0.14831451419573924,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.2321172608246047,
+      "airtime_ms": 15.707999999999998,
+      "dissemination_cbr": 0.00013089999999999998,
+      "tir_median_s": 0.5100000000000003,
+      "tir_p95_s": 1.0380000000000003,
+      "tir_uninformed_frac": 0.28889818970375025,
+      "actionable_deadline_miss_rate": 0.5202094699535496,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.1,
+     "quality": 0.9093772509654088,
+     "quality_std": 0.01108768622681769,
+     "cost": 1.059666436646861,
+     "cost_std": 0.15453947139090568,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.7276996214364054,
+      "airtime_ms": 62.656000000000006,
+      "dissemination_cbr": 0.0005221333333333334,
+      "tir_median_s": 0.5100000000000003,
+      "tir_p95_s": 0.9580000000000002,
+      "tir_uninformed_frac": 0.006787650582603433,
+      "actionable_deadline_miss_rate": 0.3225389639334151,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.2,
+     "quality": 0.9132893110075913,
+     "quality_std": 0.013288099012175321,
+     "cost": 2.2276468250000456,
+     "cost_std": 0.22399781783511505,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.9813515323978597,
+      "airtime_ms": 131.86800000000002,
+      "dissemination_cbr": 0.0010989000000000003,
+      "tir_median_s": 0.4300000000000005,
+      "tir_p95_s": 0.7100000000000004,
+      "tir_uninformed_frac": 0.0026315789473684292,
+      "actionable_deadline_miss_rate": 0.31907667264324274,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.3,
+     "quality": 0.914488795381358,
+     "quality_std": 0.009929724819667049,
+     "cost": 3.301740631689971,
+     "cost_std": 0.35841478741274374,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 3.332865721939599,
+      "airtime_ms": 195.404,
+      "dissemination_cbr": 0.0016283666666666668,
+      "tir_median_s": 0.4100000000000005,
+      "tir_p95_s": 0.5730000000000003,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.3196447843933745,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.5,
+     "quality": 0.914488795381358,
+     "quality_std": 0.009929724819667049,
+     "cost": 5.4486352204996376,
+     "cost_std": 0.5185126268407381,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 6.31425591539393,
+      "airtime_ms": 322.78400000000005,
+      "dissemination_cbr": 0.0026898666666666667,
+      "tir_median_s": 0.38000000000000045,
+      "tir_p95_s": 0.5930000000000002,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.31911002503508573,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.7,
+     "quality": 0.914488795381358,
+     "quality_std": 0.009929724819667049,
+     "cost": 7.72988784330048,
+     "cost_std": 0.6207858318387651,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 9.5461772113737,
+      "airtime_ms": 458.0400000000001,
+      "dissemination_cbr": 0.003817,
+      "tir_median_s": 0.3400000000000003,
+      "tir_p95_s": 0.5430000000000004,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.3185450532836733,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.9,
+     "quality": 0.914488795381358,
+     "quality_std": 0.009929724819667049,
+     "cost": 9.9380113076236,
+     "cost_std": 0.7228291362530443,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 12.900337208721433,
+      "airtime_ms": 589.204,
+      "dissemination_cbr": 0.0049100333333333334,
+      "tir_median_s": 0.33000000000000035,
+      "tir_p95_s": 0.5370000000000001,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.31911002503508573,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 1.0,
+     "quality": 0.914488795381358,
+     "quality_std": 0.009929724819667049,
+     "cost": 11.054177297908423,
+     "cost_std": 0.7994141417587958,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 14.453632252031301,
+      "airtime_ms": 655.336,
+      "dissemination_cbr": 0.005461133333333334,
+      "tir_median_s": 0.33000000000000035,
+      "tir_p95_s": 0.5705000000000002,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.3185450532836733,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    }
+   ],
+   "slotted_1p": [
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 1,
+     "quality": 0.9126437666004055,
+     "quality_std": 0.0099119417617809,
+     "cost": 5.58360120018483,
+     "cost_std": 0.49926439470524503,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 10.478271864410415,
+      "airtime_ms": 329.91200000000003,
+      "dissemination_cbr": 0.0027492666666666665,
+      "tir_median_s": 0.33000000000000035,
+      "tir_p95_s": 0.5495000000000002,
+      "tir_uninformed_frac": 0.002620589208871238,
+      "actionable_deadline_miss_rate": 0.3201557660172674,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 2,
+     "quality": 0.9137892221473916,
+     "quality_std": 0.011218666886638527,
+     "cost": 3.017002407738583,
+     "cost_std": 0.1819700947946435,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 4.285720957412337,
+      "airtime_ms": 178.948,
+      "dissemination_cbr": 0.0014912333333333334,
+      "tir_median_s": 0.3650000000000003,
+      "tir_p95_s": 0.5355000000000003,
+      "tir_uninformed_frac": 0.0017543859649122862,
+      "actionable_deadline_miss_rate": 0.31958172314829325,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 3,
+     "quality": 0.9113731636997742,
+     "quality_std": 0.0075822501188693445,
+     "cost": 2.3501786190211966,
+     "cost_std": 0.15753586700200187,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.607239649825171,
+      "airtime_ms": 139.084,
+      "dissemination_cbr": 0.0011590333333333332,
+      "tir_median_s": 0.3800000000000005,
+      "tir_p95_s": 0.5630000000000002,
+      "tir_uninformed_frac": 0.004263300409511839,
+      "actionable_deadline_miss_rate": 0.3206517114048721,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 5,
+     "quality": 0.914488795381358,
+     "quality_std": 0.009929724819667049,
+     "cost": 1.8813032457205474,
+     "cost_std": 0.17843020593441763,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.5379719923015833,
+      "airtime_ms": 111.452,
+      "dissemination_cbr": 0.0009287666666666668,
+      "tir_median_s": 0.40000000000000036,
+      "tir_p95_s": 0.6120000000000002,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.31911002503508573,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 8,
+     "quality": 0.912650302826777,
+     "quality_std": 0.012102321096694669,
+     "cost": 1.6446513512279797,
+     "cost_std": 0.14633906534064742,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.0233721204325437,
+      "airtime_ms": 97.37200000000001,
+      "dissemination_cbr": 0.0008114333333333335,
+      "tir_median_s": 0.4200000000000005,
+      "tir_p95_s": 0.7000000000000004,
+      "tir_uninformed_frac": 0.003515924426450745,
+      "actionable_deadline_miss_rate": 0.320119239626821,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 12,
+     "quality": 0.9135904940268571,
+     "quality_std": 0.010581096433822212,
+     "cost": 1.54973870821713,
+     "cost_std": 0.1439900494301178,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.8072464930614227,
+      "airtime_ms": 91.65200000000002,
+      "dissemination_cbr": 0.0007637666666666666,
+      "tir_median_s": 0.4100000000000004,
+      "tir_p95_s": 0.6915000000000004,
+      "tir_uninformed_frac": 0.0017467581998474424,
+      "actionable_deadline_miss_rate": 0.3201435209011022,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 20,
+     "quality": 0.911046404296202,
+     "quality_std": 0.009995508217760319,
+     "cost": 1.427014406878804,
+     "cost_std": 0.14524344854390475,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.5084322838669666,
+      "airtime_ms": 84.03999999999999,
+      "dissemination_cbr": 0.0007003333333333334,
+      "tir_median_s": 0.43000000000000044,
+      "tir_p95_s": 0.7525000000000001,
+      "tir_uninformed_frac": 0.003497174426450744,
+      "actionable_deadline_miss_rate": 0.3226408486134688,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    }
+   ],
+   "weighted_p": [
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.1,
+     "quality": 0.8914839627123369,
+     "quality_std": 0.03267719509582588,
+     "cost": 0.9121697291312667,
+     "cost_std": 0.25586845454246704,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.7541840976427672,
+      "airtime_ms": 52.97600000000001,
+      "dissemination_cbr": 0.00044146666666666665,
+      "tir_median_s": 0.5500000000000003,
+      "tir_p95_s": 0.9345000000000002,
+      "tir_uninformed_frac": 0.02045632721031585,
+      "actionable_deadline_miss_rate": 0.33917829869635757,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.2,
+     "quality": 0.9136950627341008,
+     "quality_std": 0.011710671270168602,
+     "cost": 1.963169946096204,
+     "cost_std": 0.18965174259630774,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.5644165458657366,
+      "airtime_ms": 116.204,
+      "dissemination_cbr": 0.0009683666666666667,
+      "tir_median_s": 0.45000000000000046,
+      "tir_p95_s": 0.7275000000000003,
+      "tir_uninformed_frac": 0.0017543859649122862,
+      "actionable_deadline_miss_rate": 0.31955744187401197,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.35,
+     "quality": 0.9137979069867888,
+     "quality_std": 0.010534760942230728,
+     "cost": 2.8886482564112876,
+     "cost_std": 0.29289836265208247,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.861042745114881,
+      "airtime_ms": 170.94,
+      "dissemination_cbr": 0.0014245,
+      "tir_median_s": 0.4000000000000005,
+      "tir_p95_s": 0.5900000000000004,
+      "tir_uninformed_frac": 0.0017467581998474424,
+      "actionable_deadline_miss_rate": 0.31958172314829325,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.5,
+     "quality": 0.914488795381358,
+     "quality_std": 0.009929724819667049,
+     "cost": 3.549615933591679,
+     "cost_std": 0.33960336771532457,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 3.805436317872828,
+      "airtime_ms": 210.27599999999998,
+      "dissemination_cbr": 0.0017522999999999996,
+      "tir_median_s": 0.38000000000000045,
+      "tir_p95_s": 0.5665000000000002,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.31911002503508573,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.7,
+     "quality": 0.914488795381358,
+     "quality_std": 0.009929724819667049,
+     "cost": 4.07091373650096,
+     "cost_std": 0.4277215410741238,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 4.617926679986839,
+      "airtime_ms": 240.9,
+      "dissemination_cbr": 0.0020075,
+      "tir_median_s": 0.38000000000000045,
+      "tir_p95_s": 0.5400000000000003,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.31911002503508573,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.85,
+     "quality": 0.9137641771313494,
+     "quality_std": 0.010573819034532724,
+     "cost": 4.2312560472491345,
+     "cost_std": 0.2729858736960533,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 4.883301470336891,
+      "airtime_ms": 250.888,
+      "dissemination_cbr": 0.0020907333333333336,
+      "tir_median_s": 0.38000000000000045,
+      "tir_p95_s": 0.5335000000000003,
+      "tir_uninformed_frac": 0.0017467581998474424,
+      "actionable_deadline_miss_rate": 0.31958172314829325,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 1.0,
+     "quality": 0.914488795381358,
+     "quality_std": 0.009929724819667049,
+     "cost": 4.277558224697987,
+     "cost_std": 0.3189915729185476,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 4.963570363954689,
+      "airtime_ms": 253.66000000000003,
+      "dissemination_cbr": 0.0021138333333333334,
+      "tir_median_s": 0.3450000000000003,
+      "tir_p95_s": 0.5125000000000002,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.3185450532836733,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    }
+   ],
+   "counter_based": [
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 1,
+     "quality": 0.9104024186879833,
+     "quality_std": 0.006621880508432822,
+     "cost": 1.466205076360205,
+     "cost_std": 0.11846141026802977,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.9928840803241566,
+      "airtime_ms": 86.636,
+      "dissemination_cbr": 0.0007219666666666666,
+      "tir_median_s": 0.43000000000000044,
+      "tir_p95_s": 0.7200000000000003,
+      "tir_uninformed_frac": 0.005044649879007867,
+      "actionable_deadline_miss_rate": 0.32219031892420313,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 2,
+     "quality": 0.9104024186879833,
+     "quality_std": 0.006621880508432822,
+     "cost": 1.466205076360205,
+     "cost_std": 0.11846141026802977,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.9928840803241566,
+      "airtime_ms": 86.636,
+      "dissemination_cbr": 0.0007219666666666666,
+      "tir_median_s": 0.43000000000000044,
+      "tir_p95_s": 0.7200000000000003,
+      "tir_uninformed_frac": 0.005044649879007867,
+      "actionable_deadline_miss_rate": 0.32219031892420313,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 3,
+     "quality": 0.9130510983520687,
+     "quality_std": 0.012812901954709157,
+     "cost": 2.5939424425968336,
+     "cost_std": 0.20092689448136283,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.327357171564641,
+      "airtime_ms": 153.56,
+      "dissemination_cbr": 0.0012796666666666668,
+      "tir_median_s": 0.4200000000000005,
+      "tir_p95_s": 0.6500000000000005,
+      "tir_uninformed_frac": 0.0026315789473684292,
+      "actionable_deadline_miss_rate": 0.3200534212615008,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 4,
+     "quality": 0.914759127061162,
+     "quality_std": 0.010407598196850014,
+     "cost": 3.8657202999252385,
+     "cost_std": 0.31986739793760394,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 3.6437659484546394,
+      "airtime_ms": 229.196,
+      "dissemination_cbr": 0.0019099666666666667,
+      "tir_median_s": 0.4200000000000005,
+      "tir_p95_s": 0.6740000000000002,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.3186049745300352,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 6,
+     "quality": 0.914759127061162,
+     "quality_std": 0.010407598196850014,
+     "cost": 5.951697137461094,
+     "cost_std": 0.5508816871494131,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 5.396870023743287,
+      "airtime_ms": 352.65999999999997,
+      "dissemination_cbr": 0.0029388333333333332,
+      "tir_median_s": 0.4200000000000005,
+      "tir_p95_s": 0.6600000000000003,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.3186049745300352,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 10,
+     "quality": 0.914759127061162,
+     "quality_std": 0.010407598196850014,
+     "cost": 6.652538962935301,
+     "cost_std": 0.4484930212683882,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 5.239748710433549,
+      "airtime_ms": 394.856,
+      "dissemination_cbr": 0.0032904666666666665,
+      "tir_median_s": 0.4200000000000005,
+      "tir_p95_s": 0.6600000000000003,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.3186049745300352,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    }
+   ],
+   "greedy_farthest": [
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 1,
+     "quality": 0.9137133541007717,
+     "quality_std": 0.01154046863327987,
+     "cost": 2.4522790090152737,
+     "cost_std": 0.2584437390927564,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.6995738232282607,
+      "airtime_ms": 145.42000000000002,
+      "dissemination_cbr": 0.0012118333333333334,
+      "tir_median_s": 0.5300000000000002,
+      "tir_p95_s": 0.9565000000000001,
+      "tir_uninformed_frac": 0.0017467581998474424,
+      "actionable_deadline_miss_rate": 0.31957172214819324,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 2,
+     "quality": 0.913324461057876,
+     "quality_std": 0.01185755511842383,
+     "cost": 1.98747591236543,
+     "cost_std": 0.14089119125569058,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.733043985148149,
+      "airtime_ms": 117.78800000000001,
+      "dissemination_cbr": 0.0009815666666666667,
+      "tir_median_s": 0.5700000000000003,
+      "tir_p95_s": 0.9435000000000004,
+      "tir_uninformed_frac": 0.0017467581998474424,
+      "actionable_deadline_miss_rate": 0.3200570648001055,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 4,
+     "quality": 0.914036438552355,
+     "quality_std": 0.011039353438128143,
+     "cost": 1.6334206841737369,
+     "cost_std": 0.15455948289150212,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.9564706011869092,
+      "airtime_ms": 96.756,
+      "dissemination_cbr": 0.0008063,
+      "tir_median_s": 0.5900000000000002,
+      "tir_p95_s": 0.9990000000000002,
+      "tir_uninformed_frac": 0.0017467581998474424,
+      "actionable_deadline_miss_rate": 0.31907667264324274,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 8,
+     "quality": 0.9121032051206299,
+     "quality_std": 0.010861605026212907,
+     "cost": 1.4767905512391728,
+     "cost_std": 0.11418821760176813,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.6373342463342386,
+      "airtime_ms": 87.42800000000001,
+      "dissemination_cbr": 0.0007285666666666668,
+      "tir_median_s": 0.6500000000000004,
+      "tir_p95_s": 1.1330000000000005,
+      "tir_uninformed_frac": 0.004363213130276955,
+      "actionable_deadline_miss_rate": 0.3196744932466128,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 16,
+     "quality": 0.9150262139837189,
+     "quality_std": 0.010918422544748176,
+     "cost": 1.3549415153446964,
+     "cost_std": 0.10030179318022936,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.3926117486421633,
+      "airtime_ms": 80.476,
+      "dissemination_cbr": 0.0006706333333333333,
+      "tir_median_s": 0.7100000000000004,
+      "tir_p95_s": 1.3205000000000002,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.3186346833832735,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    }
+   ],
+   "dvcast": [
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 1,
+     "quality": 0.9138379757570163,
+     "quality_std": 0.00993922232866128,
+     "cost": 5.574408347029763,
+     "cost_std": 0.4933734449682914,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 10.28383233741783,
+      "airtime_ms": 329.91200000000003,
+      "dissemination_cbr": 0.002749266666666667,
+      "tir_median_s": 0.33000000000000035,
+      "tir_p95_s": 0.5515000000000002,
+      "tir_uninformed_frac": 0.0016771929824561439,
+      "actionable_deadline_miss_rate": 0.31902582251444256,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 2,
+     "quality": 0.9137892221473916,
+     "quality_std": 0.011218666886638527,
+     "cost": 3.0385331182311432,
+     "cost_std": 0.19810214748101493,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 4.204657984085172,
+      "airtime_ms": 180.224,
+      "dissemination_cbr": 0.0015018666666666667,
+      "tir_median_s": 0.3650000000000003,
+      "tir_p95_s": 0.5355000000000003,
+      "tir_uninformed_frac": 0.0017543859649122862,
+      "actionable_deadline_miss_rate": 0.31958172314829325,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 3,
+     "quality": 0.9124788054116539,
+     "quality_std": 0.01171527604839028,
+     "cost": 2.3996844822177517,
+     "cost_std": 0.2013151282211078,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.6651982704236037,
+      "airtime_ms": 141.856,
+      "dissemination_cbr": 0.0011821333333333335,
+      "tir_median_s": 0.3750000000000005,
+      "tir_p95_s": 0.5600000000000003,
+      "tir_uninformed_frac": 0.0027082966613859007,
+      "actionable_deadline_miss_rate": 0.3200969500463833,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 5,
+     "quality": 0.9137156957921082,
+     "quality_std": 0.008839588730000568,
+     "cost": 1.8998084469322911,
+     "cost_std": 0.18392916745319807,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.5781083334580255,
+      "airtime_ms": 112.508,
+      "dissemination_cbr": 0.0009375666666666668,
+      "tir_median_s": 0.40000000000000036,
+      "tir_p95_s": 0.6095000000000003,
+      "tir_uninformed_frac": 0.0017392619479733805,
+      "actionable_deadline_miss_rate": 0.3196447843933745,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 8,
+     "quality": 0.914759127061162,
+     "quality_std": 0.010407598196850014,
+     "cost": 1.649940020175157,
+     "cost_std": 0.15537086295539118,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.9727860984641745,
+      "airtime_ms": 97.85600000000001,
+      "dissemination_cbr": 0.0008154666666666668,
+      "tir_median_s": 0.4200000000000005,
+      "tir_p95_s": 0.7080000000000004,
+      "tir_uninformed_frac": 0.0008771929824561431,
+      "actionable_deadline_miss_rate": 0.3186049745300352,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 12,
+     "quality": 0.9140990280135345,
+     "quality_std": 0.00880619816388125,
+     "cost": 1.5514237856685218,
+     "cost_std": 0.09357380157021733,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.793168865826468,
+      "airtime_ms": 92.092,
+      "dissemination_cbr": 0.0007674333333333334,
+      "tir_median_s": 0.4100000000000004,
+      "tir_p95_s": 0.6915000000000004,
+      "tir_uninformed_frac": 0.0017392619479733805,
+      "actionable_deadline_miss_rate": 0.3190829866405655,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 20,
+     "quality": 0.9121971136707774,
+     "quality_std": 0.010352190063921966,
+     "cost": 1.4548570044295919,
+     "cost_std": 0.14945852012761215,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.5315994264042578,
+      "airtime_ms": 85.888,
+      "dissemination_cbr": 0.0007157333333333335,
+      "tir_median_s": 0.43000000000000044,
+      "tir_p95_s": 0.7550000000000001,
+      "tir_uninformed_frac": 0.0034895466613859005,
+      "actionable_deadline_miss_rate": 0.32011012504508674,
+      "risk_est_precision": 0.6002984425071718,
+      "risk_peak_corr": 0.6404015748103565
+     }
+    }
+   ]
+  }
+ },
+ {
+  "key": {
+   "scenario": "urban_nlos",
+   "density": 20.0,
+   "weather": "clear",
+   "hazard_type": "fog_bank"
+  },
+  "curves": {
+   "flooding": [
+    {
+     "policy": "flooding",
+     "param": "",
+     "value": null,
+     "quality": 0.9801484691158773,
+     "quality_std": 0.008683107889297364,
+     "cost": 1.7799424690660992,
+     "cost_std": 0.07837585116249117,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.5378664370254027,
+      "airtime_ms": 199.584,
+      "dissemination_cbr": 0.0016632,
+      "tir_median_s": 0.4600000000000003,
+      "tir_p95_s": 0.6330000000000002,
+      "tir_uninformed_frac": 0.0004524886877828038,
+      "actionable_deadline_miss_rate": 0.06178063652738445,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    }
+   ],
+   "p_persistence_03": [
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.05,
+     "quality": 0.07916204930838318,
+     "quality_std": 0.08538865726578397,
+     "cost": 0.20532643151304408,
+     "cost_std": 0.08785226976551898,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.03945945945945946,
+      "airtime_ms": 1.408,
+      "dissemination_cbr": 1.1733333333333335e-05,
+      "tir_median_s": 0.3400000000000004,
+      "tir_p95_s": 0.4890000000000002,
+      "tir_uninformed_frac": 0.9202030281945028,
+      "actionable_deadline_miss_rate": 0.9263931812054202,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.1,
+     "quality": 0.20392189023491447,
+     "quality_std": 0.16194096227378812,
+     "cost": 0.23682741134930843,
+     "cost_std": 0.07906341114931947,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.032317290552584664,
+      "airtime_ms": 5.016,
+      "dissemination_cbr": 4.1800000000000006e-05,
+      "tir_median_s": 0.5350000000000004,
+      "tir_p95_s": 1.0195000000000003,
+      "tir_uninformed_frac": 0.790267716108592,
+      "actionable_deadline_miss_rate": 0.8095031304827482,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.2,
+     "quality": 0.8360896606710424,
+     "quality_std": 0.09984770177263166,
+     "cost": 0.3603219964478509,
+     "cost_std": 0.0344734195693355,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.26120292374286924,
+      "airtime_ms": 34.540000000000006,
+      "dissemination_cbr": 0.00028783333333333335,
+      "tir_median_s": 1.0700000000000003,
+      "tir_p95_s": 1.8524999999999998,
+      "tir_uninformed_frac": 0.1465981804761068,
+      "actionable_deadline_miss_rate": 0.20340205215427218,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.3,
+     "quality": 0.9438265966864346,
+     "quality_std": 0.01902201107935622,
+     "cost": 0.5160414845035006,
+     "cost_std": 0.048936677985404436,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.5091537050336139,
+      "airtime_ms": 55.70399999999999,
+      "dissemination_cbr": 0.0004642,
+      "tir_median_s": 0.7900000000000004,
+      "tir_p95_s": 1.2665000000000002,
+      "tir_uninformed_frac": 0.038857558535489854,
+      "actionable_deadline_miss_rate": 0.09658247192994981,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.5,
+     "quality": 0.9735331648472378,
+     "quality_std": 0.009519121186007536,
+     "cost": 0.8668627805695817,
+     "cost_std": 0.037886304417749844,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.009556741350346,
+      "airtime_ms": 96.624,
+      "dissemination_cbr": 0.0008052000000000001,
+      "tir_median_s": 0.5700000000000004,
+      "tir_p95_s": 0.8700000000000003,
+      "tir_uninformed_frac": 0.007674234187137197,
+      "actionable_deadline_miss_rate": 0.06758315945761208,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.7,
+     "quality": 0.9777341510202102,
+     "quality_std": 0.0074550333810028515,
+     "cost": 1.215798532239435,
+     "cost_std": 0.06483119072991868,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.548962617817849,
+      "airtime_ms": 136.004,
+      "dissemination_cbr": 0.0011333666666666666,
+      "tir_median_s": 0.5100000000000002,
+      "tir_p95_s": 0.7445000000000002,
+      "tir_uninformed_frac": 0.0031905785523717147,
+      "actionable_deadline_miss_rate": 0.06402883078776414,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 0.9,
+     "quality": 0.9797561519508617,
+     "quality_std": 0.007581970666655752,
+     "cost": 1.5886533469822595,
+     "cost_std": 0.08979006553262098,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.1921044670238645,
+      "airtime_ms": 178.02400000000003,
+      "dissemination_cbr": 0.0014835333333333334,
+      "tir_median_s": 0.4700000000000003,
+      "tir_p95_s": 0.6700000000000004,
+      "tir_uninformed_frac": 0.0008950154829687306,
+      "actionable_deadline_miss_rate": 0.062142177574757,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "p_persistence_03",
+     "param": "p",
+     "value": 1.0,
+     "quality": 0.9801484691158773,
+     "quality_std": 0.008683107889297364,
+     "cost": 1.7799424690660992,
+     "cost_std": 0.07837585116249117,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 2.5378664370254027,
+      "airtime_ms": 199.584,
+      "dissemination_cbr": 0.0016632,
+      "tir_median_s": 0.4600000000000003,
+      "tir_p95_s": 0.6330000000000002,
+      "tir_uninformed_frac": 0.0004524886877828038,
+      "actionable_deadline_miss_rate": 0.06178063652738445,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    }
+   ],
+   "slotted_1p": [
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 1,
+     "quality": 0.9707422514358809,
+     "quality_std": 0.011801778696018412,
+     "cost": 0.9401669448190131,
+     "cost_std": 0.03792271688567732,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.8527064059964644,
+      "airtime_ms": 104.54400000000001,
+      "dissemination_cbr": 0.0008712000000000001,
+      "tir_median_s": 0.45000000000000034,
+      "tir_p95_s": 0.6600000000000004,
+      "tir_uninformed_frac": 0.010178721626569399,
+      "actionable_deadline_miss_rate": 0.0701594817340703,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 2,
+     "quality": 0.966499192222766,
+     "quality_std": 0.011315325994769273,
+     "cost": 0.715398330846428,
+     "cost_std": 0.03710444537511467,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.783564634636737,
+      "airtime_ms": 79.156,
+      "dissemination_cbr": 0.0006596333333333334,
+      "tir_median_s": 0.6000000000000003,
+      "tir_p95_s": 0.8800000000000004,
+      "tir_uninformed_frac": 0.014805868605410676,
+      "actionable_deadline_miss_rate": 0.07431038822480161,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 3,
+     "quality": 0.9718725139560039,
+     "quality_std": 0.010306835048061812,
+     "cost": 0.6660288144023612,
+     "cost_std": 0.055578321784132384,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.5760780366638938,
+      "airtime_ms": 73.92,
+      "dissemination_cbr": 0.000616,
+      "tir_median_s": 0.6500000000000004,
+      "tir_p95_s": 1.0000000000000004,
+      "tir_uninformed_frac": 0.008809218280996511,
+      "actionable_deadline_miss_rate": 0.06984764374108375,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 5,
+     "quality": 0.967435655857005,
+     "quality_std": 0.008714920038642014,
+     "cost": 0.6209111803724652,
+     "cost_std": 0.032909999776209446,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.35600490933373996,
+      "airtime_ms": 68.684,
+      "dissemination_cbr": 0.0005723666666666667,
+      "tir_median_s": 0.8050000000000004,
+      "tir_p95_s": 1.3065000000000002,
+      "tir_uninformed_frac": 0.014010403698215967,
+      "actionable_deadline_miss_rate": 0.07451970419858017,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 8,
+     "quality": 0.9667187540257041,
+     "quality_std": 0.012705057534102851,
+     "cost": 0.592894367376178,
+     "cost_std": 0.03654164490729363,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.2366587121051357,
+      "airtime_ms": 65.604,
+      "dissemination_cbr": 0.0005467,
+      "tir_median_s": 1.0800000000000003,
+      "tir_p95_s": 1.8370000000000002,
+      "tir_uninformed_frac": 0.015174605310134759,
+      "actionable_deadline_miss_rate": 0.07357440634156122,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 12,
+     "quality": 0.9608545085324508,
+     "quality_std": 0.013212469985830486,
+     "cost": 0.5704446723209557,
+     "cost_std": 0.036500376798984865,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.1690968540980533,
+      "airtime_ms": 62.788,
+      "dissemination_cbr": 0.0005232333333333333,
+      "tir_median_s": 1.3300000000000005,
+      "tir_p95_s": 2.449,
+      "tir_uninformed_frac": 0.021168260640761737,
+      "actionable_deadline_miss_rate": 0.07889531918086223,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "slotted_1p",
+     "param": "n_slots",
+     "value": 20,
+     "quality": 0.9577445876945475,
+     "quality_std": 0.01478979897975025,
+     "cost": 0.5520928638916333,
+     "cost_std": 0.03683955554889005,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.10808183064083494,
+      "airtime_ms": 60.632000000000005,
+      "dissemination_cbr": 0.0005052666666666666,
+      "tir_median_s": 1.8750000000000007,
+      "tir_p95_s": 3.6114999999999986,
+      "tir_uninformed_frac": 0.0254902537449501,
+      "actionable_deadline_miss_rate": 0.08375786209495653,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    }
+   ],
+   "weighted_p": [
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.1,
+     "quality": 0.19296304023566824,
+     "quality_std": 0.15809377463654645,
+     "cost": 0.2080438109958836,
+     "cost_std": 0.07204055923032142,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.022933333333333333,
+      "airtime_ms": 4.136,
+      "dissemination_cbr": 3.4466666666666666e-05,
+      "tir_median_s": 0.5650000000000006,
+      "tir_p95_s": 1.0790000000000002,
+      "tir_uninformed_frac": 0.8015456183186629,
+      "actionable_deadline_miss_rate": 0.8202545036819755,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.2,
+     "quality": 0.6695135677132972,
+     "quality_std": 0.25891380897905175,
+     "cost": 0.30148237292396163,
+     "cost_std": 0.02479931708057518,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.2133269043517329,
+      "airtime_ms": 23.056000000000004,
+      "dissemination_cbr": 0.00019213333333333336,
+      "tir_median_s": 1.0050000000000003,
+      "tir_p95_s": 1.7540000000000002,
+      "tir_uninformed_frac": 0.3189894308514051,
+      "actionable_deadline_miss_rate": 0.35891957414674847,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.35,
+     "quality": 0.8452403548544396,
+     "quality_std": 0.27745936667868015,
+     "cost": 0.45302546722061415,
+     "cost_std": 0.062323171662899544,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.3765737090673858,
+      "airtime_ms": 45.056,
+      "dissemination_cbr": 0.0003754666666666667,
+      "tir_median_s": 0.6450000000000005,
+      "tir_p95_s": 1.1385,
+      "tir_uninformed_frac": 0.13782323343051311,
+      "actionable_deadline_miss_rate": 0.19099021812104083,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.5,
+     "quality": 0.8660835477370105,
+     "quality_std": 0.2842485926116976,
+     "cost": 0.5510961793716211,
+     "cost_std": 0.07904083378803275,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.4725094252808125,
+      "airtime_ms": 57.11200000000001,
+      "dissemination_cbr": 0.0004759333333333333,
+      "tir_median_s": 0.6300000000000002,
+      "tir_p95_s": 0.9550000000000004,
+      "tir_uninformed_frac": 0.11843163366780055,
+      "actionable_deadline_miss_rate": 0.16941982033898523,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.7,
+     "quality": 0.8706207160117717,
+     "quality_std": 0.2857412697485331,
+     "cost": 0.6226235796440582,
+     "cost_std": 0.10225704596860584,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.6221710026141161,
+      "airtime_ms": 65.34,
+      "dissemination_cbr": 0.0005445000000000001,
+      "tir_median_s": 0.5500000000000004,
+      "tir_p95_s": 0.8610000000000003,
+      "tir_uninformed_frac": 0.11368873103992456,
+      "actionable_deadline_miss_rate": 0.16534895365327168,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 0.85,
+     "quality": 0.8690290537139378,
+     "quality_std": 0.2852570369351851,
+     "cost": 0.6692620380987984,
+     "cost_std": 0.1269831185879329,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.7290983956049477,
+      "airtime_ms": 70.268,
+      "dissemination_cbr": 0.0005855666666666667,
+      "tir_median_s": 0.5500000000000004,
+      "tir_p95_s": 0.8400000000000004,
+      "tir_uninformed_frac": 0.11343907398893678,
+      "actionable_deadline_miss_rate": 0.16767211937872517,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "weighted_p",
+     "param": "max_p",
+     "value": 1.0,
+     "quality": 0.8676584662221153,
+     "quality_std": 0.2850086543626382,
+     "cost": 0.6895090487940331,
+     "cost_std": 0.13287439280017502,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.6922685210005454,
+      "airtime_ms": 72.46799999999999,
+      "dissemination_cbr": 0.0006038999999999999,
+      "tir_median_s": 0.5400000000000003,
+      "tir_p95_s": 0.8195000000000002,
+      "tir_uninformed_frac": 0.11670680684468762,
+      "actionable_deadline_miss_rate": 0.1678317116751331,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    }
+   ],
+   "counter_based": [
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 1,
+     "quality": 0.9536891281939045,
+     "quality_std": 0.011525986882796562,
+     "cost": 0.4681891142711444,
+     "cost_std": 0.03209281914969587,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.2392469617824886,
+      "airtime_ms": 51.040000000000006,
+      "dissemination_cbr": 0.0004253333333333334,
+      "tir_median_s": 0.8900000000000002,
+      "tir_p95_s": 1.488,
+      "tir_uninformed_frac": 0.027097042006250148,
+      "actionable_deadline_miss_rate": 0.0875519123337278,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 2,
+     "quality": 0.9536891281939045,
+     "quality_std": 0.011525986882796562,
+     "cost": 0.4681891142711444,
+     "cost_std": 0.03209281914969587,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.2392469617824886,
+      "airtime_ms": 51.040000000000006,
+      "dissemination_cbr": 0.0004253333333333334,
+      "tir_median_s": 0.8900000000000002,
+      "tir_p95_s": 1.488,
+      "tir_uninformed_frac": 0.027097042006250148,
+      "actionable_deadline_miss_rate": 0.0875519123337278,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 3,
+     "quality": 0.9652307741744404,
+     "quality_std": 0.010889724149781434,
+     "cost": 0.6648153238584985,
+     "cost_std": 0.032001195182775534,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.47932470426971296,
+      "airtime_ms": 73.436,
+      "dissemination_cbr": 0.0006119666666666668,
+      "tir_median_s": 0.8900000000000002,
+      "tir_p95_s": 1.3095,
+      "tir_uninformed_frac": 0.015717462139981632,
+      "actionable_deadline_miss_rate": 0.07612185469975329,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 4,
+     "quality": 0.9751133260693778,
+     "quality_std": 0.007247877819599749,
+     "cost": 0.8469319767808005,
+     "cost_std": 0.030057391130352946,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.6534747833224807,
+      "airtime_ms": 94.6,
+      "dissemination_cbr": 0.0007883333333333334,
+      "tir_median_s": 0.8800000000000004,
+      "tir_p95_s": 1.2800000000000005,
+      "tir_uninformed_frac": 0.004918974967565248,
+      "actionable_deadline_miss_rate": 0.06653393436494967,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 6,
+     "quality": 0.9794672704350663,
+     "quality_std": 0.008217824149293583,
+     "cost": 1.0325269832171027,
+     "cost_std": 0.05270666616534168,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.7507664858604465,
+      "airtime_ms": 115.76400000000001,
+      "dissemination_cbr": 0.0009647000000000001,
+      "tir_median_s": 0.8750000000000003,
+      "tir_p95_s": 1.229,
+      "tir_uninformed_frac": 0.001387088534927683,
+      "actionable_deadline_miss_rate": 0.062132684164422025,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "counter_based",
+     "param": "counter_threshold",
+     "value": 10,
+     "quality": 0.978029804336324,
+     "quality_std": 0.008537292896565718,
+     "cost": 1.060662414724479,
+     "cost_std": 0.04894347680391727,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.823919803616613,
+      "airtime_ms": 118.756,
+      "dissemination_cbr": 0.0009896333333333336,
+      "tir_median_s": 0.8750000000000003,
+      "tir_p95_s": 1.2590000000000003,
+      "tir_uninformed_frac": 0.0027796164557073676,
+      "actionable_deadline_miss_rate": 0.0635785751231698,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    }
+   ],
+   "greedy_farthest": [
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 1,
+     "quality": 0.9685413326698769,
+     "quality_std": 0.009044303801724255,
+     "cost": 0.7252984386225371,
+     "cost_std": 0.05862435522018542,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.8472127444018481,
+      "airtime_ms": 80.388,
+      "dissemination_cbr": 0.0006699,
+      "tir_median_s": 0.9000000000000004,
+      "tir_p95_s": 1.4760000000000002,
+      "tir_uninformed_frac": 0.012543461553403468,
+      "actionable_deadline_miss_rate": 0.07218764296264386,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 2,
+     "quality": 0.9691947294616414,
+     "quality_std": 0.009321340993262922,
+     "cost": 0.6166493860755146,
+     "cost_std": 0.037314427573722365,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.42078198703745706,
+      "airtime_ms": 68.464,
+      "dissemination_cbr": 0.0005705333333333335,
+      "tir_median_s": 1.0200000000000005,
+      "tir_p95_s": 1.6580000000000001,
+      "tir_uninformed_frac": 0.01290776541398333,
+      "actionable_deadline_miss_rate": 0.0717639792560785,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 4,
+     "quality": 0.9655437902617339,
+     "quality_std": 0.009724877467201654,
+     "cost": 0.6006157245428411,
+     "cost_std": 0.03498399447103296,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.35506919030736417,
+      "airtime_ms": 66.44,
+      "dissemination_cbr": 0.0005536666666666667,
+      "tir_median_s": 1.2100000000000004,
+      "tir_p95_s": 1.9395000000000002,
+      "tir_uninformed_frac": 0.016817980032373503,
+      "actionable_deadline_miss_rate": 0.07431466651454119,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 8,
+     "quality": 0.9646099815422389,
+     "quality_std": 0.009787256177242562,
+     "cost": 0.5510936751249874,
+     "cost_std": 0.028275925011483707,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.14060333091936308,
+      "airtime_ms": 60.852,
+      "dissemination_cbr": 0.0005071,
+      "tir_median_s": 1.5500000000000003,
+      "tir_p95_s": 2.5639999999999996,
+      "tir_uninformed_frac": 0.01609376508404271,
+      "actionable_deadline_miss_rate": 0.07633371210501869,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "greedy_farthest",
+     "param": "fallback_n_slots",
+     "value": 16,
+     "quality": 0.9646770743094535,
+     "quality_std": 0.010887745410242485,
+     "cost": 0.5504171324044627,
+     "cost_std": 0.035678169198350235,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.09708859173133591,
+      "airtime_ms": 60.852,
+      "dissemination_cbr": 0.0005071,
+      "tir_median_s": 2.1100000000000003,
+      "tir_p95_s": 3.7034999999999996,
+      "tir_uninformed_frac": 0.017828233164330676,
+      "actionable_deadline_miss_rate": 0.07695227504107621,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    }
+   ],
+   "dvcast": [
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 1,
+     "quality": 0.9671867952196183,
+     "quality_std": 0.015164777347834434,
+     "cost": 0.942560293468734,
+     "cost_std": 0.037627153779188016,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 1.8575719918109346,
+      "airtime_ms": 104.36800000000001,
+      "dissemination_cbr": 0.0008697333333333333,
+      "tir_median_s": 0.45000000000000034,
+      "tir_p95_s": 0.6500000000000002,
+      "tir_uninformed_frac": 0.013484951486670182,
+      "actionable_deadline_miss_rate": 0.07418827171233208,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 2,
+     "quality": 0.9675396630408933,
+     "quality_std": 0.011870872687487249,
+     "cost": 0.7189004811795048,
+     "cost_std": 0.049131599753339,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.8191102727798729,
+      "airtime_ms": 79.59600000000002,
+      "dissemination_cbr": 0.0006633000000000001,
+      "tir_median_s": 0.6000000000000003,
+      "tir_p95_s": 0.9100000000000001,
+      "tir_uninformed_frac": 0.013735876034013628,
+      "actionable_deadline_miss_rate": 0.07361614876028014,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 3,
+     "quality": 0.9682742733059968,
+     "quality_std": 0.011420002377225935,
+     "cost": 0.6756123881454058,
+     "cost_std": 0.04767214832258572,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.6073454720560414,
+      "airtime_ms": 74.756,
+      "dissemination_cbr": 0.0006229666666666667,
+      "tir_median_s": 0.6500000000000004,
+      "tir_p95_s": 1.0020000000000002,
+      "tir_uninformed_frac": 0.012438649066013408,
+      "actionable_deadline_miss_rate": 0.07314166951494641,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 5,
+     "quality": 0.9702258714145889,
+     "quality_std": 0.00891632187670204,
+     "cost": 0.6148735603923964,
+     "cost_std": 0.019378095697397936,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.40187463090693576,
+      "airtime_ms": 68.288,
+      "dissemination_cbr": 0.0005690666666666667,
+      "tir_median_s": 0.8100000000000005,
+      "tir_p95_s": 1.3115,
+      "tir_uninformed_frac": 0.010039692158981362,
+      "actionable_deadline_miss_rate": 0.07157496983614421,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 8,
+     "quality": 0.9635148777503912,
+     "quality_std": 0.0076308734765588165,
+     "cost": 0.5801336221291962,
+     "cost_std": 0.047207388116295275,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.23161454453763258,
+      "airtime_ms": 63.976,
+      "dissemination_cbr": 0.0005331333333333334,
+      "tir_median_s": 1.0850000000000004,
+      "tir_p95_s": 1.7810000000000001,
+      "tir_uninformed_frac": 0.019019827923647294,
+      "actionable_deadline_miss_rate": 0.07636936606255189,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 12,
+     "quality": 0.958682523103214,
+     "quality_std": 0.01526342677839353,
+     "cost": 0.5641473743547406,
+     "cost_std": 0.03814680125877566,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.17739419506927395,
+      "airtime_ms": 61.952,
+      "dissemination_cbr": 0.0005162666666666667,
+      "tir_median_s": 1.3300000000000005,
+      "tir_p95_s": 2.3325,
+      "tir_uninformed_frac": 0.02366553282067845,
+      "actionable_deadline_miss_rate": 0.08106624611064779,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    },
+    {
+     "policy": "dvcast",
+     "param": "n_slots",
+     "value": 20,
+     "quality": 0.9631122794826315,
+     "quality_std": 0.01116676045163545,
+     "cost": 0.5539373730767851,
+     "cost_std": 0.02936226620358019,
+     "n_seeds": 10,
+     "extras": {
+      "collisions_per_delivered": 0.08574647859638054,
+      "airtime_ms": 61.20399999999999,
+      "dissemination_cbr": 0.0005100333333333334,
+      "tir_median_s": 1.8550000000000004,
+      "tir_p95_s": 3.5134999999999983,
+      "tir_uninformed_frac": 0.020894875485529076,
+      "actionable_deadline_miss_rate": 0.07821013664912833,
+      "risk_est_precision": 0.5742272239824887,
+      "risk_peak_corr": 0.13018852070081133
+     }
+    }
+   ]
+  }
+ }
+]

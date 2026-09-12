@@ -91,6 +91,39 @@ class Cell:
                 return p
         return None
 
+    def achievable_quality(self, exclude: Iterable[str] = ()) -> float:
+        """Best RWCR any (non-excluded) policy reaches in this cell."""
+        excluded = set(exclude)
+        best = -np.inf
+        for name, curve in self.curves.items():
+            if name in excluded:
+                continue
+            for pt in curve.points:
+                if np.isfinite(pt.quality):
+                    best = max(best, pt.quality)
+        return float(best) if np.isfinite(best) else float("nan")
+
+    def resolve_target(
+        self, target: float, mode: str = "relative", exclude: Iterable[str] = ()
+    ) -> float:
+        """Turn a target specification into a concrete RWCR for this cell.
+
+        ``absolute`` uses the number as given. ``relative`` treats it as a
+        fraction of what is achievable *here*, which is the only workable
+        choice across cells of very different difficulty. Measured ceilings
+        range from RWCR 0.689 on rural at 2 veh/km/lane to 0.980 on
+        urban_nlos at 20, so no single absolute threshold is both feasible
+        in the sparse cell and demanding in the easy one: a fixed 0.95 is
+        unreachable in three cells out of four and reports n/a everywhere.
+
+        The ceiling excludes the policy being scored, so a stronger agent
+        can never raise its own bar.
+        """
+        if mode == "absolute":
+            return float(target)
+        ceiling = self.achievable_quality(exclude)
+        return float(target * ceiling) if np.isfinite(ceiling) else float("nan")
+
     def cost_at_matched(
         self, policy: str, target_quality: float, axis: str = "cost"
     ) -> float:
@@ -133,17 +166,18 @@ class OracleBest:
 
 def per_cell_oracle_best(
     cells: Sequence[Cell], target: float = 0.95, axis: str = "cost",
-    exclude: Iterable[str] = (),
+    exclude: Iterable[str] = (), mode: str = "relative",
 ) -> OracleBest:
     """The best (policy, knob) *within each cell*, tuned with hindsight."""
     excluded = set(exclude)
     out = OracleBest(axis=axis, target=target)
     for cell in cells:
+        tq = cell.resolve_target(target, mode, excluded)
         best_label, best_cost = "none", float("inf")
         for policy in cell.curves:
             if policy in excluded:
                 continue
-            c = cell.cost_at_matched(policy, target, axis)
+            c = cell.cost_at_matched(policy, tq, axis)
             if np.isfinite(c) and c < best_cost:
                 best_cost, best_label = c, policy
         out.per_cell[cell.key] = (best_label, best_cost)
@@ -175,7 +209,7 @@ class FixedBest:
 
 def best_fixed_baseline(
     cells: Sequence[Cell], target: float = 0.95, axis: str = "cost",
-    exclude: Iterable[str] = (), penalty: float = 10.0,
+    exclude: Iterable[str] = (), penalty: float = 10.0, mode: str = "relative",
 ) -> FixedBest:
     """Pick the single setting that does best averaged over all cells.
 
@@ -187,7 +221,7 @@ def best_fixed_baseline(
     all. The number of cells a candidate fails in is reported alongside.
     """
     excluded = set(exclude)
-    oracle = per_cell_oracle_best(cells, target, axis, exclude=excluded)
+    oracle = per_cell_oracle_best(cells, target, axis, exclude=excluded, mode=mode)
 
     candidates: set[tuple[str, str, Any]] = set()
     for cell in cells:
@@ -202,7 +236,8 @@ def best_fixed_baseline(
         for cell in cells:
             pt = cell.find(policy, param, value)
             ref = oracle.cost(cell.key)
-            if pt is None or pt.quality < target:
+            tq = cell.resolve_target(target, mode, excluded)
+            if pt is None or pt.quality < tq:
                 per_cell[cell.key] = float("inf")
                 ratios.append(penalty)
                 continue
@@ -247,6 +282,7 @@ class ComparisonResult:
 
 def compare_policy(
     cells: Sequence[Cell], policy: str, target: float = 0.95, axis: str = "cost",
+    mode: str = "relative",
 ) -> ComparisonResult:
     """Score ``policy`` as regret vs oracle-best and margin over fixed-best.
 
@@ -258,12 +294,13 @@ def compare_policy(
     Both exclude ``policy`` itself from the reference sets, so an agent cannot
     become its own baseline.
     """
-    oracle = per_cell_oracle_best(cells, target, axis, exclude=(policy,))
-    fixed = best_fixed_baseline(cells, target, axis, exclude=(policy,))
+    oracle = per_cell_oracle_best(cells, target, axis, exclude=(policy,), mode=mode)
+    fixed = best_fixed_baseline(cells, target, axis, exclude=(policy,), mode=mode)
 
     agent_cost, regret, margin = {}, {}, {}
     for cell in cells:
-        a = cell.cost_at_matched(policy, target, axis)
+        tq = cell.resolve_target(target, mode, {policy})
+        a = cell.cost_at_matched(policy, tq, axis)
         agent_cost[cell.key] = a
         o, f = oracle.cost(cell.key), fixed.cost(cell.key)
         regret[cell.key] = (a / o - 1.0) if np.isfinite(a) and np.isfinite(o) and o > 0 \
@@ -279,16 +316,20 @@ def compare_policy(
 # Reporting and persistence
 # ---------------------------------------------------------------------------
 def format_reference_table(
-    cells: Sequence[Cell], target: float = 0.95, axis: str = "cost"
+    cells: Sequence[Cell], target: float = 0.95, axis: str = "cost",
+    mode: str = "relative",
 ) -> str:
     """The two reference points per cell, before any agent exists."""
-    oracle = per_cell_oracle_best(cells, target, axis)
-    fixed = best_fixed_baseline(cells, target, axis)
+    oracle = per_cell_oracle_best(cells, target, axis, mode=mode)
+    fixed = best_fixed_baseline(cells, target, axis, mode=mode)
     unit = COST_AXES.get(axis, axis)
+    band = ("RWCR >= " + format(target, ".2f") if mode == "absolute"
+            else "RWCR >= " + format(target, ".0%") + " of each cell ceiling")
 
-    hdr = f"{'cell':<44}{'oracle-best':>26}{'fixed-best':>14}{'penalty':>10}"
+    hdr = (f"{'cell':<38}{'ceil':>7}{'target':>8}"
+           f"{'oracle-best':>24}{'fixed':>8}{'penalty':>9}")
     lines = ["=" * len(hdr),
-             f" REFERENCE POINTS -- {unit}, at RWCR >= {target}",
+             f" REFERENCE POINTS -- {unit}, at {band}",
              "=" * len(hdr),
              f" (b) best single fixed baseline across all cells: {fixed.label}",
              f"     mean normalised score {fixed.score:.3f} "
@@ -298,11 +339,14 @@ def format_reference_table(
     for cell in cells:
         o_label, o_cost = oracle.per_cell[cell.key]
         f_cost = fixed.cost(cell.key)
+        ceil = cell.achievable_quality()
+        tq = cell.resolve_target(target, mode)
         pen = (f_cost / o_cost) if np.isfinite(f_cost) and np.isfinite(o_cost) and o_cost > 0 \
             else float("inf")
         lines.append(
-            f"{str(cell.key):<44}{o_label + ' ' + _fmt(o_cost):>26}"
-            f"{_fmt(f_cost):>14}{_fmt(pen, 'x'):>10}"
+            f"{str(cell.key):<38}{ceil:>7.3f}{tq:>8.3f}"
+            f"{o_label + ' ' + _fmt(o_cost):>24}{_fmt(f_cost):>8}"
+            f"{_fmt(pen, 'x'):>9}"
         )
     lines.append("=" * len(hdr))
     lines.append(" 'penalty' is what a deployable fixed choice costs against per-cell")
@@ -354,6 +398,8 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="AI-HARP headline comparator")
     ap.add_argument("--seeds", type=int, default=10)
     ap.add_argument("--target", type=float, default=0.95)
+    ap.add_argument("--mode", default="relative",
+                    choices=["relative", "absolute"])
     ap.add_argument("--axis", default="cost", choices=list(COST_AXES))
     ap.add_argument("--quiet", action="store_true")
     ap.add_argument("--reuse", action="store_true",
@@ -374,7 +420,7 @@ def main(argv: list[str] | None = None) -> int:
 
     for axis in ([args.axis] if args.axis != "all" else list(COST_AXES)):
         print()
-        print(format_reference_table(cells, args.target, axis))
+        print(format_reference_table(cells, args.target, axis, args.mode))
     return 0
 
 
