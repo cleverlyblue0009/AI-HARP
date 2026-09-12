@@ -1,0 +1,70 @@
+# =============================================================================
+# AI-HARP -- Urban grid (contrast scenario).
+#
+# Manhattan grid with signalised intersections. Dense, NLOS-dominated, and
+# therefore the opposite connectivity regime from the rural corridor: the
+# point of including it is to show that a policy tuned for sparse relaying
+# does not fall apart when the network is well connected.
+# =============================================================================
+name: urban_grid
+kind: grid
+
+geometry:
+  grid_rows: 5
+  grid_cols: 5
+  block_length_m: 200.0
+  # source: [ASSUMED] 200 m blocks, typical of a European/Indian city core.
+  lanes_per_direction: 1
+  directions: 2
+  lane_width_m: 3.2
+  # source: [STD] AASHTO urban street lane width (3.0-3.3 m).
+  junctions: 25
+  signalised: true
+  green_fraction: 0.45
+  cycle_time_s: 60.0
+  # source: [ASSUMED] Fixed-time two-phase signal, 60 s cycle.
+  # Derived corridor length for density bookkeeping is computed in
+  # mobility/fallback.py as total lane-km of the grid.
+
+vehicles:
+  classes:
+    car:
+      share: 0.90
+      # source: [ASSUMED] Urban fleets carry fewer heavy vehicles than rural
+      #         highways.
+      speed_kmh_min: 30.0
+      speed_kmh_max: 55.0
+      length_m: 4.5
+      max_accel_ms2: 2.6
+      max_decel_ms2: 4.5
+    truck:
+      share: 0.10
+      speed_kmh_min: 25.0
+      speed_kmh_max: 45.0
+      length_m: 10.0
+      max_accel_ms2: 1.3
+      max_decel_ms2: 4.0
+  speed_dev: 0.12
+  min_gap_m: 2.0
+  driver_imperfection: 0.5
+  reaction_time_s: 1.0
+
+demand:
+  default_density_veh_km_lane: 20
+  densities_veh_km_lane: [5, 10, 20, 40, 80, 120]
+
+simulation:
+  timestep_s: 0.1
+  duration_s: 120.0
+  warmup_s: 20.0
+
+sumo:
+  osm_extract: null
+  # When null the SUMO backend calls netgenerate --grid to build the network.
+  step_length: 0.1
+  fcd_period: 0.1
+  seed_offset: 2000
+  car_following_model: Krauss
+  lateral_resolution: null
+  depart_speed: max
+  insertion_attempts_per_step: 10

@@ -1,0 +1,84 @@
+# =============================================================================
+# AI-HARP -- Rural two-lane highway corridor (the primary scenario).
+#
+# Target geometry: ~10 km of undivided two-lane rural highway, one lane per
+# travel direction, sparse intersections and few side roads. This is the
+# sparse-connectivity regime the paper is about.
+# =============================================================================
+name: rural_highway
+kind: highway
+
+geometry:
+  length_m: 10000.0
+  # source: [ASSUMED] 10 km corridor; long enough that a hazard message must
+  #         traverse many hops, short enough to simulate at 100 ms.
+  lanes_per_direction: 1
+  directions: 2
+  lane_width_m: 3.5
+  # source: [STD] AASHTO Green Book rural arterial lane width (3.3-3.6 m).
+  median_width_m: 0.0
+  # Undivided: opposing traffic is one lane width away and is therefore a
+  # usable relay resource (important for store-carry-forward in sparse traffic).
+  junctions: 3
+  # source: [ASSUMED] Sparse side-road connections along the corridor.
+
+vehicles:
+  # Mixed fleet. Speeds in km/h, converted to m/s on load.
+  classes:
+    car:
+      share: 0.78
+      # source: [MEAS] Rural highway heavy-vehicle share is typically 15-25%;
+      #         0.78 car / 0.22 truck sits in that band.
+      speed_kmh_min: 60.0
+      speed_kmh_max: 100.0
+      length_m: 4.5
+      max_accel_ms2: 2.6
+      max_decel_ms2: 4.5
+      # source: [ASSUMED] SUMO vClass "passenger" defaults.
+    truck:
+      share: 0.22
+      speed_kmh_min: 40.0
+      speed_kmh_max: 70.0
+      length_m: 12.0
+      max_accel_ms2: 1.3
+      max_decel_ms2: 4.0
+      # source: [ASSUMED] SUMO vClass "truck" defaults.
+  speed_dev: 0.10
+  # source: [ASSUMED] Per-driver desired-speed deviation (SUMO speedDev).
+  min_gap_m: 2.5
+  # source: [ASSUMED] SUMO default minGap.
+  driver_imperfection: 0.5
+  # source: [ASSUMED] Krauss model sigma (SUMO default 0.5).
+  reaction_time_s: 1.0
+  # source: [ASSUMED] Krauss model tau (SUMO default 1.0 s).
+
+demand:
+  # Densities are per kilometre per lane; the sweep is defined in
+  # configs/experiment.yaml. This is the default for single runs.
+  default_density_veh_km_lane: 20
+  densities_veh_km_lane: [5, 10, 20, 40, 80, 120]
+
+simulation:
+  timestep_s: 0.1
+  # source: [ASSUMED] 100 ms, matching the DSRC/CAM beacon interval and the
+  #         SUMO FCD export resolution.
+  duration_s: 120.0
+  warmup_s: 20.0
+  # Mobility is advanced for warmup_s before t=0 so the traffic stream has
+  # relaxed out of its synthetic initial spacing before any hazard occurs.
+
+sumo:
+  # Used only when a SUMO installation is detected. See mobility/sumo_runner.py.
+  osm_extract: null
+  # PAPER TODO: point this at a real OSM extract of the target rural corridor,
+  # e.g. data/osm/rural_corridor.osm.xml, and re-run. When null, the SUMO
+  # backend builds an equivalent synthetic straight two-lane corridor with
+  # netconvert so the pipeline is runnable without the extract.
+  step_length: 0.1
+  fcd_period: 0.1
+  seed_offset: 1000
+  car_following_model: Krauss
+  # source: [STD] Krauss (1998) car-following model, SUMO's default.
+  lateral_resolution: null
+  depart_speed: max
+  insertion_attempts_per_step: 10
