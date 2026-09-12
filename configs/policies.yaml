@@ -1,0 +1,113 @@
+# =============================================================================
+# AI-HARP -- Phase 4 baseline policy parameters.
+#
+# Each entry is the default kwargs for one registered policy. Sweeps and the
+# single-run driver may override any of them, but nothing is hardcoded in
+# agents/*.py.
+#
+# The broadcast-storm mitigation family (p-persistence, slotted, weighted,
+# counter, distance) follows:
+#   [1] Ni, Tseng, Chen, Sheu, "The broadcast storm problem in a mobile ad hoc
+#       network", ACM MobiCom 1999 -- defines the probabilistic, counter-based,
+#       distance-based, location-based and cluster-based schemes.
+#   [2] Wisitpongphan, Tonguz, Parikh, Mudalige, Bai, Sadekar, "Broadcast storm
+#       mitigation techniques in vehicular ad hoc networks", IEEE Wireless
+#       Communications 14(6), 2007 -- adapts them to VANETs and defines
+#       weighted p-persistence, slotted 1-persistence and slotted
+#       p-persistence.
+#   [3] Tonguz, Wisitpongphan, Bai, "DV-CAST: A distributed vehicular broadcast
+#       protocol for vehicular ad hoc networks", IEEE Wireless Communications
+#       17(2), 2010 -- the store-carry-forward protocol for disconnected
+#       networks.
+#
+# TIMING NOTE (applies to every scheme that defers).
+# The engine's decision epoch is 100 ms, so a "slot" here is 100 ms, whereas a
+# real slotted scheme uses an estimated one-hop delay of a few milliseconds.
+# This inflates the absolute latency of every deferring scheme and gives them
+# more time to overhear duplicates (so better suppression). It applies equally
+# to the baselines and to the AI-HARP agent's defer action, so the comparison
+# stays internally fair -- but absolute TIR figures for deferring schemes are
+# pessimistic relative to a millisecond-slot implementation, and the paper must
+# say so. `slot_epochs` is exposed for a sensitivity check.
+# =============================================================================
+
+flooding: {}
+# Blind flooding takes no parameters; that is the point of it.
+
+# --- 2. Probabilistic p-persistence -----------------------------------------
+# On first reception, rebroadcast with fixed probability p, else discard.
+p_persistence_03:
+  p: 0.3
+p_persistence_05:
+  p: 0.5
+p_persistence_07:
+  p: 0.7
+# source: [STD-LIT] Ref [1] Sec. 3.1. The three values are the sweep the build
+#         brief specifies.
+
+# --- 3. Slotted 1-persistence ------------------------------------------------
+# Divide the transmission range into n_slots bands. A node in the band farthest
+# from the sender waits the fewest slots, so the farthest receiver rebroadcasts
+# first and everyone nearer cancels on hearing it.
+slotted_1p:
+  p: 1.0
+  n_slots: 5
+  slot_epochs: 1
+  cancel_on_duplicates: 1
+# source: [STD-LIT] Ref [2] Sec. "Slotted 1-persistence". n_slots = 5 is the
+#         value used in that paper's evaluation. [VERIFY] against the text.
+
+# --- 4. Weighted p-persistence (distance-weighted) ---------------------------
+# Rebroadcast probability is proportional to the sender distance: p_ij = D_ij/R.
+# Farther receivers, which add more new coverage, are likelier to relay.
+weighted_p:
+  min_p: 0.0
+  max_p: 1.0
+# source: [STD-LIT] Ref [2] Sec. "Weighted p-persistence".
+
+# --- 5. Distance-based counter scheme ----------------------------------------
+# Hybrid of the counter-based and distance-based schemes of Ref [1]: wait a
+# random assessment delay, count duplicates, and cancel if either the duplicate
+# count reaches the threshold (someone else has covered this area) or the
+# sender was too close for the rebroadcast to add worthwhile new coverage.
+counter_based:
+  counter_threshold: 3
+  max_delay_epochs: 5
+  min_distance_fraction: 0.35
+# source: [STD-LIT] Ref [1] Secs. 3.2 (counter-based, C = 3..6) and 3.3
+#         (distance-based). C = 3 is the value Ref [1] reports as the knee of
+#         the reachability/overhead curve. min_distance_fraction is
+#         [ASSUMED]: Ref [1] states the threshold in metres, and expressing it
+#         as a fraction of R keeps it meaningful as weather shrinks the range.
+
+# --- 6. Greedy farthest-relay selection --------------------------------------
+# The sender picks the neighbour with the greatest progress along the
+# propagation direction and names it as the relay. Non-designated receivers
+# stay silent unless the designated relay fails to speak up.
+greedy_farthest:
+  fallback_enabled: true
+  fallback_epochs: 3
+  fallback_n_slots: 4
+  seed_both_directions: true
+# source: [ASSUMED] Greedy/most-forward-within-radius relaying is standard, but
+#         designation over an UNACKNOWLEDGED broadcast has no delivery
+#         guarantee: if the designated relay does not decode the frame, the
+#         chain dies. `fallback_enabled` gives the remaining receivers an
+#         implicit-ACK timeout so they take over -- without it this baseline is
+#         a straw man, and beating a straw man proves nothing.
+
+# --- 7. DV-CAST-style store-carry-forward ------------------------------------
+# Classify the local neighbourhood, then act:
+#   well connected      -> suppress via slotted persistence
+#   sparsely connected  -> rebroadcast now
+#   totally disconnected-> carry the message until neighbours appear
+dvcast:
+  n_slots: 5
+  slot_epochs: 1
+  cancel_on_duplicates: 1
+  carry_recheck_epochs: 10
+  use_opposite_direction_carriers: true
+  opposite_heading_threshold_rad: 1.5708
+# source: [STD-LIT] Ref [3]. The three connectivity regimes correspond to
+#         DV-CAST's DFlg / ODN / MDC flags. carry_recheck_epochs = 10 is a 1 s
+#         re-evaluation interval [ASSUMED].
