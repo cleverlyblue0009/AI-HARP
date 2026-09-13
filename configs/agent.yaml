@@ -147,6 +147,24 @@ confidence_gate:
 # Reported as a sensitivity over {0.25, 0.5, 1.0, 1.83, 3.0, 6.0} rather than
 # asserted to be correct.
 # -----------------------------------------------------------------------------
+# !!! KNOWN BROKEN -- DO NOT TRAIN ON THIS REWARD. !!!
+# The "calibration" above balanced one transmission against the relevance it
+# directly informs. It never checked that the reward ranks whole POLICIES
+# correctly, and it does not. Measured on rural d=40, evaluation seed 0:
+#
+#     policy            RWCR    tx   total reward   coverage/miss term per vehicle
+#     always-suppress   0.020    1        +1.5         -0.0106
+#     slotted_1p        0.954  175      -829.3         +0.0055
+#     weighted_p        0.949  309     -2613.7         +0.0055
+#     flooding          0.954  755     -9301.2         +0.0055
+#
+# Silence out-scores every working scheme. The coverage and miss terms are
+# divided by the at-risk count and spread over all vehicles, so total failure
+# versus near-perfect coverage moves the reward by 0.016 per vehicle, while
+# each transmission costs >= 1.33. Training run3 found this optimum: after 11
+# updates it reached RWCR 0.034, informing 23 of ~800 vehicles with a single
+# transmission (eval seeds 0-1). The replacement objective is an open design
+# decision; see README "Known limitations".
 reward:
   w1_relevance_informed: 1.0
   w2_transmission_cost: 1.33

@@ -226,6 +226,28 @@ derived from measured speed.
   vehicle fell from 0.971 to 0.782. **Training runs 1 and 2 predate these
   fixes and are invalid**; run1 additionally had the confidence gate active in
   training (fallback rate 1.0) and run2 dropout 0.1.
+- **The reward is broken: it prefers silence. The claimed calibration is
+  retracted.** With the semantics fixed, training run3 learned quickly —
+  transmissions per informed vehicle fell 0.76 → 0.14 in 10 updates, below
+  `slotted_1p`. On evaluation seeds it had learned near-total silence: RWCR
+  **0.034**, 23 of ~800 vehicles informed, one transmission, actionable miss
+  rate 0.977. Scoring fixed policies with the reward shows why:
+
+  | policy (rural d=40, eval seed 0) | RWCR | tx | total reward |
+  |---|---|---|---|
+  | always-suppress | 0.020 | 1 | **+1.5** |
+  | slotted_1p | 0.954 | 175 | −829.3 |
+  | weighted_p | 0.949 | 309 | −2,613.7 |
+  | flooding | 0.954 | 755 | −9,301.2 |
+
+  The coverage and miss terms are divided by the at-risk count and added to
+  every vehicle, so total failure versus near-perfect coverage shifts the
+  reward by 0.016 per vehicle, against ≥ 1.33 per transmission. The
+  "calibration" balanced one transmission against the relevance it directly
+  informs, and never checked that the reward ranks whole policies correctly.
+  Lesson recorded for every future reward: **score a set of fixed reference
+  policies under it before training**, and require the ranking to be sane.
+  No training run to date has a valid objective.
 - `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
   attention on `neighbour → holder` edges *is* the relay ranking**;
   `relay_top_k` designates the k-th most attended neighbour, so the heatmap
