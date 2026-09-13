@@ -257,53 +257,77 @@ def ppo_update(
     return stats
 
 
-def fit_normaliser(cfg: dict[str, Any], cfgs: dict[str, Any], n_graphs: int = 400):
-    """Fit frozen feature statistics on HELD-OUT traces.
+def fit_normaliser(
+    cfg: dict[str, Any],
+    cfgs: dict[str, Any],
+    n_graphs: int | None = None,
+    path: Path | None = None,
+    mode: str = "full",
+) -> FeatureNormaliser:
+    """Fit frozen feature statistics on a REPRESENTATIVE held-out sample.
 
     Held-out seeds, so the statistics never see a training episode. Frozen
-    afterwards: a deployed OBU normalises with baked-in constants, and training
-    must match that.
+    afterwards: a deployed OBU normalises with baked-in constants.
+
+    Representative is the operative word. The first version looped
+    ``for seed: for scenario:``, broke out once it had enough graphs, and kept
+    the FIRST ``n_graphs`` -- so all 120 came from the opening ~0.3 s of one
+    rural run. Measured consequences in the frozen stats: ``rel_vy`` and
+    ``heading_sin`` std exactly 0 (an east-west corridor), ``message_age_s``
+    std 0.07 s against a 60 s TTL, ``neighbour_count`` std 2.9. Every urban
+    episode then fed the encoder inputs scaled by up to ~1e6.
+
+    So this samples every training scenario, across the density range, over
+    several hold-out seeds, and strides uniformly through each run instead of
+    taking its opening decisions.
     """
     from agents.registry import build_policy
 
-    seeds = cfg["graph"]["normalisation"]["holdout_seeds"]
+    norm_cfg = cfg["graph"]["normalisation"]
+    scenarios = list(cfg["training"]["train_scenarios"])
+    densities = [float(d) for d in norm_cfg.get("fit_densities", [2, 5, 20, 80])]
+    seeds = list(norm_cfg["holdout_seeds"])[: int(norm_cfg.get("fit_seeds", 2))]
+    n_graphs = int(n_graphs or norm_cfg.get("fit_graphs", 2000))
+    gcfg = GraphConfig.from_config(cfg)
+
+    cells = [(sc, d, s) for sc in scenarios for d in densities for s in seeds]
+    per_cell = max(1, n_graphs // len(cells))
     graphs: list = []
-    collector = build_policy("weighted_p")
+    for scenario, density, seed in cells:
+        scenario_cfg = load_scenario(scenario)
+        trace = get_trace(scenario_cfg, density, seed, phy_cfg=cfgs["phy"])
+        hazard = hazard_from_config(cfgs["hazard"], trace.meta)
+        phy = build_phy(cfgs["phy"], scenario_cfg["name"], "clear", seed,
+                        trace_meta=trace.meta)
+        mac = build_mac(cfgs["phy"], phy)
+        risk = build_risk_field(cfgs["hazard"], trace, hazard)
 
-    class _Collect(type(collector)):  # type: ignore[misc]
-        pass
+        captured: list = []
+        probe = build_policy("weighted_p")
+        original = probe.decide
 
-    for seed in seeds:
-        for scenario in cfg["training"]["train_scenarios"]:
-            if len(graphs) >= n_graphs:
-                break
-            scenario_cfg = load_scenario(scenario)
-            trace = get_trace(scenario_cfg, 20, seed, phy_cfg=cfgs["phy"])
-            hazard = hazard_from_config(cfgs["hazard"], trace.meta)
-            phy = build_phy(cfgs["phy"], scenario_cfg["name"], "clear", seed,
-                            trace_meta=trace.meta)
-            mac = build_mac(cfgs["phy"], phy)
-            risk = build_risk_field(cfgs["hazard"], trace, hazard)
+        def decide(ctx, _orig=original, _cap=captured, _phy=phy):
+            _cap.append(build_decision_graph(ctx, gcfg, _phy))
+            return _orig(ctx)
 
-            captured: list = []
-            probe = build_policy("weighted_p")
-            original = probe.decide
-
-            def decide(ctx, _orig=original, _cap=captured, _phy=phy):
-                _cap.append(build_decision_graph(ctx, GraphConfig.from_config(cfg), _phy))
-                return _orig(ctx)
-
-            probe.decide = decide  # type: ignore[method-assign]
-            DisseminationEngine(trace, phy, mac, risk, hazard, probe,
-                                SeedBundle(master_seed=seed),
-                                SimSettings.from_config(cfgs["experiment"])).run()
-            graphs.extend(captured)
+        probe.decide = decide  # type: ignore[method-assign]
+        DisseminationEngine(trace, phy, mac, risk, hazard, probe,
+                            SeedBundle(master_seed=seed),
+                            SimSettings.from_config(cfgs["experiment"])).run()
+        if captured:
+            # Stride through the whole run: early decisions all share a young
+            # message, a low hop count and the originator's neighbourhood.
+            take = np.unique(np.linspace(0, len(captured) - 1,
+                                         min(per_cell, len(captured))).astype(int))
+            graphs.extend(captured[i] for i in take)
 
     if not graphs:
         raise RuntimeError("collected no graphs for normalisation")
-    norm = FeatureNormaliser.fit(graphs[:n_graphs])
-    path = PROJECT_ROOT / cfg["graph"]["normalisation"]["stats_path"]
-    norm.save(path)
+    norm = FeatureNormaliser.fit(graphs, provenance={
+        "mode": mode, "scenarios": scenarios, "densities": densities,
+        "seeds": seeds, "graphs_per_cell": per_cell, "n_cells": len(cells),
+    })
+    norm.save(path or PROJECT_ROOT / norm_cfg["stats_path"])
     return norm
 
 
@@ -317,9 +341,29 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
     logger.info("network: %s | %d parameters | w2/w1 = %.2f",
                 cfg["encoder"]["type"], count_parameters(net), weights.w2_over_w1)
 
-    stats_path = PROJECT_ROOT / cfg["graph"]["normalisation"]["stats_path"]
-    norm = (FeatureNormaliser.load(stats_path) if stats_path.exists()
-            else fit_normaliser(cfg, cfgs, n_graphs=120 if smoke else 400))
+    # Smoke runs fit and keep their own statistics. A smoke fit used to be saved
+    # to the canonical path and silently reused by the next full run.
+    mode = "smoke" if smoke else "full"
+    canonical = PROJECT_ROOT / cfg["graph"]["normalisation"]["stats_path"]
+    stats_path = (canonical.with_name(f"{canonical.stem}_smoke{canonical.suffix}")
+                  if smoke else canonical)
+    scenarios = cfg["training"]["train_scenarios"]
+    norm = FeatureNormaliser.load(stats_path) if stats_path.exists() else None
+    if norm is not None and not norm.matches(mode, scenarios):
+        logger.warning(
+            "Refitting feature statistics: %s was fitted on %s, not for a %s run "
+            "over %s.", stats_path.name, norm.provenance or "unrecorded data",
+            mode, sorted(scenarios),
+        )
+        norm = None
+    if norm is None:
+        fit_cfg = cfg
+        if smoke:
+            # Small but still multi-scenario: one density, one seed per scenario.
+            nc = {**cfg["graph"]["normalisation"], "fit_densities": [20], "fit_seeds": 1}
+            fit_cfg = {**cfg, "graph": {**cfg["graph"], "normalisation": nc}}
+        norm = fit_normaliser(fit_cfg, cfgs, n_graphs=200 if smoke else None,
+                              path=stats_path, mode=mode)
 
     policy = AiHarpPolicy(
         network=net, gate=ConfidenceGate.from_config(cfg), normaliser=norm,

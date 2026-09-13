@@ -203,3 +203,58 @@ def test_normaliser_never_divides_by_zero():
     out = FeatureNormaliser.fit(graphs).apply(graphs[0])
     assert np.all(np.isfinite(out.x))
     assert np.all(np.isfinite(out.edge_attr))
+
+
+def test_feature_constant_in_fit_set_does_not_explode_at_deployment():
+    """Regression: fitted on an east-west corridor, rel_vy and heading_sin had
+    std exactly 0. Floored at 1e-6, the first vehicle driving north became a
+    ~1.5e7 input to the encoder."""
+    east_west = [build_decision_graph(make_ctx()) for _ in range(5)]
+    norm = FeatureNormaliser.fit(east_west)
+
+    for name in ("rel_vy", "heading_sin"):
+        col = NODE_FEATURES.index(name)
+        assert name in norm.degenerate
+        assert norm.node_std[col] == pytest.approx(1.0)
+
+    north = build_decision_graph(make_ctx(
+        heading=np.pi / 2, neighbour_vy=np.array([15.0, -15.0, 15.0]),
+    ))
+    out = norm.apply(north).x
+    for name in ("rel_vy", "heading_sin"):
+        col = NODE_FEATURES.index(name)
+        assert np.abs(out[:, col]).max() <= 50.0, (
+            f"{name} normalised to {np.abs(out[:, col]).max():.3g}"
+        )
+
+
+def test_representative_fit_reports_no_spurious_degeneracy():
+    """Heading and vertical velocity vary once the fit set includes turns."""
+    graphs = [build_decision_graph(make_ctx(heading=float(h),
+                                            neighbour_vy=np.array([v, -v, v])))
+              for h in np.linspace(0, np.pi, 8) for v in (0.0, 5.0, 15.0)]
+    norm = FeatureNormaliser.fit(graphs)
+    assert "rel_vy" not in norm.degenerate
+    assert "heading_sin" not in norm.degenerate
+
+
+def test_degeneracy_and_provenance_survive_save_and_load(tmp_path):
+    norm = FeatureNormaliser.fit(
+        [build_decision_graph(make_ctx()) for _ in range(3)],
+        provenance={"mode": "full", "scenarios": ["rural_highway", "urban_nlos"]},
+    )
+    back = FeatureNormaliser.load(norm.save(tmp_path / "stats.json"))
+    assert back.degenerate == norm.degenerate
+    assert back.provenance == norm.provenance
+
+
+def test_statistics_only_match_the_purpose_they_were_fitted_for():
+    """A smoke fit must never be silently reused by a full run, and stats with
+    no recorded provenance must never be trusted."""
+    g = [build_decision_graph(make_ctx()) for _ in range(3)]
+    full = FeatureNormaliser.fit(
+        g, provenance={"mode": "full", "scenarios": ["rural_highway", "urban_nlos"]})
+    assert full.matches("full", ["urban_nlos", "rural_highway"])
+    assert not full.matches("smoke", ["rural_highway", "urban_nlos"])
+    assert not full.matches("full", ["rural_highway"])          # missing a scenario
+    assert not FeatureNormaliser.fit(g).matches("full", ["rural_highway"])

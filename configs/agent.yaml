@@ -44,6 +44,16 @@ graph:
     mode: frozen
     stats_path: results/feature_stats.json
     holdout_seeds: [900, 901, 902, 903, 904]
+    fit_densities: [2, 5, 20, 80]
+    fit_seeds: 2
+    fit_graphs: 2000
+    # source: [DERIVED] Fit across EVERY training scenario, spanning the
+    #         curriculum's density range, striding through each run. The first
+    #         fit kept the first 120 graphs it saw -- all from the opening
+    #         ~0.3 s of one rural run -- so rel_vy and heading_sin had std 0
+    #         (an east-west corridor) and message_age_s had std 0.07 s against
+    #         a 60 s TTL. Urban episodes then fed the encoder inputs scaled by
+    #         up to ~1e6.
     # source: [ASSUMED] Feature statistics are computed once on held-out traces
     #         and FROZEN. Per-batch normalisation would make a vehicle's
     #         features depend on its batch-mates, which is impossible to

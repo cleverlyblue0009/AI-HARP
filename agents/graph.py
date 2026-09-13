@@ -295,16 +295,54 @@ class FeatureNormaliser:
     edge_std: np.ndarray
     n_samples: int = 0
     frozen: bool = True
+    #: Features whose fit-set std was below ``min_std``; they are centred but
+    #: not scaled. Recorded so a degenerate fit is visible rather than silent.
+    degenerate: tuple[str, ...] = ()
+    #: What the statistics were fitted on (scenarios, densities, seeds, mode).
+    provenance: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def fit(cls, graphs: Sequence[DecisionGraph], eps: float = 1e-6) -> "FeatureNormaliser":
+    def fit(
+        cls,
+        graphs: Sequence[DecisionGraph],
+        min_std: float = 1e-3,
+        provenance: dict[str, Any] | None = None,
+    ) -> "FeatureNormaliser":
+        """Fit z-score statistics; degenerate features get std 1.0, not a floor.
+
+        The first version floored std at 1e-6. A feature that happens to be
+        constant in the fit set then gets multiplied by a million wherever it
+        is not constant -- and the fit set was entirely an east-west rural
+        corridor, where ``rel_vy`` and ``heading_sin`` are exactly zero. The
+        first urban vehicle driving north at 15 m/s became a ~1.5e7 input.
+
+        Centring a degenerate feature without scaling it keeps inputs on the
+        feature's own physical scale, which is bounded. It is a safety net, not
+        the fix: the fix is fitting on a representative sample
+        (``agents.train.fit_normaliser``), and ``degenerate`` records when that
+        did not happen.
+        """
         xs = np.concatenate([g.x for g in graphs if g.n_nodes], axis=0)
         es = [g.edge_attr for g in graphs if g.n_edges]
         ea = np.concatenate(es, axis=0) if es else np.zeros((1, N_EDGE_FEATURES))
+
+        node_std, edge_std = xs.std(axis=0), ea.std(axis=0)
+        degenerate = tuple(
+            [NODE_FEATURES[i] for i in np.flatnonzero(node_std < min_std)]
+            + [EDGE_FEATURES[i] for i in np.flatnonzero(edge_std < min_std)]
+        )
+        if degenerate:
+            logger.warning(
+                "Feature statistics are degenerate for %s (std < %g in the fit set); "
+                "they are centred but not scaled. A representative fit should not "
+                "produce this except for features that are genuinely constant "
+                "(e.g. is_rsu with no RSUs modelled).", list(degenerate), min_std,
+            )
         return cls(
-            node_mean=xs.mean(axis=0), node_std=np.maximum(xs.std(axis=0), eps),
-            edge_mean=ea.mean(axis=0), edge_std=np.maximum(ea.std(axis=0), eps),
-            n_samples=len(graphs),
+            node_mean=xs.mean(axis=0), node_std=np.where(node_std < min_std, 1.0, node_std),
+            edge_mean=ea.mean(axis=0), edge_std=np.where(edge_std < min_std, 1.0, edge_std),
+            n_samples=len(graphs), degenerate=degenerate,
+            provenance=dict(provenance or {}),
         )
 
     def apply(self, graph: DecisionGraph) -> DecisionGraph:
@@ -325,6 +363,8 @@ class FeatureNormaliser:
             "node_mean": self.node_mean.tolist(), "node_std": self.node_std.tolist(),
             "edge_mean": self.edge_mean.tolist(), "edge_std": self.edge_std.tolist(),
             "n_samples": self.n_samples,
+            "degenerate": list(self.degenerate),
+            "provenance": self.provenance,
         }, indent=1), encoding="utf-8")
         logger.info("Froze feature stats from %d graphs -> %s", self.n_samples, path)
         return path
@@ -341,4 +381,18 @@ class FeatureNormaliser:
             node_mean=np.asarray(d["node_mean"]), node_std=np.asarray(d["node_std"]),
             edge_mean=np.asarray(d["edge_mean"]), edge_std=np.asarray(d["edge_std"]),
             n_samples=int(d.get("n_samples", 0)),
+            degenerate=tuple(d.get("degenerate", ())),
+            provenance=dict(d.get("provenance", {})),
         )
+
+    def matches(self, mode: str, scenarios: Sequence[str]) -> bool:
+        """Were these statistics fitted for this purpose?
+
+        A smoke-mode fit used to be written to the canonical path and then
+        loaded, without complaint, by a later full run -- which is how 120
+        graphs from the opening moments of one rural run came to normalise
+        urban training. Statistics with no recorded provenance (everything
+        fitted before provenance was recorded) never match.
+        """
+        return (self.provenance.get("mode") == mode
+                and set(self.provenance.get("scenarios", [])) == set(scenarios))
