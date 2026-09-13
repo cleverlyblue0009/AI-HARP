@@ -147,6 +147,48 @@ confidence_gate:
 # Reported as a sensitivity over {0.25, 0.5, 1.0, 1.83, 3.0, 6.0} rather than
 # asserted to be correct.
 # -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# OBJECTIVE -- constrained. Replaces the weighted-sum reward below.
+#
+#   maximise  -(transmissions) / n_at_risk   subject to  causal coverage >= C*
+#
+#   r_v    = -(tx_v + collision_weight * coll_v) + lambda * credit_v
+#   lambda <- clip(lambda + lambda_lr * mean_e[(C*_e - C_e) / C*_e], 0, lambda_max)
+#
+# credit_v is a Shapley split of each warned at-risk vehicle's relevance along
+# its ancestor path in the informed_by tree (agents/constrained_reward.py), so
+# relays have a stake in coverage they enabled downstream.
+#
+# Gate before any training: `python -m analysis.reward_check` must report SANE
+# (silence escapable below lambda_max; an efficient scheme beating flooding).
+# -----------------------------------------------------------------------------
+objective:
+  kind: constrained
+  lambda_init: 2.0
+  # source: [ASSUMED] Starting price of one unit of causal coverage, in
+  #         transmissions per at-risk vehicle. Dual ascent moves it; the
+  #         break-even at which silence stops being optimal is measured by
+  #         analysis/reward_check.py, and the initial value should sit near it.
+  lambda_lr: 1.0
+  # source: [ASSUMED] Step per PPO update per unit of normalised shortfall.
+  lambda_max: 50.0
+  # source: [ASSUMED] Cap. A saturated lambda means the constraint cannot be
+  #         met even at maximum price; it is logged, not hidden.
+  target_fraction: 0.95
+  # source: [DERIVED] Same matched-quality convention as analysis/comparator.py:
+  #         95% of each cell's measured ceiling.
+  fallback_target: 0.80
+  # source: [ASSUMED] Only for cells missing from the targets table, with a warning.
+  collision_weight: 0.0
+  # source: [DERIVED] Zero. Collisions already destroy coverage, which lambda
+  #         prices. A separate hand weight is one more thing to get wrong: the
+  #         old reward's collision weight inflated its effective transmission
+  #         cost 5.5x before it was caught.
+  targets_path: results/coverage_targets.json
+  target_seeds: 2
+  # Training-pool seeds per cell used to measure ceilings
+  # (experiments/coverage_targets.py).
+
 # !!! KNOWN BROKEN -- DO NOT TRAIN ON THIS REWARD. !!!
 # The "calibration" above balanced one transmission against the relevance it
 # directly informs. It never checked that the reward ranks whole POLICIES
