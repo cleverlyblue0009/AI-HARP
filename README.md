@@ -201,6 +201,31 @@ derived from measured speed.
   longer be silently reused by a full run. Residual: `message_age_s` still has
   a narrow fitted std (0.34 s) because decisions cluster early in a message's
   life, so late decisions normalise to several units.
+- **Three action-semantics bugs made silence unlearnable, and were found only by
+  measuring normalised cost.** run2 (40 updates, stopped at 13) looked healthy
+  on entropy and confidence, but transmissions per informed vehicle sat at
+  0.963–0.972 on every update — flooding-level redundancy — and the network had
+  cut suppress from ~15% of decisions to 0.35%. Raw per-episode transmission
+  counts hid this, because each update samples a random mix of densities;
+  **never read learning from raw transmission counts**. Replaying an untrained
+  network (the policy PPO starts from) located the cause:
+  1. every one of a vehicle's decisions received its full reward, so GAE
+     over-credited its earliest decisions;
+  2. a suppress was not final — 90% were followed by a re-ask on a later
+     duplicate and a transmission, so they carried the transmitter's reward;
+  3. the agent's `defer` never cancelled on duplicates, unlike every slotted
+     baseline's, so it was "broadcast later" and strictly dominated.
+
+  | advantage of suppress minus transmit | |
+  |---|---|
+  | as built | −8.02 (PPO pushed suppress down) |
+  | reward-placement fix only | +1.66 |
+  | all three fixes | **+8.45** (ideal with no re-ask: +11.58) |
+
+  With all three fixes, even an untrained network's transmissions per informed
+  vehicle fell from 0.971 to 0.782. **Training runs 1 and 2 predate these
+  fixes and are invalid**; run1 additionally had the confidence gate active in
+  training (fallback rate 1.0) and run2 dropout 0.1.
 - `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
   attention on `neighbour → holder` edges *is* the relay ranking**;
   `relay_top_k` designates the k-th most attended neighbour, so the heatmap
