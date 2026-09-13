@@ -434,6 +434,22 @@ valuable thing in this repository.
   pooled coverage is still short — update 35 had coverage 0.451 against target
   0.520 yet a mean shortfall of −0.048. Whether to step λ on pooled or
   per-cell shortfall is an open design decision, not yet changed.
+- **The confidence gate's fallback (`weighted_p`) can kill a message, and the
+  agent inherits that.** `weighted_p` decides once per vehicle with
+  probability `sender_distance / R` and never retries. On urban_nlos d=20
+  seed 2 the originator's broadcast reached 14 vehicles, all 13 relays drew
+  suppress, and dissemination died one hop out (RWCR 0.014); `slotted_1p` on
+  the same seed informs 477 of 480. It is the only baseline with this failure:
+  every `weighted_p` setting at useful coverage has seed-std RWCR ≈ 0.28 there
+  (a mean of ~0.87 is nine seeds at ~0.96 and one at ~0), against ≤ 0.02 for
+  every timer, counter and distance scheme. When the gate hands seed 2 to the
+  fallback, the agent dies the same way (bias 0: RWCR 0.014, fallback rate
+  1.0); at bias −2 a 0.2% share of network decisions kept it alive (0.964).
+  Consequences: (1) urban "reaches matched quality" for any agent setting can
+  turn on this single seed rather than typical behaviour; (2) the fallback
+  choice is itself a design decision the gate ablation must report — a
+  fallback that cannot die (e.g. `slotted_1p`) is the obvious candidate, but
+  it has not been changed or tested.
 - **Grid risk estimation is approximate.** The causal field in a grid is
   route-unaware (Manhattan distance + bearing gate), which is why its
   correlation with ground truth is 0.13 there. The oracle fixes *evaluation*;
