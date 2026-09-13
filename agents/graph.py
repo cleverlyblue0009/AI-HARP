@@ -385,6 +385,23 @@ class FeatureNormaliser:
             provenance=dict(d.get("provenance", {})),
         )
 
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> "FeatureNormaliser":
+        """Rebuild from the dict ``save`` writes -- used for stats embedded in a
+        checkpoint, so a checkpoint is always evaluated with its own statistics."""
+        if tuple(d["node_features"]) != NODE_FEATURES:
+            raise ValueError(
+                "Embedded stats were fitted with a different node-feature set; "
+                "this checkpoint cannot be evaluated with the current graph schema."
+            )
+        return cls(
+            node_mean=np.asarray(d["node_mean"]), node_std=np.asarray(d["node_std"]),
+            edge_mean=np.asarray(d["edge_mean"]), edge_std=np.asarray(d["edge_std"]),
+            n_samples=int(d.get("n_samples", 0)),
+            degenerate=tuple(d.get("degenerate", ())),
+            provenance=dict(d.get("provenance", {})),
+        )
+
     def matches(self, mode: str, scenarios: Sequence[str]) -> bool:
         """Were these statistics fitted for this purpose?
 

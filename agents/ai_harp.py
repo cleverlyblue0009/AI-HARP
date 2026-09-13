@@ -123,8 +123,11 @@ class AiHarpPolicy(Policy):
         record: bool = False,
         phy: Any | None = None,
         carry_epochs: int = 10,
+        suppression_bias: float = 0.0,
     ) -> None:
-        super().__init__(fallback_policy=fallback_policy, deterministic=deterministic)
+        super().__init__(fallback_policy=fallback_policy, deterministic=deterministic,
+                         suppression_bias=suppression_bias)
+        self.suppression_bias = float(suppression_bias)
         self.network = network
         self.gate = gate or ConfidenceGate()
         self.normaliser = normaliser
@@ -138,12 +141,101 @@ class AiHarpPolicy(Policy):
         self.n_relay_actions = 0
         self.n_decisions = 0
 
+    @classmethod
+    def from_checkpoint(
+        cls,
+        checkpoint: Any,
+        tau: float | None = None,
+        suppression_bias: float = 0.0,
+        deterministic: bool = True,
+        fallback_policy: str | None = None,
+        checkpoint_sha: str | None = None,
+        **_unused: Any,
+    ) -> "AiHarpPolicy":
+        """Build an EVALUATION policy from a training checkpoint.
+
+        The confidence gate is enabled here (training disables it), with tau
+        from the checkpoint's own config unless overridden. Feature statistics
+        come from inside the checkpoint; a checkpoint written before they were
+        embedded falls back to the stats file only if its provenance matches,
+        and says so. ``checkpoint_sha`` is accepted purely so it enters the
+        results config hash.
+        """
+        from pathlib import Path
+
+        import torch
+
+        from agents.gat_drl import build_network
+        from common.config import PROJECT_ROOT, load_yaml
+        from common.logging_utils import get_logger
+
+        path = Path(checkpoint)
+        if not path.is_absolute():
+            path = PROJECT_ROOT / path
+        state = torch.load(str(path), map_location="cpu", weights_only=False)
+        cfg = state.get("config") or load_yaml("agent.yaml")
+
+        net = build_network(cfg)
+        net.load_state_dict(state["model"])
+        net.eval()                      # dropout off for evaluation
+
+        if state.get("normaliser_stats"):
+            norm = FeatureNormaliser.from_dict(state["normaliser_stats"])
+        else:
+            stats_path = PROJECT_ROOT / cfg["graph"]["normalisation"]["stats_path"]
+            norm = FeatureNormaliser.load(stats_path)
+            if not norm.matches("full", cfg["training"]["train_scenarios"]):
+                raise ValueError(
+                    f"{path.name} has no embedded feature statistics and {stats_path.name} "
+                    f"was fitted for {norm.provenance or 'unrecorded data'}; refusing to "
+                    "evaluate with statistics it may not have been trained on."
+                )
+            get_logger("agents.ai_harp").warning(
+                "%s has no embedded feature statistics; using %s, which cannot be "
+                "proven identical to the ones it was trained with.", path.name,
+                stats_path.name,
+            )
+
+        gcfg = cfg["confidence_gate"]
+        gate = ConfidenceGate(tau=float(gcfg["tau"] if tau is None else tau),
+                              method=str(gcfg.get("method", "entropy")), enabled=True)
+        policy = cls(
+            network=net, gate=gate, normaliser=norm,
+            graph_cfg=GraphConfig.from_config(cfg),
+            fallback_policy=fallback_policy or gcfg["fallback_policy"],
+            deterministic=deterministic, suppression_bias=suppression_bias,
+        )
+        policy.params.update({"checkpoint": str(checkpoint),
+                              "checkpoint_sha": checkpoint_sha, "tau": gate.tau})
+        return policy
+
     def reset(self, n_vehicles: int, rng: np.random.Generator) -> None:
         self.fallback.reset(n_vehicles, rng)
         self.gate.reset()
         self.transitions = []
         self.n_relay_actions = 0
         self.n_decisions = 0
+
+    #: Direction each action's logit moves under a POSITIVE suppression bias,
+    #: in ACTION_NAMES order: suppress up; broadcast and the three relay
+    #: actions down; deferral and carrying untouched.
+    _BIAS_SIGN = np.array([+1, -1, 0, 0, 0, -1, -1, -1, 0], dtype=float)
+
+    def _apply_suppression_bias(
+        self, probs: np.ndarray, rng: np.random.Generator
+    ) -> tuple[np.ndarray, int]:
+        """The agent's operating-curve knob, applied in logit space.
+
+        Positive trades coverage for fewer transmissions, negative the reverse
+        -- the same role p, n_slots or the counter threshold play for the
+        baselines, so the agent is compared along a curve rather than at one
+        point.
+        """
+        logits = np.log(np.clip(probs, 1e-12, 1.0)) + self.suppression_bias * self._BIAS_SIGN
+        z = np.exp(logits - logits.max())
+        p = z / z.sum()
+        action = int(np.argmax(p)) if self.deterministic else int(rng.choice(p.size, p=p))
+        return p, action
 
     # --------------------------------------------------------------- decide --
     def decide(self, ctx: DecisionContext) -> Action:
@@ -161,12 +253,21 @@ class AiHarpPolicy(Policy):
             graph = self.normaliser.apply(graph)
 
         out = self.network.act(graph.to_pyg(), deterministic=self.deterministic)
-        decision = self.gate.evaluate(out["probs"])
+        probs = np.asarray(out["probs"], dtype=float)
+        action = int(out["action"])
+        if self.suppression_bias != 0.0:
+            if self.record:
+                # The recorded log-prob would describe the network's sample,
+                # not the biased action actually executed: off-policy again.
+                raise ValueError("suppression_bias is an evaluation knob; "
+                                 "it must be 0 while recording transitions")
+            probs, action = self._apply_suppression_bias(probs, ctx.rng)
+        decision = self.gate.evaluate(probs)
         self.n_decisions += 1
 
         if self.record:
             self.transitions.append(Transition(
-                graph=graph, action=int(out["action"]),
+                graph=graph, action=action,
                 log_prob=float(out.get("log_prob", 0.0)),
                 value=float(out.get("value", 0.0)),
                 entropy=float(out.get("entropy", 0.0)),
@@ -177,7 +278,7 @@ class AiHarpPolicy(Policy):
         if decision.used_fallback:
             return self.fallback.decide(ctx)
 
-        act = action_to_engine(int(out["action"]), graph,
+        act = action_to_engine(action, graph,
                                out.get("relay_order", []), self.carry_epochs)
         if act.kind is ActionType.RELAY:
             self.n_relay_actions += 1

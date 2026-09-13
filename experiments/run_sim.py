@@ -89,6 +89,11 @@ def run_single(
     mac = build_mac(phy_cfg, phy)
     risk = build_risk_field(hz_cfg, trace, hazard)
     policy = build_policy(spec.policy, **spec.policy_params)
+    # A learned policy computes its predicted-RSSI edge feature from the PHY.
+    # Training sets this; evaluation must too, or the agent is scored on
+    # features computed differently from the ones it was trained on.
+    if hasattr(policy, "phy"):
+        policy.phy = phy
     settings = SimSettings.from_config(exp_cfg)
 
     logger.info("PHY  | %s", json.dumps(phy.summary()))
@@ -107,6 +112,10 @@ def run_single(
         )
 
     metrics = compute_metrics(result, hz_cfg)
+    # Policy-level statistics (the confidence gate's fallback rate is a
+    # first-class reported metric) would otherwise never reach a results row.
+    if hasattr(policy, "stats"):
+        metrics.update(policy.stats())
     metrics.update({
         "scenario": spec.scenario,
         "density_veh_km_lane": spec.density_veh_km_lane,

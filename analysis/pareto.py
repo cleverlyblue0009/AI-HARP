@@ -167,18 +167,29 @@ def sweep_policy(
                                     "dissemination_cbr", "tir_median_s",
                                     "tir_p95_s", "tir_uninformed_frac",
                                     "actionable_deadline_miss_rate",
-                                    "risk_est_precision", "risk_peak_corr"),
+                                    "risk_est_precision", "risk_peak_corr",
+                                    "gate_fallback_rate", "gate_confidence_mean"),
+    sweep: tuple[str, Sequence[Any]] | None = None,
+    fixed_params: dict[str, Any] | None = None,
 ) -> PolicyCurve:
-    """Trace one policy's operating curve by sweeping its suppression knob."""
+    """Trace one policy's operating curve by sweeping its suppression knob.
+
+    ``sweep`` overrides the knob from :data:`POLICY_SWEEPS`, and
+    ``fixed_params`` are passed unchanged at every setting -- which is how a
+    learned policy's checkpoint rides along while its suppression bias is
+    swept.
+    """
     cfgs = cfgs or {}
     phy_cfg = cfgs.get("phy") or load_yaml("phy.yaml")
     hz_cfg = cfgs.get("hazard") or load_yaml("hazard.yaml")
     exp_cfg = cfgs.get("experiment") or load_yaml("experiment.yaml")
     seeds = list(seeds)
+    fixed = dict(fixed_params or {})
 
-    param, values = POLICY_SWEEPS.get(policy, ("", ()))
+    param, values = sweep if sweep is not None else POLICY_SWEEPS.get(policy, ("", ()))
     settings: list[tuple[str, Any, dict[str, Any]]] = (
-        [("", None, {})] if not values else [(param, v, {param: v}) for v in values]
+        [("", None, dict(fixed))] if not values
+        else [(param, v, {**fixed, param: v}) for v in values]
     )
 
     points: list[OperatingPoint] = []

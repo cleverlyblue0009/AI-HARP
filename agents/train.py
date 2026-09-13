@@ -400,9 +400,15 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
     ckpt_every = int(cfg["training"]["checkpoint_every_updates"])
     t0 = time.time()
 
+    # The feature statistics travel INSIDE the checkpoint. Loading them from
+    # results/feature_stats.json at evaluation time would silently pair a
+    # checkpoint with whatever statistics were fitted most recently.
+    normaliser_stats = json.loads(stats_path.read_text(encoding="utf-8"))
+
     def _checkpoint(tag: str, at_update: int) -> None:
         torch.save({"update": at_update, "model": net.state_dict(),
-                    "optimiser": opt.state_dict(), "config": cfg},
+                    "optimiser": opt.state_dict(), "config": cfg,
+                    "normaliser_stats": normaliser_stats},
                    out_dir / f"ckpt_{tag}.pt")
 
     update = 0

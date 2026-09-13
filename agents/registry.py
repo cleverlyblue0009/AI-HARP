@@ -55,6 +55,10 @@ def _build_ai_harp(**params: Any) -> Policy:
     """
     from agents.ai_harp import AiHarpPolicy
 
+    # A checkpoint path is how a trained agent travels through RunSpec, which
+    # only carries serialisable params (and therefore enters the config hash).
+    if "checkpoint" in params:
+        return AiHarpPolicy.from_checkpoint(**params)
     return AiHarpPolicy(**params)
 
 
