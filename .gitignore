@@ -35,3 +35,5 @@ Thumbs.db
 checkpoints/
 tb_logs/
 results/feature_stats.json
+results/feature_stats_smoke.json
+logs/

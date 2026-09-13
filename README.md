@@ -185,6 +185,22 @@ derived from measured speed.
   GAT-vs-MLP ablation vacuous. Normalisation statistics are **frozen** and
   schema-checked on load — per-batch normalisation would make a vehicle's
   features depend on its batch-mates, which a real OBU cannot reproduce.
+  **The statistics must also be representative, and this was found broken.**
+  The first fit kept the first 120 graphs of one rural run, so `rel_vy` and
+  `heading_sin` had std exactly 0 (an east-west corridor), floored at 1e-6.
+  Measured on an urban_nlos d=40 episode:
+
+  | | max normalised input | value_loss, untrained head |
+  |---|---|---|
+  | before | 2.06×10⁷ (`rel_vy`) | 8.2×10⁸ |
+  | after  | 6.04 | 1,060 |
+
+  The fit now spans both training scenarios, densities 2–80 and two hold-out
+  seeds, striding through each run; degenerate features are centred rather
+  than scaled and listed; and stats carry provenance, so a smoke fit can no
+  longer be silently reused by a full run. Residual: `message_age_s` still has
+  a narrow fitted std (0.34 s) because decisions cluster early in a message's
+  life, so late decisions normalise to several units.
 - `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
   attention on `neighbour → holder` edges *is* the relay ranking**;
   `relay_top_k` designates the k-th most attended neighbour, so the heatmap
