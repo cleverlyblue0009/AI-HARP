@@ -432,8 +432,14 @@ valuable thing in this repository.
   per-episode shortfalls, each normalised by its own target. Low-ceiling cells
   (d=1 targets down to ~0.12) that overshoot pull the mean negative while the
   pooled coverage is still short — update 35 had coverage 0.451 against target
-  0.520 yet a mean shortfall of −0.048. Whether to step λ on pooled or
-  per-cell shortfall is an open design decision, not yet changed.
+  0.520 yet a mean shortfall of −0.048. **Changed after run4** (the user chose
+  this before any further training): one multiplier per (scenario, density)
+  group — 16, weather and hazard pooled — each stepped on its group's pooled
+  shortfall `(Σ target − Σ coverage) / Σ target`. Pooling alone would let
+  dense-cell surplus hide sparse-cell misses, the paper's regime; per-cell
+  (96 multipliers) is too sparsely sampled for a ~200-update run. History
+  now logs `lambda_by_group`, `shortfall_by_group` and the old per-episode
+  mean for comparison. run4's numbers above were produced by the old rule.
 - **run4 pilot evaluation (40 updates): no general cost advantage, and the
   sparse cell fails.** `experiments.evaluate_agent` on seeds 0–9, the four
   committed cells, suppression bias swept −2…+3, with the gate on (τ = 0.5,

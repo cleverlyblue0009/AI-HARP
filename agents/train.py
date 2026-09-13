@@ -133,9 +133,10 @@ def run_episode(
     """One episode under the constrained objective; transitions carry rewards.
 
     ``objective`` is an :class:`agents.constrained_reward.TrainingObjective`.
-    Rewards use the multiplier's CURRENT value. The multiplier is stepped once
-    per PPO update from all of that update's episodes, never inside an episode,
-    so every transition in a batch was scored at the same price.
+    Rewards use the CURRENT value of this cell's group multiplier. Multipliers
+    are stepped once per PPO update from all of that update's episodes, never
+    inside an episode, so every transition of a group in a batch was scored at
+    the same price.
     """
     phy_cfg, hz_cfg, exp_cfg = cfgs["phy"], cfgs["hazard"], cfgs["experiment"]
     scenario_cfg = load_scenario(spec.scenario)
@@ -159,7 +160,8 @@ def run_episode(
     from agents.constrained_reward import episode_rewards
 
     target = objective.target_for(spec.scenario, spec.density, spec.weather, spec.hazard_type)
-    lam = float(objective.multiplier.value)
+    group = objective.group_for(spec.scenario, spec.density, spec.weather, spec.hazard_type)
+    lam = float(objective.multipliers.value(group))
     rewards, outcome = episode_rewards(result, risk, hazard, lam, objective.objective, target)
     # Once per vehicle, on its last decision -- not copied onto every decision.
     assign_terminal_rewards(policy.transitions, rewards)
@@ -172,6 +174,7 @@ def run_episode(
         if policy.transitions else 0.0,
         "n_decisions": float(len(policy.transitions)),
         "lambda": lam,
+        "lambda_group": group,
         **{f"obj_{k}": v for k, v in outcome.as_dict().items()},
         **policy.stats(),
     }
@@ -350,7 +353,7 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
     rng = np.random.default_rng(int(cfg["training"]["seed"]))
 
     net = build_network(cfg)
-    from agents.constrained_reward import build_training_objective
+    from agents.constrained_reward import build_training_objective, pooled_shortfall
 
     # Constrained objective (agents/constrained_reward.py). The weighted-sum
     # reward ranked silence above every working scheme; the builder refuses it.
@@ -358,9 +361,11 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
     objective = build_training_objective(cfg, PROJECT_ROOT, require_targets=not smoke)
     logger.info(
         "network: %s | %d parameters | objective: constrained, lambda_init=%.2f "
-        "lr=%.2f max=%.1f, target = %.0f%% of cell ceiling",
-        cfg["encoder"]["type"], count_parameters(net), objective.multiplier.value,
-        objective.multiplier.lr, objective.multiplier.max_value,
+        "lr=%.2f max=%.1f, one multiplier per %s on pooled shortfall, "
+        "target = %.0f%% of cell ceiling",
+        cfg["encoder"]["type"], count_parameters(net), objective.multipliers.init,
+        objective.multipliers.lr, objective.multipliers.max_value,
+        " x ".join(objective.multipliers.group_by) or "run (global)",
         100 * objective.objective.target_fraction,
     )
 
@@ -453,8 +458,13 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
             # small-batch skip below. A near-silent policy produces too few
             # transitions to update on; skipping the dual step as well would
             # freeze lambda exactly where silence pays.
-            lam_used = float(objective.multiplier.value)
-            lam_next = objective.update([i["obj_shortfall"] for i in infos])
+            lam_used_by = {g: objective.multipliers.value(g)
+                           for g in sorted({i["lambda_group"] for i in infos})}
+            lam_next_by = objective.update(
+                [(i["lambda_group"], i["obj_coverage"], i["obj_target"]) for i in infos])
+            shortfall_by = dict(objective.multipliers.last_shortfalls)
+            lam_used = float(np.mean(list(lam_used_by.values())))
+            lam_next = float(np.mean(list(lam_next_by.values())))
 
             from agents.ai_harp import executed_transitions
 
@@ -488,12 +498,22 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
                 "fallback_rate": float(np.nanmean([i["gate_fallback_rate"] for i in infos])),
                 "confidence_mean": float(np.nanmean([i["gate_confidence_mean"] for i in infos])),
                 "n_transitions": len(transitions),
+                # lambda / lambda_next: mean over the groups sampled this update;
+                # the per-group values are what the dual step actually used.
                 "lambda": lam_used,
                 "lambda_next": lam_next,
-                "lambda_saturated": bool(objective.multiplier.saturated),
+                "lambda_by_group": lam_used_by,
+                "lambda_next_by_group": lam_next_by,
+                "lambda_saturated": bool(objective.multipliers.saturated_groups),
+                "lambda_saturated_groups": objective.multipliers.saturated_groups,
                 "coverage": float(np.nanmean([i["obj_coverage"] for i in infos])),
                 "target": float(np.nanmean([i["obj_target"] for i in infos])),
+                # shortfall: run4's mean of per-episode ratios, kept for
+                # comparison; shortfall_pooled / _by_group drive the update.
                 "shortfall": float(np.nanmean([i["obj_shortfall"] for i in infos])),
+                "shortfall_pooled": pooled_shortfall(
+                    [i["obj_coverage"] for i in infos], [i["obj_target"] for i in infos]),
+                "shortfall_by_group": shortfall_by,
                 "cost_per_at_risk": float(np.nanmean(
                     [i["obj_cost_per_at_risk"] for i in infos])),
                 **losses,

@@ -18,12 +18,25 @@ Per episode, with ``n`` the causal at-risk count and ``C`` causal coverage::
 
 solved with a Lagrange multiplier::
 
-    L      = -tx / n + lambda * (C - C*)
-    lambda <- clip(lambda + eta * mean_e[(C*_e - C_e) / C*_e], 0, lambda_max)
+    L        = -tx / n + lambda_g * (C - C*)
+    lambda_g <- clip(lambda_g + eta * (sum_e C*_e - sum_e C_e) / sum_e C*_e,
+                     0, lambda_max)
+
+with one multiplier per group ``g`` of cells (default: scenario x density) and
+the sums over that group's episodes in one PPO update.
 
 A coverage shortfall raises lambda until relaying pays; a surplus lowers it
 until suppression pays. Silence cannot be a resting point: it leaves C far
 below C*, so lambda keeps rising.
+
+Why pooled, and why per group. run4 stepped ONE multiplier on the mean of
+per-episode normalised shortfalls. A d=1 episode with target 0.12 that reached
+0.30 contributes -1.5 and outvotes several real misses: update 35 recorded
+coverage 0.451 against target 0.520 yet a mean shortfall of -0.048, so lambda
+fell. Pooling removes that, but a single pooled multiplier would still let
+dense cells' surplus hide sparse cells' shortfall -- the regime the paper is
+about. Grouping by (scenario, density) gives each regime its own price while
+pooling weather and hazard, which a 200-update run samples too rarely per cell.
 
 Per-vehicle credit: a Shapley split along the dissemination tree
 ----------------------------------------------------------------
@@ -71,6 +84,9 @@ logger = get_logger("agents.constrained_reward")
 
 NO_PARENT = -1
 
+#: Cell fields a multiplier group may be keyed on.
+GROUP_FIELDS: tuple[str, ...] = ("scenario", "density", "weather", "hazard_type")
+
 
 @dataclass
 class ConstrainedObjective:
@@ -83,6 +99,14 @@ class ConstrainedObjective:
     fallback_target: float = 0.80
     collision_weight: float = 0.0
     targets_path: str = "results/coverage_targets.json"
+    lambda_group_by: tuple[str, ...] = ("scenario", "density")
+
+    def __post_init__(self) -> None:
+        self.lambda_group_by = tuple(self.lambda_group_by)
+        unknown = [f for f in self.lambda_group_by if f not in GROUP_FIELDS]
+        if unknown:
+            raise ValueError(f"lambda_group_by has unknown fields {unknown}; "
+                             f"allowed: {list(GROUP_FIELDS)}")
 
     @classmethod
     def from_config(cls, cfg: dict[str, Any]) -> "ConstrainedObjective":
@@ -242,6 +266,83 @@ class LagrangeMultiplier:
         return {"value": self.value, "lr": self.lr, "max_value": self.max_value}
 
 
+def pooled_shortfall(coverages: Iterable[float], targets: Iterable[float]) -> float:
+    """``(sum targets - sum coverages) / sum targets`` over finite episodes.
+
+    Not the mean of per-episode ratios: that lets one low-target episode that
+    overshoots outvote real misses (run4, update 35). NaN if nothing is finite.
+    """
+    pairs = [(float(c), float(t)) for c, t in zip(coverages, targets)
+             if np.isfinite(c) and np.isfinite(t) and t > 0]
+    if not pairs:
+        return float("nan")
+    total_t = sum(t for _, t in pairs)
+    return (total_t - sum(c for c, _ in pairs)) / total_t
+
+
+@dataclass
+class MultiplierBank:
+    """One :class:`LagrangeMultiplier` per group of cells, created on first use.
+
+    A group absent from an update's batch keeps its price unchanged.
+    ``group_by = ()`` is a single global multiplier (still on pooled shortfall).
+    """
+
+    init: float
+    lr: float
+    max_value: float
+    group_by: tuple[str, ...] = ("scenario", "density")
+    groups: dict[str, LagrangeMultiplier] = field(default_factory=dict)
+    last_shortfalls: dict[str, float] = field(default_factory=dict)
+
+    @classmethod
+    def from_objective(cls, o: ConstrainedObjective) -> "MultiplierBank":
+        return cls(init=float(o.lambda_init), lr=float(o.lambda_lr),
+                   max_value=float(o.lambda_max), group_by=tuple(o.lambda_group_by))
+
+    def group_key(self, scenario: str, density: float, weather: str,
+                  hazard_type: str) -> str:
+        fields = {"scenario": scenario, "density": f"{float(density):g}",
+                  "weather": weather, "hazard_type": hazard_type}
+        return "|".join(str(fields[f]) for f in self.group_by) or "all"
+
+    def get(self, group: str) -> LagrangeMultiplier:
+        if group not in self.groups:
+            self.groups[group] = LagrangeMultiplier(value=self.init, lr=self.lr,
+                                                    max_value=self.max_value)
+        return self.groups[group]
+
+    def value(self, group: str) -> float:
+        return float(self.get(group).value)
+
+    def update(self, records: Iterable[tuple[str, float, float]]) -> dict[str, float]:
+        """One dual step per group from ``(group, coverage, target)`` records.
+
+        Returns the new value of every group present in ``records``.
+        """
+        by_group: dict[str, tuple[list[float], list[float]]] = {}
+        for group, cov, target in records:
+            covs, tgts = by_group.setdefault(group, ([], []))
+            covs.append(cov)
+            tgts.append(target)
+        self.last_shortfalls = {}
+        out: dict[str, float] = {}
+        for group, (covs, tgts) in sorted(by_group.items()):
+            s = pooled_shortfall(covs, tgts)
+            self.last_shortfalls[group] = s
+            out[group] = self.get(group).update([s])     # NaN: no step
+        return out
+
+    @property
+    def saturated_groups(self) -> list[str]:
+        return sorted(g for g, m in self.groups.items() if m.saturated)
+
+    def state_dict(self) -> dict[str, Any]:
+        return {"init": self.init, "lr": self.lr, "max_value": self.max_value,
+                "group_by": list(self.group_by),
+                "values": {g: m.value for g, m in sorted(self.groups.items())}}
+
+
 # ---------------------------------------------------------------------------
 # Per-cell coverage targets
 # ---------------------------------------------------------------------------
@@ -291,23 +392,32 @@ class CoverageTargets:
 # ---------------------------------------------------------------------------
 @dataclass
 class TrainingObjective:
-    """Objective settings, the live multiplier and the per-cell targets."""
+    """Objective settings, the live per-group multipliers and the per-cell targets."""
 
     objective: ConstrainedObjective
-    multiplier: LagrangeMultiplier
+    multipliers: MultiplierBank
     targets: CoverageTargets
 
     def target_for(self, scenario: str, density: float, weather: str,
                    hazard_type: str) -> float:
         return self.targets.target(scenario, density, weather, hazard_type)
 
-    def update(self, shortfalls: Iterable[float]) -> float:
-        """One dual-ascent step from a whole PPO update's episodes."""
-        return self.multiplier.update(shortfalls)
+    def group_for(self, scenario: str, density: float, weather: str,
+                  hazard_type: str) -> str:
+        return self.multipliers.group_key(scenario, density, weather, hazard_type)
+
+    def lambda_for(self, scenario: str, density: float, weather: str,
+                   hazard_type: str) -> float:
+        return self.multipliers.value(self.group_for(scenario, density, weather, hazard_type))
+
+    def update(self, records: Iterable[tuple[str, float, float]]) -> dict[str, float]:
+        """One dual step per group from a whole PPO update's episodes."""
+        return self.multipliers.update(records)
 
     def state_dict(self) -> dict[str, Any]:
-        return {"multiplier": self.multiplier.state_dict(),
-                "objective": dict(self.objective.__dict__)}
+        obj = dict(self.objective.__dict__)
+        obj["lambda_group_by"] = list(obj["lambda_group_by"])
+        return {"multipliers": self.multipliers.state_dict(), "objective": obj}
 
 
 def training_cell_keys(cfg: dict[str, Any]) -> list[str]:
@@ -358,5 +468,5 @@ def build_training_objective(
                 "`python -m experiments.coverage_targets` first: fallback targets are "
                 "infeasible in urban_nlos and drive lambda toward flooding."
             )
-    return TrainingObjective(objective=o, multiplier=LagrangeMultiplier.from_objective(o),
+    return TrainingObjective(objective=o, multipliers=MultiplierBank.from_objective(o),
                              targets=targets)

@@ -170,7 +170,17 @@ objective:
   #         break-even at which silence stops being optimal is measured by
   #         analysis/reward_check.py, and the initial value should sit near it.
   lambda_lr: 1.0
-  # source: [ASSUMED] Step per PPO update per unit of normalised shortfall.
+  # source: [ASSUMED] Step per PPO update per unit of pooled normalised
+  #         shortfall, (sum target - sum coverage) / sum target, per group.
+  lambda_group_by: [scenario, density]
+  # source: [DERIVED] One multiplier per (scenario, density), weather and hazard
+  #         pooled. run4 stepped one global multiplier on the mean of
+  #         per-episode shortfall ratios: low-target d=1 episodes that
+  #         overshot outvoted real misses (update 35: coverage 0.451 vs target
+  #         0.520, mean shortfall -0.048, lambda fell). A single pooled
+  #         multiplier would instead let dense-cell surplus hide sparse-cell
+  #         shortfall. Per-cell (96 multipliers) is too sparsely sampled for a
+  #         ~200-update run. [] = one global pooled multiplier.
   lambda_max: 50.0
   # source: [ASSUMED] Cap. A saturated lambda means the constraint cannot be
   #         met even at maximum price; it is logged, not hidden.
