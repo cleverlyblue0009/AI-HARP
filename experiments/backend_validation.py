@@ -62,20 +62,40 @@ class BackendComparison:
         stds = [float(np.nanstd(v)) for v in samples.values() if len(v) > 1]
         return float(np.nanmean(stds)) if stds else float("nan")
 
+    def moved(self) -> list[str]:
+        """Policies whose rank differs between the two backends."""
+        a, b = self.ranking("fallback"), self.ranking("sumo")
+        return [p for p in a if p in b and a.index(p) != b.index(p)]
+
+    def _spread_and_std(self, which: str, policies: Sequence[str]) -> tuple[float, float]:
+        d = self.fallback if which == "fallback" else self.sumo
+        samples = self.fallback_samples if which == "fallback" else self.sumo_samples
+        vals = [d[p] for p in policies if np.isfinite(d.get(p, np.nan))]
+        spread = float(max(vals) - min(vals)) if len(vals) > 1 else float("nan")
+        stds = [float(np.nanstd(samples[p])) for p in policies
+                if samples and p in samples and len(samples[p]) > 1]
+        return spread, (float(np.nanmean(stds)) if stds else float("nan"))
+
     @property
     def separable(self) -> bool:
-        """Are the policies distinguishable at all on this metric?
+        """Is the rank change a real flip rather than noise?
 
-        If the whole spread across policies is smaller than the typical
-        seed-to-seed standard deviation, a rank change is noise reshuffling
-        indistinguishable policies, not a conclusion flipping. Reporting it as
-        a flip would be alarmist and wrong.
+        Judged only on the policies that MOVED, and only if their gap exceeds
+        the seed-to-seed std under BOTH backends. The first version used the
+        spread across all policies, so one outlier that did not move (flooding,
+        ~2.3 on cost against ~0.6 for the rest) made a reshuffle among three
+        near-identical schemes look separable. Requiring both backends
+        distinguishes a genuine reversal from "ordered in one, tied in the
+        other".
         """
+        movers = self.moved()
+        if len(movers) < 2:
+            return False
         for which in ("fallback", "sumo"):
-            sp, sd = self.spread(which), self.typical_std(which)
-            if np.isfinite(sp) and np.isfinite(sd) and sp > sd:
-                return True
-        return False
+            sp, sd = self._spread_and_std(which, movers)
+            if not (np.isfinite(sp) and np.isfinite(sd) and sp > sd):
+                return False
+        return True
 
     @property
     def verdict(self) -> str:

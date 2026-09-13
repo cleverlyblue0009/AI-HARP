@@ -284,18 +284,33 @@ lightness band.
 These are the paper's limitations section, pre-written. They are the most
 valuable thing in this repository.
 
-- **Backend orderings differ, and the paper must report both.** Eclipse SUMO
-  1.19.0 now runs (see ENVIRONMENT.md). Comparing the same cells under both
-  backends at rural d=20: SUMO gives systematically **lower RWCR (-0.16)** --
-  expected, since the fallback pre-places vehicles and has no lane changing, so
-  its traffic is more platooned and better connected. More importantly the
-  *ordering* of policies changed on RWCR, cost and PDR. TIR ordering was
-  preserved (Spearman +1.0). Run
-  `python -m experiments.backend_validation` to reproduce.
-  Caveat on that verdict: separability is judged from the full spread across
-  policies, which one outlier (flooding) can inflate -- on cost the three
-  non-flooding schemes are within 0.06 of each other and are not really
-  separable. Read the spread and seed-std columns, not just the verdict.
+- **Backend comparison: absolute numbers differ; whether orderings flip is
+  mostly noise, and one metric is unresolved.** Eclipse SUMO 1.19.0 now runs
+  (see ENVIRONMENT.md). At rural d=20 (4 km, 3 seeds) SUMO gives
+  systematically **lower RWCR (-0.16)** -- expected, since the fallback
+  pre-places vehicles and has no lane changing, so its traffic is more
+  platooned and better connected. TIR ordering was preserved (Spearman +1.0).
+  An earlier version of this entry said orderings changed on RWCR, cost and
+  PDR and that the paper must report both backends. **That overstated it.**
+  The verdict judged separability from the spread across *all* policies, so
+  flooding's outlier cost (~2.3 against ~0.6) made reshuffles among
+  near-identical schemes look real. The rule now considers only the policies
+  that moved, and calls a flip real only if their gap exceeds seed noise under
+  **both** backends. Re-applied to the committed means and fallback seed-stds
+  (not re-simulated -- per-seed samples were not saved):
+  - RWCR: the movers span 0.0037 against seed-std 0.0056 -> within noise.
+  - Cost: the non-flooding movers are within 0.06 against seed-std ~0.05 ->
+    within noise.
+  - PDR: spread 0.0245 against seed-std 0.0244 under fallback -> borderline,
+    and the SUMO-side std was never printed. **Unresolved; re-run with more
+    seeds before claiming either way.**
+  Re-run `python -m experiments.backend_validation --seeds 10` before
+  submission. Three seeds cannot separate policies this close.
+  A second bug surfaced here: `tx_per_at_risk_informed` was missing from
+  `METRIC_DIRECTION`, so cost was ranked higher-is-better and flooding came out
+  "best on cost". Ordering *comparisons* were unaffected (both backends were
+  reversed equally), but `analysis.stats.strongest_baseline` would have chosen
+  flooding as the reference baseline for cost. Fixed and pinned by tests.
 - **The fallback backend is still what most committed results used.** It is a
   real Krauss microscopic model, but it has no lane changing (hence no
   overtaking), no OSM geometry and no junction gap acceptance. Every trace is

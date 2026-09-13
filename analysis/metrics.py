@@ -48,6 +48,15 @@ METRIC_DIRECTION: dict[str, int] = {
     "collisions_per_delivered": -1,
     "deadline_miss_rate": -1,
     "actionable_deadline_miss_rate": -1,
+    # Cost metrics. `tx_per_at_risk_informed` -- the headline cost axis -- was
+    # missing, so it defaulted to +1 (higher is better). The backend
+    # validation printout then ranked flooding BEST on cost, and
+    # analysis.stats.strongest_baseline would have picked flooding as the
+    # strongest cost baseline: the weakest opponent, chosen as the reference.
+    "tx_per_at_risk_informed": -1,
+    "airtime_ms": -1,
+    "airtime_per_at_risk_informed_ms": -1,
+    "dissemination_cbr": -1,
     "max_hops": +1,
     "spatial_reach_m": +1,
 }
