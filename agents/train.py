@@ -354,7 +354,8 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
 
     # Constrained objective (agents/constrained_reward.py). The weighted-sum
     # reward ranked silence above every working scheme; the builder refuses it.
-    objective = build_training_objective(cfg, PROJECT_ROOT)
+    # Full runs refuse to start on fallback targets; smoke runs may use them.
+    objective = build_training_objective(cfg, PROJECT_ROOT, require_targets=not smoke)
     logger.info(
         "network: %s | %d parameters | objective: constrained, lambda_init=%.2f "
         "lr=%.2f max=%.1f, target = %.0f%% of cell ceiling",

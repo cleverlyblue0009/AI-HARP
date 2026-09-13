@@ -310,11 +310,33 @@ class TrainingObjective:
                 "objective": dict(self.objective.__dict__)}
 
 
-def build_training_objective(cfg: dict[str, Any], project_root: Path | str) -> TrainingObjective:
+def training_cell_keys(cfg: dict[str, Any]) -> list[str]:
+    """Every (scenario, density, weather, hazard) cell training can sample.
+
+    Must enumerate exactly what ``agents.train.sample_episode_specs`` draws and
+    what ``experiments/coverage_targets.py`` measures; tests pin both matches,
+    so no cell can silently fall through to the fallback target.
+    """
+    t = cfg["training"]
+    densities = sorted({float(d) for st in t["curriculum"]["stages"] for d in st["densities"]})
+    return [CoverageTargets.key(sc, d, w, h) for sc in t["train_scenarios"]
+            for d in densities for w in t["train_weather"] for h in t["train_hazards"]]
+
+
+def build_training_objective(
+    cfg: dict[str, Any], project_root: Path | str, require_targets: bool = False,
+) -> TrainingObjective:
     """Construct from ``configs/agent.yaml``; refuses anything but ``constrained``.
 
     The weighted-sum reward still sits in the config, marked broken, for the
     record. Refusing it here means it cannot be trained on by accident.
+
+    ``require_targets`` -- set for every non-smoke run -- refuses to start unless
+    every training cell has a measured ceiling. The fallback target is not safe
+    to train on: a 3-update smoke run on fallback targets scored an episode at
+    causal coverage 0.286, consistent with urban_nlos where every policy tops
+    out near 0.29, against a 0.80 target that is infeasible there; lambda rose
+    on every update and would have driven the policy toward flooding.
     """
     kind = cfg.get("objective", {}).get("kind")
     if kind != "constrained":
@@ -323,7 +345,18 @@ def build_training_objective(cfg: dict[str, Any], project_root: Path | str) -> T
             "weighted-sum reward ranks silence above every working scheme."
         )
     o = ConstrainedObjective.from_config(cfg)
-    targets = CoverageTargets.load(Path(project_root) / o.targets_path,
-                                   o.target_fraction, o.fallback_target)
+    path = Path(project_root) / o.targets_path
+    targets = CoverageTargets.load(path, o.target_fraction, o.fallback_target)
+    if require_targets:
+        keys = training_cell_keys(cfg)
+        missing = [k for k in keys
+                   if not np.isfinite(float(targets.table.get(k, {}).get("ceiling", np.nan)))]
+        if missing:
+            raise ValueError(
+                f"{len(missing)} of {len(keys)} training cells have no measured coverage "
+                f"ceiling in {path} (e.g. {missing[:3]}). Run "
+                "`python -m experiments.coverage_targets` first: fallback targets are "
+                "infeasible in urban_nlos and drive lambda toward flooding."
+            )
     return TrainingObjective(objective=o, multiplier=LagrangeMultiplier.from_objective(o),
                              targets=targets)
