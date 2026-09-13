@@ -434,6 +434,35 @@ valuable thing in this repository.
   pooled coverage is still short — update 35 had coverage 0.451 against target
   0.520 yet a mean shortfall of −0.048. Whether to step λ on pooled or
   per-cell shortfall is an open design decision, not yet changed.
+- **run4 pilot evaluation (40 updates): no general cost advantage, and the
+  sparse cell fails.** `experiments.evaluate_agent` on seeds 0–9, the four
+  committed cells, suppression bias swept −2…+3, with the gate on (τ = 0.5,
+  fallback `weighted_p`) and off (τ = 0, network only). Cost is transmissions
+  per at-risk vehicle informed, at the cheapest agent setting reaching 95% of
+  the cell's baseline RWCR ceiling, against the cheapest baseline that does.
+  Outputs live in `checkpoints/run4/eval*` (git-ignored); nothing entered
+  `results/`.
+
+  | cell | cheapest baseline at target | gated τ=0.5 | network only τ=0 |
+  |---|---|---|---|
+  | rural d=2 | slotted_1p 1.79 | never (best RWCR 0.401 vs 0.655) | never (best 0.613) |
+  | rural d=20 | DV-CAST 0.70 | 0.61 (−13%) | 0.77 (+10%) |
+  | rural d=80 | weighted_p 0.91 | 0.47 (−48%) | 0.49 (−46%) — see below |
+  | urban d=20 | counter_based 0.47 | 0.73 (+56%) | 0.56 (+20%) |
+
+  - The sparse cell — the paper's target regime — is not reached at any
+    setting, gated or not.
+  - The network alone is cheaper than the best baseline in one cell of four.
+    That cell's −46% is **not yet a finding**: the agent's qualifying point
+    sits at RWCR 0.876 against target 0.869 (seed-std 0.019), and no committed
+    baseline point lies between RWCR 0.649 and 0.891 because the baseline
+    knob grids stop at `max_p = 0.1` / `p = 0.1`. At a measured baseline point
+    (RWCR ≈ 0.90) the network costs 0.86 against `weighted_p`'s 0.91 (−5%).
+    A finer cheap-end baseline sweep is required before any dense-cell claim.
+  - The gate at τ = 0.5 helps only by mixing in `weighted_p`; it cuts urban
+    coverage below target and imports `weighted_p`'s die-out (below).
+  - TIR: network-only median TIR is within 3% of flooding in the three cells
+    where it reaches target, the one axis where the pilot looks competitive.
 - **The committed baseline curves still reproduce.** `results/pareto_cells.json`
   was generated at `788d5fe`, before six later commits touched simulation,
   metrics or policy code. Eight committed points (all four cells; flooding,
