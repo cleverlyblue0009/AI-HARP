@@ -434,6 +434,14 @@ valuable thing in this repository.
   pooled coverage is still short — update 35 had coverage 0.451 against target
   0.520 yet a mean shortfall of −0.048. Whether to step λ on pooled or
   per-cell shortfall is an open design decision, not yet changed.
+- **The committed baseline curves still reproduce.** `results/pareto_cells.json`
+  was generated at `788d5fe`, before six later commits touched simulation,
+  metrics or policy code. Eight committed points (all four cells; flooding,
+  p-persistence, slotted, weighted-p, counter and DV-CAST) were re-run through
+  `analysis.pareto.sweep_policy` on seeds 0–9 at `a22301c`: RWCR and cost
+  match to every printed digit (worst absolute difference 0). Agent regret and
+  margin are therefore scored against current-code baselines. This is a
+  sample, not a full regeneration.
 - **The confidence gate's fallback (`weighted_p`) can kill a message, and the
   agent inherits that.** `weighted_p` decides once per vehicle with
   probability `sender_distance / R` and never retries. On urban_nlos d=20
