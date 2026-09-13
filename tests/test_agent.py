@@ -381,3 +381,26 @@ def test_episode_seeds_come_from_the_bounded_pool():
     cfg, _ = _train_cfgs()
     specs = sample_episode_specs(cfg, 0.5, np.random.default_rng(0), 200)
     assert {s.seed for s in specs} <= set(training_seed_pool(cfg).tolist())
+
+
+def test_transitions_the_gate_overrode_are_never_trained_on():
+    """Regression: with the gate active in training, an untrained policy fell
+    back on 100% of decisions, and PPO credited weighted_p's outcomes to
+    actions the network sampled but never executed."""
+    from types import SimpleNamespace
+
+    from agents.ai_harp import executed_transitions
+
+    t = [SimpleNamespace(used_fallback=False), SimpleNamespace(used_fallback=True),
+         SimpleNamespace(used_fallback=False)]
+    kept = executed_transitions(t)
+    assert len(kept) == 2
+    assert not any(x.used_fallback for x in kept)
+
+
+def test_untrained_policy_would_trip_the_deployment_gate():
+    """Why training cannot run with the gate on: a near-uniform distribution
+    over nine actions has confidence ~0, below any useful tau."""
+    gate = ConfidenceGate(tau=0.5)
+    near_uniform = np.full(9, 1 / 9) + np.linspace(-0.005, 0.005, 9)
+    assert gate.evaluate(near_uniform / near_uniform.sum()).used_fallback

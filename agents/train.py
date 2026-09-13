@@ -365,9 +365,19 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
         norm = fit_normaliser(fit_cfg, cfgs, n_graphs=200 if smoke else None,
                               path=stats_path, mode=mode)
 
+    # The confidence gate is DISABLED during training rollouts. Training must be
+    # on-policy: the first 40-update run recorded fallback_rate = 1.0 at update
+    # 1, because an untrained policy is near-uniform (entropy 2.15 against a
+    # maximum of ln 9 = 2.20), so confidence ~0.02 < tau = 0.5 and every
+    # decision was handed to weighted_p. PPO then credited weighted_p's
+    # outcomes to actions the network sampled but never executed, the policy
+    # could not sharpen, and the gate kept falling back -- a deadlock.
+    # The gate is a deployment mechanism; its tau sweep is run at evaluation.
     policy = AiHarpPolicy(
-        network=net, gate=ConfidenceGate.from_config(cfg), normaliser=norm,
-        graph_cfg=GraphConfig.from_config(cfg),
+        network=net,
+        gate=ConfidenceGate(tau=0.0, method=cfg["confidence_gate"]["method"],
+                            enabled=False),
+        normaliser=norm, graph_cfg=GraphConfig.from_config(cfg),
         fallback_policy=cfg["confidence_gate"]["fallback_policy"], record=True,
     )
     opt = torch.optim.Adam(net.parameters(), lr=float(cfg["algorithm"]["ppo"]["lr"]))
@@ -408,6 +418,17 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
                 tr_, info = run_episode(spec, policy, weights, cfgs)
                 transitions.extend(tr_)
                 infos.append(info)
+
+            from agents.ai_harp import executed_transitions
+
+            n_recorded = len(transitions)
+            transitions = executed_transitions(transitions)
+            if len(transitions) < n_recorded:
+                logger.warning(
+                    "update %d: dropped %d/%d transitions the gate overrode; "
+                    "training must be on-policy", update,
+                    n_recorded - len(transitions), n_recorded,
+                )
 
             if len(transitions) < 4:
                 logger.warning("update %d: only %d transitions; skipping",

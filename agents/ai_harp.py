@@ -62,6 +62,19 @@ class Transition:
     ret: float = 0.0
 
 
+def executed_transitions(transitions: list[Transition]) -> list[Transition]:
+    """Only the transitions whose recorded action was actually executed.
+
+    When the confidence gate falls back, the engine runs the analytic policy's
+    action, not the network's sampled one. Training on such a transition credits
+    the fallback's outcome to an action that never happened, which is exactly
+    what deadlocked the first training run (fallback rate 1.0 at update 1).
+    Training disables the gate, so this should drop nothing; it is the guard
+    that keeps the invariant from depending on a config staying correct.
+    """
+    return [t for t in transitions if not t.used_fallback]
+
+
 def action_to_engine(
     action_index: int, graph: DecisionGraph, relay_order: list[int], carry_epochs: int = 10
 ) -> Action:
