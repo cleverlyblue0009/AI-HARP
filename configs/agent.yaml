@@ -67,7 +67,12 @@ encoder:
   edge_dim: 5
   residual: true
   layer_norm: true
-  dropout: 0.1
+  dropout: 0.0
+  # source: [DERIVED] Zero, deliberately. With dropout on, a rollout's log-prob
+  #         is sampled under one dropout mask and re-evaluated in the PPO
+  #         update under another, so the importance ratio mixes mask noise
+  #         with genuine policy change and clipping fires on noise. The first
+  #         on-policy 40-update run was launched with 0.1 and carries this.
   attention_as_relay_logits: true
   # The attention weights over neighbours ARE the relay-selection logits, not a
   # by-product read out for visualisation. This is what makes the architecture

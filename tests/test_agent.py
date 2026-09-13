@@ -404,3 +404,30 @@ def test_untrained_policy_would_trip_the_deployment_gate():
     gate = ConfidenceGate(tau=0.5)
     near_uniform = np.full(9, 1 / 9) + np.linspace(-0.005, 0.005, 9)
     assert gate.evaluate(near_uniform / near_uniform.sum()).used_fallback
+
+
+def test_ppo_encoder_has_no_dropout():
+    """Dropout makes the PPO importance ratio compare log-probs taken under
+    different dropout masks, so clipping fires on mask noise."""
+    from common.config import load_yaml
+
+    assert load_yaml("agent.yaml")["encoder"]["dropout"] == 0.0
+
+
+def test_recomputed_log_prob_matches_the_rollout_without_dropout():
+    """With dropout off, re-evaluating the same graph and action before any
+    update reproduces the recorded log-prob, so the initial ratio is exactly 1."""
+    pytest.importorskip("torch")
+    pytest.importorskip("torch_geometric")
+    import torch as _t
+
+    from agents.gat_drl import ActorCritic, EncoderConfig, graphs_to_batch
+    from common.config import load_yaml
+
+    _t.manual_seed(0)
+    net = ActorCritic(EncoderConfig.from_config(load_yaml("agent.yaml")))
+    graphs = [build_decision_graph(make_ctx(relevance=float(r))) for r in (0.1, 0.5, 0.9)]
+    acts = [net.act(g.to_pyg()) for g in graphs]
+    lp, _, _ = net.evaluate_actions(graphs_to_batch(graphs),
+                                    _t.tensor([a["action"] for a in acts]))
+    assert np.allclose(lp.detach().numpy(), [a["log_prob"] for a in acts], atol=1e-5)
