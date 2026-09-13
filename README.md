@@ -259,9 +259,13 @@ derived from measured speed.
 
   | regime (eval seed 0) | λ at which silence stops being optimal | verdict |
   |---|---|---|
-  | rural d=40 | 0.535 | SANE |
-  | rural d=2 | 0.915 | SANE |
-  | urban_nlos d=20 | 1.217 | SANE |
+  | rural d=40 | 0.679 (0.535 on the pre-`5f02df7` engine) | SANE |
+  | rural d=2 | 0.731 (0.915) | SANE |
+  | urban_nlos d=20 | 1.207 (1.217) | SANE |
+
+  Re-run after the busy-medium fix; in every regime an efficient scheme
+  (`slotted_1p`, DV-CAST or `weighted_p`) outranks flooding just above
+  break-even.
 
   Beyond break-even, `slotted_1p` and DV-CAST outrank flooding, so it does not
   trade silence for flooding. Two caveats:

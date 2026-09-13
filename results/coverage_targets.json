@@ -110,9 +110,9 @@
    ]
   },
   "rural_highway|2|heavy_rain|fog_bank": {
-   "ceiling": 0.9420773691328872,
+   "ceiling": 0.9323906892438449,
    "per_policy": {
-    "flooding": 0.9420773691328872,
+    "flooding": 0.9323906892438449,
     "dvcast": 0.8588751669712391
    },
    "seeds": [
@@ -121,9 +121,9 @@
    ]
   },
   "rural_highway|2|heavy_rain|landslide": {
-   "ceiling": 0.9374767910235202,
+   "ceiling": 0.9270877393606358,
    "per_policy": {
-    "flooding": 0.9374767910235202,
+    "flooding": 0.9270877393606358,
     "dvcast": 0.8520446587904974
    },
    "seeds": [
@@ -134,7 +134,7 @@
   "rural_highway|2|heavy_rain|crash": {
    "ceiling": 0.9851521176357949,
    "per_policy": {
-    "flooding": 0.9352335170661317,
+    "flooding": 0.917116720304237,
     "dvcast": 0.9851521176357949
    },
    "seeds": [
@@ -179,7 +179,7 @@
    "ceiling": 0.9564825988221657,
    "per_policy": {
     "flooding": 0.9564825988221657,
-    "dvcast": 0.8283005946072904
+    "dvcast": 0.7345547247100719
    },
    "seeds": [
     100,
@@ -190,7 +190,7 @@
    "ceiling": 0.9531214474507596,
    "per_policy": {
     "flooding": 0.9531214474507596,
-    "dvcast": 0.8206096897601483
+    "dvcast": 0.7221112757116812
    },
    "seeds": [
     100,
@@ -209,10 +209,10 @@
    ]
   },
   "rural_highway|5|clear|fog_bank": {
-   "ceiling": 0.9426864105232621,
+   "ceiling": 0.9418809823816834,
    "per_policy": {
-    "flooding": 0.9426864105232621,
-    "dvcast": 0.8727195260111886
+    "flooding": 0.9310071392859584,
+    "dvcast": 0.9418809823816834
    },
    "seeds": [
     100,
@@ -220,10 +220,10 @@
    ]
   },
   "rural_highway|5|clear|landslide": {
-   "ceiling": 0.9377542872159723,
+   "ceiling": 0.9368892023991846,
    "per_policy": {
-    "flooding": 0.9377542872159723,
-    "dvcast": 0.8641601897075935
+    "flooding": 0.9265846556954964,
+    "dvcast": 0.9368892023991846
    },
    "seeds": [
     100,
@@ -231,10 +231,10 @@
    ]
   },
   "rural_highway|5|clear|crash": {
-   "ceiling": 0.9941866800382297,
+   "ceiling": 0.9925878422336429,
    "per_policy": {
-    "flooding": 0.9941866800382297,
-    "dvcast": 0.8772660548339895
+    "flooding": 0.9722455676689237,
+    "dvcast": 0.9925878422336429
    },
    "seeds": [
     100,
@@ -242,9 +242,9 @@
    ]
   },
   "rural_highway|5|heavy_rain|fog_bank": {
-   "ceiling": 0.9672036400128359,
+   "ceiling": 0.9549882061264915,
    "per_policy": {
-    "flooding": 0.9672036400128359,
+    "flooding": 0.9549882061264915,
     "dvcast": 0.953948745365995
    },
    "seeds": [
@@ -253,9 +253,9 @@
    ]
   },
   "rural_highway|5|heavy_rain|landslide": {
-   "ceiling": 0.9643152852770852,
+   "ceiling": 0.9515796333822407,
    "per_policy": {
-    "flooding": 0.9643152852770852,
+    "flooding": 0.9515796333822407,
     "dvcast": 0.9515796333822407
    },
    "seeds": [
@@ -266,7 +266,7 @@
   "rural_highway|5|heavy_rain|crash": {
    "ceiling": 0.995486365336384,
    "per_policy": {
-    "flooding": 0.995486365336384,
+    "flooding": 0.9718230101723053,
     "dvcast": 0.995486365336384
    },
    "seeds": [
@@ -308,10 +308,10 @@
    ]
   },
   "rural_highway|10|heavy_rain|fog_bank": {
-   "ceiling": 0.9840871065929491,
+   "ceiling": 0.9820244839155754,
    "per_policy": {
     "flooding": 0.9820244839155754,
-    "dvcast": 0.9840871065929491
+    "dvcast": 0.9820244839155754
    },
    "seeds": [
     100,
@@ -319,10 +319,10 @@
    ]
   },
   "rural_highway|10|heavy_rain|landslide": {
-   "ceiling": 0.9820512320420205,
+   "ceiling": 0.9798677247240253,
    "per_policy": {
     "flooding": 0.9798677247240253,
-    "dvcast": 0.9820512320420205
+    "dvcast": 0.9798677247240253
    },
    "seeds": [
     100,
@@ -407,10 +407,10 @@
    ]
   },
   "rural_highway|40|clear|fog_bank": {
-   "ceiling": 0.9987661952016502,
+   "ceiling": 0.9968617742708781,
    "per_policy": {
-    "flooding": 0.9987661952016502,
-    "dvcast": 0.9949573533401059
+    "flooding": 0.990746197381742,
+    "dvcast": 0.9968617742708781
    },
    "seeds": [
     100,
@@ -418,10 +418,10 @@
    ]
   },
   "rural_highway|40|clear|landslide": {
-   "ceiling": 0.9981199118702854,
+   "ceiling": 0.9963010562657577,
    "per_policy": {
-    "flooding": 0.9981199118702854,
-    "dvcast": 0.9944822006612302
+    "flooding": 0.9898947388332922,
+    "dvcast": 0.9963010562657577
    },
    "seeds": [
     100,
@@ -431,8 +431,8 @@
   "rural_highway|40|clear|crash": {
    "ceiling": 0.9997372777315342,
    "per_policy": {
-    "flooding": 0.9997372777315342,
-    "dvcast": 0.9960373279275719
+    "flooding": 0.986349625136244,
+    "dvcast": 0.9997372777315342
    },
    "seeds": [
     100,
@@ -440,10 +440,10 @@
    ]
   },
   "rural_highway|40|heavy_rain|fog_bank": {
-   "ceiling": 0.9981778856041346,
+   "ceiling": 0.989468124653646,
    "per_policy": {
-    "flooding": 0.9981778856041346,
-    "dvcast": 0.995037934288156
+    "flooding": 0.9875820558284623,
+    "dvcast": 0.989468124653646
    },
    "seeds": [
     100,
@@ -451,10 +451,10 @@
    ]
   },
   "rural_highway|40|heavy_rain|landslide": {
-   "ceiling": 0.9980294377095738,
+   "ceiling": 0.9896770021007821,
    "per_policy": {
-    "flooding": 0.9980294377095738,
-    "dvcast": 0.994903304032685
+    "flooding": 0.9876977703822962,
+    "dvcast": 0.9896770021007821
    },
    "seeds": [
     100,
@@ -462,10 +462,10 @@
    ]
   },
   "rural_highway|40|heavy_rain|crash": {
-   "ceiling": 1.0,
+   "ceiling": 0.9955026988834633,
    "per_policy": {
-    "flooding": 1.0,
-    "dvcast": 0.9958379417169748
+    "flooding": 0.9913970822673582,
+    "dvcast": 0.9955026988834633
    },
    "seeds": [
     100,
@@ -473,10 +473,10 @@
    ]
   },
   "rural_highway|80|clear|fog_bank": {
-   "ceiling": 1.0,
+   "ceiling": 0.998042886608068,
    "per_policy": {
-    "flooding": 1.0,
-    "dvcast": 0.9982682416231685
+    "flooding": 0.9957080800937064,
+    "dvcast": 0.998042886608068
    },
    "seeds": [
     100,
@@ -484,9 +484,9 @@
    ]
   },
   "rural_highway|80|clear|landslide": {
-   "ceiling": 1.0000000000000002,
+   "ceiling": 0.9981030803932831,
    "per_policy": {
-    "flooding": 1.0000000000000002,
+    "flooding": 0.9957906296305195,
     "dvcast": 0.9981030803932831
    },
    "seeds": [
@@ -497,7 +497,7 @@
   "rural_highway|80|clear|crash": {
    "ceiling": 1.0,
    "per_policy": {
-    "flooding": 1.0,
+    "flooding": 0.9992142135443058,
     "dvcast": 1.0
    },
    "seeds": [
@@ -541,7 +541,7 @@
   "urban_nlos|1|clear|fog_bank": {
    "ceiling": 0.1324440715057439,
    "per_policy": {
-    "flooding": 0.1324440715057439,
+    "flooding": 0.11160973891938214,
     "dvcast": 0.1324440715057439
    },
    "seeds": [
@@ -552,7 +552,7 @@
   "urban_nlos|1|clear|landslide": {
    "ceiling": 0.1290288992620631,
    "per_policy": {
-    "flooding": 0.1290288992620631,
+    "flooding": 0.10819556592872978,
     "dvcast": 0.1290288992620631
    },
    "seeds": [
@@ -563,7 +563,7 @@
   "urban_nlos|1|clear|crash": {
    "ceiling": 0.13220500421596623,
    "per_policy": {
-    "flooding": 0.13220500421596623,
+    "flooding": 0.11837494332533793,
     "dvcast": 0.13220500421596623
    },
    "seeds": [
@@ -605,10 +605,10 @@
    ]
   },
   "urban_nlos|2|clear|fog_bank": {
-   "ceiling": 0.33472318372435633,
+   "ceiling": 0.3560913006443977,
    "per_policy": {
-    "flooding": 0.33472318372435633,
-    "dvcast": 0.3135988164221692
+    "flooding": 0.31332085640796875,
+    "dvcast": 0.3560913006443977
    },
    "seeds": [
     100,
@@ -616,10 +616,10 @@
    ]
   },
   "urban_nlos|2|clear|landslide": {
-   "ceiling": 0.32789202601363504,
+   "ceiling": 0.34897252682731406,
    "per_policy": {
-    "flooding": 0.32789202601363504,
-    "dvcast": 0.306811525199956
+    "flooding": 0.306811525199956,
+    "dvcast": 0.34897252682731406
    },
    "seeds": [
     100,
@@ -627,10 +627,10 @@
    ]
   },
   "urban_nlos|2|clear|crash": {
-   "ceiling": 0.31387939707175166,
+   "ceiling": 0.33610735177166884,
    "per_policy": {
-    "flooding": 0.31387939707175166,
-    "dvcast": 0.29177482038234526
+    "flooding": 0.29162811546660805,
+    "dvcast": 0.33610735177166884
    },
    "seeds": [
     100,
@@ -640,8 +640,8 @@
   "urban_nlos|2|heavy_rain|fog_bank": {
    "ceiling": 0.3440674475876617,
    "per_policy": {
-    "flooding": 0.30219117389980743,
-    "dvcast": 0.3440674475876617
+    "flooding": 0.3440674475876617,
+    "dvcast": 0.3090038070419188
    },
    "seeds": [
     100,
@@ -651,8 +651,8 @@
   "urban_nlos|2|heavy_rain|landslide": {
    "ceiling": 0.3389506662060702,
    "per_policy": {
-    "flooding": 0.29614289280948575,
-    "dvcast": 0.3389506662060702
+    "flooding": 0.3389506662060702,
+    "dvcast": 0.3049006562006261
    },
    "seeds": [
     100,
@@ -662,8 +662,8 @@
   "urban_nlos|2|heavy_rain|crash": {
    "ceiling": 0.35133806264875267,
    "per_policy": {
-    "flooding": 0.3046308959056714,
-    "dvcast": 0.35133806264875267
+    "flooding": 0.35133806264875267,
+    "dvcast": 0.3220197779535179
    },
    "seeds": [
     100,
@@ -671,10 +671,10 @@
    ]
   },
   "urban_nlos|3|clear|fog_bank": {
-   "ceiling": 0.2497814510015075,
+   "ceiling": 0.24960006022122871,
    "per_policy": {
-    "flooding": 0.24343689851284664,
-    "dvcast": 0.2497814510015075
+    "flooding": 0.24960006022122871,
+    "dvcast": 0.23488209640854735
    },
    "seeds": [
     100,
@@ -684,8 +684,8 @@
   "urban_nlos|3|clear|landslide": {
    "ceiling": 0.24373449563063834,
    "per_policy": {
-    "flooding": 0.23724197235150446,
-    "dvcast": 0.24373449563063834
+    "flooding": 0.24373449563063834,
+    "dvcast": 0.22928423739073078
    },
    "seeds": [
     100,
@@ -693,10 +693,10 @@
    ]
   },
   "urban_nlos|3|clear|crash": {
-   "ceiling": 0.22861295555062427,
+   "ceiling": 0.22093503984037538,
    "per_policy": {
-    "flooding": 0.2144616543220395,
-    "dvcast": 0.22861295555062427
+    "flooding": 0.22093503984037538,
+    "dvcast": 0.20592774785010465
    },
    "seeds": [
     100,
@@ -704,10 +704,10 @@
    ]
   },
   "urban_nlos|3|heavy_rain|fog_bank": {
-   "ceiling": 0.34752482773322,
+   "ceiling": 0.3551628470766436,
    "per_policy": {
-    "flooding": 0.34752482773322,
-    "dvcast": 0.32455884567101134
+    "flooding": 0.3551628470766436,
+    "dvcast": 0.33202555118153126
    },
    "seeds": [
     100,
@@ -715,10 +715,10 @@
    ]
   },
   "urban_nlos|3|heavy_rain|landslide": {
-   "ceiling": 0.3410237765392565,
+   "ceiling": 0.3484299931506535,
    "per_policy": {
-    "flooding": 0.3410237765392565,
-    "dvcast": 0.31880512670506556
+    "flooding": 0.3484299931506535,
+    "dvcast": 0.3261313593557154
    },
    "seeds": [
     100,
@@ -726,10 +726,10 @@
    ]
   },
   "urban_nlos|3|heavy_rain|crash": {
-   "ceiling": 0.35438809979190017,
+   "ceiling": 0.36240743305580403,
    "per_policy": {
-    "flooding": 0.35438809979190017,
-    "dvcast": 0.33030321054026723
+    "flooding": 0.36240743305580403,
+    "dvcast": 0.33776108793339704
    },
    "seeds": [
     100,
@@ -737,10 +737,10 @@
    ]
   },
   "urban_nlos|5|clear|fog_bank": {
-   "ceiling": 0.256346616641218,
+   "ceiling": 0.24314782511629232,
    "per_policy": {
-    "flooding": 0.24315081554249734,
-    "dvcast": 0.256346616641218
+    "flooding": 0.2386636808557323,
+    "dvcast": 0.24314782511629232
    },
    "seeds": [
     100,
@@ -748,10 +748,10 @@
    ]
   },
   "urban_nlos|5|clear|landslide": {
-   "ceiling": 0.2502666289883475,
+   "ceiling": 0.23734773382546087,
    "per_policy": {
-    "flooding": 0.23734773382546087,
-    "dvcast": 0.2502666289883475
+    "flooding": 0.2330292030101328,
+    "dvcast": 0.23734773382546087
    },
    "seeds": [
     100,
@@ -759,10 +759,10 @@
    ]
   },
   "urban_nlos|5|clear|crash": {
-   "ceiling": 0.24489363765245387,
+   "ceiling": 0.2308303991715464,
    "per_policy": {
-    "flooding": 0.2308319736801168,
-    "dvcast": 0.24489363765245387
+    "flooding": 0.22610844796895163,
+    "dvcast": 0.2308303991715464
    },
    "seeds": [
     100,
@@ -770,10 +770,10 @@
    ]
   },
   "urban_nlos|5|heavy_rain|fog_bank": {
-   "ceiling": 0.35305074484059784,
+   "ceiling": 0.3644906314068851,
    "per_policy": {
-    "flooding": 0.35305074484059784,
-    "dvcast": 0.3529431382326649
+    "flooding": 0.3644906314068851,
+    "dvcast": 0.35624004882438975
    },
    "seeds": [
     100,
@@ -781,10 +781,10 @@
    ]
   },
   "urban_nlos|5|heavy_rain|landslide": {
-   "ceiling": 0.34559462952667486,
+   "ceiling": 0.3568864164885155,
    "per_policy": {
-    "flooding": 0.3450362739571554,
-    "dvcast": 0.34559462952667486
+    "flooding": 0.3568864164885155,
+    "dvcast": 0.348891114822212
    },
    "seeds": [
     100,
@@ -792,10 +792,10 @@
    ]
   },
   "urban_nlos|5|heavy_rain|crash": {
-   "ceiling": 0.3370330097390952,
+   "ceiling": 0.34836623972308445,
    "per_policy": {
-    "flooding": 0.3370330097390952,
-    "dvcast": 0.335627016759497
+    "flooding": 0.34836623972308445,
+    "dvcast": 0.33934046233263726
    },
    "seeds": [
     100,
@@ -803,10 +803,10 @@
    ]
   },
   "urban_nlos|10|clear|fog_bank": {
-   "ceiling": 0.2976809908080922,
+   "ceiling": 0.29793781790656115,
    "per_policy": {
-    "flooding": 0.2976809908080922,
-    "dvcast": 0.2864855309249842
+    "flooding": 0.29793781790656115,
+    "dvcast": 0.29548100545465744
    },
    "seeds": [
     100,
@@ -814,10 +814,10 @@
    ]
   },
   "urban_nlos|10|clear|landslide": {
-   "ceiling": 0.29072935437603176,
+   "ceiling": 0.2909403612585172,
    "per_policy": {
-    "flooding": 0.29072935437603176,
-    "dvcast": 0.27975012693426715
+    "flooding": 0.2909403612585172,
+    "dvcast": 0.28862370030568946
    },
    "seeds": [
     100,
@@ -825,10 +825,10 @@
    ]
   },
   "urban_nlos|10|clear|crash": {
-   "ceiling": 0.28589284526977443,
+   "ceiling": 0.27817965350846385,
    "per_policy": {
-    "flooding": 0.28589284526977443,
-    "dvcast": 0.2781918010496278
+    "flooding": 0.27817965350846385,
+    "dvcast": 0.2738020329392685
    },
    "seeds": [
     100,
@@ -836,10 +836,10 @@
    ]
   },
   "urban_nlos|10|heavy_rain|fog_bank": {
-   "ceiling": 0.3368769949726914,
+   "ceiling": 0.3298896221152696,
    "per_policy": {
-    "flooding": 0.3368769949726914,
-    "dvcast": 0.33368244387938484
+    "flooding": 0.3298896221152696,
+    "dvcast": 0.32499028751894826
    },
    "seeds": [
     100,
@@ -847,10 +847,10 @@
    ]
   },
   "urban_nlos|10|heavy_rain|landslide": {
-   "ceiling": 0.32788130766915047,
+   "ceiling": 0.32072089293505696,
    "per_policy": {
-    "flooding": 0.32788130766915047,
-    "dvcast": 0.3244254990372536
+    "flooding": 0.32072089293505696,
+    "dvcast": 0.3163881349237971
    },
    "seeds": [
     100,
@@ -858,10 +858,10 @@
    ]
   },
   "urban_nlos|10|heavy_rain|crash": {
-   "ceiling": 0.3089226575712033,
+   "ceiling": 0.318672314883821,
    "per_policy": {
-    "flooding": 0.3089226575712033,
-    "dvcast": 0.2943649675005323
+    "flooding": 0.318672314883821,
+    "dvcast": 0.30006320008087384
    },
    "seeds": [
     100,
@@ -869,10 +869,10 @@
    ]
   },
   "urban_nlos|20|clear|fog_bank": {
-   "ceiling": 0.3047947287480818,
+   "ceiling": 0.3071200798969823,
    "per_policy": {
-    "flooding": 0.3047947287480818,
-    "dvcast": 0.30138995404005786
+    "flooding": 0.3071200798969823,
+    "dvcast": 0.3047986915493642
    },
    "seeds": [
     100,
@@ -880,10 +880,10 @@
    ]
   },
   "urban_nlos|20|clear|landslide": {
-   "ceiling": 0.2975732289848615,
+   "ceiling": 0.2998690942801776,
    "per_policy": {
-    "flooding": 0.2975732289848615,
-    "dvcast": 0.2942846474968295
+    "flooding": 0.2998690942801776,
+    "dvcast": 0.29757322898486155
    },
    "seeds": [
     100,
@@ -891,10 +891,10 @@
    ]
   },
   "urban_nlos|20|clear|crash": {
-   "ceiling": 0.29518895698049463,
+   "ceiling": 0.29878383815305387,
    "per_policy": {
-    "flooding": 0.29518895698049463,
-    "dvcast": 0.28673261632469244
+    "flooding": 0.29878383815305387,
+    "dvcast": 0.293910385033732
    },
    "seeds": [
     100,
@@ -902,10 +902,10 @@
    ]
   },
   "urban_nlos|20|heavy_rain|fog_bank": {
-   "ceiling": 0.3440595918849846,
+   "ceiling": 0.3451323408089151,
    "per_policy": {
-    "flooding": 0.3440595918849846,
-    "dvcast": 0.3381799921887369
+    "flooding": 0.3451323408089151,
+    "dvcast": 0.3364927951245539
    },
    "seeds": [
     100,
@@ -913,10 +913,10 @@
    ]
   },
   "urban_nlos|20|heavy_rain|landslide": {
-   "ceiling": 0.33629107976213446,
+   "ceiling": 0.3374456582972717,
    "per_policy": {
-    "flooding": 0.33629107976213446,
-    "dvcast": 0.33058861758673513
+    "flooding": 0.3374456582972717,
+    "dvcast": 0.3287968615341471
    },
    "seeds": [
     100,
@@ -924,10 +924,10 @@
    ]
   },
   "urban_nlos|20|heavy_rain|crash": {
-   "ceiling": 0.31971699672359644,
+   "ceiling": 0.3208190134469537,
    "per_policy": {
-    "flooding": 0.31971699672359644,
-    "dvcast": 0.31491758627872257
+    "flooding": 0.3208190134469537,
+    "dvcast": 0.31817820554649434
    },
    "seeds": [
     100,
@@ -935,10 +935,10 @@
    ]
   },
   "urban_nlos|40|clear|fog_bank": {
-   "ceiling": 0.3176390609966498,
+   "ceiling": 0.31661880117504315,
    "per_policy": {
-    "flooding": 0.3176390609966498,
-    "dvcast": 0.3109229097686895
+    "flooding": 0.31661880117504315,
+    "dvcast": 0.3098538575508938
    },
    "seeds": [
     100,
@@ -946,10 +946,10 @@
    ]
   },
   "urban_nlos|40|clear|landslide": {
-   "ceiling": 0.31107565395810105,
+   "ceiling": 0.3100806418226933,
    "per_policy": {
-    "flooding": 0.31107565395810105,
-    "dvcast": 0.30450390221040713
+    "flooding": 0.3100806418226933,
+    "dvcast": 0.30338933293145187
    },
    "seeds": [
     100,
@@ -957,10 +957,10 @@
    ]
   },
   "urban_nlos|40|clear|crash": {
-   "ceiling": 0.2934230163096835,
+   "ceiling": 0.2929629150483747,
    "per_policy": {
-    "flooding": 0.2934230163096835,
-    "dvcast": 0.28749124701193174
+    "flooding": 0.2929629150483747,
+    "dvcast": 0.285278368532635
    },
    "seeds": [
     100,
@@ -968,10 +968,10 @@
    ]
   },
   "urban_nlos|40|heavy_rain|fog_bank": {
-   "ceiling": 0.3734905772079226,
+   "ceiling": 0.3747148687824263,
    "per_policy": {
-    "flooding": 0.3734905772079226,
-    "dvcast": 0.3696409493008763
+    "flooding": 0.3747148687824263,
+    "dvcast": 0.36931758097728884
    },
    "seeds": [
     100,
@@ -979,10 +979,10 @@
    ]
   },
   "urban_nlos|40|heavy_rain|landslide": {
-   "ceiling": 0.3661950332248307,
+   "ceiling": 0.36750659890909604,
    "per_policy": {
-    "flooding": 0.3661950332248307,
-    "dvcast": 0.3625028086067798
+    "flooding": 0.36750659890909604,
+    "dvcast": 0.3621611832885884
    },
    "seeds": [
     100,
@@ -990,10 +990,10 @@
    ]
   },
   "urban_nlos|40|heavy_rain|crash": {
-   "ceiling": 0.3462876285086366,
+   "ceiling": 0.3472118521079197,
    "per_policy": {
-    "flooding": 0.3462876285086366,
-    "dvcast": 0.344874150775706
+    "flooding": 0.3472118521079197,
+    "dvcast": 0.34389743387132454
    },
    "seeds": [
     100,
@@ -1001,10 +1001,10 @@
    ]
   },
   "urban_nlos|80|clear|fog_bank": {
-   "ceiling": 0.3387849814559222,
+   "ceiling": 0.344694898229298,
    "per_policy": {
-    "flooding": 0.3352872927941692,
-    "dvcast": 0.3387849814559222
+    "flooding": 0.344694898229298,
+    "dvcast": 0.3392520604314976
    },
    "seeds": [
     100,
@@ -1012,10 +1012,10 @@
    ]
   },
   "urban_nlos|80|clear|landslide": {
-   "ceiling": 0.3340471679188547,
+   "ceiling": 0.33980476594659625,
    "per_policy": {
-    "flooding": 0.3305473012401495,
-    "dvcast": 0.3340471679188547
+    "flooding": 0.33980476594659625,
+    "dvcast": 0.3345183302739231
    },
    "seeds": [
     100,
@@ -1023,10 +1023,10 @@
    ]
   },
   "urban_nlos|80|clear|crash": {
-   "ceiling": 0.3083219947378927,
+   "ceiling": 0.31543763683536813,
    "per_policy": {
-    "flooding": 0.3074014102446696,
-    "dvcast": 0.3083219947378927
+    "flooding": 0.31543763683536813,
+    "dvcast": 0.3100036450387248
    },
    "seeds": [
     100,
@@ -1034,10 +1034,10 @@
    ]
   },
   "urban_nlos|80|heavy_rain|fog_bank": {
-   "ceiling": 0.39678557668574865,
+   "ceiling": 0.40457620805916633,
    "per_policy": {
-    "flooding": 0.39678557668574865,
-    "dvcast": 0.3949072493672612
+    "flooding": 0.40457620805916633,
+    "dvcast": 0.40221013484642937
    },
    "seeds": [
     100,
@@ -1045,10 +1045,10 @@
    ]
   },
   "urban_nlos|80|heavy_rain|landslide": {
-   "ceiling": 0.39216905189669105,
+   "ceiling": 0.39967484516935,
    "per_policy": {
-    "flooding": 0.39216905189669105,
-    "dvcast": 0.39034140355245295
+    "flooding": 0.39967484516935,
+    "dvcast": 0.39743273947528696
    },
    "seeds": [
     100,
@@ -1056,10 +1056,10 @@
    ]
   },
   "urban_nlos|80|heavy_rain|crash": {
-   "ceiling": 0.3588893644913558,
+   "ceiling": 0.3649517291179889,
    "per_policy": {
-    "flooding": 0.3588893644913558,
-    "dvcast": 0.3564972012082651
+    "flooding": 0.3649517291179889,
+    "dvcast": 0.3635970058290119
    },
    "seeds": [
     100,
