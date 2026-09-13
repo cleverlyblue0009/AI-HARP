@@ -284,3 +284,46 @@ class CoverageTargets:
             return cls({}, fraction, fallback)
         payload = json.loads(p.read_text(encoding="utf-8"))
         return cls(payload.get("cells", payload), fraction, fallback)
+
+
+# ---------------------------------------------------------------------------
+# What the trainer holds
+# ---------------------------------------------------------------------------
+@dataclass
+class TrainingObjective:
+    """Objective settings, the live multiplier and the per-cell targets."""
+
+    objective: ConstrainedObjective
+    multiplier: LagrangeMultiplier
+    targets: CoverageTargets
+
+    def target_for(self, scenario: str, density: float, weather: str,
+                   hazard_type: str) -> float:
+        return self.targets.target(scenario, density, weather, hazard_type)
+
+    def update(self, shortfalls: Iterable[float]) -> float:
+        """One dual-ascent step from a whole PPO update's episodes."""
+        return self.multiplier.update(shortfalls)
+
+    def state_dict(self) -> dict[str, Any]:
+        return {"multiplier": self.multiplier.state_dict(),
+                "objective": dict(self.objective.__dict__)}
+
+
+def build_training_objective(cfg: dict[str, Any], project_root: Path | str) -> TrainingObjective:
+    """Construct from ``configs/agent.yaml``; refuses anything but ``constrained``.
+
+    The weighted-sum reward still sits in the config, marked broken, for the
+    record. Refusing it here means it cannot be trained on by accident.
+    """
+    kind = cfg.get("objective", {}).get("kind")
+    if kind != "constrained":
+        raise ValueError(
+            f"objective.kind is {kind!r}; only 'constrained' may be trained on. The "
+            "weighted-sum reward ranks silence above every working scheme."
+        )
+    o = ConstrainedObjective.from_config(cfg)
+    targets = CoverageTargets.load(Path(project_root) / o.targets_path,
+                                   o.target_fraction, o.fallback_target)
+    return TrainingObjective(objective=o, multiplier=LagrangeMultiplier.from_objective(o),
+                             targets=targets)

@@ -248,6 +248,33 @@ derived from measured speed.
   Lesson recorded for every future reward: **score a set of fixed reference
   policies under it before training**, and require the ranking to be sane.
   No training run to date has a valid objective.
+- **The replacement is a constrained objective, and it passed that check before
+  any training.** Minimise transmissions per at-risk vehicle subject to causal
+  coverage ≥ 95% of each training cell's measured ceiling (the better of
+  flooding and DV-CAST), via a Lagrange multiplier λ. Per-vehicle credit is a
+  Shapley split of each warned vehicle's relevance along its ancestor path in
+  the `informed_by` tree, so relays have a stake in coverage they enabled
+  downstream. Code: `agents/constrained_reward.py`; gate:
+  `python -m analysis.reward_check`.
+
+  | regime (eval seed 0) | λ at which silence stops being optimal | verdict |
+  |---|---|---|
+  | rural d=40 | 0.535 | SANE |
+  | rural d=2 | 0.915 | SANE |
+  | urban_nlos d=20 | 1.217 | SANE |
+
+  Beyond break-even, `slotted_1p` and DV-CAST outrank flooding, so it does not
+  trade silence for flooding. Two caveats:
+  1. **In grid cells the constraint is enforced on a weak proxy.** Every
+     urban_nlos policy scores causal coverage 0.28–0.29 against ~0.98 oracle
+     RWCR, because the causal grid estimator correlates only 0.13 with ground
+     truth. Per-cell targets keep the constraint feasible, but there the agent
+     learns which vehicles the proxy flags, not which are truly at risk.
+     Training may not use the oracle, so this is the honest limit of the
+     causal-only rule; evaluation measures the gap.
+  2. **λ may oscillate.** Dense cells exceed their targets easily, so dual
+     ascent pulls λ toward the ~0.5 break-even where silence becomes
+     attractive again. λ is logged every update so this is visible.
 - `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
   attention on `neighbour → holder` edges *is* the relay ranking**;
   `relay_top_k` designates the k-th most attended neighbour, so the heatmap
