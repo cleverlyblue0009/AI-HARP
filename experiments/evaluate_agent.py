@@ -150,6 +150,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cells", type=int, default=None, help="first N cells only")
     ap.add_argument("--skip-gate", action="store_true")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--out-dir", default=None,
+                    help="where to write outputs (default results/); point a "
+                         "partially trained checkpoint elsewhere so a pipeline "
+                         "check never lands in results/")
     args = ap.parse_args(argv)
     if args.quiet:
         logging.getLogger("aiharp").setLevel(logging.WARNING)
@@ -177,8 +181,13 @@ def main(argv: list[str] | None = None) -> int:
     if updates < configured:
         banner += " -- PARTIAL TRAINING: a pipeline check, not a result"
 
+    out_dir = Path(args.out_dir) if args.out_dir else RESULTS_DIR
+    if not out_dir.is_absolute():
+        out_dir = PROJECT_ROOT / out_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
+
     scored = agent_cells(ckpt, cells, seeds, args.biases, tau, cfgs)
-    save_cells(scored, RESULTS_DIR / "pareto_cells_agent.json")
+    save_cells(scored, out_dir / "pareto_cells_agent.json")
 
     summary: dict[str, Any] = {"checkpoint": str(ckpt), "checkpoint_sha": checkpoint_sha(ckpt),
                                "updates": updates, "configured_updates": configured,
@@ -203,9 +212,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.skip_gate:
         sweep = gate_sweep(ckpt, cells, seeds, args.taus, cfgs)
-        (RESULTS_DIR / "gate_sweep.json").write_text(json.dumps(sweep, indent=1),
-                                                    encoding="utf-8")
-        summary["gate_sweep"] = "results/gate_sweep.json"
+        (out_dir / "gate_sweep.json").write_text(json.dumps(sweep, indent=1),
+                                                encoding="utf-8")
+        summary["gate_sweep"] = str(out_dir / "gate_sweep.json")
         print("\nGATE SWEEP (fallback rate vs quality):")
         for cell, rows in sweep.items():
             print(f"  {cell}")
@@ -213,7 +222,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"    tau={r['tau']:.1f} fallback={r['fallback_rate']:.3f} "
                       f"rwcr={r['rwcr']:.3f} cost={r['cost']:.2f}")
 
-    (RESULTS_DIR / "agent_evaluation.json").write_text(
+    (out_dir / "agent_evaluation.json").write_text(
         json.dumps(summary, indent=1, default=float), encoding="utf-8")
     print(f"\n{banner}")
     return 0
