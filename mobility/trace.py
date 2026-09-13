@@ -17,6 +17,8 @@ quantisation that costs (~1e-4 m at 10 km) is far below any modelled effect.
 from __future__ import annotations
 
 import json
+import os
+import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterator
@@ -201,13 +203,41 @@ def save_trace(trace: Trace, path: Path) -> Path:
         "routes": [list(r) for r in trace.routes] if trace.routes is not None else None,
         "meta": trace.meta,
     }
-    np.savez_compressed(path, _meta=np.array(json.dumps(meta)), **arrays)
+    # Write to a sibling temp file and rename into place. A process killed
+    # mid-write (run3 was stopped while saving) used to leave a truncated
+    # .npz under the real name, which crashed run4 13 updates later.
+    tmp = path.with_name(path.name + f".{os.getpid()}.tmp")
+    try:
+        with open(tmp, "wb") as fh:
+            np.savez_compressed(fh, _meta=np.array(json.dumps(meta)), **arrays)
+        os.replace(tmp, path)
+    finally:
+        tmp.unlink(missing_ok=True)
     size_mb = path.stat().st_size / 1e6
     logger.info("Cached trace -> %s (%.1f MB)", path.name, size_mb)
     return path
 
 
+class CorruptTraceError(ValueError):
+    """A cached trace file exists but cannot be read (truncated or damaged)."""
+
+
 def load_trace(path: Path) -> Trace:
+    # np.load sniffs the magic bytes and reports non-zip garbage as "pickled
+    # data" (a ValueError), indistinguishable from a format mismatch; check first.
+    with open(path, "rb") as fh:
+        magic = fh.read(4)
+    if magic not in (b"PK\x03\x04", b"PK\x05\x06"):
+        raise CorruptTraceError(f"{path.name}: not an .npz archive (magic {magic!r})")
+    try:
+        return _load_trace(path)
+    except (zipfile.BadZipFile, EOFError, KeyError, OSError, json.JSONDecodeError) as exc:
+        if isinstance(exc, FileNotFoundError):
+            raise
+        raise CorruptTraceError(f"{path.name}: {type(exc).__name__}: {exc}") from exc
+
+
+def _load_trace(path: Path) -> Trace:
     with np.load(path, allow_pickle=False) as z:
         meta = json.loads(str(z["_meta"]))
         if meta.get("format_version") != TRACE_FORMAT_VERSION:

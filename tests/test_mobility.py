@@ -125,6 +125,48 @@ def test_roundtrip_through_npz(trace, tmp_path):
     assert back.meta["density_veh_km_lane"] == trace.meta["density_veh_km_lane"]
 
 
+def test_save_leaves_no_temp_file_behind(trace, tmp_path):
+    save_trace(trace, tmp_path / "t.npz")
+    assert [p.name for p in tmp_path.iterdir()] == ["t.npz"]
+
+
+def test_truncated_cache_file_is_reported_as_corrupt(trace, tmp_path):
+    """run4 crashed on an .npz cut off when run3 was stopped mid-save."""
+    from mobility.trace import CorruptTraceError
+
+    p = tmp_path / "t.npz"
+    save_trace(trace, p)
+    p.write_bytes(p.read_bytes()[: p.stat().st_size // 2])
+    with pytest.raises(CorruptTraceError):
+        load_trace(p)
+
+
+def test_format_version_mismatch_is_not_treated_as_corruption(trace, tmp_path, monkeypatch):
+    """A stale format must still fail loudly, not be silently regenerated."""
+    import mobility.trace as mt
+
+    p = tmp_path / "t.npz"
+    monkeypatch.setattr(mt, "TRACE_FORMAT_VERSION", -1)
+    save_trace(trace, p)
+    monkeypatch.undo()
+    with pytest.raises(ValueError) as info:
+        load_trace(p)
+    assert not isinstance(info.value, mt.CorruptTraceError)
+
+
+def test_get_trace_regenerates_a_corrupt_cache_entry(short_scenario, tmp_path, monkeypatch):
+    import mobility.generate as gen
+
+    monkeypatch.setattr(gen, "TRACE_CACHE", tmp_path)
+    first = gen.get_trace(short_scenario, 20.0, 7, backend="fallback")
+    (cached,) = tmp_path.glob("*.npz")
+    cached.write_bytes(b"not a zip file")
+    again = gen.get_trace(short_scenario, 20.0, 7, backend="fallback")
+    assert np.array_equal(again.active, first.active)
+    assert np.array_equal(np.nan_to_num(again.x), np.nan_to_num(first.x))
+    load_trace(cached)                                      # rewritten, readable
+
+
 def test_to_records_matches_the_brief_layout(trace):
     rec = trace.to_records()
     assert rec.dtype.names == (

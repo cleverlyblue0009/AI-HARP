@@ -16,7 +16,7 @@ from common.config import PROJECT_ROOT, config_hash, ensure_dir, load_yaml
 from common.logging_utils import get_logger, log_banner
 from common.seeding import make_rng
 from mobility.fallback import generate_fallback_trace
-from mobility.trace import Trace, load_trace, save_trace
+from mobility.trace import CorruptTraceError, Trace, load_trace, save_trace
 
 logger = get_logger("mobility.generate")
 
@@ -137,9 +137,17 @@ def get_trace(
     cache_path = TRACE_CACHE / f"{scfg['name']}_d{density_veh_km_lane:g}_s{seed}_{key}.npz"
 
     if use_cache and cache_path.exists():
-        trace = load_trace(cache_path)
-        logger.info("Trace cache HIT  %s | %s", cache_path.name, _fmt(trace.summary()))
-        return trace
+        try:
+            trace = load_trace(cache_path)
+        except CorruptTraceError as exc:
+            # Generation is deterministic in (config, density, seed), so
+            # regenerating reproduces the file that should have been there.
+            logger.warning("Trace cache CORRUPT %s (%s); deleting and regenerating",
+                           cache_path.name, exc)
+            cache_path.unlink(missing_ok=True)
+        else:
+            logger.info("Trace cache HIT  %s | %s", cache_path.name, _fmt(trace.summary()))
+            return trace
 
     logger.info(
         "Trace cache MISS -> generating (%s, density=%g veh/km/lane, weather=%s, seed=%d)",
