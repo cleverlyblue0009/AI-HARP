@@ -452,13 +452,30 @@ valuable thing in this repository.
 
   - The sparse cell — the paper's target regime — is not reached at any
     setting, gated or not.
-  - The network alone is cheaper than the best baseline in one cell of four.
-    That cell's −46% is **not yet a finding**: the agent's qualifying point
-    sits at RWCR 0.876 against target 0.869 (seed-std 0.019), and no committed
-    baseline point lies between RWCR 0.649 and 0.891 because the baseline
-    knob grids stop at `max_p = 0.1` / `p = 0.1`. At a measured baseline point
-    (RWCR ≈ 0.90) the network costs 0.86 against `weighted_p`'s 0.91 (−5%).
-    A finer cheap-end baseline sweep is required before any dense-cell claim.
+  - The network alone is cheaper than the best baseline in one cell of four,
+    and the committed −46% overstated it. The agent's qualifying point sits
+    at RWCR 0.876 against target 0.869 (seed-std 0.019), where the committed
+    baseline knob grids had no points (nothing between RWCR 0.649 and 0.891).
+    A finer cheap-end sweep at rural d=80 (seeds 0–9; not merged into
+    `results/pareto_cells.json`):
+
+    | setting | RWCR | cost | median TIR |
+    |---|---|---|---|
+    | `weighted_p` max_p=0.07 | 0.852 ± 0.083 | 0.574 | 0.61 s |
+    | `p_persistence` p=0.08 | 0.869 ± 0.083 | 0.787 | 0.59 s |
+    | agent, network only, bias +2 | 0.876 ± 0.020 | 0.490 | 0.32 s |
+    | agent, network only, bias +1 | 0.901 ± 0.016 | 0.859 | 0.34 s |
+
+    `p = 0.08` clears the target (0.869275) by 0.00002, so the refined
+    cheapest qualifying baseline is 0.787 and the agent's margin is **−38%**;
+    interpolating `weighted_p` to the agent's RWCR gives 0.78 (−37%). Near
+    RWCR 0.90 the margin shrinks to −14% (0.86 vs interpolated 1.00). The
+    agent is also ~4× less variable across seeds and reaches at-risk vehicles
+    in about half the median time. This is one dense cell, just above its
+    target, from a 40-update pilot — not yet a finding.
+    **The committed baseline grids are too coarse at the cheap end** for
+    matched-quality comparisons in dense cells; the Phase 7 sweep must extend
+    them (e.g. `p`, `max_p` below 0.1) before regret or margin is reported.
   - The gate at τ = 0.5 helps only by mixing in `weighted_p`; it cuts urban
     coverage below target and imports `weighted_p`'s die-out (below).
   - TIR: network-only median TIR is within 3% of flooding in the three cells
