@@ -62,6 +62,34 @@ class Transition:
     ret: float = 0.0
 
 
+def assign_terminal_rewards(
+    transitions: list[Transition], rewards: dict[int, float]
+) -> list[Transition]:
+    """Credit each vehicle's episode reward ONCE, on its last decision.
+
+    ``run_episode`` used to copy the vehicle's full reward onto every one of its
+    decisions, and GAE then sums along the vehicle's sequence -- so a vehicle
+    deciding k times was credited roughly k times, and its EARLIER decisions
+    absorbed the most. Replaying an untrained network (the policy PPO starts
+    from) on rural d=40, 90% of suppress decisions belonged to vehicles that
+    were re-asked on a later duplicate and transmitted anyway; the suppress
+    decisions were credited a mean -9.51 against -10.61 for transmitting ones,
+    so the ~12-point value of actually staying silent all but vanished and PPO
+    drove suppress from ~15% of decisions to 0.35% in 13 updates.
+
+    Earlier decisions still receive the outcome through GAE's discounted
+    bootstrap, which is the right amount of credit rather than a copy.
+    """
+    last: dict[int, int] = {}
+    for i, t in enumerate(transitions):
+        j = last.get(t.vehicle)
+        if j is None or t.step >= transitions[j].step:
+            last[t.vehicle] = i
+    for i, t in enumerate(transitions):
+        t.reward = float(rewards.get(t.vehicle, 0.0)) if last[t.vehicle] == i else 0.0
+    return transitions
+
+
 def executed_transitions(transitions: list[Transition]) -> list[Transition]:
     """Only the transitions whose recorded action was actually executed.
 
@@ -76,7 +104,8 @@ def executed_transitions(transitions: list[Transition]) -> list[Transition]:
 
 
 def action_to_engine(
-    action_index: int, graph: DecisionGraph, relay_order: list[int], carry_epochs: int = 10
+    action_index: int, graph: DecisionGraph, relay_order: list[int], carry_epochs: int = 10,
+    defer_cancel: int = 1,
 ) -> Action:
     """Map a discrete action index onto an engine :class:`Action`.
 
@@ -85,6 +114,13 @@ def action_to_engine(
     fewer neighbours than the requested rank, the action degrades to a plain
     broadcast rather than silently becoming a no-op -- a relay action that
     quietly turned into silence would be an invisible failure.
+
+    ``defer_k`` cancels on ``defer_cancel`` overheard duplicates, as every
+    slotted baseline's deferral does. Without the cancellation a deferral was
+    "broadcast later", strictly dominated by broadcasting now; measured, the
+    trained agent's argmax mode drifted to defer and its cost stayed pinned at
+    flooding's ~0.97 transmissions per informed vehicle while slotted_1p's
+    identical-looking deferral reached 0.229.
     """
     name = ACTION_NAMES[action_index]
     if name == "suppress":
@@ -92,7 +128,8 @@ def action_to_engine(
     if name == "broadcast_now":
         return BROADCAST_NOW
     if name.startswith("defer_"):
-        return Action(ActionType.DEFER, delay_steps=int(name.split("_")[1]))
+        return Action(ActionType.DEFER, delay_steps=int(name.split("_")[1]),
+                      cancel_on_duplicates=int(defer_cancel))
     if name == "carry_and_forward":
         return Action(ActionType.CARRY, delay_steps=carry_epochs)
     if name.startswith("relay_top_"):
@@ -209,12 +246,21 @@ class AiHarpPolicy(Policy):
                               "checkpoint_sha": checkpoint_sha, "tau": gate.tau})
         return policy
 
+    #: Mirrors configs/agent.yaml -> action_space (asserted equal by tests).
+    #: A deferred rebroadcast is cancelled on this many duplicates, exactly as
+    #: for the slotted baselines; without it the agent's defer could not
+    #: express slotted-style suppression at all.
+    defer_cancel_on_duplicates: int = 1
+    #: A suppress on a received message is final for that vehicle.
+    suppress_is_final: bool = True
+
     def reset(self, n_vehicles: int, rng: np.random.Generator) -> None:
         self.fallback.reset(n_vehicles, rng)
         self.gate.reset()
         self.transitions = []
         self.n_relay_actions = 0
         self.n_decisions = 0
+        self._settled: set[int] = set()
 
     #: Direction each action's logit moves under a POSITIVE suppression bias,
     #: in ACTION_NAMES order: suppress up; broadcast and the three relay
@@ -237,6 +283,19 @@ class AiHarpPolicy(Policy):
         action = int(np.argmax(p)) if self.deterministic else int(rng.choice(p.size, p=p))
         return p, action
 
+    def _settle(self, vehicle: int, act: Action) -> Action:
+        """Record a final suppress so later duplicates do not re-query.
+
+        Measured on an untrained network (the policy PPO starts from) at rural
+        d=40: 90% of suppress decisions were followed by a re-ask on a later
+        duplicate and a transmission. That turned the +11.58 advantage of
+        staying silent into -8.02, and PPO eliminated suppress. Carrying is
+        not settled -- store-carry-forward exists to be re-evaluated.
+        """
+        if self.suppress_is_final and act.kind is ActionType.SUPPRESS:
+            self._settled.add(int(vehicle))
+        return act
+
     # --------------------------------------------------------------- decide --
     def decide(self, ctx: DecisionContext) -> Action:
         # Same broadcast-suppression invariant every baseline obeys: a vehicle
@@ -247,6 +306,11 @@ class AiHarpPolicy(Policy):
             return BROADCAST_NOW
         if self.network is None:
             return self.fallback.decide(ctx)
+        settled = self.__dict__.setdefault("_settled", set())
+        if ctx.trigger is Trigger.RECEIVE and int(ctx.index) in settled:
+            # Already decided to stay silent on this message: no re-query and
+            # no transition, so no transmitter's reward can land on it.
+            return SUPPRESS
 
         graph = build_decision_graph(ctx, self.graph_cfg, self.phy)
         if self.normaliser is not None:
@@ -276,13 +340,16 @@ class AiHarpPolicy(Policy):
             ))
 
         if decision.used_fallback:
-            return self.fallback.decide(ctx)
+            # The fallback's suppress is final too: re-drawing a probabilistic
+            # scheme on every duplicate would inflate its cost the same way.
+            return self._settle(ctx.index, self.fallback.decide(ctx))
 
-        act = action_to_engine(action, graph,
-                               out.get("relay_order", []), self.carry_epochs)
+        act = action_to_engine(action, graph, out.get("relay_order", []),
+                               self.carry_epochs,
+                               defer_cancel=self.defer_cancel_on_duplicates)
         if act.kind is ActionType.RELAY:
             self.n_relay_actions += 1
-        return act
+        return self._settle(ctx.index, act)
 
     def stats(self) -> dict[str, float]:
         s = self.gate.stats()

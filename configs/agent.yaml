@@ -92,6 +92,19 @@ action_space:
     - relay_top_3
     - carry_and_forward
   defer_epochs: [1, 2, 3]
+  defer_cancel_on_duplicates: 1
+  # source: [DERIVED] A deferred rebroadcast is cancelled on hearing one
+  #         duplicate, exactly as for the slotted baselines
+  #         (configs/policies.yaml). Without it the agent's defer was
+  #         "broadcast later", strictly dominated by broadcasting now, and the
+  #         action space could not express slotted-style suppression at all.
+  suppress_is_final: true
+  # A network (or fallback) SUPPRESS on a received message is final for that
+  # vehicle; later duplicates do not re-query it. Carriers are still
+  # re-evaluated. Measured on an untrained network at rural d=40: 90% of
+  # suppress decisions were followed by a re-ask and a transmission, which
+  # turned a +11.58 advantage for staying silent into -8.02, and PPO drove
+  # suppress from ~15% of decisions to 0.35%.
   # 100 ms per epoch. Note the README limitation: this granularity inflates the
   # absolute latency of every deferring scheme, baselines and agent alike.
 

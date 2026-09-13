@@ -431,3 +431,29 @@ def test_recomputed_log_prob_matches_the_rollout_without_dropout():
     lp, _, _ = net.evaluate_actions(graphs_to_batch(graphs),
                                     _t.tensor([a["action"] for a in acts]))
     assert np.allclose(lp.detach().numpy(), [a["log_prob"] for a in acts], atol=1e-5)
+
+
+def test_vehicle_reward_is_credited_once_on_its_last_decision():
+    """Regression: the full vehicle reward was copied onto every decision, so
+    GAE credited a k-decision vehicle about k times, earliest decisions most."""
+    from types import SimpleNamespace
+
+    from agents.ai_harp import assign_terminal_rewards
+
+    t = [SimpleNamespace(vehicle=1, step=5, reward=0.0),
+         SimpleNamespace(vehicle=2, step=6, reward=0.0),
+         SimpleNamespace(vehicle=1, step=9, reward=0.0)]
+    assign_terminal_rewards(t, {1: -10.0, 2: 3.0})
+    assert [x.reward for x in t] == [0.0, 3.0, -10.0]
+    assert sum(x.reward for x in t if x.vehicle == 1) == -10.0   # credited once
+
+
+def test_terminal_reward_handles_out_of_order_transitions():
+    from types import SimpleNamespace
+
+    from agents.ai_harp import assign_terminal_rewards
+
+    t = [SimpleNamespace(vehicle=4, step=20, reward=0.0),
+         SimpleNamespace(vehicle=4, step=3, reward=0.0)]
+    assign_terminal_rewards(t, {4: 2.5})
+    assert t[0].reward == 2.5 and t[1].reward == 0.0

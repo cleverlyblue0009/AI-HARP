@@ -150,8 +150,10 @@ def run_episode(
     result = engine.run()
 
     rewards = compute_rewards(result, risk, hazard, weights)
-    for tr_ in policy.transitions:
-        tr_.reward = float(rewards.get(tr_.vehicle, 0.0))
+    from agents.ai_harp import assign_terminal_rewards
+
+    # Once per vehicle, on its last decision -- not copied onto every decision.
+    assign_terminal_rewards(policy.transitions, rewards)
 
     informed = int((result.informed_step >= 0).sum())
     info = {
