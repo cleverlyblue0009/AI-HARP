@@ -486,6 +486,26 @@ valuable thing in this repository.
     coverage below target and imports `weighted_p`'s die-out (below).
   - TIR: network-only median TIR is within 3% of flooding in the three cells
     where it reaches target, the one axis where the pilot looks competitive.
+- **The engine silently discards frames after five busy-channel deferrals, and
+  in dense cells this can kill a whole episode.** Found while diagnosing run5,
+  whose urban d=80 multiplier kept receiving pooled coverage of exactly 0.
+  `DisseminationEngine._channel_access` (since Phase 2, `ba85971`) draws a
+  clear-channel check once per 100 ms epoch with `p_busy` = the background
+  beacon channel load (≈ 0.50 at urban d=80 under DCC, capped near its 0.62
+  target), defers a busy frame one epoch, and after
+  `max_busy_deferrals = 5` sets it to unscheduled. The give-up is not counted
+  as a drop (only `n_busy_deferrals` rises), no test pins it, and the
+  `[ASSUMED]` config comment was the only record. A frame therefore vanishes
+  with probability ≈ `p_busy^6` (~1.5% at 0.50, ~5.7% at 0.62). When the
+  frame is the originator's, nothing is ever transmitted: urban_nlos d=80
+  seed 2 gives 0 transmissions, 0 reception attempts and 6 busy deferrals for
+  flooding, `slotted_1p` and the agent alike. Real 802.11p defers in 13 µs
+  backoff slots and would send this frame within milliseconds, so this is a
+  modelling artefact, not channel physics. It affects every dense cell —
+  committed baseline curves, coverage targets and training alike — and
+  penalises low-redundancy schemes (slotted, counter, the agent) more than
+  flooding, which has spare relays. **Not yet fixed**: the fix changes the
+  simulator and invalidates committed results, so it is a user decision.
 - **The committed baseline curves still reproduce.** `results/pareto_cells.json`
   was generated at `788d5fe`, before six later commits touched simulation,
   metrics or policy code. Eight committed points (all four cells; flooding,
