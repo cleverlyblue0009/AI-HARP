@@ -486,8 +486,14 @@ valuable thing in this repository.
     coverage below target and imports `weighted_p`'s die-out (below).
   - TIR: network-only median TIR is within 3% of flooding in the three cells
     where it reaches target, the one axis where the pilot looks competitive.
-- **The engine silently discards frames after five busy-channel deferrals, and
-  in dense cells this can kill a whole episode.** Found while diagnosing run5,
+- **FIXED in `5f02df7`: the engine silently discarded frames after five
+  busy-channel deferrals, and in dense cells this could kill a whole episode.**
+  Every number below and above this entry that was simulated before
+  `5f02df7` — the run4 pilot evaluation, the baseline-reproduction check, the
+  rural d=80 fine sweep, the `weighted_p` die-out statistics, run3–run5 — used
+  the old engine and is superseded; `results/pareto_cells.json` and
+  `results/coverage_targets.json` are being regenerated, and
+  `METRICS_VERSION` is now 3. Found while diagnosing run5,
   whose urban d=80 multiplier kept receiving pooled coverage of exactly 0.
   `DisseminationEngine._channel_access` (since Phase 2, `ba85971`) draws a
   clear-channel check once per 100 ms epoch with `p_busy` = the background
@@ -496,16 +502,40 @@ valuable thing in this repository.
   `max_busy_deferrals = 5` sets it to unscheduled. The give-up is not counted
   as a drop (only `n_busy_deferrals` rises), no test pins it, and the
   `[ASSUMED]` config comment was the only record. A frame therefore vanishes
-  with probability ≈ `p_busy^6` (~1.5% at 0.50, ~5.7% at 0.62). When the
-  frame is the originator's, nothing is ever transmitted: urban_nlos d=80
-  seed 2 gives 0 transmissions, 0 reception attempts and 6 busy deferrals for
-  flooding, `slotted_1p` and the agent alike. Real 802.11p defers in 13 µs
+  with probability ≈ `p_busy^6`, and local `p_busy` runs well above the
+  network-average CBR: the DCC beacon-rate floor (1 Hz) lets it reach 0.81
+  around an urban d=80 originator, so `0.81^6` ≈ 28% of episodes never
+  transmit at all. When the frame is the originator's, nothing is ever sent:
+  urban_nlos d=80 seed 2 gives 0 transmissions, 0 reception attempts and 6
+  busy deferrals for flooding, `slotted_1p` and the agent alike. Measured with
+  `_channel_access` instrumented (flooding / `slotted_1p`, seed 0):
+
+  | cell | local p_busy (mean / max) | relay frames given up |
+  |---|---|---|
+  | urban d=80 | 0.66 / 0.82 | 8.8% / 2.1% |
+  | rural d=80 | 0.62 / 0.62 | 5.9% / 1.0% |
+  | urban d=20 | 0.62 / 0.62 | 5.8% / 0.6% |
+  | rural d=20 | 0.31 / 0.36 | 0.0% / 0.0% |
+
+  On the training pool, flooding at urban d=80 transmitted nothing on 2 of the
+  first 8 seeds (103, 104). The coverage targets were measured on seeds 100–101,
+  which both disseminated, so roughly a quarter of urban d=80 training episodes
+  cannot reach their target under any policy — run5's urban d=80 multiplier
+  rose to 7.3 by update 24 chasing them. Real 802.11p defers in 13 µs
   backoff slots and would send this frame within milliseconds, so this is a
   modelling artefact, not channel physics. It affects every dense cell —
   committed baseline curves, coverage targets and training alike — and
   penalises low-redundancy schemes (slotted, counter, the agent) more than
-  flooding, which has spare relays. **Not yet fixed**: the fix changes the
-  simulator and invalidates committed results, so it is a user decision.
+  flooding, which has spare relays.
+  **The fix** (user decision: stop run5, fix, rerun): a frame that finds the
+  medium busy is delayed within its 100 ms epoch and still transmitted, as
+  802.11p's 13 µs backoff allows; the busy draw only counts
+  `n_busy_deferrals`, and `max_busy_deferrals` is removed and refused if
+  configured. Verified on the formerly dead episodes: urban d=80 seed 2 now
+  reaches RWCR 0.921 under flooding (was 0.000) and training seed 103 0.914
+  (was 0.000); flooding sends exactly one frame per informed vehicle
+  (1,915 / 1,915). Tests pin that the originator transmits, in its scheduled
+  epoch, on a medium forced 99% busy.
 - **The committed baseline curves still reproduce.** `results/pareto_cells.json`
   was generated at `788d5fe`, before six later commits touched simulation,
   metrics or policy code. Eight committed points (all four cells; flooding,
