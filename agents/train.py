@@ -507,6 +507,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--tau", type=float, default=None)
     ap.add_argument("--out", default=None)
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--keep-awake", action="store_true",
+                    help="hold off idle sleep while training (Windows); see common/keep_awake.py")
     args = ap.parse_args(argv)
     if args.quiet:
         logging.getLogger("aiharp").setLevel(logging.WARNING)
@@ -523,7 +525,15 @@ def main(argv: list[str] | None = None) -> int:
             "experiment": load_yaml("experiment.yaml")}
     updates = args.updates or (3 if args.smoke else int(cfg["training"]["total_updates"]))
     out = Path(args.out) if args.out else PROJECT_ROOT / cfg["training"]["checkpoint_dir"]
-    train(cfg, cfgs, updates, out, smoke=args.smoke)
+    from common.keep_awake import keep_awake
+
+    with keep_awake(args.keep_awake) as awake:
+        if args.keep_awake and not awake:
+            logger.warning("--keep-awake requested but unavailable on this platform; "
+                           "idle sleep can still suspend training")
+        elif awake:
+            logger.info("idle sleep held off for the duration of training")
+        train(cfg, cfgs, updates, out, smoke=args.smoke)
     return 0
 
 

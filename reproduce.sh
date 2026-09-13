@@ -53,7 +53,9 @@ step "4. Operating curves and reference points -> results/pareto_cells.json"
 
 if [[ $TRAIN -eq 1 ]]; then
   step "5. Train the agent ($UPDATES updates)"
-  "$PY" -m agents.train --updates "$UPDATES" --quiet
+  # --keep-awake: without it, idle sleep dominated a multi-hour run on the
+  # development laptop (one PPO update took 13,828 s instead of ~170 s).
+  "$PY" -m agents.train --updates "$UPDATES" --quiet --keep-awake
 else
   step "5. Training skipped (--no-train); reusing checkpoints/"
 fi
