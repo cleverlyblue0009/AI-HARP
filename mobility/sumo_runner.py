@@ -12,10 +12,23 @@ Network sources, in priority order:
    (urban). A runnable stand-in so the pipeline works before the extract is
    dropped in; traces built this way carry ``network_source='synthetic'``.
 
-.. warning::
-   This module is **untested against a live SUMO installation** in the current
-   development environment (no SUMO present). Treat the first real SUMO run as
-   an integration test, not as known-good code.
+Warm-up, and why it is computed rather than configured
+------------------------------------------------------
+The fallback generator *pre-places* vehicles along the corridor, so it is at
+steady state from step 0. SUMO cannot do that: it injects vehicles at the
+boundary, and the corridor is not full until the first of them has driven its
+whole length. Recording before that yields a density far below the commanded
+one -- silently, because nothing downstream re-checks density.
+
+Measured on first contact: a 2 km corridor at 20 veh/km/lane with a 10 s warm-up
+recorded 18.6 concurrent vehicles against an expected 76. For the real 10 km
+corridor the transit time is ~457 s against a configured warm-up of 20 s, so
+every SUMO run would have been a fraction of its nominal density and would have
+been incomparable with the fallback results.
+
+So the warm-up is ``max(configured, corridor_transit_time * safety)``, and
+:func:`_check_density` verifies the achieved density afterwards and warns
+loudly if it still misses. Do not lower either.
 """
 
 from __future__ import annotations
@@ -38,6 +51,14 @@ logger = get_logger("mobility.sumo")
 
 BUILD_DIR = PROJECT_ROOT / "cache" / "sumo_build"
 KMH_TO_MS = 1.0 / 3.6
+
+#: Multiple of the corridor transit time to warm up for. 1.5 leaves margin
+#: for slow vehicles (trucks traverse more slowly than the fleet mean) and
+#: for the queue that forms behind them.
+WARMUP_TRANSITS = 1.5
+
+#: Achieved density may miss the command by this fraction before we warn.
+DENSITY_TOLERANCE = 0.25
 
 
 @dataclass(frozen=True)
@@ -80,6 +101,63 @@ def _run(cmd: list[str], cwd: Path) -> None:
             f"SUMO command failed ({proc.returncode}): {' '.join(cmd)}\n"
             f"stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}"
         )
+
+
+def _fleet_mean_speed_ms(scenario: dict[str, Any], speed_factor: float) -> float:
+    classes = scenario["vehicles"]["classes"]
+    return float(np.average(
+        [(c["speed_kmh_min"] + c["speed_kmh_max"]) / 2 for c in classes.values()],
+        weights=[c["share"] for c in classes.values()],
+    )) * KMH_TO_MS * speed_factor
+
+
+def required_warmup_s(scenario: dict[str, Any], speed_factor: float = 1.0) -> float:
+    """Time for a vehicle to traverse the corridor, times a safety factor.
+
+    Below this the corridor is still filling when recording starts. Grid
+    scenarios circulate rather than traverse, so one block-row is used as the
+    characteristic length.
+    """
+    geo = scenario["geometry"]
+    v = max(_fleet_mean_speed_ms(scenario, speed_factor), 1e-6)
+    if scenario.get("kind") == "grid":
+        span = float(geo.get("block_length_m", 200.0)) * float(geo.get("grid_cols", 5))
+    else:
+        span = float(geo.get("length_m", 0.0))
+    return span / v * WARMUP_TRANSITS
+
+
+def _check_density(trace: Trace, scenario: dict[str, Any], commanded: float) -> None:
+    """Warn if the achieved density misses the command.
+
+    The guard that would have caught the warm-up bug on its own: nothing else
+    downstream re-checks that SUMO actually produced the density it was asked
+    for, and a quietly empty corridor looks like a valid result.
+    """
+    geo = scenario["geometry"]
+    if scenario.get("kind") == "grid":
+        lane_km = (float(geo.get("block_length_m", 200.0))
+                   * float(geo.get("grid_rows", 5)) * float(geo.get("grid_cols", 5))
+                   * 4.0 / 1000.0)
+    else:
+        lane_km = (float(geo.get("length_m", 0.0)) / 1000.0
+                   * float(geo.get("lanes_per_direction", 1))
+                   * float(geo.get("directions", 2)))
+    if lane_km <= 0:
+        return
+    achieved = float(trace.active.sum(axis=1).mean()) / lane_km
+    trace.meta["achieved_density_veh_km_lane"] = round(achieved, 2)
+    rel = abs(achieved - commanded) / max(commanded, 1e-9)
+    if rel > DENSITY_TOLERANCE:
+        logger.warning(
+            "SUMO density MISS: commanded %.3g veh/km/lane, achieved %.3g (%.0f%% off). "
+            "Usually too short a warm-up (need >= %.0f s for this corridor) or demand "
+            "that cannot be inserted. Do not compare this trace with fallback results.",
+            commanded, achieved, rel * 100.0, required_warmup_s(scenario),
+        )
+    else:
+        logger.info("SUMO density OK: commanded %.3g, achieved %.3g veh/km/lane",
+                    commanded, achieved)
 
 
 def _write(path: Path, text: str) -> Path:
@@ -189,7 +267,8 @@ def _write_routes(
             weights=[c["share"] for c in classes.values()],
         )
     ) * speed_factor
-    duration = float(sim["duration_s"]) + float(sim["warmup_s"])
+    duration = float(sim["duration_s"]) + max(float(sim["warmup_s"]),
+                                              required_warmup_s(scenario, speed_factor))
     q_veh_h = density * v_mean_kmh * lanes
 
     n_seg = max(1, int(geo.get("junctions", 1)) + 1)
@@ -229,9 +308,19 @@ def generate_sumo_trace(
     sim, scfg = scenario["simulation"], scenario["sumo"]
     work = ensure_dir(BUILD_DIR / f"{scenario['name']}_d{density_veh_km_lane:g}_s{seed}")
 
+    configured_warmup = float(sim["warmup_s"])
+    needed = required_warmup_s(scenario, speed_factor)
+    warmup = max(configured_warmup, needed)
+    if warmup > configured_warmup:
+        logger.info(
+            "SUMO warm-up raised %.0f s -> %.0f s (one corridor transit x %.1f); "
+            "below this the corridor is still filling when recording starts.",
+            configured_warmup, warmup, WARMUP_TRANSITS,
+        )
+
     net, net_source = _build_network(scenario, tools, work)
     routes = _write_routes(scenario, density_veh_km_lane, seed, work, speed_factor)
-    duration = float(sim["duration_s"]) + float(sim["warmup_s"])
+    duration = float(sim["duration_s"]) + warmup
     fcd = work / "fcd.xml"
 
     _write(work / "run.sumocfg", f"""<configuration>
@@ -257,15 +346,18 @@ def generate_sumo_trace(
 
     logger.info("Running SUMO (%s network, density=%g veh/km/lane, seed=%d)",
                 net_source, density_veh_km_lane, seed)
+    # NOTE: the FCD sampling period is `--device.fcd.period`, NOT
+    # `--fcd-output.period` (which does not exist and makes SUMO exit 1).
+    # Verified against `sumo --help` for 1.19.0.
     _run([tools.sumo, "-c", "run.sumocfg", "--fcd-output", fcd.name,
-          "--fcd-output.period", str(scfg["fcd_period"]), "--no-step-log", "true",
+          "--device.fcd.period", str(scfg["fcd_period"]), "--no-step-log", "true",
           "--no-warnings", "true"], cwd=work)
 
     trace = parse_fcd(
         fcd,
         scenario_name=scenario["name"],
         dt=float(sim["timestep_s"]),
-        warmup_s=float(sim["warmup_s"]),
+        warmup_s=warmup,
         meta={
             "kind": scenario.get("kind", "highway"),
             "length_m": float(scenario["geometry"].get("length_m", 0.0)),
@@ -277,6 +369,8 @@ def generate_sumo_trace(
             "car_following": scfg["car_following_model"],
         },
     )
+    trace.meta["warmup_s"] = warmup
+    _check_density(trace, scenario, density_veh_km_lane)
     if not keep_fcd:
         fcd.unlink(missing_ok=True)
     return trace

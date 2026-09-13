@@ -12,7 +12,7 @@ vehicular networks.
 | 5 | GATv2 agent, PPO / Dueling DQN, confidence gate, curriculum training | code done; **not yet trained to convergence** |
 | 6 | Metrics (PDR, RWCR, TIR, overhead, deadlines, channel load) | done |
 | 7 | Paired sweeps, Wilcoxon + Holm + effect sizes | runner + stats done; **ablations not run** |
-| 7b | Simulator validation (live SUMO, published-curve reproduction) | **not started** |
+| 7b | Simulator validation | SUMO installed and running; backend comparison done; **published-curve reproduction not started** |
 | 8 | IEEE figures, LaTeX tables, `reproduce.sh` | pipeline done; agent-dependent figures pending |
 
 **Read `ENVIRONMENT.md` first** — the Python environment lives on `D:`, not `C:`.
@@ -268,14 +268,31 @@ lightness band.
 These are the paper's limitations section, pre-written. They are the most
 valuable thing in this repository.
 
-- **All results use the pure-Python fallback mobility backend.** No SUMO is
-  installed. It is a real Krauss microscopic model, but it has no lane
-  changing (hence no overtaking), no OSM geometry and no junction gap
-  acceptance. `mobility/sumo_runner.py` has **never been executed against a
-  live SUMO install**. Every trace is stamped `backend=fallback`.
-- **Phase 7b has not been done.** The network layer is custom Python rather
-  than NS-3 or Veins, and no published curve has been reproduced. This is the
-  single biggest reviewer risk and it is currently unaddressed.
+- **Backend orderings differ, and the paper must report both.** Eclipse SUMO
+  1.19.0 now runs (see ENVIRONMENT.md). Comparing the same cells under both
+  backends at rural d=20: SUMO gives systematically **lower RWCR (-0.16)** --
+  expected, since the fallback pre-places vehicles and has no lane changing, so
+  its traffic is more platooned and better connected. More importantly the
+  *ordering* of policies changed on RWCR, cost and PDR. TIR ordering was
+  preserved (Spearman +1.0). Run
+  `python -m experiments.backend_validation` to reproduce.
+  Caveat on that verdict: separability is judged from the full spread across
+  policies, which one outlier (flooding) can inflate -- on cost the three
+  non-flooding schemes are within 0.06 of each other and are not really
+  separable. Read the spread and seed-std columns, not just the verdict.
+- **The fallback backend is still what most committed results used.** It is a
+  real Krauss microscopic model, but it has no lane changing (hence no
+  overtaking), no OSM geometry and no junction gap acceptance. Every trace is
+  stamped `backend=fallback`, and the headline numbers should be regenerated
+  under SUMO before submission.
+- **No published curve has been reproduced.** The network layer is custom
+  Python rather than NS-3 or Veins. Installing SUMO addresses the mobility half
+  of the reviewer risk; the PHY/MAC half is still unvalidated against an
+  external implementation.
+- **The SUMO network is synthetic, not an OSM extract.** `netconvert` builds a
+  straight corridor / `netgenerate` grid. Point
+  `configs/scenario_rural.yaml -> sumo.osm_extract` at a real extract before
+  submission.
 - **The agent is not trained to convergence.** The pipeline runs end to end;
   no performance claim is supported yet.
 - **Grid risk estimation is approximate.** The causal field in a grid is

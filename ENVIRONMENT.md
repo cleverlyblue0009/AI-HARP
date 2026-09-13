@@ -74,6 +74,31 @@ interpreter; only the Phase 5 tests require D:.
 
 ## SUMO
 
-Still not installed. Every result to date uses the pure-Python fallback
-mobility backend, which is logged as a banner on every run and stamped into
-`trace.backend`. See README "Which mobility backend is running".
+**Eclipse SUMO 1.19.0 is installed at `D:\sumo-1.19.0`.** It is not on
+conda-forge under that name (`conda install sumo` pulls an unrelated
+materials-science package), so it was taken from the official Windows zip.
+
+Set the environment variable before any run that needs it:
+
+```bash
+export SUMO_HOME="D:/sumo-1.19.0"
+export PATH="$SUMO_HOME/bin:$PATH"
+```
+
+`mobility/sumo_runner.py` detects it via `SUMO_HOME` and logs a banner naming
+the active backend. With `--backend sumo` a missing installation is a hard
+error rather than a silent fallback.
+
+Two bugs surfaced on first contact, both of which had been sitting in code that
+had never executed:
+
+1. `--fcd-output.period` does not exist; the FCD sampling period is
+   `--device.fcd.period`. SUMO exited 1.
+2. **The corridor was never filling.** SUMO injects vehicles at the boundary,
+   whereas the fallback pre-places them, so recording cannot start until one
+   vehicle has traversed the whole corridor. At the configured 20 s warm-up the
+   10 km corridor needs ~457 s, and a 2 km test recorded 18.6 concurrent
+   vehicles against an expected 76 -- silently, since nothing re-checked
+   density. Warm-up is now `max(configured, transit_time x 1.5)` and
+   `_check_density()` warns if the achieved density still misses by >25%.
+   After the fix: commanded 20, achieved 20.8 veh/km/lane.
