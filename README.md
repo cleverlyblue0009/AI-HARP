@@ -287,7 +287,15 @@ derived from measured speed.
   runs along **each vehicle's own decision sequence**; the flat transition list
   is not one trajectory.
 
-### The reward is calibrated, not chosen
+### Superseded: the weighted-sum reward "calibration"
+
+> **Retracted — kept only as a record of what was wrong.** The derivation below
+> balances one transmission against the relevance it directly informs. It never
+> checked how the reward ranks whole policies, and under it always-suppress
+> outranks every scheme that informs anyone (see "The reward is broken" above).
+> Training uses the constrained objective; `configs/agent.yaml` marks the old
+> `reward:` block as known broken. The collision-attribution fix at the end of
+> this section is still in force.
 
 A transmission is reward-neutral when its total price equals
 `mean_relevance / target_cost`. The measured front fixes that: 0.41 for the
@@ -399,7 +407,13 @@ valuable thing in this repository.
   `configs/scenario_rural.yaml -> sumo.osm_extract` at a real extract before
   submission.
 - **The agent is not trained to convergence.** The pipeline runs end to end;
-  no performance claim is supported yet.
+  no performance claim is supported yet. Training run4 (first run on the
+  constrained objective) is a 40-update pilot against 2,000 configured
+  updates. Its first attempt crashed at update 14 on a trace-cache file
+  truncated when run3 was stopped mid-save; cache writes are now atomic and
+  unreadable entries are regenerated. The restart reproduced the crashed
+  attempt's per-update history exactly through update 13, so training is
+  deterministic under fixed seeds on this machine (CPU, torch 2.2.2).
 - **Grid risk estimation is approximate.** The causal field in a grid is
   route-unaware (Manhattan distance + bearing gate), which is why its
   correlation with ground truth is 0.13 there. The oracle fixes *evaluation*;
