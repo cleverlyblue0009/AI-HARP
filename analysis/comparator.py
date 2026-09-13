@@ -387,6 +387,14 @@ def load_cells(path: Path | None = None) -> list[Cell]:
     return cells
 
 
+def _build_one_cell(work: tuple[dict[str, Any], int, dict[str, Any]]) -> list[Cell]:
+    """One cell's sweep. Module-level so worker processes can import it."""
+    from analysis.pareto import build_cells
+
+    spec, n_seeds, cfgs = work
+    return build_cells([spec], range(n_seeds), cfgs=cfgs)
+
+
 def main(argv: list[str] | None = None) -> int:
     """Run the multi-cell sweep and report the two reference points."""
     import argparse
@@ -404,6 +412,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--quiet", action="store_true")
     ap.add_argument("--reuse", action="store_true",
                     help="load results/pareto_cells.json instead of re-running")
+    ap.add_argument("--jobs", type=int, default=1,
+                    help="cells in parallel worker processes; every run is seeded "
+                         "on its own, so results are identical")
     args = ap.parse_args(argv)
     if args.quiet:
         logging.getLogger("aiharp").setLevel(logging.WARNING)
@@ -415,7 +426,15 @@ def main(argv: list[str] | None = None) -> int:
         specs = exp["comparator"]["cells"]
         cfgs = {"phy": load_yaml("phy.yaml"), "hazard": load_yaml("hazard.yaml"),
                 "experiment": exp}
-        cells = build_cells(specs, range(args.seeds), cfgs=cfgs)
+        if args.jobs > 1:
+            from concurrent.futures import ProcessPoolExecutor
+
+            with ProcessPoolExecutor(max_workers=args.jobs) as ex:
+                parts = list(ex.map(_build_one_cell,
+                                    [(s, args.seeds, cfgs) for s in specs]))
+            cells = [c for part in parts for c in part]
+        else:
+            cells = build_cells(specs, range(args.seeds), cfgs=cfgs)
         save_cells(cells)
 
     for axis in ([args.axis] if args.axis != "all" else list(COST_AXES)):

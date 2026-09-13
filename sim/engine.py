@@ -5,7 +5,8 @@ Per epoch:
 1. **Detection.** A vehicle within ``detection_range_m`` of an active hazard,
    and heading into it, originates the hazard message.
 2. **Channel access.** Vehicles with a transmission scheduled for this epoch
-   perform CCA; a busy medium defers them by one epoch (CSMA), up to a cap.
+   perform CCA; a busy medium delays the frame within the epoch (802.11p
+   backoff slots are 13 us) and never drops it.
 3. **Contention.** Surviving transmitters draw backoff slots. Transmitters that
    hear each other and tie -- plus mutually hidden transmitters whose frames
    fall in each other's vulnerable window -- overlap in time.
@@ -49,15 +50,24 @@ class SimSettings:
 
     max_hops: int = 32
     message_ttl_s: float = 60.0
-    max_busy_deferrals: int = 5
     carry_recheck_steps: int = 10
     max_originators: int = 1
     rx_prune_margin_db: float = 15.0
     record_transmissions: bool = True
 
+    #: Keys that used to exist and must not come back silently.
+    REMOVED_KEYS = {
+        "max_busy_deferrals": "a busy medium no longer defers a frame by whole "
+                              "100 ms epochs or drops it; see _channel_access",
+    }
+
     @classmethod
     def from_config(cls, cfg: dict[str, Any]) -> "SimSettings":
         s = cfg.get("simulation", {})
+        removed = sorted(k for k in s if k in cls.REMOVED_KEYS)
+        if removed:
+            raise ValueError(f"simulation keys {removed} were removed: "
+                             + "; ".join(cls.REMOVED_KEYS[k] for k in removed))
         known = {f for f in cls.__dataclass_fields__}
         return cls(**{k: v for k, v in s.items() if k in known})
 
@@ -172,7 +182,6 @@ class DisseminationEngine:
         timer_sched = np.full(N, NO_STEP, dtype=np.int32)
         cancel_at_dups = np.full(N, NO_STEP, dtype=np.int32)
         forced_broadcast = np.zeros(N, dtype=bool)
-        busy_defers = np.zeros(N, dtype=np.int16)
         tx_count = np.zeros(N, dtype=np.int32)
         collisions_caused = np.zeros(N, dtype=np.float64)
 
@@ -225,9 +234,7 @@ class DisseminationEngine:
                     pending = np.setdiff1d(pending, expired, assume_unique=True)
 
             if pending.size:
-                pending = self._channel_access(
-                    pending, step, act, tx_sched, busy_defers, counters, rng_mac
-                )
+                self._channel_access(pending, step, act, counters, rng_mac)
 
             if pending.size:
                 self._transmit(
@@ -291,23 +298,28 @@ class DisseminationEngine:
 
     # ---------------------------------------------------------- channel access --
     def _channel_access(
-        self, pending: np.ndarray, step: int, act: np.ndarray, tx_sched: np.ndarray,
-        busy_defers: np.ndarray, counters: dict[str, int], rng: np.random.Generator,
-    ) -> np.ndarray:
-        """CCA: a busy medium defers the frame by one epoch."""
+        self, pending: np.ndarray, step: int, act: np.ndarray,
+        counters: dict[str, int], rng: np.random.Generator,
+    ) -> None:
+        """CCA. A busy medium delays a frame within its epoch; it is never dropped.
+
+        802.11p defers in 13 us backoff slots behind background beacons that
+        last well under a millisecond, so a frame that finds the medium busy
+        still goes out long before a 100 ms epoch ends. Contention with other
+        relays and beacon overlap at the receiver are modelled separately.
+
+        This used to defer a busy frame by a whole epoch and discard it after
+        five busy draws, uncounted. Local busy probability reaches 0.81 around
+        an urban d=80 originator, so 0.81^6 = 28% of episodes never transmitted
+        at all (9 of 32 training seeds under flooding, for every policy), and
+        dense cells silently lost 6-9% of flooding's relay frames and added
+        ~100-200 ms of spurious latency. The busy draw is kept only to count
+        how many frames had to defer.
+        """
         n_nb = self._neighbour_counts(step, act, pending, self.cs_range_m)
         p_busy = self.mac.channel_busy_probability(n_nb)
         busy = rng.random(pending.size) < p_busy
-        if not busy.any():
-            return pending
-        b_idx = pending[busy]
-        can_retry = busy_defers[b_idx] < self.cfg.max_busy_deferrals
-        retry, give_up = b_idx[can_retry], b_idx[~can_retry]
-        tx_sched[retry] = step + 1
-        busy_defers[retry] += 1
-        tx_sched[give_up] = NO_STEP
-        counters["n_busy_deferrals"] += int(b_idx.size)
-        return pending[~busy]
+        counters["n_busy_deferrals"] += int(busy.sum())
 
     # ------------------------------------------------------------- transmission --
     def _transmit(

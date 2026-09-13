@@ -47,12 +47,18 @@ logger = get_logger("analysis.pareto")
 #: exactly why it sits at the expensive end of every front.
 POLICY_SWEEPS: dict[str, tuple[str, tuple[Any, ...]]] = {
     "flooding": ("", ()),
-    "p_persistence_03": ("p", (0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 1.0)),
-    "slotted_1p": ("n_slots", (1, 2, 3, 5, 8, 12, 20)),
-    "weighted_p": ("max_p", (0.1, 0.2, 0.35, 0.5, 0.7, 0.85, 1.0)),
+    # The cheap ends are dense on purpose. The first grids stopped at p = 0.1 /
+    # max_p = 0.1, leaving no baseline point between RWCR 0.649 and 0.891 at
+    # rural d=80 -- exactly where matched-quality targets sit -- and inflating
+    # the pilot agent's margin there from -38% to -46%.
+    "p_persistence_03": ("p", (0.03, 0.05, 0.06, 0.07, 0.08, 0.1, 0.15, 0.2, 0.3,
+                               0.5, 0.7, 0.9, 1.0)),
+    "slotted_1p": ("n_slots", (1, 2, 3, 5, 8, 12, 20, 30, 50)),
+    "weighted_p": ("max_p", (0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.35, 0.5, 0.7,
+                             0.85, 1.0)),
     "counter_based": ("counter_threshold", (1, 2, 3, 4, 6, 10)),
-    "greedy_farthest": ("fallback_n_slots", (1, 2, 4, 8, 16)),
-    "dvcast": ("n_slots", (1, 2, 3, 5, 8, 12, 20)),
+    "greedy_farthest": ("fallback_n_slots", (1, 2, 4, 8, 16, 32)),
+    "dvcast": ("n_slots", (1, 2, 3, 5, 8, 12, 20, 30, 50)),
 }
 
 #: Policies whose curve is a single point (no suppression knob).

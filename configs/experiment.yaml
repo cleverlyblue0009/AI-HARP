@@ -9,9 +9,10 @@ simulation:
   message_ttl_s: 60.0
   # source: [ASSUMED] A hazard warning is stale after a minute; beyond that the
   #         at-risk set has turned over completely at highway speeds.
-  max_busy_deferrals: 5
-  # source: [ASSUMED] CSMA defers on a busy medium; after this many 100 ms
-  #         deferrals the frame is dropped rather than queued forever.
+  # max_busy_deferrals was REMOVED (the engine refuses it). A busy medium used
+  # to defer a frame by whole 100 ms epochs and drop it after 5 busy draws; at
+  # an urban d=80 originator that killed 28% of episodes for every policy.
+  # 802.11p defers in 13 us slots, so a busy frame now goes out in its epoch.
   carry_recheck_steps: 10
   # Store-carry-forward re-evaluation interval, in 100 ms epochs (= 1 s).
   max_originators: 1

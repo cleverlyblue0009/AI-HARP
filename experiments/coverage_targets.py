@@ -71,24 +71,43 @@ def cell_coverage(
     return causal_coverage(peak, at_risk, warned)
 
 
+def _cell_row(work: tuple[tuple[str, float, str, str], list[int], dict[str, Any]]
+              ) -> tuple[str, dict[str, Any]]:
+    """One cell's ceiling. Module-level so worker processes can import it."""
+    (sc, d, w, h), seeds, cfgs = work
+    per_policy = {}
+    for pol in REFERENCE_POLICIES:
+        vals = [cell_coverage(sc, d, w, h, s, pol, cfgs) for s in seeds]
+        vals = [v for v in vals if np.isfinite(v)]
+        per_policy[pol] = float(np.mean(vals)) if vals else float("nan")
+    finite = [v for v in per_policy.values() if np.isfinite(v)]
+    return CoverageTargets.key(sc, d, w, h), {
+        "ceiling": float(max(finite)) if finite else float("nan"),
+        "per_policy": per_policy, "seeds": seeds}
+
+
 def build_targets(cfg: dict[str, Any], cfgs: dict[str, Any], n_seeds: int,
-                  cells: list[tuple[str, float, str, str]]) -> dict[str, Any]:
+                  cells: list[tuple[str, float, str, str]], jobs: int = 1) -> dict[str, Any]:
+    """Every run is seeded on its own, so ``jobs`` changes wall-clock time only."""
     pool = cfg["training"].get("train_seed_pool", {"start": 100, "count": 32})
     seeds = list(range(int(pool["start"]), int(pool["start"]) + n_seeds))
+    work = [(c, seeds, cfgs) for c in cells]
     table: dict[str, Any] = {}
     t0 = time.time()
-    for i, (sc, d, w, h) in enumerate(cells, 1):
-        per_policy = {}
-        for pol in REFERENCE_POLICIES:
-            vals = [cell_coverage(sc, d, w, h, s, pol, cfgs) for s in seeds]
-            vals = [v for v in vals if np.isfinite(v)]
-            per_policy[pol] = float(np.mean(vals)) if vals else float("nan")
-        finite = [v for v in per_policy.values() if np.isfinite(v)]
-        key = CoverageTargets.key(sc, d, w, h)
-        table[key] = {"ceiling": float(max(finite)) if finite else float("nan"),
-                      "per_policy": per_policy, "seeds": seeds}
-        logger.info("[%d/%d] %s ceiling=%.3f %s (%.0fs)", i, len(cells), key,
-                    table[key]["ceiling"], per_policy, time.time() - t0)
+
+    def _collect(rows):
+        for i, (key, row) in enumerate(rows, 1):
+            table[key] = row
+            logger.info("[%d/%d] %s ceiling=%.3f %s (%.0fs)", i, len(cells), key,
+                        row["ceiling"], row["per_policy"], time.time() - t0)
+
+    if jobs > 1:
+        from concurrent.futures import ProcessPoolExecutor
+
+        with ProcessPoolExecutor(max_workers=jobs) as ex:
+            _collect(ex.map(_cell_row, work))
+    else:
+        _collect(map(_cell_row, work))
     return table
 
 
@@ -97,6 +116,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--seeds", type=int, default=None)
     ap.add_argument("--quick", action="store_true", help="4 cells, 1 seed")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--jobs", type=int, default=1,
+                    help="cells in parallel worker processes; results are identical")
     args = ap.parse_args(argv)
 
     cfg = load_yaml("agent.yaml")
@@ -108,7 +129,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.quick:
         cells, n_seeds = cells[:4], 1
 
-    table = build_targets(cfg, cfgs, n_seeds, cells)
+    table = build_targets(cfg, cfgs, n_seeds, cells, jobs=args.jobs)
     out = PROJECT_ROOT / (args.out or objective.get("targets_path", "results/coverage_targets.json"))
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({

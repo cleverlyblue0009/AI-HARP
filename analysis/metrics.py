@@ -29,7 +29,11 @@ from sim.engine import NO_STEP, RunResult
 #: 1  original causal at-risk set
 #: 2  oracle at-risk set for RWCR/TIR; actionable_deadline_miss_rate; regime;
 #:    risk-estimation agreement; per-transmitter collision attribution
-METRICS_VERSION = 2
+#: 3  not a metric definition but an ENGINE change every metric depends on: a
+#:    busy medium no longer defers frames by whole epochs or drops them after
+#:    five busy draws (28% of urban d=80 episodes never transmitted). Bumped
+#:    so rows simulated by the old engine drop out of the current era.
+METRICS_VERSION = 3
 
 #: +1 = higher is better, -1 = lower is better. Used for significance markers
 #: and for picking the "strongest baseline" in Phase 7.

@@ -131,6 +131,62 @@ def test_weather_degrades_delivery(hz_cfg):
     assert heavy["comm_range_m"] < clear["comm_range_m"]
 
 
+@pytest.fixture(scope="module")
+def saturated_run(hz_cfg):
+    """Flooding with CCA forced busy 99% of the time."""
+    from sim.mac import MacModel
+
+    mp = pytest.MonkeyPatch()
+    mp.setattr(MacModel, "channel_busy_probability",
+               lambda self, n: np.full(np.shape(n), 0.99))
+    try:
+        spec = RunSpec(
+            scenario="rural_highway", density_veh_km_lane=10.0, weather="clear",
+            policy="flooding", seed=0, duration_s=20.0, corridor_length_m=2000.0,
+        )
+        yield run_single(spec, return_result=True)
+    finally:
+        mp.undo()
+
+
+def test_a_busy_medium_never_discards_the_originators_frame(saturated_run):
+    """The engine used to drop a frame after five busy draws; at an urban d=80
+    originator (busy probability 0.81) 28% of episodes never transmitted."""
+    _, res = saturated_run
+    assert res.origin_index >= 0
+    assert res.tx_count[res.origin_index] == 1
+    assert res.n_busy_deferrals > 0
+    assert res.n_transmissions > 1
+
+
+def test_a_busy_frame_goes_out_in_its_scheduled_epoch(saturated_run, run):
+    """Deferral is sub-epoch: no whole-epoch delay, so first transmission timing
+    matches the unloaded run."""
+    _, busy = saturated_run
+    _, calm = run
+    first = lambda r: min(t["step"] for t in r.transmissions)  # noqa: E731
+    assert first(busy) == busy.origin_step + 1
+    assert first(busy) == first(calm)
+
+
+def test_flooding_relays_every_informed_vehicle_even_on_a_saturated_medium(saturated_run):
+    """No silent relay loss: every informed vehicle still active one epoch after
+    being informed transmits exactly once."""
+    _, res = saturated_run
+    tr = res.trace
+    for v in np.flatnonzero(res.informed_step >= 0):
+        nxt = int(res.informed_step[v]) + 1
+        if nxt < tr.n_steps and tr.active[nxt, v]:
+            assert res.tx_count[v] == 1, f"vehicle {v} was informed but never relayed"
+
+
+def test_removed_busy_deferral_cap_is_refused():
+    from sim.engine import SimSettings
+
+    with pytest.raises(ValueError, match="max_busy_deferrals"):
+        SimSettings.from_config({"simulation": {"max_busy_deferrals": 5}})
+
+
 def test_config_hash_changes_with_configuration(hz_cfg):
     a = RunSpec(policy="flooding", seed=0).key()
     b = RunSpec(policy="flooding", seed=1).key()
