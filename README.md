@@ -414,6 +414,26 @@ valuable thing in this repository.
   unreadable entries are regenerated. The restart reproduced the crashed
   attempt's per-update history exactly through update 13, so training is
   deterministic under fixed seeds on this machine (CPU, torch 2.2.2).
+  **At 40 updates the constraint is not yet satisfied on training cells.**
+  From `checkpoints/run4/history.jsonl`:
+
+  | curriculum phase | updates | λ | coverage / target (mean) | updates meeting target | cost per at-risk vehicle |
+  |---|---|---|---|---|---|
+  | dense (40, 80) | 1–10 | 2.00 → 2.85 | 0.548 / 0.579 | 5 / 10 | 1.022 |
+  | mid (10–40) | 11–20 | 2.85 → 4.25 | 0.570 / 0.622 | 3 / 10 | 0.423 |
+  | sparse mix (1–80) | 21–40 | 4.25 → 5.77 | 0.512 / 0.568 | 4 / 20 | 0.508 |
+
+  λ rose every phase and never settled (max 5.81, cap 50), so the feared
+  oscillation toward the dense-cell break-even did not occur. But
+  transmissions fell faster than coverage followed the rising price: the
+  policy under-covers by ~5 points. Mean wall-clock was 88 s per update, so
+  the configured 2,000 updates is ~49 h on this CPU.
+  **The multiplier step can mask misses.** λ is driven by the mean of
+  per-episode shortfalls, each normalised by its own target. Low-ceiling cells
+  (d=1 targets down to ~0.12) that overshoot pull the mean negative while the
+  pooled coverage is still short — update 35 had coverage 0.451 against target
+  0.520 yet a mean shortfall of −0.048. Whether to step λ on pooled or
+  per-cell shortfall is an open design decision, not yet changed.
 - **Grid risk estimation is approximate.** The causal field in a grid is
   route-unaware (Manhattan distance + bearing gate), which is why its
   correlation with ground truth is 0.13 there. The oracle fixes *evaluation*;
