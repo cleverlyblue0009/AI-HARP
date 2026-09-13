@@ -83,6 +83,7 @@ def sample_episode_specs(
 ) -> list[EpisodeSpec]:
     t = cfg["training"]
     densities = curriculum_densities(cfg, progress)
+    pool = training_seed_pool(cfg)
     out = []
     for _ in range(n):
         out.append(EpisodeSpec(
@@ -90,9 +91,37 @@ def sample_episode_specs(
             density=float(rng.choice(densities)),
             weather=str(rng.choice(t["train_weather"])),
             hazard_type=str(rng.choice(t["train_hazards"])),
-            seed=int(rng.integers(0, 1_000_000)),
+            seed=int(rng.choice(pool)),
         ))
     return out
+
+
+def training_seed_pool(cfg: dict[str, Any]) -> np.ndarray:
+    """The mobility seeds training may draw from.
+
+    Bounded, for two reasons. Speed: seeds were drawn from [0, 1e6), so every
+    episode was a trace-cache miss and paid for fresh mobility generation --
+    the first 40-update run burned ~50 CPU-minutes largely on that. And the
+    train/eval split: an unbounded draw can land on the evaluation seeds (0-9),
+    silently evaluating the agent on traffic it trained on.
+    """
+    p = cfg["training"].get("train_seed_pool", {"start": 100, "count": 32})
+    return np.arange(int(p["start"]), int(p["start"]) + int(p["count"]))
+
+
+def check_seed_split(cfg: dict[str, Any], cfgs: dict[str, Any]) -> None:
+    """Refuse to train on seeds used for evaluation or normalisation."""
+    train = set(training_seed_pool(cfg).tolist())
+    evaluation = set(cfgs["experiment"].get("compare", {}).get("seeds", []))
+    evaluation |= set(cfgs["experiment"].get("sweep", {}).get("seeds", []))
+    holdout = set(cfg["graph"]["normalisation"]["holdout_seeds"])
+    for name, other in (("evaluation", evaluation), ("normalisation hold-out", holdout)):
+        overlap = sorted(train & set(other))
+        if overlap:
+            raise ValueError(
+                f"training seed pool overlaps the {name} seeds {overlap}; the agent "
+                "would be scored on traffic it trained on. Move train_seed_pool."
+            )
 
 
 def run_episode(
@@ -307,66 +336,91 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
     except Exception as exc:  # pragma: no cover
         logger.warning("TensorBoard unavailable (%s); logging to JSONL only", exc)
 
+    check_seed_split(cfg, cfgs)
     out_dir.mkdir(parents=True, exist_ok=True)
     history: list[dict[str, Any]] = []
+    history_path = out_dir / "history.jsonl"
+    history_path.write_text("", encoding="utf-8")        # one run per directory
+    (out_dir / "crash.json").unlink(missing_ok=True)
     n_eps = 2 if smoke else int(cfg["training"]["rollout_episodes_per_update"])
     ckpt_every = int(cfg["training"]["checkpoint_every_updates"])
     t0 = time.time()
 
-    for update in range(1, updates + 1):
-        progress = update / max(updates, 1)
-        specs = sample_episode_specs(cfg, progress, rng, n_eps)
+    def _checkpoint(tag: str, at_update: int) -> None:
+        torch.save({"update": at_update, "model": net.state_dict(),
+                    "optimiser": opt.state_dict(), "config": cfg},
+                   out_dir / f"ckpt_{tag}.pt")
 
-        transitions: list = []
-        infos: list[dict[str, float]] = []
-        for spec in specs:
-            policy.reset(0, rng)
-            tr_, info = run_episode(spec, policy, weights, cfgs)
-            transitions.extend(tr_)
-            infos.append(info)
+    update = 0
+    try:
+        for update in range(1, updates + 1):
+            progress = update / max(updates, 1)
+            specs = sample_episode_specs(cfg, progress, rng, n_eps)
 
-        if len(transitions) < 4:
-            logger.warning("update %d: only %d transitions; skipping",
-                           update, len(transitions))
-            continue
+            transitions: list = []
+            infos: list[dict[str, float]] = []
+            for spec in specs:
+                policy.reset(0, rng)
+                tr_, info = run_episode(spec, policy, weights, cfgs)
+                transitions.extend(tr_)
+                infos.append(info)
 
-        adv, ret = compute_gae(transitions,
-                               float(cfg["algorithm"]["ppo"]["gamma"]),
-                               float(cfg["algorithm"]["ppo"]["gae_lambda"]))
-        losses = ppo_update(net, opt, transitions, adv, ret, cfg)
+            if len(transitions) < 4:
+                logger.warning("update %d: only %d transitions; skipping",
+                               update, len(transitions))
+                continue
 
-        rec = {
-            "update": update,
-            "densities": sorted(set(s.density for s in specs)),
-            "reward_mean": float(np.mean([i["reward_mean"] for i in infos])),
-            "transmissions": float(np.mean([i["transmissions"] for i in infos])),
-            "informed": float(np.mean([i["informed"] for i in infos])),
-            "fallback_rate": float(np.nanmean([i["gate_fallback_rate"] for i in infos])),
-            "confidence_mean": float(np.nanmean([i["gate_confidence_mean"] for i in infos])),
-            "n_transitions": len(transitions),
-            **losses,
-        }
-        history.append(rec)
+            adv, ret = compute_gae(transitions,
+                                   float(cfg["algorithm"]["ppo"]["gamma"]),
+                                   float(cfg["algorithm"]["ppo"]["gae_lambda"]))
+            losses = ppo_update(net, opt, transitions, adv, ret, cfg)
+
+            rec = {
+                "update": update,
+                "elapsed_s": round(time.time() - t0, 1),
+                "densities": sorted(set(s.density for s in specs)),
+                "reward_mean": float(np.mean([i["reward_mean"] for i in infos])),
+                "transmissions": float(np.mean([i["transmissions"] for i in infos])),
+                "informed": float(np.mean([i["informed"] for i in infos])),
+                "fallback_rate": float(np.nanmean([i["gate_fallback_rate"] for i in infos])),
+                "confidence_mean": float(np.nanmean([i["gate_confidence_mean"] for i in infos])),
+                "n_transitions": len(transitions),
+                **losses,
+            }
+            history.append(rec)
+            # Append and flush EVERY update. History used to be written only
+            # at the end, so the first 40-update run died leaving checkpoints/
+            # empty and no record of how far it got or why it stopped.
+            with history_path.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(rec) + "\n")
+            if writer:
+                for k, v in rec.items():
+                    if isinstance(v, (int, float)):
+                        writer.add_scalar(f"train/{k}", v, update)
+                writer.flush()
+            if update % max(1, updates // 10) == 0 or update == 1:
+                logger.info(
+                    "update %4d/%d | r=%+.3f tx=%.0f inf=%.0f fb=%.2f ent=%.3f pl=%+.4f",
+                    update, updates, rec["reward_mean"], rec["transmissions"],
+                    rec["informed"], rec["fallback_rate"], rec["entropy"],
+                    rec["policy_loss"],
+                )
+            _checkpoint("latest", update)                  # ~0.5 MB, always resumable
+            if update % ckpt_every == 0 or update == updates:
+                _checkpoint(f"{update:06d}", update)
+    except BaseException as exc:
+        # BaseException, not Exception: an interrupted or killed run must still
+        # leave evidence of where it stopped and why.
+        crash = {"crashed_at_update": update, "completed_updates": len(history),
+                 "error": f"{type(exc).__name__}: {exc}",
+                 "elapsed_s": round(time.time() - t0, 1)}
+        (out_dir / "crash.json").write_text(json.dumps(crash, indent=1), encoding="utf-8")
+        logger.error("training stopped at update %d: %s", update, crash["error"])
+        raise
+    finally:
         if writer:
-            for k, v in rec.items():
-                if isinstance(v, (int, float)):
-                    writer.add_scalar(f"train/{k}", v, update)
-        if update % max(1, updates // 10) == 0 or update == 1:
-            logger.info(
-                "update %4d/%d | r=%+.3f tx=%.0f inf=%.0f fb=%.2f ent=%.3f pl=%+.4f",
-                update, updates, rec["reward_mean"], rec["transmissions"],
-                rec["informed"], rec["fallback_rate"], rec["entropy"], rec["policy_loss"],
-            )
-        if update % ckpt_every == 0 or update == updates:
-            ckpt = out_dir / f"ckpt_{update:06d}.pt"
-            torch.save({"update": update, "model": net.state_dict(),
-                        "optimiser": opt.state_dict(), "config": cfg}, ckpt)
+            writer.close()
 
-    (out_dir / "history.jsonl").write_text(
-        "\n".join(json.dumps(h) for h in history), encoding="utf-8"
-    )
-    if writer:
-        writer.close()
     logger.info("trained %d updates in %.1fs", updates, time.time() - t0)
     return {"history": history, "network": net, "normaliser": norm}
 

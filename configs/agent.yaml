@@ -192,6 +192,11 @@ training:
   tensorboard_dir: tb_logs/
   seed: 0
   deterministic: true
+  train_seed_pool: {start: 100, count: 32}
+  # Mobility seeds 100-131. Must stay disjoint from the evaluation seeds (0-9,
+  # configs/experiment.yaml) and the normaliser hold-out (900-904);
+  # agents/train.py refuses to start otherwise. Bounded so traces are cached
+  # and reused -- an unbounded draw made every episode a cache miss.
 
   curriculum:
     # Start connected, anneal toward sparse: credit assignment is tractable

@@ -336,3 +336,48 @@ def test_gae_is_computed_per_vehicle_not_across_vehicles():
     adv, _ = compute_gae(t, gamma=0.99, lam=0.95)
     # Vehicle 1's first decision must not absorb vehicle 2's huge reward.
     assert adv[0] < 3.0
+
+
+# ============================================================ seed split ====
+def _train_cfgs():
+    from common.config import load_yaml
+
+    return load_yaml("agent.yaml"), {"experiment": load_yaml("experiment.yaml")}
+
+
+def test_committed_training_seeds_are_disjoint_from_evaluation():
+    """Training on seeds 0-9 would score the agent on traffic it trained on."""
+    pytest.importorskip("torch")
+    pytest.importorskip("torch_geometric")
+    from agents.train import check_seed_split, training_seed_pool
+
+    cfg, cfgs = _train_cfgs()
+    check_seed_split(cfg, cfgs)                     # must not raise
+    pool = set(training_seed_pool(cfg).tolist())
+    assert not pool & set(cfgs["experiment"]["compare"]["seeds"])
+    assert not pool & set(cfg["graph"]["normalisation"]["holdout_seeds"])
+
+
+def test_seed_split_guard_rejects_an_overlapping_pool():
+    pytest.importorskip("torch")
+    pytest.importorskip("torch_geometric")
+    import copy
+
+    from agents.train import check_seed_split
+
+    cfg, cfgs = _train_cfgs()
+    bad = copy.deepcopy(cfg)
+    bad["training"]["train_seed_pool"] = {"start": 5, "count": 10}   # hits 5-9
+    with pytest.raises(ValueError, match="evaluation"):
+        check_seed_split(bad, cfgs)
+
+
+def test_episode_seeds_come_from_the_bounded_pool():
+    """An unbounded draw made every episode a trace-cache miss."""
+    pytest.importorskip("torch")
+    pytest.importorskip("torch_geometric")
+    from agents.train import sample_episode_specs, training_seed_pool
+
+    cfg, _ = _train_cfgs()
+    specs = sample_episode_specs(cfg, 0.5, np.random.default_rng(0), 200)
+    assert {s.seed for s in specs} <= set(training_seed_pool(cfg).tolist())
