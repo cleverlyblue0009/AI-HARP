@@ -1,0 +1,86 @@
+# python -m experiments.profile_training --updates 3 --checkpoint checkpoints/run7/ckpt_000200.pt --workers 8 --seed 2026
+# commit 28a3931 | AMD64 Family 25 Model 124 Stepping 0, AuthenticAMD | torch 2.2.2 (threads 6) | 2026-09-14 19:49
+# episodes per update 8; curriculum progress 1.0 (mixed densities)
+#   update 1: urban d=2, rural d=1, urban d=40, rural d=40, rural d=80, urban d=10, urban d=40, rural d=2
+#   update 2: rural d=5, rural d=5, urban d=3, urban d=80, rural d=3, urban d=10, rural d=3, rural d=1
+#   update 3: rural d=20, urban d=1, urban d=5, urban d=40, urban d=1, urban d=40, rural d=1, urban d=3
+
+== 1. Wall-clock, uninstrumented ==
+serial      :    45.2 s/update  (rollouts   32.8 s, PPO   12.4 s) | 5385 transitions/update | 119 transitions/s end to end
+8 workers   :    27.6 s/update  (rollouts   15.6 s, PPO   12.0 s) | 195 transitions/s | pool start + warm-up 21.4 s once per run
+2,000 updates: serial 25.1 h, 8 workers 15.3 h
+
+== 2. Instrumented breakdown (serial, same episodes, run7 weights) ==
+(instrumented total 143.8 s over 3 updates; instrumentation adds overhead, so use shares, not absolute times)
+  forward passes (inference)                               62.8 s   43.7%
+  decision-graph construction                               8.0 s    5.6%
+  feature normalisation                                     0.4 s    0.3%
+  to_pyg conversion                                         3.3 s    2.3%
+  other policy logic (mask, gate, mapping)                  2.2 s    1.5%
+  simulator (engine, excl. policy)                         22.8 s   15.9%
+  reward, trace/hazard setup (run_episode excl. engine)      4.4 s    3.0%
+  PPO forward (evaluate_actions)                           14.9 s   10.4%
+  PPO backward                                             17.4 s   12.1%
+  PPO optimiser step                                        1.1 s    0.8%
+  PPO other (batching graphs, GAE tensors, loss)            6.4 s    4.4%
+forward passes: 15247 calls, 4.12 ms/call, graph size mean 12.9 nodes (median 13, p95 13, max 13)
+decisions per engine epoch (epochs with >=1 decision): mean 52.18, median 10, p90 118, max 1154 over 394 epochs; share of decisions in epochs with >=8 decisions: 97.9%
+Amdahl bound for an inference-only optimisation (forward + to_pyg = 46.0%): 1 / (1 - 0.460) = 1.85x
+Amdahl bound if the whole policy path (graph build + normalise + forward) went to zero (53.4%): 2.14x
+
+== 3. Worker-pool transfer cost ==
+one update's returned transitions: 73.8 MB pickled, serialise + deserialise 0.37 s (1.3% of a 8-worker update)
+weights sent per episode: 0.16 MB
+
+== 4. cProfile, rollouts only, top 25 by cumulative time ==
+         24023534 function calls (22944535 primitive calls) in 103.655 seconds
+   Ordered by: cumulative time
+   List reduced from 833 to 25 due to restriction <25>
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       24    0.001    0.000  103.894    4.329 C:\Users\UPASANA\AI-HARP\agents\train.py:255(collect_rollouts)
+       24    0.017    0.001  103.831    4.326 C:\Users\UPASANA\AI-HARP\agents\train.py:200(run_seeded_episode)
+       24    0.010    0.000  103.759    4.323 C:\Users\UPASANA\AI-HARP\agents\train.py:127(run_episode)
+ 81572/24    0.489    0.000   99.538    4.147 C:\Users\UPASANA\AI-HARP\experiments\profile_training.py:60(inner)
+       24    0.383    0.016   99.537    4.147 C:\Users\UPASANA\AI-HARP\sim\engine.py:167(run)
+    20560    0.153    0.000   92.601    0.005 C:\Users\UPASANA\AI-HARP\sim\engine.py:509(_decide_and_apply)
+    20560    0.128    0.000   76.674    0.004 C:\Users\UPASANA\AI-HARP\experiments\profile_training.py:234(decide_counting)
+    20560    0.677    0.000   76.546    0.004 C:\Users\UPASANA\AI-HARP\agents\ai_harp.py:327(decide)
+      143    0.981    0.007   74.929    0.524 C:\Users\UPASANA\AI-HARP\sim\engine.py:325(_transmit)
+    15247    0.124    0.000   62.710    0.004 C:\Users\UPASANA\AI-HARP\experiments\profile_training.py:219(act_counting)
+    15247    0.210    0.000   62.523    0.004 D:\aiharp-env\Lib\site-packages\torch\utils\_contextlib.py:112(decorate_context)
+    15247    0.768    0.000   61.983    0.004 C:\Users\UPASANA\AI-HARP\agents\gat_drl.py:218(act)
+487904/15247    0.847    0.000   49.673    0.003 D:\aiharp-env\Lib\site-packages\torch\nn\modules\module.py:1507(_wrapped_call_impl)
+487904/15247    1.584    0.000   49.639    0.003 D:\aiharp-env\Lib\site-packages\torch\nn\modules\module.py:1513(_call_impl)
+    15247    0.677    0.000   49.490    0.003 C:\Users\UPASANA\AI-HARP\agents\gat_drl.py:195(forward)
+    15247    1.054    0.000   44.153    0.003 C:\Users\UPASANA\AI-HARP\agents\gat_drl.py:117(forward)
+    45741    1.345    0.000   37.499    0.001 D:\aiharp-env\Lib\site-packages\torch_geometric\nn\conv\gatv2_conv.py:250(forward)
+    45741    0.686    0.000   24.039    0.001 C:\Users\UPASANA\AppData\Local\Temp\torch_geometric.nn.conv.gatv2_conv_GATv2Conv_edge_updater_733c25in.py:135(edge_updater)
+    45741    1.947    0.000   19.436    0.000 D:\aiharp-env\Lib\site-packages\torch_geometric\nn\conv\gatv2_conv.py:358(edge_update)
+    20560    2.693    0.000   15.432    0.001 C:\Users\UPASANA\AI-HARP\sim\engine.py:523(_context)
+    45741    0.895    0.000    8.336    0.000 C:\Users\UPASANA\AppData\Local\Temp\torch_geometric.nn.conv.gatv2_conv_GATv2Conv_propagate_igi6__nr.py:112(propagate)
+    45741    1.988    0.000    8.196    0.000 D:\aiharp-env\Lib\site-packages\torch_geometric\utils\_softmax.py:12(softmax)
+    15247    3.632    0.000    7.891    0.001 C:\Users\UPASANA\AI-HARP\agents\graph.py:154(build_decision_graph)
+    20794    1.841    0.000    7.601    0.000 C:\Users\UPASANA\AI-HARP\hazard\risk_field.py:195(evaluate)
+   137223    1.219    0.000    6.841    0.000 D:\aiharp-env\Lib\site-packages\torch_geometric\utils\_scatter.py:14(scatter)
+
+== 5. torch autograd profiler, last PPO update, top 15 ops by self CPU time ==
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg    # of Calls  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                              aten::sum        19.47%        1.837s        19.72%        1.860s     854.162us          2178  
+                                               aten::mm        14.85%        1.401s        14.85%        1.401s     763.167us          1836  
+                                              aten::mul         9.86%     930.431ms         9.89%     933.170ms     361.134us          2584  
+                                     aten::scatter_add_         8.25%     778.538ms         8.25%     778.538ms     602.584us          1292  
+                              aten::leaky_relu_backward         5.78%     545.607ms         5.78%     545.607ms       2.675ms           204  
+                                              aten::add         5.43%     512.288ms         5.50%     518.398ms      28.426us         18237  
+                                       aten::leaky_relu         5.41%     510.576ms         5.41%     510.576ms       2.503ms           204  
+                                     aten::index_select         3.31%     312.629ms         3.40%     321.026ms     314.731us          1020  
+                                            aten::addmm         2.07%     195.070ms         2.33%     220.025ms     294.151us           748  
+                                              aten::cat         1.87%     176.361ms         3.70%     348.664ms     732.487us           476  
+                               Optimizer.step#Adam.step         1.36%     127.910ms         3.36%     316.554ms       4.655ms            68  
+                                         aten::scatter_         1.25%     117.580ms         1.25%     117.580ms     576.373us           204  
+                                              aten::elu         1.20%     113.180ms         1.20%     113.180ms     554.804us           204  
+                                  aten::scatter_reduce_         1.10%     103.497ms         2.34%     221.077ms       1.084ms           204  
+                                           aten::gather         1.03%      97.447ms         1.03%      97.447ms     204.721us           476  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 9.434s
