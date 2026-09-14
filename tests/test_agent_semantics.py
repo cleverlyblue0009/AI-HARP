@@ -29,7 +29,7 @@ class _CountingNet:
         self.calls = 0
         self.masks: list = []
 
-    def act(self, data, deterministic: bool = False, action_mask=None):
+    def act(self, data, deterministic: bool = False, action_mask=None, uniform=None):
         self.calls += 1
         self.masks.append(action_mask)
         choice = self.index
@@ -42,7 +42,7 @@ class _CountingNet:
 
 
 class _NearUniformNet(_CountingNet):
-    def act(self, data, deterministic: bool = False, action_mask=None):
+    def act(self, data, deterministic: bool = False, action_mask=None, uniform=None):
         self.calls += 1
         p = np.full(len(ACTION_NAMES), 1.0 / len(ACTION_NAMES))
         return {"action": 1, "probs": p, "relay_order": [1, 2, 3],

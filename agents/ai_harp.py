@@ -94,6 +94,19 @@ def assign_terminal_rewards(
     return transitions
 
 
+def _seed_without_advancing(rng: np.random.Generator) -> int:
+    """A 31-bit seed derived from ``rng``'s current state, without drawing from it.
+
+    Drawing would shift every later draw the fallback policy makes from the
+    same per-run RNG; hashing the state leaves that stream untouched.
+    """
+    import hashlib
+    import json
+
+    state = json.dumps(rng.bit_generator.state, sort_keys=True, default=str)
+    return int(hashlib.sha256(state.encode()).hexdigest()[:8], 16) & 0x7FFFFFFF
+
+
 def executed_transitions(transitions: list[Transition]) -> list[Transition]:
     """Only the transitions whose recorded action was actually executed.
 
@@ -274,6 +287,17 @@ class AiHarpPolicy(Policy):
         self.n_decisions = 0
         self._settled: set[int] = set()
         self._carries: dict[int, int] = {}
+        # Evaluation only: sampled actions draw their uniforms from a private
+        # generator seeded from this run's policy RNG, so a stochastic
+        # evaluation run depends only on its own seed, never on which runs
+        # happened before it in the process. Training (record=True) keeps
+        # sampling from torch's global generator, which agents.train seeds
+        # per episode.
+        self._eval_gen = None
+        if self.network is not None and not self.record and not self.deterministic:
+            import torch
+
+            self._eval_gen = torch.Generator().manual_seed(_seed_without_advancing(rng))
 
     _CARRY = ACTION_NAMES.index("carry_and_forward")
 
@@ -338,11 +362,13 @@ class AiHarpPolicy(Policy):
         graph, mask = self._prepare(ctx)
         # The mask is applied INSIDE the network's sampling so the recorded
         # log-prob and entropy describe the distribution actually sampled.
-        if mask is None:
-            out = self.network.act(graph.to_pyg(), deterministic=self.deterministic)
-        else:
-            out = self.network.act(graph.to_pyg(), deterministic=self.deterministic,
-                                   action_mask=mask)
+        kwargs: dict[str, Any] = {"deterministic": self.deterministic}
+        if mask is not None:
+            kwargs["action_mask"] = mask
+        gen = self.__dict__.get("_eval_gen")
+        if gen is not None:
+            kwargs["uniform"] = float(__import__("torch").rand((), generator=gen))
+        out = self.network.act(graph.to_pyg(), **kwargs)
         return self._post_network(ctx, graph, mask, out)
 
     def decide_batch(self, ctxs: list[DecisionContext]) -> list[Action]:
@@ -375,8 +401,10 @@ class AiHarpPolicy(Policy):
                 full = np.ones(len(ACTION_NAMES), dtype=bool)
                 masks = torch.as_tensor(np.stack(
                     [full if prepared[k][1] is None else prepared[k][1] for k in need]))
+            gen = self.__dict__.get("_eval_gen")
+            uniforms = torch.rand(len(need), generator=gen) if gen is not None else None
             results = self.network.act_batch(batch, deterministic=self.deterministic,
-                                             action_masks=masks)
+                                             action_masks=masks, uniforms=uniforms)
             outs = dict(zip(need, results))
 
         return [pres[k] if pres[k] is not None

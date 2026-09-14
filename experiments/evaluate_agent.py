@@ -72,7 +72,7 @@ def agent_params(checkpoint: Path | str, **extra: Any) -> dict[str, Any]:
 
 def agent_cells(
     checkpoint: Path, cells: Sequence[Cell], seeds: Sequence[int],
-    biases: Sequence[float], tau: float, cfgs: dict[str, Any],
+    biases: Sequence[float], tau: float, cfgs: dict[str, Any], deterministic: bool = False,
 ) -> list[Cell]:
     """Each cell with an ``ai_harp`` operating curve added beside the baselines."""
     out = []
@@ -83,7 +83,7 @@ def agent_cells(
             "ai_harp", seeds, scenario=k.scenario, density=k.density,
             weather=k.weather, hazard_type=k.hazard_type, cfgs=cfgs,
             sweep=("suppression_bias", tuple(biases)),
-            fixed_params=agent_params(checkpoint, tau=tau, deterministic=True),
+            fixed_params=agent_params(checkpoint, tau=tau, deterministic=deterministic),
         )
         out.append(Cell(key=k, curves={**cell.curves, "ai_harp": curve}))
     return out
@@ -91,7 +91,7 @@ def agent_cells(
 
 def gate_sweep(
     checkpoint: Path, cells: Sequence[Cell], seeds: Sequence[int],
-    taus: Sequence[float], cfgs: dict[str, Any],
+    taus: Sequence[float], cfgs: dict[str, Any], deterministic: bool = False,
 ) -> dict[str, list[dict[str, float]]]:
     """Fallback rate and quality against tau, at zero suppression bias."""
     out: dict[str, list[dict[str, float]]] = {}
@@ -101,7 +101,8 @@ def gate_sweep(
             "ai_harp", seeds, scenario=k.scenario, density=k.density,
             weather=k.weather, hazard_type=k.hazard_type, cfgs=cfgs,
             sweep=("tau", tuple(taus)),
-            fixed_params=agent_params(checkpoint, suppression_bias=0.0, deterministic=True),
+            fixed_params=agent_params(checkpoint, suppression_bias=0.0,
+                                      deterministic=deterministic),
         )
         out[str(k)] = [{
             "tau": float(p.value), "rwcr": p.quality, "rwcr_std": p.quality_std,
@@ -160,6 +161,10 @@ def main(argv: list[str] | None = None) -> int:
                          "rate within this (absolute) of the cell's best baseline")
     ap.add_argument("--no-miss-guard", action="store_true",
                     help="RWCR-only matched quality (the pre-guard definition)")
+    ap.add_argument("--policy-mode", default="sampled", choices=["sampled", "argmax"],
+                    help="score the stochastic policy training optimised (sampled, the "
+                         "headline) or its most-likely action (argmax). On run8 rural d=80 "
+                         "argmax gave oracle RWCR 0.642 vs 0.814 sampled at the same cost.")
     ap.add_argument("--out-dir", default=None,
                     help="where to write outputs (default results/); point a "
                          "partially trained checkpoint elsewhere so a pipeline "
@@ -207,7 +212,9 @@ def main(argv: list[str] | None = None) -> int:
         out_dir = PROJECT_ROOT / out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    scored = agent_cells(ckpt, cells, seeds, args.biases, tau, cfgs)
+    deterministic = args.policy_mode == "argmax"
+    banner += f" | policy {args.policy_mode}"
+    scored = agent_cells(ckpt, cells, seeds, args.biases, tau, cfgs, deterministic=deterministic)
     save_cells(scored, out_dir / "pareto_cells_agent.json")
 
     summary: dict[str, Any] = {"checkpoint": str(ckpt), "checkpoint_sha": checkpoint_sha(ckpt),
@@ -216,6 +223,7 @@ def main(argv: list[str] | None = None) -> int:
                                "mode": args.mode, "axes": {}}
     miss_margin = None if args.no_miss_guard else args.miss_margin
     summary["miss_margin"] = miss_margin
+    summary["policy_mode"] = args.policy_mode
     print(banner)
     for axis in COST_AXES:
         res = compare_policy(scored, "ai_harp", args.target, axis, args.mode,
@@ -235,7 +243,7 @@ def main(argv: list[str] | None = None) -> int:
         }
 
     if not args.skip_gate:
-        sweep = gate_sweep(ckpt, cells, seeds, args.taus, cfgs)
+        sweep = gate_sweep(ckpt, cells, seeds, args.taus, cfgs, deterministic=deterministic)
         (out_dir / "gate_sweep.json").write_text(json.dumps(sweep, indent=1),
                                                 encoding="utf-8")
         summary["gate_sweep"] = str(out_dir / "gate_sweep.json")
