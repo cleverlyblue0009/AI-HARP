@@ -105,6 +105,16 @@ action_space:
   # suppress decisions were followed by a re-ask and a transmission, which
   # turned a +11.58 advantage for staying silent into -8.02, and PPO drove
   # suppress from ~15% of decisions to 0.35%.
+  max_carries_per_vehicle: 3
+  # source: [DERIVED] After this many carry_and_forward decisions a vehicle may
+  #         only suppress, broadcast, defer or relay (carry is masked inside
+  #         the network's sampling, and the mask is stored with the transition
+  #         so PPO re-applies it). run6 collapsed onto carry at update 41:
+  #         92-94% of decisions, 16-20 decisions per informed vehicle, entropy
+  #         0.73 -> 0.27, fewer vehicles reached than slotted_1p. Carrying cost
+  #         nothing, never settled, and the reward lands on a vehicle's last
+  #         decision. 3 x carry_recheck (1 s) keeps genuine store-carry-forward
+  #         across short gaps.
   # 100 ms per epoch. Note the README limitation: this granularity inflates the
   # absolute latency of every deferring scheme, baselines and agent alike.
 

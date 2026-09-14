@@ -175,6 +175,11 @@ def run_episode(
         "n_decisions": float(len(policy.transitions)),
         "lambda": lam,
         "lambda_group": group,
+        # Share of decisions that carried, and decisions per informed vehicle:
+        # the two numbers that exposed run6's collapse onto carry.
+        "carry_rate": float(np.mean([t.action == AiHarpPolicy._CARRY for t in policy.transitions]))
+        if policy.transitions else 0.0,
+        "decisions_per_informed": float(len(policy.transitions) / max(informed, 1)),
         **{f"obj_{k}": v for k, v in outcome.as_dict().items()},
         **policy.stats(),
     }
@@ -229,6 +234,11 @@ def ppo_update(
 
     graphs = [t.graph.to_pyg() for t in transitions]
     actions = torch.tensor([t.action for t in transitions], dtype=torch.long)
+    # Each decision's available actions, re-applied so new and old log-probs
+    # come from the same (masked) distribution.
+    n_act = int(net.n_actions)
+    masks = torch.tensor([t.action_mask if getattr(t, "action_mask", None) is not None
+                          else (True,) * n_act for t in transitions], dtype=torch.bool)
     old_lp = torch.tensor([t.log_prob for t in transitions], dtype=torch.float32)
     adv_t = torch.tensor(adv, dtype=torch.float32)
     ret_t = torch.tensor(ret, dtype=torch.float32)
@@ -247,7 +257,7 @@ def ppo_update(
             if sel.numel() < 2:
                 continue
             batch = Batch.from_data_list([graphs[i] for i in sel.tolist()])
-            lp, value, entropy = net.evaluate_actions(batch, actions[sel])
+            lp, value, entropy = net.evaluate_actions(batch, actions[sel], masks[sel])
 
             ratio = torch.exp(lp - old_lp[sel])
             a = adv_t[sel]
@@ -498,6 +508,9 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
                 "fallback_rate": float(np.nanmean([i["gate_fallback_rate"] for i in infos])),
                 "confidence_mean": float(np.nanmean([i["gate_confidence_mean"] for i in infos])),
                 "n_transitions": len(transitions),
+                "carry_rate": float(np.mean([i["carry_rate"] for i in infos])),
+                "decisions_per_informed": float(np.mean(
+                    [i["decisions_per_informed"] for i in infos])),
                 # lambda / lambda_next: mean over the groups sampled this update;
                 # the per-group values are what the dual step actually used.
                 "lambda": lam_used,

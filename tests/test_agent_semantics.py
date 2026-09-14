@@ -22,22 +22,27 @@ pytest.importorskip("torch_geometric")
 
 
 class _CountingNet:
-    """Always picks one action; counts how often it is consulted."""
+    """Always picks one action (or suppress, if that one is masked); counts calls."""
 
     def __init__(self, action: str) -> None:
         self.index = ACTION_NAMES.index(action)
         self.calls = 0
+        self.masks: list = []
 
-    def act(self, data, deterministic: bool = False):
+    def act(self, data, deterministic: bool = False, action_mask=None):
         self.calls += 1
+        self.masks.append(action_mask)
+        choice = self.index
+        if action_mask is not None and not action_mask[choice]:
+            choice = ACTION_NAMES.index("suppress")
         p = np.zeros(len(ACTION_NAMES))
-        p[self.index] = 1.0
-        return {"action": self.index, "probs": p, "relay_order": [1, 2, 3],
+        p[choice] = 1.0
+        return {"action": choice, "probs": p, "relay_order": [1, 2, 3],
                 "log_prob": 0.0, "value": 0.0, "entropy": 0.0}
 
 
 class _NearUniformNet(_CountingNet):
-    def act(self, data, deterministic: bool = False):
+    def act(self, data, deterministic: bool = False, action_mask=None):
         self.calls += 1
         p = np.full(len(ACTION_NAMES), 1.0 / len(ACTION_NAMES))
         return {"action": 1, "probs": p, "relay_order": [1, 2, 3],
@@ -133,6 +138,99 @@ def test_policy_semantics_match_the_config_file():
     space = load_yaml("agent.yaml")["action_space"]
     assert AiHarpPolicy.defer_cancel_on_duplicates == space["defer_cancel_on_duplicates"]
     assert AiHarpPolicy.suppress_is_final == space["suppress_is_final"]
+
+
+# ------------------------------------------------ (d) carry is capped -------
+def test_carry_is_masked_after_the_cap():
+    """run6 collapsed onto carry: 92-94% of decisions, 16-20 per informed vehicle."""
+    net = _CountingNet("carry_and_forward")
+    pol = _policy(net)
+    cap = AiHarpPolicy.max_carries_per_vehicle
+    for _ in range(cap):
+        assert pol.decide(make_ctx(trigger=_timer())).kind is ActionType.CARRY
+    capped = pol.decide(make_ctx(trigger=_timer()))
+    assert capped.kind is not ActionType.CARRY
+    assert net.masks[:cap] == [None] * cap
+    assert net.masks[cap] is not None and not net.masks[cap][ACTION_NAMES.index("carry_and_forward")]
+
+
+def _timer():
+    from agents.base import Trigger
+
+    return Trigger.TIMER
+
+
+def test_carry_cap_is_per_vehicle_and_reset_clears_it():
+    net = _CountingNet("carry_and_forward")
+    pol = _policy(net)
+    for _ in range(AiHarpPolicy.max_carries_per_vehicle):
+        pol.decide(make_ctx(index=3, trigger=_timer()))
+    assert pol.decide(make_ctx(index=4, trigger=_timer())).kind is ActionType.CARRY
+    pol.reset(0, np.random.default_rng(0))
+    assert pol.decide(make_ctx(index=3, trigger=_timer())).kind is ActionType.CARRY
+
+
+def test_capped_decision_records_its_mask_for_the_learner():
+    net = _CountingNet("carry_and_forward")
+    pol = _policy(net)
+    pol.record = True
+    for _ in range(AiHarpPolicy.max_carries_per_vehicle + 1):
+        pol.decide(make_ctx(trigger=_timer()))
+    masks = [t.action_mask for t in pol.transitions]
+    assert all(m is None for m in masks[:-1])
+    assert masks[-1] is not None and masks[-1][ACTION_NAMES.index("carry_and_forward")] is False
+
+
+def test_carry_cap_matches_the_config_file():
+    from common.config import load_yaml
+
+    space = load_yaml("agent.yaml")["action_space"]
+    assert AiHarpPolicy.max_carries_per_vehicle == space["max_carries_per_vehicle"]
+
+
+def _real_net_and_graph():
+    from agents.gat_drl import build_network
+    from common.config import load_yaml
+
+    net = build_network(load_yaml("agent.yaml"))
+    net.eval()
+    return net, build_decision_graph(make_ctx()).to_pyg()
+
+
+def test_a_real_network_never_samples_a_masked_action():
+    import torch
+
+    torch.manual_seed(0)
+    net, data = _real_net_and_graph()
+    mask = np.ones(len(ACTION_NAMES), dtype=bool)
+    mask[ACTION_NAMES.index("carry_and_forward")] = False
+    for _ in range(200):
+        out = net.act(data, deterministic=False, action_mask=mask)
+        assert out["action"] != ACTION_NAMES.index("carry_and_forward")
+        assert np.isfinite(out["log_prob"]) and np.isfinite(out["entropy"])
+    assert out["probs"][ACTION_NAMES.index("carry_and_forward")] == pytest.approx(0.0, abs=1e-9)
+    assert net.act(data, deterministic=True, action_mask=mask)["action"] != \
+        ACTION_NAMES.index("carry_and_forward")
+
+
+def test_evaluate_actions_reproduces_the_masked_log_prob():
+    """PPO's ratio must be exactly 1 for an unchanged network under the mask."""
+    import torch
+    from torch_geometric.data import Batch
+
+    torch.manual_seed(1)
+    net, data = _real_net_and_graph()
+    mask = np.ones(len(ACTION_NAMES), dtype=bool)
+    mask[ACTION_NAMES.index("carry_and_forward")] = False
+    out = net.act(data, deterministic=False, action_mask=mask)
+    lp, _, ent = net.evaluate_actions(Batch.from_data_list([data]),
+                                      torch.tensor([out["action"]]),
+                                      torch.as_tensor(mask[None, :]))
+    assert float(lp[0]) == pytest.approx(out["log_prob"], abs=1e-5)
+    assert float(ent[0]) == pytest.approx(out["entropy"], abs=1e-5)
+    unmasked_lp, _, _ = net.evaluate_actions(Batch.from_data_list([data]),
+                                             torch.tensor([out["action"]]))
+    assert float(unmasked_lp[0]) < float(lp[0])       # masking renormalises
 
 
 def test_decide_passes_the_cancel_threshold_through():

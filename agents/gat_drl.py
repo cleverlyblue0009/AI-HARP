@@ -216,9 +216,16 @@ class ActorCritic(nn.Module):
         }
 
     @torch.no_grad()
-    def act(self, data: Data, deterministic: bool = False) -> dict[str, Any]:
+    def act(
+        self, data: Data, deterministic: bool = False, action_mask: Any | None = None,
+    ) -> dict[str, Any]:
+        """Sample (or argmax) an action. ``action_mask`` (True = available) is
+        applied before sampling, so log-prob and entropy describe the
+        distribution the action was actually drawn from."""
         out = self(data)
         logits = out["logits"][0]
+        if action_mask is not None:
+            logits = mask_logits(logits, torch.as_tensor(action_mask, dtype=torch.bool))
         dist = torch.distributions.Categorical(logits=logits)
         action = int(torch.argmax(logits)) if deterministic else int(dist.sample())
         probs = torch.softmax(logits, dim=-1)
@@ -232,11 +239,27 @@ class ActorCritic(nn.Module):
         }
 
     def evaluate_actions(
-        self, data: Batch, actions: torch.Tensor
+        self, data: Batch, actions: torch.Tensor, action_masks: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Log-probs, values and entropies for PPO, under each decision's mask."""
         out = self(data)
-        dist = torch.distributions.Categorical(logits=out["logits"])
+        logits = out["logits"]
+        if action_masks is not None:
+            logits = mask_logits(logits, action_masks.to(torch.bool))
+        dist = torch.distributions.Categorical(logits=logits)
         return dist.log_prob(actions), out["value"], dist.entropy()
+
+
+#: Logit given to unavailable actions. Finite, so entropy stays 0 * finite
+#: rather than 0 * -inf = NaN; its softmax probability underflows to exactly 0.
+MASKED_LOGIT = -1e9
+
+
+def mask_logits(logits: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+    """Set logits of unavailable actions (``mask`` False) to :data:`MASKED_LOGIT`."""
+    if not bool(mask.any(dim=-1).all()):
+        raise ValueError("action mask leaves no available action")
+    return logits.masked_fill(~mask, MASKED_LOGIT)
 
 
 def _relay_order(scores: torch.Tensor) -> list[int]:
@@ -295,11 +318,19 @@ class DuelingQNetwork(nn.Module):
         }
 
     @torch.no_grad()
-    def act(self, data: Data, epsilon: float = 0.0) -> dict[str, Any]:
+    def act(
+        self, data: Data, epsilon: float = 0.0, action_mask: Any | None = None,
+        deterministic: bool = True,
+    ) -> dict[str, Any]:
         out = self(data)
         q = out["q"][0]
+        allowed = torch.arange(self.n_actions)
+        if action_mask is not None:
+            m = torch.as_tensor(action_mask, dtype=torch.bool)
+            q = mask_logits(q, m)
+            allowed = allowed[m]
         if epsilon > 0 and float(torch.rand(1)) < epsilon:
-            action = int(torch.randint(self.n_actions, (1,)))
+            action = int(allowed[torch.randint(allowed.numel(), (1,))])
         else:
             action = int(torch.argmax(q))
         # Softmax over Q is not a calibrated posterior, but its entropy is a

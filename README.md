@@ -279,6 +279,30 @@ derived from measured speed.
   2. **λ may oscillate.** Dense cells exceed their targets easily, so dual
      ascent pulls λ toward the ~0.5 break-even where silence becomes
      attractive again. λ is logged every update so this is visible.
+- **Carrying was a free postponement, and run6 collapsed onto it.** On the
+  fixed engine with per-group λ, run6 trained normally for 40 updates, then
+  at update 41 entropy fell 0.73 → 0.27 and the batch held 34,932 transitions
+  (typically 11–19k). Replaying that checkpoint:
+
+  | episode | policy | decisions / informed vehicle | carry share | informed | RWCR |
+  |---|---|---|---|---|---|
+  | rural d=40, seed 105 | run6 u41 | 19.5 | 94% | 586 | 0.821 |
+  | | `slotted_1p` | 1.0 | 0% | 792 | 0.900 |
+  | urban d=40, seed 124 | run6 u41 | 16.1 | 92% | 908 | 0.912 |
+  | | `slotted_1p` | 1.0 | 0% | 953 | 0.966 |
+
+  `carry_and_forward` costs no transmission, never settles, and the reward
+  lands only on a vehicle's last decision, so holding and being re-asked
+  every second was never penalised — the same shape as the earlier suppress
+  and defer bugs. **Fix (user decision): at most
+  `action_space.max_carries_per_vehicle = 3` carries per vehicle per
+  message**, after which carry is masked out. The mask is applied inside the
+  network's sampling (so the recorded log-prob and entropy describe the
+  distribution actually sampled), stored on the transition, and re-applied
+  when PPO recomputes log-probs; tests pin that a real network never samples
+  a masked action and that `evaluate_actions` reproduces the masked log-prob
+  exactly. History now logs `carry_rate` and `decisions_per_informed`. run6
+  (42 updates) is superseded.
 - `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
   attention on `neighbour → holder` edges *is* the relay ranking**;
   `relay_top_k` designates the k-th most attended neighbour, so the heatmap

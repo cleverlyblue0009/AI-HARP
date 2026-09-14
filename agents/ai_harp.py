@@ -60,6 +60,10 @@ class Transition:
     reward: float = 0.0
     advantage: float = 0.0
     ret: float = 0.0
+    #: Actions available at this decision (None = all). The learner must
+    #: re-apply it when recomputing log-probs, or the PPO ratio compares a
+    #: masked sample against an unmasked distribution.
+    action_mask: tuple[bool, ...] | None = None
 
 
 def assign_terminal_rewards(
@@ -253,6 +257,14 @@ class AiHarpPolicy(Policy):
     defer_cancel_on_duplicates: int = 1
     #: A suppress on a received message is final for that vehicle.
     suppress_is_final: bool = True
+    #: A vehicle may carry the message at most this many times; after that
+    #: carry_and_forward is masked out of its choices. run6's policy collapsed
+    #: onto carry at update 41 (92-94% of decisions, 16-20 decisions per
+    #: informed vehicle, entropy 0.73 -> 0.27, 35k transitions in a batch):
+    #: carrying costs no transmission, never settles, and the reward lands only
+    #: on a vehicle's last decision, so postponing was free. It reached fewer
+    #: vehicles than slotted_1p (586 vs 792 at rural d=40 seed 105).
+    max_carries_per_vehicle: int = 3
 
     def reset(self, n_vehicles: int, rng: np.random.Generator) -> None:
         self.fallback.reset(n_vehicles, rng)
@@ -261,6 +273,18 @@ class AiHarpPolicy(Policy):
         self.n_relay_actions = 0
         self.n_decisions = 0
         self._settled: set[int] = set()
+        self._carries: dict[int, int] = {}
+
+    _CARRY = ACTION_NAMES.index("carry_and_forward")
+
+    def _action_mask(self, vehicle: int) -> np.ndarray | None:
+        """Available actions for ``vehicle``; ``None`` when nothing is masked."""
+        carries = self.__dict__.setdefault("_carries", {})
+        if carries.get(int(vehicle), 0) < self.max_carries_per_vehicle:
+            return None
+        mask = np.ones(len(ACTION_NAMES), dtype=bool)
+        mask[self._CARRY] = False
+        return mask
 
     #: Direction each action's logit moves under a POSITIVE suppression bias,
     #: in ACTION_NAMES order: suppress up; broadcast and the three relay
@@ -268,17 +292,20 @@ class AiHarpPolicy(Policy):
     _BIAS_SIGN = np.array([+1, -1, 0, 0, 0, -1, -1, -1, 0], dtype=float)
 
     def _apply_suppression_bias(
-        self, probs: np.ndarray, rng: np.random.Generator
+        self, probs: np.ndarray, rng: np.random.Generator,
+        mask: np.ndarray | None = None,
     ) -> tuple[np.ndarray, int]:
         """The agent's operating-curve knob, applied in logit space.
 
         Positive trades coverage for fewer transmissions, negative the reverse
         -- the same role p, n_slots or the counter threshold play for the
         baselines, so the agent is compared along a curve rather than at one
-        point.
+        point. Masked actions stay unavailable after biasing.
         """
         logits = np.log(np.clip(probs, 1e-12, 1.0)) + self.suppression_bias * self._BIAS_SIGN
         z = np.exp(logits - logits.max())
+        if mask is not None:
+            z = np.where(mask, z, 0.0)
         p = z / z.sum()
         action = int(np.argmax(p)) if self.deterministic else int(rng.choice(p.size, p=p))
         return p, action
@@ -316,7 +343,14 @@ class AiHarpPolicy(Policy):
         if self.normaliser is not None:
             graph = self.normaliser.apply(graph)
 
-        out = self.network.act(graph.to_pyg(), deterministic=self.deterministic)
+        # The mask is applied INSIDE the network's sampling so the recorded
+        # log-prob and entropy describe the distribution actually sampled.
+        mask = self._action_mask(int(ctx.index))
+        if mask is None:
+            out = self.network.act(graph.to_pyg(), deterministic=self.deterministic)
+        else:
+            out = self.network.act(graph.to_pyg(), deterministic=self.deterministic,
+                                   action_mask=mask)
         probs = np.asarray(out["probs"], dtype=float)
         action = int(out["action"])
         if self.suppression_bias != 0.0:
@@ -325,7 +359,7 @@ class AiHarpPolicy(Policy):
                 # not the biased action actually executed: off-policy again.
                 raise ValueError("suppression_bias is an evaluation knob; "
                                  "it must be 0 while recording transitions")
-            probs, action = self._apply_suppression_bias(probs, ctx.rng)
+            probs, action = self._apply_suppression_bias(probs, ctx.rng, mask)
         decision = self.gate.evaluate(probs)
         self.n_decisions += 1
 
@@ -337,6 +371,7 @@ class AiHarpPolicy(Policy):
                 entropy=float(out.get("entropy", 0.0)),
                 vehicle=int(ctx.index), step=int(ctx.step),
                 used_fallback=decision.used_fallback, confidence=decision.confidence,
+                action_mask=None if mask is None else tuple(bool(m) for m in mask),
             ))
 
         if decision.used_fallback:
@@ -349,6 +384,9 @@ class AiHarpPolicy(Policy):
                                defer_cancel=self.defer_cancel_on_duplicates)
         if act.kind is ActionType.RELAY:
             self.n_relay_actions += 1
+        if act.kind is ActionType.CARRY:
+            carries = self.__dict__.setdefault("_carries", {})
+            carries[int(ctx.index)] = carries.get(int(ctx.index), 0) + 1
         return self._settle(ctx.index, act)
 
     def stats(self) -> dict[str, float]:
