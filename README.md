@@ -541,6 +541,29 @@ valuable thing in this repository.
   (was 0.000); flooding sends exactly one frame per informed vehicle
   (1,915 / 1,915). Tests pin that the originator transmits, in its scheduled
   epoch, on a medium forced 99% busy.
+- **Cost at matched RWCR is unbounded in latency, so slot-based baselines
+  win by waiting.** Regenerated on the fixed engine with the extended grids
+  (`results/pareto_cells.json`, seeds 0–9), the cheapest qualifying point of
+  `slotted_1p`, DV-CAST and greedy sits on the **largest slot count in every
+  cell**, and cost is still falling there while median TIR climbs:
+
+  | cell | `slotted_1p` n_slots = 12 → 50 | DV-CAST 12 → 50 |
+  |---|---|---|
+  | rural d=2 | cost 1.79 → 1.56, TIR 0.91 → 3.09 s | 1.70 → 1.45, 0.81 → 3.37 s |
+  | rural d=20 | 0.80 → 0.73, 0.41 → 0.51 s | 0.79 → 0.72, 0.41 → 0.56 s |
+  | rural d=80 | 2.06 → 1.65, 0.22 → 0.28 s | 2.04 → 1.66, 0.22 → 0.28 s |
+  | urban d=20 | 0.61 → 0.54, 1.02 → 3.03 s | 0.60 → 0.55, 1.01 → 3.07 s |
+
+  RWCR credits a warning whenever it arrives while the vehicle is still at
+  risk, so a scheme that waits seconds still "matches quality", and the 100 ms
+  slot granularity turns 50 slots into up to 5 s of wait (a real slotted
+  scheme uses millisecond slots). Extending the grids further would only move
+  the edge. Consequently the regenerated reference table — best fixed baseline
+  `dvcast(n_slots=50)` within 1.00–1.04× of per-cell hindsight tuning in three
+  of four cells, 1.30× at rural d=80 — describes baselines that trade latency
+  for cost, and **is not yet a valid headline comparator**. Matched quality
+  needs a latency bound (e.g. on median TIR or actionable-deadline miss rate);
+  that is a methodology decision pending with the user.
 - **The committed baseline curves still reproduce.** `results/pareto_cells.json`
   was generated at `788d5fe`, before six later commits touched simulation,
   metrics or policy code. Eight committed points (all four cells; flooding,
