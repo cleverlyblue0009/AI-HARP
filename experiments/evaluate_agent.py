@@ -186,10 +186,21 @@ def main(argv: list[str] | None = None) -> int:
 
     updates = checkpoint_updates(ckpt)
     configured = int(agent_cfg["training"]["total_updates"])
-    banner = (f"checkpoint {ckpt.name} sha={checkpoint_sha(ckpt)} | trained "
-              f"{updates} of {configured} configured updates")
-    if updates < configured:
-        banner += " -- PARTIAL TRAINING: a pipeline check, not a result"
+    run_summary = ckpt.parent / "run_summary.json"
+    summary_stop = (json.loads(run_summary.read_text(encoding="utf-8")).get("stopped")
+                    if run_summary.exists() else None)
+    if summary_stop in ("early_stop", "max_updates", "completed"):
+        # A staged run is complete when it stopped early on its constraints or
+        # reached its plan's cap; total_updates describes the anneal schedule.
+        banner = (f"checkpoint {ckpt.name} sha={checkpoint_sha(ckpt)} | trained {updates} "
+                  f"updates; run finished ({summary_stop})")
+        if summary_stop == "max_updates":
+            banner += " -- constraints did NOT hold at the update cap"
+    else:
+        banner = (f"checkpoint {ckpt.name} sha={checkpoint_sha(ckpt)} | trained "
+                  f"{updates} of {configured} configured updates")
+        if updates < configured:
+            banner += " -- PARTIAL TRAINING: a pipeline check, not a result"
 
     out_dir = Path(args.out_dir) if args.out_dir else RESULTS_DIR
     if not out_dir.is_absolute():

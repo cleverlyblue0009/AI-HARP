@@ -30,8 +30,9 @@ for arg in "$@"; do
 done
 
 SEEDS=10
-UPDATES=2000
-if [[ $SMOKE -eq 1 ]]; then SEEDS=2; UPDATES=3; fi
+RUN_DIR=checkpoints/reproduce
+TRAIN_FLAGS=()
+if [[ $SMOKE -eq 1 ]]; then SEEDS=2; RUN_DIR=checkpoints/reproduce_smoke; TRAIN_FLAGS=(--smoke); fi
 
 step() { printf '\n=== %s ===\n' "$1"; }
 
@@ -52,13 +53,27 @@ step "4. Operating curves and reference points -> results/pareto_cells.json"
 "$PY" -m analysis.comparator --seeds "$SEEDS" --quiet
 
 if [[ $TRAIN -eq 1 ]]; then
-  step "5. Train the agent ($UPDATES updates)"
+  step "5. Train the agent: dense pretrain, then sparse-weighted finetune -> $RUN_DIR"
+  # Warm the trace cache first, or every rollout worker regenerates the same
+  # traces during the first updates.
+  if [[ $SMOKE -eq 0 ]]; then "$PY" -m experiments.warm_traces --jobs 8; fi
   # --keep-awake: without it, idle sleep dominated a multi-hour run on the
   # development laptop (one PPO update took 13,828 s instead of ~170 s).
-  "$PY" -m agents.train --updates "$UPDATES" --quiet --keep-awake
+  # A run interrupted part-way (ckpt_latest.pt but no run_summary.json) is
+  # resumed exactly rather than restarted.
+  if [[ -f "$RUN_DIR/ckpt_latest.pt" && ! -f "$RUN_DIR/run_summary.json" ]]; then
+    "$PY" -m agents.train --resume "$RUN_DIR/ckpt_latest.pt" --workers auto --quiet --keep-awake
+  else
+    "$PY" -m agents.train "${TRAIN_FLAGS[@]}" --out "$RUN_DIR" --workers auto --quiet --keep-awake
+  fi
+  cat "$RUN_DIR/run_summary.json"
 else
-  step "5. Training skipped (--no-train); reusing checkpoints/"
+  step "5. Training skipped (--no-train); reusing $RUN_DIR"
 fi
+
+step "5b. Evaluate the trained agent against the baselines -> results/agent"
+"$PY" -m experiments.evaluate_agent --checkpoint "$RUN_DIR/ckpt_final.pt" --seeds "$SEEDS" \
+  --out-dir results/agent
 
 step "6. Figures and tables -> results/figures, results/tables"
 "$PY" -m analysis.report

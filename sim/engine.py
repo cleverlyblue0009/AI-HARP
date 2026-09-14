@@ -54,6 +54,10 @@ class SimSettings:
     max_originators: int = 1
     rx_prune_margin_db: float = 15.0
     record_transmissions: bool = True
+    #: Compute the risk-field features once per epoch instead of once per
+    #: decision. They depend only on (trace, step, hazard), so the result is
+    #: identical; measured at 11% of rollout time (20,242 calls in 3 updates).
+    cache_step_features: bool = True
 
     #: Keys that used to exist and must not come back silently.
     REMOVED_KEYS = {
@@ -169,6 +173,7 @@ class DisseminationEngine:
         rng_mac = self.seeds.rng("mac")
         rng_fade = self.seeds.rng("fading")
         rng_pol = self.seeds.rng("policy")
+        self._feats_cache = None
         self.policy.reset(self.N, rng_pol)
 
         N = self.N
@@ -561,7 +566,14 @@ class DisseminationEngine:
     ) -> DecisionContext:
         tr = self.trace
         act = tr.active[step]
-        feats = self.risk.features_at(tr, step, self.hazard)
+        if self.cfg.cache_step_features:
+            cached = getattr(self, "_feats_cache", None)
+            if cached is None or cached[0] != step:
+                cached = (step, self.risk.features_at(tr, step, self.hazard))
+                self._feats_cache = cached
+            feats = cached[1]
+        else:
+            feats = self.risk.features_at(tr, step, self.hazard)
 
         rx_idx = np.flatnonzero(act)
         dx = tr.x[step, rx_idx] - tr.x[step, i]
