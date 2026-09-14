@@ -152,10 +152,25 @@ say "traffic-mediated"; worst-case channel effect is a 0.24% range change.
 antennas, giving a 610 m nominal range. A single-slope model would predict
 ~2.1 km and delete the sparse regime this paper is about.
 
-`cw_min` remains `[STD-UNVERIFIED]` and is **load-bearing** — it sets the
-contention window that drives the whole collision model. IEEE 802.11-2020 is
-paywalled and ETSI blocks automated download. Report it as a sensitivity across
-access categories until verified.
+`cw_min` is **load-bearing** — it sets the contention window that drives the
+whole collision model — and is now **half verified**. The per-access-category
+values were checked by the user against IEEE 802.11-2020's default EDCA
+parameters for `dot11OCBActivated = true` (2026-09-14): with aCWmin = 15 and
+aCWmax = 1023 for the OFDM PHY,
+
+| AC | CWmin | CWmax | AIFSN |
+|---|---|---|---|
+| AC_BK | 15 | 1023 | 9 |
+| AC_BE | 15 | 1023 | 6 |
+| **AC_VI** (configured) | **7** = (aCWmin+1)/2 − 1 | 15 | 3 |
+| AC_VO | 3 = (aCWmin+1)/4 − 1 | 7 | 2 |
+
+so the configured `cw_min = 7`, `cw_max = 15`, `aifsn = 3` are the correct
+AC_VI values. The edition's table number was not recorded. **Still
+unverified: that a hazard DENM is sent as AC_VI.** That mapping comes from
+ETSI (EN 302 663 / EN 302 636-4-1 traffic-class mapping), not 802.11; if
+DENMs use AC_VO, `cw_min` is 3 and results must be regenerated. Until that is
+checked, report `cw_min` as a sensitivity across AC_VO / AC_VI / AC_BE.
 
 ---
 

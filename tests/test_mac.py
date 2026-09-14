@@ -156,10 +156,12 @@ def test_inert_mac_parameters_are_not_read_by_any_computation():
     100 ms decision epoch interframe spacing is four orders of magnitude below
     the timestep.
 
-    They are also [STD-UNVERIFIED] -- the primary IEEE/ETSI documents are
-    paywalled and were not accessed. That is acceptable only for as long as
-    they stay inert. This test fails the moment one is wired into a
-    computation, forcing verification before it can affect a result.
+    Slot, SIFS and DIFS are also [STD-UNVERIFIED] -- the primary IEEE document
+    was not accessed for them. CWmax and AIFSN were checked against the
+    802.11-2020 OCB EDCA table (for AC_VI), but which access category a DENM
+    uses is still unverified. That is acceptable only for as long as they stay
+    inert. This test fails the moment one is wired into a computation,
+    forcing verification before it can affect a result.
     """
     import inspect
 

@@ -335,27 +335,37 @@ mac:
   #         microseconds is four orders of magnitude below the timestep, so
   #         sim/mac.py reads none of these three. They affect no result.
   access_category: AC_VI
+  # source: [STD-UNVERIFIED] Which access category an ETSI hazard DENM is sent
+  #         on is fixed by ETSI's traffic-class mapping (EN 302 663 /
+  #         EN 302 636-4-1), not by 802.11, and has not been checked. AC_VI is
+  #         a common mapping for event-driven safety messages; many ITS-G5
+  #         deployments use AC_VO for safety-critical DENMs instead, which
+  #         would make cw_min = 3.
+  #         *** LOAD-BEARING: this choice selects cw_min below. ***
   cw_min: 7
-  # source: [STD-UNVERIFIED] ETSI EN 302 663 / IEEE 1609.4 EDCA parameter set.
-  #         AC_VI is the usual mapping for DSRC event-driven safety messages:
-  #         CWmin = 7. ETSI blocks automated download and IEEE is paywalled,
-  #         so this was not checked against the primary document.
-  #         *** LOAD-BEARING: this is the single most important unverified
-  #         number in this file. ***  The backoff window is CWmin + 1 = 8
-  #         slots, which drives the whole collision model:
-  #         P(tie) = 1 - (1 - 1/(CWmin+1))^(n-1).
-  #         Because it could not be verified, its effect is reported as a
-  #         SENSITIVITY ANALYSIS across the plausible access categories
-  #         (AC_VO CWmin=3, AC_VI CWmin=7, AC_BE CWmin=15) rather than assumed.
-  #         See analysis/pareto.py and the paper's parameter table.
+  # source: [STD] IEEE 802.11-2020 default EDCA parameters for
+  #         dot11OCBActivated = true, checked by the user on 2026-09-14 (table
+  #         number not recorded): aCWmin = 15, aCWmax = 1023 for the OFDM PHY;
+  #         AC_BK 15/1023/AIFSN 9, AC_BE 15/1023/6, AC_VI (aCWmin+1)/2-1 = 7 /
+  #         CWmax aCWmin = 15 / 3, AC_VO (aCWmin+1)/4-1 = 3 / 7 / 2.
+  #         7 is therefore the correct CWmin FOR AC_VI; whether AC_VI is the
+  #         right category is the unverified access_category above.
+  #         *** LOAD-BEARING: the backoff window is CWmin + 1 = 8 slots, which
+  #         drives the whole collision model:
+  #         P(tie) = 1 - (1 - 1/(CWmin+1))^(n-1). ***
+  #         Until the ETSI mapping is checked, report a sensitivity across
+  #         AC_VO (3), AC_VI (7) and AC_BE (15). NOT YET RUN: no experiment
+  #         currently varies cw_min.
   cw_max: 15
-  # source: [STD-UNVERIFIED] [INERT] CWmax for AC_VI. Broadcast frames are
-  #         unacknowledged so there is no ACK timeout to grow the window: the
-  #         CW never leaves cw_min and sim/mac.py never reads cw_max. Carried
-  #         for the parameter table and for future unicast-relay variants.
+  # source: [STD] [INERT] CWmax for AC_VI = aCWmin = 15 (same 802.11-2020 OCB
+  #         EDCA table as cw_min). Broadcast frames are unacknowledged so there
+  #         is no ACK timeout to grow the window: the CW never leaves cw_min and
+  #         sim/mac.py never reads cw_max. Carried for the parameter table and
+  #         for future unicast-relay variants.
   aifsn: 3
-  # source: [STD-UNVERIFIED] [INERT] AIFSN for AC_VI. Not read by sim/mac.py,
-  #         for the same timestep-granularity reason as the interframe spacing.
+  # source: [STD] [INERT] AIFSN for AC_VI = 3 (same 802.11-2020 OCB EDCA
+  #         table). Not read by sim/mac.py, for the same timestep-granularity
+  #         reason as the interframe spacing.
   frame_bytes: 300
   # source: [ASSUMED] An ETSI DENM hazard notification with security headers
   #         is a few hundred bytes; 300 B is representative.
