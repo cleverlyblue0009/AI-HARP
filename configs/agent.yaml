@@ -295,6 +295,13 @@ algorithm:
 training:
   total_updates: 2000
   rollout_episodes_per_update: 8
+  rollout_workers: 1
+  # Episodes of one update run in this many worker processes (1 torch thread
+  # each); 1 = serial. Results are identical for any value: each episode's
+  # policy randomness comes from a per-episode seed drawn from the training
+  # RNG. Profiled on run7: per-decision inference 44%, simulator 25%, PPO step
+  # 25% of an update, so a GPU would give ~1.2x; parallel CPU rollouts are the
+  # speed-up. Left at 1 until benchmarked on an idle machine (run7 was training).
   checkpoint_every_updates: 100
   checkpoint_dir: checkpoints/
   tensorboard_dir: tb_logs/

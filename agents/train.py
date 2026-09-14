@@ -186,6 +186,102 @@ def run_episode(
     return list(policy.transitions), info
 
 
+# ---------------------------------------------------------------------------
+# Rollout collection, serial or across worker processes
+# ---------------------------------------------------------------------------
+# Profiled on run7's checkpoint (one update's rollouts + PPO step): per-decision
+# network inference 44%, simulator + reward 25%, PPO step 25%, decision graphs
+# 5%. A GPU only helps the PPO step (~1.2x overall; single 4-node graphs are
+# slower to ship to it), so the episodes of an update run in parallel CPU
+# processes instead, one torch thread each.
+_WORKER: dict[str, Any] = {}
+
+
+def run_seeded_episode(
+    policy: AiHarpPolicy, spec: EpisodeSpec, episode_seed: int, objective: Any,
+    cfgs: dict[str, Any],
+) -> tuple[list, dict[str, float]]:
+    """One episode whose policy randomness depends only on ``episode_seed``.
+
+    Seeds the policy's NumPy RNG and torch's global RNG (action sampling) from
+    the episode seed and restores torch's RNG afterwards, so the result does
+    not depend on which process runs the episode or what ran before it, and
+    the caller's torch stream (PPO minibatch shuffling) is left untouched.
+    """
+    torch_state = torch.get_rng_state()
+    try:
+        torch.manual_seed(int(episode_seed))
+        policy.reset(0, np.random.default_rng(int(episode_seed)))
+        return run_episode(spec, policy, objective, cfgs)
+    finally:
+        torch.set_rng_state(torch_state)
+
+
+def _training_policy(net: Any, cfg: dict[str, Any], normaliser: Any) -> AiHarpPolicy:
+    # The confidence gate is DISABLED during training rollouts (see train()).
+    return AiHarpPolicy(
+        network=net,
+        gate=ConfidenceGate(tau=0.0, method=cfg["confidence_gate"]["method"], enabled=False),
+        normaliser=normaliser, graph_cfg=GraphConfig.from_config(cfg),
+        fallback_policy=cfg["confidence_gate"]["fallback_policy"], record=True,
+    )
+
+
+def _init_rollout_worker(cfg: dict[str, Any], cfgs: dict[str, Any],
+                         normaliser_stats: dict[str, Any] | None) -> None:
+    torch.set_num_threads(1)
+    net = build_network(cfg)
+    norm = FeatureNormaliser.from_dict(normaliser_stats) if normaliser_stats else None
+    _WORKER.update(net=net, policy=_training_policy(net, cfg, norm), cfgs=cfgs)
+
+
+def _rollout_task(work: tuple[dict[str, Any], Any, EpisodeSpec, int]) -> tuple[list, dict]:
+    state_dict, objective, spec, episode_seed = work
+    _WORKER["net"].load_state_dict(state_dict)
+    return run_seeded_episode(_WORKER["policy"], spec, episode_seed, objective, _WORKER["cfgs"])
+
+
+def make_rollout_pool(cfg: dict[str, Any], cfgs: dict[str, Any],
+                      normaliser_stats: dict[str, Any] | None, workers: int):
+    """A persistent worker pool, or ``None`` for serial collection."""
+    if workers <= 1:
+        return None
+    from concurrent.futures import ProcessPoolExecutor
+
+    return ProcessPoolExecutor(max_workers=workers, initializer=_init_rollout_worker,
+                               initargs=(cfg, cfgs, normaliser_stats))
+
+
+def collect_rollouts(
+    specs: Sequence[EpisodeSpec], episode_seeds: Sequence[int], net: Any,
+    policy: AiHarpPolicy, objective: Any, cfgs: dict[str, Any], pool: Any = None,
+) -> list[tuple[list, dict[str, float]]]:
+    """Every episode of one update, in spec order; identical with or without ``pool``.
+
+    Workers receive the current weights and the multipliers as they stand
+    before this update's dual step, so every episode is priced exactly as in
+    the serial loop.
+
+    Serial collection also runs with ONE torch thread (restored afterwards).
+    With 6 threads the recorded log-probs differed from a worker's by up to
+    1.7e-6 -- float32 kernels are not bit-identical across thread counts --
+    while actions, rewards and coverage matched; single-threaded they match
+    exactly. It is also faster for these 4-node graphs (2.47 vs 3.04 ms per
+    decision).
+    """
+    if pool is None:
+        threads = torch.get_num_threads()
+        torch.set_num_threads(1)
+        try:
+            return [run_seeded_episode(policy, s, e, objective, cfgs)
+                    for s, e in zip(specs, episode_seeds)]
+        finally:
+            torch.set_num_threads(threads)
+    state = {k: v.detach().clone() for k, v in net.state_dict().items()}
+    return list(pool.map(_rollout_task,
+                         [(state, objective, s, e) for s, e in zip(specs, episode_seeds)]))
+
+
 def compute_gae(
     transitions: Sequence[Any], gamma: float, lam: float
 ) -> tuple[np.ndarray, np.ndarray]:
@@ -450,6 +546,10 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
                     "objective": objective.state_dict()},
                    out_dir / f"ckpt_{tag}.pt")
 
+    workers = 1 if smoke else int(cfg["training"].get("rollout_workers", 1))
+    pool = make_rollout_pool(cfg, cfgs, normaliser_stats, workers)
+    logger.info("rollouts: %s", f"{workers} worker processes" if pool else "serial")
+
     update = 0
     try:
         for update in range(1, updates + 1):
@@ -458,9 +558,11 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
 
             transitions: list = []
             infos: list[dict[str, float]] = []
-            for spec in specs:
-                policy.reset(0, rng)
-                tr_, info = run_episode(spec, policy, objective, cfgs)
+            # One seed per episode, drawn in order from the training RNG, so a
+            # run is identical whether its episodes run serially or in workers.
+            episode_seeds = [int(rng.integers(2**31 - 1)) for _ in specs]
+            for tr_, info in collect_rollouts(specs, episode_seeds, net, policy,
+                                              objective, cfgs, pool):
                 transitions.extend(tr_)
                 infos.append(info)
 
@@ -562,6 +664,8 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
         logger.error("training stopped at update %d: %s", update, crash["error"])
         raise
     finally:
+        if pool is not None:
+            pool.shutdown(wait=True, cancel_futures=True)
         if writer:
             writer.close()
 
