@@ -47,8 +47,10 @@ REFERENCE_POLICIES = ("flooding", "dvcast")
 
 
 def training_cells(cfg: dict[str, Any]) -> list[tuple[str, float, str, str]]:
+    from agents.constrained_reward import curriculum_all_densities
+
     t = cfg["training"]
-    densities = sorted({float(d) for st in t["curriculum"]["stages"] for d in st["densities"]})
+    densities = curriculum_all_densities(t)
     return [(sc, d, w, h) for sc in t["train_scenarios"] for d in densities
             for w in t["train_weather"] for h in t["train_hazards"]]
 

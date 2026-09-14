@@ -246,6 +246,7 @@ class DisseminationEngine:
 
             # -- 5. deferred re-decisions (carry / store-carry-forward) -------
             due = np.flatnonzero((timer_sched == step) & holds & act)
+            self._begin_batch()
             for i in due:
                 timer_sched[i] = NO_STEP
                 if tx_sched[i] != NO_STEP:
@@ -256,6 +257,7 @@ class DisseminationEngine:
                     origin_step, rng_pol, sender=None,
                     sender_dist=float(max_sender_dist[i]), tx_count=tx_count,
                 )
+            self._flush_batch(step, tx_sched, timer_sched, cancel_at_dups, forced_broadcast)
 
         return RunResult(
             informed_step=informed_step, hops=hops, informed_by=informed_by,
@@ -396,6 +398,7 @@ class DisseminationEngine:
 
         # --- deliver ---------------------------------------------------------
         any_decoded = decoded.any(axis=0)
+        self._begin_batch()
         for r_local in np.flatnonzero(any_decoded):
             r = int(rx_idx[r_local])
             senders = np.flatnonzero(decoded[:, r_local])
@@ -444,6 +447,8 @@ class DisseminationEngine:
                         forced_broadcast, origin_step, rng_pol, sender=s, sender_dist=dist,
                         tx_count=tx_count,
                     )
+
+        self._flush_batch(step, tx_sched, timer_sched, cancel_at_dups, forced_broadcast)
 
         if self.cfg.record_transmissions:
             for k, i in enumerate(tx):
@@ -517,8 +522,37 @@ class DisseminationEngine:
             origin_step, rng_pol, sender, sender_dist, designated,
             0 if tx_count is None else int(tx_count[i]),
         )
+        pending = getattr(self, "_pending", None)
+        if pending is not None:
+            # Batched: the context is built NOW, so it sees exactly the state a
+            # sequential decision would (e.g. which neighbours are already
+            # informed this epoch); evaluation and application are deferred.
+            pending.append((i, ctx))
+            return
         action = self.policy.decide(ctx)
         self._apply(action, i, step, tx_sched, timer_sched, cancel_at_dups, forced_broadcast)
+
+    def _begin_batch(self) -> None:
+        """Start collecting decisions, if the policy evaluates them in batches.
+
+        Deferring evaluation within one loop is exact for a policy whose
+        decisions depend only on its own context: applying an action changes
+        only the decider's own schedule, except a RELAY designation, which
+        reaches a later receiver solely through ``ctx.was_designated``. A
+        policy that reads ``was_designated`` (greedy forwarding) must not set
+        ``batch_decisions``; the learned agent's graph never reads it.
+        """
+        self._pending = [] if getattr(self.policy, "batch_decisions", False) else None
+
+    def _flush_batch(self, step: int, tx_sched, timer_sched, cancel_at_dups,
+                     forced_broadcast) -> None:
+        pending = getattr(self, "_pending", None)
+        self._pending = None
+        if not pending:
+            return
+        actions = self.policy.decide_batch([ctx for _, ctx in pending])
+        for (i, _), action in zip(pending, actions):
+            self._apply(action, i, step, tx_sched, timer_sched, cancel_at_dups, forced_broadcast)
 
     def _context(
         self, i: int, step: int, trigger: Trigger, hops, dup_count, max_sender_dist,

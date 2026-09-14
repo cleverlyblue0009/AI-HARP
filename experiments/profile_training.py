@@ -215,12 +215,26 @@ def main(argv=None) -> int:
     epoch_counts: dict[tuple[int, int], int] = defaultdict(int)
 
     orig_act = net.act
+    orig_act_batch = getattr(net, "act_batch", None)
+    batch_sizes: list[int] = []
+    batch_nodes: list[int] = []
 
     def act_counting(data, *a, **k):
         nodes.append(int(data.x.shape[0]))
+        batch_sizes.append(1)
+        batch_nodes.append(int(data.x.shape[0]))
         return orig_act(data, *a, **k)
 
+    def act_batch_counting(batch, *a, **k):
+        sizes = (batch.ptr[1:] - batch.ptr[:-1]).tolist()
+        nodes.extend(int(s) for s in sizes)
+        batch_sizes.append(len(sizes))
+        batch_nodes.append(int(batch.x.shape[0]))
+        return orig_act_batch(batch, *a, **k)
+
     net.act = timer.wrap("forward_pass", act_counting)
+    if orig_act_batch is not None:
+        net.act_batch = timer.wrap("forward_pass", act_batch_counting)
     orig_build = ah.build_decision_graph
     ah.build_decision_graph = timer.wrap("graph_build", orig_build)
     orig_apply = FeatureNormaliser.apply
@@ -229,13 +243,35 @@ def main(argv=None) -> int:
     orig_pyg = DecisionGraph.to_pyg
     DecisionGraph.to_pyg = timer.wrap("to_pyg", orig_pyg)
     orig_decide = ah.AiHarpPolicy.decide
+    orig_decide_batch = getattr(ah.AiHarpPolicy, "decide_batch", None)
     episode_id = [0]
+    inside_batch = [False]
+    decide_t = {"t": 0.0}
 
     def decide_counting(self, ctx):
+        if inside_batch[0]:                      # already timed by decide_batch
+            return orig_decide(self, ctx)
         epoch_counts[(episode_id[0], int(ctx.step))] += 1
-        return orig_decide(self, ctx)
+        t0 = time.perf_counter()
+        try:
+            return orig_decide(self, ctx)
+        finally:
+            decide_t["t"] += time.perf_counter() - t0
 
-    ah.AiHarpPolicy.decide = timer.wrap("policy_decide_total", decide_counting)
+    def decide_batch_counting(self, ctxs):
+        for c in ctxs:
+            epoch_counts[(episode_id[0], int(c.step))] += 1
+        inside_batch[0] = True
+        t0 = time.perf_counter()
+        try:
+            return orig_decide_batch(self, ctxs)
+        finally:
+            inside_batch[0] = False
+            decide_t["t"] += time.perf_counter() - t0
+
+    ah.AiHarpPolicy.decide = decide_counting
+    if orig_decide_batch is not None:
+        ah.AiHarpPolicy.decide_batch = decide_batch_counting
     import sim.engine as eng
     orig_run = eng.DisseminationEngine.run
     eng.DisseminationEngine.run = timer.wrap("engine_run_total", orig_run)
@@ -260,13 +296,17 @@ def main(argv=None) -> int:
                 _ppo(net, cfg, trs, ppo_timer)
     finally:
         net.act = orig_act
+        if orig_act_batch is not None:
+            net.act_batch = orig_act_batch
         ah.build_decision_graph = orig_build
         FeatureNormaliser.apply = orig_apply
         DecisionGraph.to_pyg = orig_pyg
         ah.AiHarpPolicy.decide = orig_decide
+        if orig_decide_batch is not None:
+            ah.AiHarpPolicy.decide_batch = orig_decide_batch
         eng.DisseminationEngine.run = orig_run
 
-    decide = timer.t["policy_decide_total"]
+    decide = decide_t["t"]
     engine = timer.t["engine_run_total"]
     fwd, gb, nm, pyg = (timer.t[k] for k in ("forward_pass", "graph_build", "normalise", "to_pyg"))
     policy_other = decide - fwd - gb - nm - pyg
@@ -294,9 +334,16 @@ def main(argv=None) -> int:
     ]
     for name, t in rows:
         say(f"  {name:<52} {t:8.1f} s  {100 * t / total:5.1f}%")
-    say(f"forward passes: {n_fwd} calls, {1e3 * fwd / max(n_fwd, 1):.2f} ms/call, "
+    say(f"forward passes: {n_fwd} calls for {len(nodes)} decisions "
+        f"({1e3 * fwd / max(n_fwd, 1):.2f} ms/call, {1e3 * fwd / max(len(nodes), 1):.2f} ms/decision), "
         f"graph size mean {np.mean(nodes):.1f} nodes (median {np.median(nodes):.0f}, "
         f"p95 {np.percentile(nodes, 95):.0f}, max {max(nodes)})")
+    bs, bn = np.array(batch_sizes), np.array(batch_nodes)
+    say(f"graphs per forward call: mean {bs.mean():.1f} (median {np.median(bs):.0f}, "
+        f"p90 {np.percentile(bs, 90):.0f}, max {bs.max()}); nodes per forward call: mean "
+        f"{bn.mean():.0f} (median {np.median(bn):.0f}, p90 {np.percentile(bn, 90):.0f}); "
+        f"decisions evaluated in calls of >= 256 nodes: "
+        f"{bs[bn >= 256].sum() / max(bs.sum(), 1):.1%}")
     per_epoch = np.array(list(epoch_counts.values()))
     say(f"decisions per engine epoch (epochs with >=1 decision): mean {per_epoch.mean():.2f}, "
         f"median {np.median(per_epoch):.0f}, p90 {np.percentile(per_epoch, 90):.0f}, "

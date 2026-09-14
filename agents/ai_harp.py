@@ -324,7 +324,67 @@ class AiHarpPolicy(Policy):
         return act
 
     # --------------------------------------------------------------- decide --
+    #: When True the engine collects all of an epoch loop's decisions and calls
+    #: :meth:`decide_batch`. Exact for this policy because its decision graph
+    #: never reads ``ctx.was_designated`` -- the one way an earlier decision in
+    #: the same loop can reach a later vehicle's context. Training sets it from
+    #: ``training.batch_inference``.
+    batch_decisions: bool = False
+
     def decide(self, ctx: DecisionContext) -> Action:
+        pre = self._pre_network(ctx)
+        if pre is not None:
+            return pre
+        graph, mask = self._prepare(ctx)
+        # The mask is applied INSIDE the network's sampling so the recorded
+        # log-prob and entropy describe the distribution actually sampled.
+        if mask is None:
+            out = self.network.act(graph.to_pyg(), deterministic=self.deterministic)
+        else:
+            out = self.network.act(graph.to_pyg(), deterministic=self.deterministic,
+                                   action_mask=mask)
+        return self._post_network(ctx, graph, mask, out)
+
+    def decide_batch(self, ctxs: list[DecisionContext]) -> list[Action]:
+        """Decide for several vehicles with one forward pass; same result as
+        calling :meth:`decide` on each in order.
+
+        Pre-network checks have no side effects once a network is present, a
+        vehicle appears at most once per engine loop, and post-processing runs
+        in decision order, so the gate, fallback and suppression-bias RNG draws
+        happen in exactly the sequential order. The network's uniforms are one
+        ``torch.rand(B)`` draw, equal to B successive single draws. Falls back
+        to sequential decisions whenever those conditions cannot be guaranteed.
+        """
+        indices = [int(c.index) for c in ctxs]
+        if (self.network is None or not hasattr(self.network, "act_batch")
+                or len(set(indices)) != len(indices)):
+            return [self.decide(c) for c in ctxs]
+
+        pres = [self._pre_network(c) for c in ctxs]
+        need = [k for k, p in enumerate(pres) if p is None]
+        prepared = {k: self._prepare(ctxs[k]) for k in need}
+        outs: dict[int, dict[str, Any]] = {}
+        if need:
+            import torch
+            from torch_geometric.data import Batch
+
+            batch = Batch.from_data_list([prepared[k][0].to_pyg() for k in need])
+            masks = None
+            if any(prepared[k][1] is not None for k in need):
+                full = np.ones(len(ACTION_NAMES), dtype=bool)
+                masks = torch.as_tensor(np.stack(
+                    [full if prepared[k][1] is None else prepared[k][1] for k in need]))
+            results = self.network.act_batch(batch, deterministic=self.deterministic,
+                                             action_masks=masks)
+            outs = dict(zip(need, results))
+
+        return [pres[k] if pres[k] is not None
+                else self._post_network(c, prepared[k][0], prepared[k][1], outs[k])
+                for k, c in enumerate(ctxs)]
+
+    def _pre_network(self, ctx: DecisionContext) -> Action | None:
+        """Decisions made without consulting the network, or None."""
         # Same broadcast-suppression invariant every baseline obeys: a vehicle
         # that has already relayed this message must not relay it again.
         if ctx.own_tx_count > 0:
@@ -338,19 +398,18 @@ class AiHarpPolicy(Policy):
             # Already decided to stay silent on this message: no re-query and
             # no transition, so no transmitter's reward can land on it.
             return SUPPRESS
+        return None
 
+    def _prepare(self, ctx: DecisionContext) -> tuple[DecisionGraph, np.ndarray | None]:
         graph = build_decision_graph(ctx, self.graph_cfg, self.phy)
         if self.normaliser is not None:
             graph = self.normaliser.apply(graph)
+        return graph, self._action_mask(int(ctx.index))
 
-        # The mask is applied INSIDE the network's sampling so the recorded
-        # log-prob and entropy describe the distribution actually sampled.
-        mask = self._action_mask(int(ctx.index))
-        if mask is None:
-            out = self.network.act(graph.to_pyg(), deterministic=self.deterministic)
-        else:
-            out = self.network.act(graph.to_pyg(), deterministic=self.deterministic,
-                                   action_mask=mask)
+    def _post_network(
+        self, ctx: DecisionContext, graph: DecisionGraph, mask: np.ndarray | None,
+        out: dict[str, Any],
+    ) -> Action:
         probs = np.asarray(out["probs"], dtype=float)
         action = int(out["action"])
         if self.suppression_bias != 0.0:

@@ -419,6 +419,33 @@ class TrainingObjective:
         obj["lambda_group_by"] = list(obj["lambda_group_by"])
         return {"multipliers": self.multipliers.state_dict(), "objective": obj}
 
+    def load_state_dict(self, state: dict[str, Any]) -> None:
+        """Restore every group's multiplier value (resume, or stage 2 from stage 1).
+
+        Learning rate and cap stay those of the current config; the grouping
+        must match, or values would be attached to the wrong cells.
+        """
+        m = state.get("multipliers", {})
+        saved = list(m.get("group_by", []))
+        if saved != list(self.multipliers.group_by):
+            raise ValueError(f"checkpoint multipliers are grouped by {saved}, config by "
+                             f"{list(self.multipliers.group_by)}")
+        for group, value in m.get("values", {}).items():
+            self.multipliers.get(group).value = float(value)
+
+
+def curriculum_all_densities(training: dict[str, Any]) -> list[float]:
+    """Every density any curriculum mode can sample (anneal stages, staged
+    pretrain and finetune), so target measurement and the sampler agree."""
+    c = training["curriculum"]
+    ds = {float(d) for st in c.get("stages", []) for d in st["densities"]}
+    if "pretrain" in c:
+        ds |= {float(d) for d in c["pretrain"]["densities"]}
+    if "finetune" in c:
+        f = c["finetune"]
+        ds |= {float(d) for d in f["sparse_densities"]} | {float(d) for d in f["dense_densities"]}
+    return sorted(ds)
+
 
 def training_cell_keys(cfg: dict[str, Any]) -> list[str]:
     """Every (scenario, density, weather, hazard) cell training can sample.
@@ -428,7 +455,7 @@ def training_cell_keys(cfg: dict[str, Any]) -> list[str]:
     so no cell can silently fall through to the fallback target.
     """
     t = cfg["training"]
-    densities = sorted({float(d) for st in t["curriculum"]["stages"] for d in st["densities"]})
+    densities = curriculum_all_densities(t)
     return [CoverageTargets.key(sc, d, w, h) for sc in t["train_scenarios"]
             for d in densities for w in t["train_weather"] for h in t["train_hazards"]]
 

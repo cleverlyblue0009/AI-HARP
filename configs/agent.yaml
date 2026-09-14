@@ -295,9 +295,9 @@ algorithm:
 training:
   total_updates: 2000
   rollout_episodes_per_update: 8
-  rollout_workers: 8
+  rollout_workers: auto
   # Episodes of one update run in this many worker processes (1 torch thread
-  # each); 1 = serial. Results are identical for any value: each episode's
+  # each); 1 = serial; auto = os.cpu_count() - 1. Results are identical for any value: each episode's
   # policy randomness comes from a per-episode seed drawn from the training
   # RNG. Profiled on run7: per-decision inference 44%, simulator 25%, PPO step
   # 25% of an update, so a GPU would give ~1.2x; parallel CPU rollouts are the
@@ -306,6 +306,18 @@ training:
   #         episodes (20,671 transitions): serial 117.1 s; 4 workers 49.3 s
   #         (2.37x); 6 workers 39.8 s (2.94x); 8 workers 29.5 s (3.98x);
   #         identical transitions at every count. Pool start ~35 s, once per run.
+  batch_inference: true
+  # All learned-agent decisions in one engine loop (receptions, then timers) of
+  # one 100 ms epoch go through the network in a single forward pass.
+  # source: [MEASURED] results/profile_baseline.txt: 15,247 single-graph
+  #         forward passes at 4.12 ms were 44% of a serial update; decisions per
+  #         epoch mean 52 (median 10, p90 118). Forward cost per decision on
+  #         13-node graphs: 3.44 ms alone, 1.00 ms in batches of 10, 0.74 ms at
+  #         52. Not bit-identical to single-graph passes -- dense kernels differ
+  #         by matrix shape (nn.Linear, 1,300 rows vs 13-row chunks: 3.6e-7) --
+  #         so the gate (user decision) is identical actions, rewards, masks,
+  #         graphs and order, with log-prob/value/entropy within 1e-4
+  #         (tests/test_batched_inference.py). 0 action flips in 1,794 decisions.
   checkpoint_every_updates: 100
   checkpoint_dir: checkpoints/
   tensorboard_dir: tb_logs/
@@ -322,11 +334,40 @@ training:
     # when a relay decision has an immediate visible consequence, and becomes
     # hard when the message must be carried across a gap.
     mode: density_anneal
+    mode: staged
+    # staged (default from run8): dense pretrain, then sparse-weighted finetune.
+    # anneal: the run4-run7 schedule in `stages` below, kept for comparability.
+    # run7 (anneal) left the sparse groups -- rural d=2-3, urban d=2, the
+    # paper's regime -- 0.17-0.34 short of target with lambda still climbing,
+    # because the anneal gave d <= 5 only the final ~40% of updates.
     stages:
       - {until_frac: 0.25, densities: [40, 80]}
       - {until_frac: 0.50, densities: [10, 20, 40]}
       - {until_frac: 0.75, densities: [3, 5, 10, 20]}
       - {until_frac: 1.00, densities: [1, 2, 3, 5, 10, 20, 40, 80]}
+    pretrain:
+      updates: 200
+      densities: [20, 40, 80]
+      # Purpose: a stable value function and sane action semantics, nothing
+      # more. Ends in checkpoint ckpt_pretrain.pt, which stage 2 can restart
+      # from (--init-from) with different weightings.
+    finetune:
+      sparse_densities: [1, 2, 3, 5]
+      dense_densities: [10, 20, 40, 80]
+      sparse_to_dense_weight: 3.0
+      # Sparse densities drawn 3:1 over dense in total (75% / 25%), each
+      # density equally within its half; dense is retained so the policy
+      # does not forget.
+      max_updates: 800
+      # Stage-2 cap: 200 + 800 = 1,000 updates in total. If the sparse
+      # constraints are not met by then, that is a finding about the
+      # objective, not a reason to keep burning compute: the run stops and
+      # run_summary.json says so.
+    early_stop:
+      consecutive_updates: 30
+      # Finetune stops once this many consecutive updates have every sampled
+      # group's pooled shortfall <= 0, AND every training group appeared at
+      # least once within that run (so no group can pass by not being drawn).
 
   train_scenarios: [rural_highway, urban_nlos]
   held_out_scenarios: [urban_grid]

@@ -72,6 +72,64 @@ interpreter; only the Phase 5 tests require D:.
   will grow; they are written under the project on `C:` and should be moved to
   `D:` if space becomes a problem again.
 
+## Training on a many-core cloud machine
+
+Training throughput is CPU-bound (see `results/profile_baseline.txt`), so the
+cheapest real speed-up is more cores for a few hours. On a fresh Linux box:
+
+```bash
+git clone <repo> AI-HARP && cd AI-HARP
+python3.12 -m venv .venv && . .venv/bin/activate
+pip install "numpy<2" torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
+pip install torch-geometric==2.8.0 pandas scipy matplotlib pyyaml pytest tensorboard
+
+# 1. Warm the trace cache ONCE, before training. Otherwise every rollout
+#    worker regenerates the same traces during the first updates.
+python -m experiments.warm_traces --jobs "$(nproc)"
+
+# 2. Correctness gate before any long run (includes batched-vs-unbatched and
+#    worker-count identity tests).
+python -m pytest tests/ -q
+
+# 3. Measure where scaling flattens on THIS machine.
+python -m experiments.bench_rollouts --workers 1 8 16 32 --episodes 32
+
+# 4. The full two-stage run (pretrain 200 dense updates, then sparse-weighted
+#    finetune up to 800 more, with early stopping on the constraints).
+python -m agents.train --out checkpoints/run8 --workers auto
+```
+
+`rollout_workers: auto` means `os.cpu_count() - 1`. **Workers beyond
+`training.rollout_episodes_per_update` (8) are idle**: one episode runs in one
+worker, and raising episodes per update changes each PPO batch, which is an
+optimisation change rather than a free speed-up. A 64-vCPU machine therefore
+does not train 8x faster than a 12-thread laptop unless that setting is
+deliberately changed and justified.
+
+**Splitting a run across sessions.** Every update rewrites
+`ckpt_latest.pt` with the model, optimiser, per-group multipliers, both RNG
+streams, the curriculum stage and the early-stop state, so a resumed run is
+identical to an uninterrupted one (`tests/test_curriculum_resume.py`):
+
+```bash
+python -m agents.train --resume checkpoints/run8/ckpt_latest.pt
+```
+
+Copy `checkpoints/run8/` (and, to skip regeneration, `cache/traces/`) between
+machines. A resumed run keeps the configuration stored in its checkpoint.
+
+**Re-running stage 2 only**, e.g. with a different sparse weighting, from the
+stage boundary:
+
+```bash
+python -m agents.train --stage finetune --sparse-weight 5 \
+    --init-from checkpoints/run8/ckpt_pretrain.pt --out checkpoints/run8_ft_w5
+```
+
+The run writes `run_summary.json` saying whether finetuning stopped early
+(constraints held for 30 consecutive updates) or reached its update cap -- the
+latter is reported as a finding, not silently extended.
+
 ## SUMO
 
 **Eclipse SUMO 1.19.0 is installed at `D:\sumo-1.19.0`.** It is not on

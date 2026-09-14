@@ -218,17 +218,28 @@ class ActorCritic(nn.Module):
     @torch.no_grad()
     def act(
         self, data: Data, deterministic: bool = False, action_mask: Any | None = None,
+        uniform: float | None = None,
     ) -> dict[str, Any]:
-        """Sample (or argmax) an action. ``action_mask`` (True = available) is
+        """Sample (or argmax) one action. ``action_mask`` (True = available) is
         applied before sampling, so log-prob and entropy describe the
-        distribution the action was actually drawn from."""
+        distribution the action was actually drawn from.
+
+        Sampling is inverse-CDF on one uniform draw (``uniform``, or
+        ``torch.rand(())`` from the global generator), the same rule
+        :meth:`act_batch` applies per graph -- so a batch of decisions picks
+        exactly the actions the same decisions would pick one at a time.
+        """
         out = self(data)
         logits = out["logits"][0]
         if action_mask is not None:
             logits = mask_logits(logits, torch.as_tensor(action_mask, dtype=torch.bool))
         dist = torch.distributions.Categorical(logits=logits)
-        action = int(torch.argmax(logits)) if deterministic else int(dist.sample())
-        probs = torch.softmax(logits, dim=-1)
+        probs = dist.probs
+        if deterministic:
+            action = int(torch.argmax(logits))
+        else:
+            u = torch.rand(()) if uniform is None else torch.as_tensor(float(uniform))
+            action = int(sample_inverse_cdf(probs[None, :], u[None])[0])
         return {
             "action": action,
             "log_prob": float(dist.log_prob(torch.tensor(action))),
@@ -237,6 +248,43 @@ class ActorCritic(nn.Module):
             "probs": probs.numpy(),
             "relay_order": _relay_order(out["relay_scores"]),
         }
+
+    @torch.no_grad()
+    def act_batch(
+        self, batch: Batch, deterministic: bool = False,
+        action_masks: torch.Tensor | None = None, uniforms: torch.Tensor | None = None,
+    ) -> list[dict[str, Any]]:
+        """One forward pass for a whole batch of decision graphs.
+
+        Returns one dict per graph with the same keys as :meth:`act`. Masks
+        are applied per graph before sampling; ``uniforms`` (one per graph,
+        default ``torch.rand(B)``, which equals B successive ``torch.rand(())``
+        draws) drive the same inverse-CDF rule as :meth:`act`.
+        """
+        out = self(batch)
+        logits = out["logits"]
+        n = logits.shape[0]
+        if action_masks is not None:
+            logits = mask_logits(logits, action_masks.to(torch.bool))
+        dist = torch.distributions.Categorical(logits=logits)
+        probs = dist.probs
+        if deterministic:
+            actions = torch.argmax(logits, dim=-1)
+        else:
+            u = torch.rand(n) if uniforms is None else uniforms.to(probs.dtype)
+            actions = sample_inverse_cdf(probs, u)
+        log_probs = dist.log_prob(actions)
+        entropies = dist.entropy()
+        ptr = batch.ptr.tolist()
+        scores = out["relay_scores"]
+        return [{
+            "action": int(actions[j]),
+            "log_prob": float(log_probs[j]),
+            "value": float(out["value"][j]),
+            "entropy": float(entropies[j]),
+            "probs": probs[j].numpy(),
+            "relay_order": _relay_order(scores[ptr[j]:ptr[j + 1]]),
+        } for j in range(n)]
 
     def evaluate_actions(
         self, data: Batch, actions: torch.Tensor, action_masks: torch.Tensor | None = None,
@@ -253,6 +301,22 @@ class ActorCritic(nn.Module):
 #: Logit given to unavailable actions. Finite, so entropy stays 0 * finite
 #: rather than 0 * -inf = NaN; its softmax probability underflows to exactly 0.
 MASKED_LOGIT = -1e9
+
+
+def sample_inverse_cdf(probs: torch.Tensor, uniforms: torch.Tensor) -> torch.Tensor:
+    """Row-wise categorical sample from ``[B, A]`` probabilities and ``[B]`` uniforms.
+
+    Picks the first action whose cumulative probability exceeds ``u * total``.
+    A zero-probability (masked) action never has a CDF step, so it is never
+    chosen; float round-off at ``u -> 1`` is clamped to the last available
+    action rather than past it.
+    """
+    cdf = torch.cumsum(probs, dim=-1)
+    target = (uniforms * cdf[:, -1]).unsqueeze(-1)
+    idx = torch.searchsorted(cdf, target, right=True).squeeze(-1)
+    available = probs > 0
+    last = probs.shape[-1] - 1 - torch.argmax(available.flip(-1).to(torch.int8), dim=-1)
+    return torch.minimum(idx, last)
 
 
 def mask_logits(logits: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:

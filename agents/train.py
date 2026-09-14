@@ -29,7 +29,7 @@ import argparse
 import json
 import logging
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -78,17 +78,41 @@ def curriculum_densities(cfg: dict[str, Any], progress: float) -> list[float]:
     return [float(d) for d in stages[-1]["densities"]]
 
 
+def stage_densities(cfg: dict[str, Any], stage: str) -> tuple[list[float], np.ndarray]:
+    """Densities and sampling probabilities for a staged-curriculum stage."""
+    c = cfg["training"]["curriculum"]
+    if stage == "pretrain":
+        d = [float(x) for x in c["pretrain"]["densities"]]
+        return d, np.full(len(d), 1.0 / len(d))
+    if stage == "finetune":
+        f = c["finetune"]
+        sparse = [float(x) for x in f["sparse_densities"]]
+        dense = [float(x) for x in f["dense_densities"]]
+        w = float(f.get("sparse_to_dense_weight", 3.0))
+        p_sparse = w / (w + 1.0)
+        probs = [p_sparse / len(sparse)] * len(sparse) + [(1.0 - p_sparse) / len(dense)] * len(dense)
+        return sparse + dense, np.asarray(probs, dtype=float)
+    raise ValueError(f"unknown curriculum stage {stage!r}")
+
+
 def sample_episode_specs(
-    cfg: dict[str, Any], progress: float, rng: np.random.Generator, n: int
+    cfg: dict[str, Any], progress: float, rng: np.random.Generator, n: int,
+    stage: str | None = None,
 ) -> list[EpisodeSpec]:
+    """Episode specs for one update. ``stage`` selects a staged-curriculum
+    stage; ``None`` uses the anneal schedule at ``progress``."""
     t = cfg["training"]
-    densities = curriculum_densities(cfg, progress)
+    if stage is None:
+        densities, probs = curriculum_densities(cfg, progress), None
+    else:
+        densities, probs = stage_densities(cfg, stage)
     pool = training_seed_pool(cfg)
     out = []
     for _ in range(n):
         out.append(EpisodeSpec(
             scenario=str(rng.choice(t["train_scenarios"])),
-            density=float(rng.choice(densities)),
+            density=float(rng.choice(densities) if probs is None
+                          else rng.choice(densities, p=probs)),
             weather=str(rng.choice(t["train_weather"])),
             hazard_type=str(rng.choice(t["train_hazards"])),
             seed=int(rng.choice(pool)),
@@ -219,12 +243,14 @@ def run_seeded_episode(
 
 def _training_policy(net: Any, cfg: dict[str, Any], normaliser: Any) -> AiHarpPolicy:
     # The confidence gate is DISABLED during training rollouts (see train()).
-    return AiHarpPolicy(
+    policy = AiHarpPolicy(
         network=net,
         gate=ConfidenceGate(tau=0.0, method=cfg["confidence_gate"]["method"], enabled=False),
         normaliser=normaliser, graph_cfg=GraphConfig.from_config(cfg),
         fallback_policy=cfg["confidence_gate"]["fallback_policy"], record=True,
     )
+    policy.batch_decisions = bool(cfg["training"].get("batch_inference", True))
+    return policy
 
 
 def _init_rollout_worker(cfg: dict[str, Any], cfgs: dict[str, Any],
@@ -239,6 +265,75 @@ def _rollout_task(work: tuple[dict[str, Any], Any, EpisodeSpec, int]) -> tuple[l
     state_dict, objective, spec, episode_seed = work
     _WORKER["net"].load_state_dict(state_dict)
     return run_seeded_episode(_WORKER["policy"], spec, episode_seed, objective, _WORKER["cfgs"])
+
+
+def resolve_workers(value: Any) -> int:
+    """``training.rollout_workers``: an integer, or ``auto`` = cpu_count - 1."""
+    if isinstance(value, str) and value.strip().lower() == "auto":
+        import os
+
+        return max(1, (os.cpu_count() or 2) - 1)
+    return max(1, int(value))
+
+
+@dataclass
+class ConstraintEarlyStop:
+    """Stop finetuning once the coverage constraints have held for a while.
+
+    An update counts as "met" when every group sampled in it has pooled
+    shortfall <= 0. Stopping requires ``window`` consecutive met updates AND
+    every group in ``required`` to have appeared within that run -- otherwise
+    a rarely drawn sparse group could "pass" simply by not being sampled.
+    """
+
+    window: int
+    required: frozenset[str]
+    run: int = 0
+    seen: list[list[str]] = field(default_factory=list)
+
+    def update(self, shortfall_by_group: dict[str, float]) -> bool:
+        finite = {g: s for g, s in shortfall_by_group.items() if np.isfinite(s)}
+        if finite and all(s <= 0.0 for s in finite.values()):
+            self.run += 1
+            self.seen.append(sorted(finite))
+            self.seen = self.seen[-self.window:]
+        else:
+            self.run, self.seen = 0, []
+        covered = {g for groups in self.seen for g in groups}
+        return self.run >= self.window and self.required <= covered
+
+    def state_dict(self) -> dict[str, Any]:
+        return {"run": self.run, "seen": self.seen}
+
+    def load_state_dict(self, state: dict[str, Any]) -> None:
+        self.run = int(state.get("run", 0))
+        self.seen = [list(s) for s in state.get("seen", [])]
+
+
+def training_plan(cfg: dict[str, Any], updates: int | None, stage: str,
+                  smoke: bool) -> list[tuple[str, int]]:
+    """Ordered ``(stage, n_updates)`` for this run.
+
+    ``anneal`` mode is one stage of ``updates``. ``staged`` mode is pretrain
+    then finetune (stage ``all``), or just one of them; ``updates``, when given,
+    caps the total, filling pretrain first.
+    """
+    c = cfg["training"]["curriculum"]
+    if str(c.get("mode", "anneal")) != "staged":
+        n = updates or (3 if smoke else int(cfg["training"]["total_updates"]))
+        return [("anneal", n)]
+    p = 2 if smoke else int(c["pretrain"]["updates"])
+    f = 1 if smoke else int(c["finetune"]["max_updates"])
+    plan = {"all": [("pretrain", p), ("finetune", f)], "pretrain": [("pretrain", p)],
+            "finetune": [("finetune", f)]}[stage]
+    if updates is not None:
+        capped, left = [], int(updates)
+        for name, n in plan:
+            take = min(n, left)
+            capped.append((name, take))
+            left -= take
+        plan = capped
+    return plan
 
 
 def make_rollout_pool(cfg: dict[str, Any], cfgs: dict[str, Any],
@@ -453,13 +548,24 @@ def fit_normaliser(
     return norm
 
 
-def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
-          out_dir: Path, smoke: bool = False) -> dict[str, Any]:
+def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int | None,
+          out_dir: Path, smoke: bool = False, stage: str = "all",
+          resume: Path | None = None, init_from: Path | None = None) -> dict[str, Any]:
+    """Train under the curriculum's plan (see :func:`training_plan`).
+
+    ``resume`` continues a run in ``out_dir`` from its checkpoint exactly: model,
+    optimiser, multipliers, both RNG streams, stage position and early-stop
+    state are restored. ``init_from`` starts a NEW run (e.g. ``--stage
+    finetune``) from another run's checkpoint -- the stage boundary -- so stage 2
+    can be re-run with different weightings without repeating stage 1.
+    """
     set_global_determinism(int(cfg["training"]["seed"]))
     rng = np.random.default_rng(int(cfg["training"]["seed"]))
 
     net = build_network(cfg)
-    from agents.constrained_reward import build_training_objective, pooled_shortfall
+    from agents.constrained_reward import (
+        build_training_objective, curriculum_all_densities, pooled_shortfall,
+    )
 
     # Constrained objective (agents/constrained_reward.py). The weighted-sum
     # reward ranked silence above every working scheme; the builder refuses it.
@@ -475,29 +581,44 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
         100 * objective.objective.target_fraction,
     )
 
-    # Smoke runs fit and keep their own statistics. A smoke fit used to be saved
-    # to the canonical path and silently reused by the next full run.
-    mode = "smoke" if smoke else "full"
-    canonical = PROJECT_ROOT / cfg["graph"]["normalisation"]["stats_path"]
-    stats_path = (canonical.with_name(f"{canonical.stem}_smoke{canonical.suffix}")
-                  if smoke else canonical)
-    scenarios = cfg["training"]["train_scenarios"]
-    norm = FeatureNormaliser.load(stats_path) if stats_path.exists() else None
-    if norm is not None and not norm.matches(mode, scenarios):
-        logger.warning(
-            "Refitting feature statistics: %s was fitted on %s, not for a %s run "
-            "over %s.", stats_path.name, norm.provenance or "unrecorded data",
-            mode, sorted(scenarios),
-        )
-        norm = None
-    if norm is None:
-        fit_cfg = cfg
-        if smoke:
-            # Small but still multi-scenario: one density, one seed per scenario.
-            nc = {**cfg["graph"]["normalisation"], "fit_densities": [20], "fit_seeds": 1}
-            fit_cfg = {**cfg, "graph": {**cfg["graph"], "normalisation": nc}}
-        norm = fit_normaliser(fit_cfg, cfgs, n_graphs=200 if smoke else None,
-                              path=stats_path, mode=mode)
+    loaded = None
+    if resume is not None or init_from is not None:
+        src = Path(resume or init_from)
+        loaded = torch.load(str(src), map_location="cpu", weights_only=False)
+        net.load_state_dict(loaded["model"])
+        objective.load_state_dict(loaded["objective"])
+        normaliser_stats = loaded["normaliser_stats"]
+        norm = FeatureNormaliser.from_dict(normaliser_stats)
+        logger.info("%s from %s (update %d, stage %s)", "resuming" if resume else "initialised",
+                    src, int(loaded["update"]), loaded.get("stage", "?"))
+    else:
+        # Smoke runs fit and keep their own statistics. A smoke fit used to be
+        # saved to the canonical path and silently reused by the next full run.
+        mode = "smoke" if smoke else "full"
+        canonical = PROJECT_ROOT / cfg["graph"]["normalisation"]["stats_path"]
+        stats_path = (canonical.with_name(f"{canonical.stem}_smoke{canonical.suffix}")
+                      if smoke else canonical)
+        scenarios = cfg["training"]["train_scenarios"]
+        norm = FeatureNormaliser.load(stats_path) if stats_path.exists() else None
+        if norm is not None and not norm.matches(mode, scenarios):
+            logger.warning(
+                "Refitting feature statistics: %s was fitted on %s, not for a %s run "
+                "over %s.", stats_path.name, norm.provenance or "unrecorded data",
+                mode, sorted(scenarios),
+            )
+            norm = None
+        if norm is None:
+            fit_cfg = cfg
+            if smoke:
+                # Small but still multi-scenario: one density, one seed per scenario.
+                nc = {**cfg["graph"]["normalisation"], "fit_densities": [20], "fit_seeds": 1}
+                fit_cfg = {**cfg, "graph": {**cfg["graph"], "normalisation": nc}}
+            norm = fit_normaliser(fit_cfg, cfgs, n_graphs=200 if smoke else None,
+                                  path=stats_path, mode=mode)
+        # The feature statistics travel INSIDE the checkpoint. Loading them from
+        # results/feature_stats.json at evaluation time would silently pair a
+        # checkpoint with whatever statistics were fitted most recently.
+        normaliser_stats = json.loads(stats_path.read_text(encoding="utf-8"))
 
     # The confidence gate is DISABLED during training rollouts. Training must be
     # on-policy: the first 40-update run recorded fallback_rate = 1.0 at update
@@ -507,14 +628,15 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
     # outcomes to actions the network sampled but never executed, the policy
     # could not sharpen, and the gate kept falling back -- a deadlock.
     # The gate is a deployment mechanism; its tau sweep is run at evaluation.
-    policy = AiHarpPolicy(
-        network=net,
-        gate=ConfidenceGate(tau=0.0, method=cfg["confidence_gate"]["method"],
-                            enabled=False),
-        normaliser=norm, graph_cfg=GraphConfig.from_config(cfg),
-        fallback_policy=cfg["confidence_gate"]["fallback_policy"], record=True,
-    )
+    # Built by _training_policy, exactly as in the workers: constructing it
+    # directly here left serial training unbatched while workers batched.
+    policy = _training_policy(net, cfg, norm)
     opt = torch.optim.Adam(net.parameters(), lr=float(cfg["algorithm"]["ppo"]["lr"]))
+    if loaded is not None:
+        opt.load_state_dict(loaded["optimiser"])
+        if loaded.get("rng_state") is not None:
+            rng.bit_generator.state = loaded["rng_state"]
+            torch.set_rng_state(loaded["torch_rng_state"])
 
     writer = None
     try:
@@ -526,35 +648,77 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
 
     check_seed_split(cfg, cfgs)
     out_dir.mkdir(parents=True, exist_ok=True)
-    history: list[dict[str, Any]] = []
     history_path = out_dir / "history.jsonl"
-    history_path.write_text("", encoding="utf-8")        # one run per directory
+    plan = training_plan(cfg, updates, stage, smoke)
+    history: list[dict[str, Any]] = []
+    start_stage, start_stage_update, update = plan[0][0], 0, 0
+    if resume is not None:
+        update = int(loaded["update"])
+        start_stage = str(loaded.get("stage", plan[0][0]))
+        start_stage_update = int(loaded.get("stage_update", update))
+        if history_path.exists():
+            # By update number, not count: an update that skipped its PPO step
+            # (too few transitions) wrote no history row.
+            history = [r for r in (json.loads(ln) for ln in history_path.read_text(
+                encoding="utf-8").splitlines() if ln.strip()) if int(r["update"]) <= update]
+        history_path.write_text("".join(json.dumps(r) + "\n" for r in history), encoding="utf-8")
+    else:
+        history_path.write_text("", encoding="utf-8")    # one run per directory
+        if init_from is not None:
+            update = int(loaded["update"])               # global count continues
     (out_dir / "crash.json").unlink(missing_ok=True)
     n_eps = 2 if smoke else int(cfg["training"]["rollout_episodes_per_update"])
     ckpt_every = int(cfg["training"]["checkpoint_every_updates"])
     t0 = time.time()
 
-    # The feature statistics travel INSIDE the checkpoint. Loading them from
-    # results/feature_stats.json at evaluation time would silently pair a
-    # checkpoint with whatever statistics were fitted most recently.
-    normaliser_stats = json.loads(stats_path.read_text(encoding="utf-8"))
+    t = cfg["training"]
+    finetune_groups = frozenset(
+        objective.group_for(sc, d, w, h)
+        for sc in t["train_scenarios"] for d in curriculum_all_densities(t)
+        for w in t["train_weather"] for h in t["train_hazards"]
+        if "finetune" in t["curriculum"] and d in stage_densities(cfg, "finetune")[0])
+    early = ConstraintEarlyStop(
+        window=int(t["curriculum"].get("early_stop", {}).get("consecutive_updates", 30)),
+        required=finetune_groups)
+    if resume is not None and loaded.get("early_stop"):
+        early.load_state_dict(loaded["early_stop"])
+    current = {"stage": start_stage, "stage_update": start_stage_update}
 
     def _checkpoint(tag: str, at_update: int) -> None:
         torch.save({"update": at_update, "model": net.state_dict(),
                     "optimiser": opt.state_dict(), "config": cfg,
                     "normaliser_stats": normaliser_stats,
-                    "objective": objective.state_dict()},
+                    "objective": objective.state_dict(),
+                    "stage": current["stage"], "stage_update": current["stage_update"],
+                    "early_stop": early.state_dict(),
+                    "rng_state": rng.bit_generator.state,
+                    "torch_rng_state": torch.get_rng_state()},
                    out_dir / f"ckpt_{tag}.pt")
 
-    workers = 1 if smoke else int(cfg["training"].get("rollout_workers", 1))
+    workers = 1 if smoke else resolve_workers(cfg["training"].get("rollout_workers", 1))
     pool = make_rollout_pool(cfg, cfgs, normaliser_stats, workers)
-    logger.info("rollouts: %s", f"{workers} worker processes" if pool else "serial")
+    logger.info("rollouts: %s | plan %s", f"{workers} worker processes" if pool else "serial",
+                plan)
 
-    update = 0
+    # Skip the stages a resumed run already finished.
+    names = [name for name, _ in plan]
+    if start_stage not in names:
+        raise ValueError(f"checkpoint stage {start_stage!r} is not in this run's plan {plan}")
+    schedule = []
+    for name, n in plan[names.index(start_stage):]:
+        first = start_stage_update + 1 if name == start_stage else 1
+        schedule.extend((name, k, n) for k in range(first, n + 1))
+
+    stopped = "completed"
     try:
-        for update in range(1, updates + 1):
-            progress = update / max(updates, 1)
-            specs = sample_episode_specs(cfg, progress, rng, n_eps)
+        for stage_name, stage_update, stage_total in schedule:
+            if stage_name != current["stage"]:
+                _checkpoint(current["stage"], update)     # the stage boundary
+            current["stage"], current["stage_update"] = stage_name, stage_update
+            update += 1
+            progress = stage_update / max(stage_total, 1)
+            specs = sample_episode_specs(cfg, progress, rng, n_eps,
+                                         stage=None if stage_name == "anneal" else stage_name)
 
             transitions: list = []
             infos: list[dict[str, float]] = []
@@ -593,6 +757,9 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
                 logger.warning("update %d: only %d transitions; skipping the PPO step "
                                "(lambda %.3f -> %.3f still applied)",
                                update, len(transitions), lam_used, lam_next)
+                # Persist the lambda step and the RNG draws this update consumed,
+                # or a resume from the previous checkpoint would replay it.
+                _checkpoint("latest", update)
                 continue
 
             adv, ret = compute_gae(transitions,
@@ -600,8 +767,12 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
                                    float(cfg["algorithm"]["ppo"]["gae_lambda"]))
             losses = ppo_update(net, opt, transitions, adv, ret, cfg)
 
+            met_stop = stage_name == "finetune" and early.update(shortfall_by)
             rec = {
                 "update": update,
+                "stage": stage_name,
+                "stage_update": stage_update,
+                "early_stop_run": early.run if stage_name == "finetune" else 0,
                 "elapsed_s": round(time.time() - t0, 1),
                 "densities": sorted(set(s.density for s in specs)),
                 "reward_mean": float(np.mean([i["reward_mean"] for i in infos])),
@@ -644,16 +815,30 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
                     if isinstance(v, (int, float)):
                         writer.add_scalar(f"train/{k}", v, update)
                 writer.flush()
-            if update % max(1, updates // 10) == 0 or update == 1:
+            if stage_update % max(1, stage_total // 10) == 0 or stage_update == 1:
                 logger.info(
-                    "update %4d/%d | r=%+.3f tx=%.0f inf=%.0f fb=%.2f ent=%.3f pl=%+.4f",
-                    update, updates, rec["reward_mean"], rec["transmissions"],
-                    rec["informed"], rec["fallback_rate"], rec["entropy"],
-                    rec["policy_loss"],
+                    "update %4d (%s %d/%d) | cov %.3f tgt %.3f | tx=%.0f inf=%.0f "
+                    "ent=%.3f carry=%.2f",
+                    update, stage_name, stage_update, stage_total, rec["coverage"],
+                    rec["target"], rec["transmissions"], rec["informed"], rec["entropy"],
+                    rec["carry_rate"],
                 )
             _checkpoint("latest", update)                  # ~0.5 MB, always resumable
-            if update % ckpt_every == 0 or update == updates:
+            if update % ckpt_every == 0:
                 _checkpoint(f"{update:06d}", update)
+            if met_stop:
+                stopped = "early_stop"
+                logger.info("early stop at update %d: every group met its coverage target "
+                            "for %d consecutive updates", update, early.window)
+                break
+        if schedule and stopped == "completed" and current["stage"] == "finetune":
+            stopped = "max_updates"
+            logger.warning(
+                "finetune reached its update cap (%d total updates) without the coverage "
+                "constraints holding for %d consecutive updates. That is a finding about "
+                "the objective; the run stops here.", update, early.window)
+        _checkpoint(current["stage"], update)
+        _checkpoint("final", update)
     except BaseException as exc:
         # BaseException, not Exception: an interrupted or killed run must still
         # leave evidence of where it stopped and why.
@@ -669,8 +854,20 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int,
         if writer:
             writer.close()
 
-    logger.info("trained %d updates in %.1fs", updates, time.time() - t0)
-    return {"history": history, "network": net, "normaliser": norm}
+    last = history[-1] if history else {}
+    summary = {
+        "stopped": stopped, "total_updates": update, "plan": plan,
+        "final_stage": current["stage"], "final_stage_update": current["stage_update"],
+        "early_stop_window": early.window, "early_stop_run": early.run,
+        "elapsed_s_this_session": round(time.time() - t0, 1),
+        "resumed_from": str(resume) if resume else None,
+        "initialised_from": str(init_from) if init_from else None,
+        "last_shortfall_by_group": last.get("shortfall_by_group"),
+        "last_lambda_by_group": last.get("lambda_next_by_group"),
+    }
+    (out_dir / "run_summary.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
+    logger.info("trained to update %d (%s) in %.1fs", update, stopped, time.time() - t0)
+    return {"history": history, "network": net, "normaliser": norm, "summary": summary}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -684,22 +881,42 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--quiet", action="store_true")
     ap.add_argument("--keep-awake", action="store_true",
                     help="hold off idle sleep while training (Windows); see common/keep_awake.py")
+    ap.add_argument("--stage", default="all", choices=["all", "pretrain", "finetune"],
+                    help="staged curriculum: which stage(s) to run")
+    ap.add_argument("--resume", default=None,
+                    help="continue the run that wrote this checkpoint (e.g. its ckpt_latest.pt)")
+    ap.add_argument("--init-from", default=None,
+                    help="start a new run from another run's checkpoint (e.g. ckpt_pretrain.pt)")
+    ap.add_argument("--sparse-weight", type=float, default=None,
+                    help="override curriculum.finetune.sparse_to_dense_weight")
+    ap.add_argument("--workers", default=None, help="override training.rollout_workers")
     args = ap.parse_args(argv)
     if args.quiet:
         logging.getLogger("aiharp").setLevel(logging.WARNING)
 
     cfg = load_yaml("agent.yaml")
+    if args.resume:
+        # A resumed run keeps the configuration it started with.
+        state = torch.load(args.resume, map_location="cpu", weights_only=False)
+        cfg = state["config"]
     if args.algorithm:
         cfg["algorithm"]["name"] = args.algorithm
     if args.encoder:
         cfg["encoder"]["type"] = args.encoder
     if args.tau is not None:
         cfg["confidence_gate"]["tau"] = args.tau
+    if args.sparse_weight is not None:
+        cfg["training"]["curriculum"]["finetune"]["sparse_to_dense_weight"] = args.sparse_weight
+    if args.workers is not None:
+        cfg["training"]["rollout_workers"] = args.workers
 
     cfgs = {"phy": load_yaml("phy.yaml"), "hazard": load_yaml("hazard.yaml"),
             "experiment": load_yaml("experiment.yaml")}
-    updates = args.updates or (3 if args.smoke else int(cfg["training"]["total_updates"]))
-    out = Path(args.out) if args.out else PROJECT_ROOT / cfg["training"]["checkpoint_dir"]
+    updates = args.updates
+    if args.resume and not args.out:
+        out = Path(args.resume).parent
+    else:
+        out = Path(args.out) if args.out else PROJECT_ROOT / cfg["training"]["checkpoint_dir"]
     from common.keep_awake import keep_awake
 
     with keep_awake(args.keep_awake) as awake:
@@ -708,7 +925,9 @@ def main(argv: list[str] | None = None) -> int:
                            "idle sleep can still suspend training")
         elif awake:
             logger.info("idle sleep held off for the duration of training")
-        train(cfg, cfgs, updates, out, smoke=args.smoke)
+        train(cfg, cfgs, updates, out, smoke=args.smoke, stage=args.stage,
+              resume=Path(args.resume) if args.resume else None,
+              init_from=Path(args.init_from) if args.init_from else None)
     return 0
 
 
