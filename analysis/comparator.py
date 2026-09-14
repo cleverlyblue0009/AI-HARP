@@ -55,6 +55,18 @@ COST_AXES: dict[str, str] = {
     "tir_p95_s": "p95 time-to-informed-at-risk (s)",
 }
 
+#: Latency guard on matched quality (user decision after the fixed-engine
+#: re-sweep). RWCR credits a warning whenever it lands while the vehicle is
+#: still at risk, so on RWCR alone a slotted scheme "matches quality" by
+#: waiting: the cheapest qualifying slotted_1p / DV-CAST / greedy point sat on
+#: the largest slot count in every cell, with median TIR above 3 s at rural
+#: d=2 and urban d=20. A point therefore also has to keep its actionable-
+#: deadline miss rate within ``miss_margin`` (absolute) of the best any
+#: policy achieves in that cell -- the paper's own deadline metric, per cell.
+MISS_METRIC = "actionable_deadline_miss_rate"
+DEFAULT_MISS_MARGIN = 0.05
+_warned_no_miss: set[str] = set()
+
 
 @dataclass(frozen=True)
 class CellKey:
@@ -124,22 +136,64 @@ class Cell:
         ceiling = self.achievable_quality(exclude)
         return float(target * ceiling) if np.isfinite(ceiling) else float("nan")
 
+    def best_miss_rate(self, exclude: Iterable[str] = ()) -> float:
+        """Lowest actionable-deadline miss rate any (non-excluded) setting reaches."""
+        excluded = set(exclude)
+        vals = [float(pt.extras.get(MISS_METRIC, np.nan))
+                for name, curve in self.curves.items() if name not in excluded
+                for pt in curve.points]
+        vals = [v for v in vals if np.isfinite(v)]
+        return float(min(vals)) if vals else float("nan")
+
+    def resolve_miss_bound(
+        self, margin: float | None, exclude: Iterable[str] = ()
+    ) -> float:
+        """Highest actionable-deadline miss rate a qualifying point may have.
+
+        ``None`` disables the guard. Like the RWCR ceiling, the best rate
+        excludes the policy being scored, so it cannot tighten its own bar.
+        """
+        if margin is None:
+            return float("inf")
+        best = self.best_miss_rate(exclude)
+        if not np.isfinite(best):
+            if str(self.key) not in _warned_no_miss:
+                logger.warning("%s: no %s recorded; the latency guard cannot be applied",
+                               self.key, MISS_METRIC)
+                _warned_no_miss.add(str(self.key))
+            return float("inf")
+        return float(best + margin)
+
+    @staticmethod
+    def within_miss_bound(point: OperatingPoint, bound: float) -> bool:
+        """A point with no recorded miss rate cannot show it meets a finite bound."""
+        if not np.isfinite(bound):
+            return True
+        miss = float(point.extras.get(MISS_METRIC, np.nan))
+        return bool(np.isfinite(miss) and miss <= bound)
+
     def cost_at_matched(
-        self, policy: str, target_quality: float, axis: str = "cost"
+        self, policy: str, target_quality: float, axis: str = "cost",
+        miss_bound: float = float("inf"),
     ) -> float:
         """Cheapest cost on ``axis`` at which ``policy`` attains the target.
 
-        For the transmission axis this is the interpolated Pareto crossing. For
-        a latency axis, interpolation is not meaningful (latency is not
-        monotone in the suppression knob), so the value of the cheapest
-        qualifying setting is taken instead.
+        Only settings within ``miss_bound`` qualify. For the transmission axis
+        this is the interpolated Pareto crossing, and it is never interpolated
+        towards a setting that fails the guard (see
+        :meth:`analysis.pareto.PolicyCurve.overhead_at`), so loosening the
+        margin can only lower the cost. For a latency axis, interpolation is
+        not meaningful (latency is not monotone in the suppression knob), so
+        the value of the cheapest qualifying setting is taken instead.
         """
         curve = self.curves.get(policy)
         if curve is None:
             return float("inf")
         if axis == "cost":
-            return curve.overhead_at(target_quality)
-        qualifying = [p for p in curve.points if p.quality >= target_quality]
+            return curve.overhead_at(
+                target_quality, eligible=lambda p: self.within_miss_bound(p, miss_bound))
+        qualifying = [p for p in curve.points if p.quality >= target_quality
+                      and self.within_miss_bound(p, miss_bound)]
         if not qualifying:
             return float("inf")
         best = min(qualifying, key=lambda p: p.cost)
@@ -156,6 +210,7 @@ class OracleBest:
     per_cell: dict[CellKey, tuple[str, float]] = field(default_factory=dict)
     axis: str = "cost"
     target: float = 0.95
+    miss_bound: dict[CellKey, float] = field(default_factory=dict)
 
     def cost(self, key: CellKey) -> float:
         return self.per_cell.get(key, ("", float("inf")))[1]
@@ -167,17 +222,20 @@ class OracleBest:
 def per_cell_oracle_best(
     cells: Sequence[Cell], target: float = 0.95, axis: str = "cost",
     exclude: Iterable[str] = (), mode: str = "relative",
+    miss_margin: float | None = DEFAULT_MISS_MARGIN,
 ) -> OracleBest:
     """The best (policy, knob) *within each cell*, tuned with hindsight."""
     excluded = set(exclude)
     out = OracleBest(axis=axis, target=target)
     for cell in cells:
         tq = cell.resolve_target(target, mode, excluded)
+        mb = cell.resolve_miss_bound(miss_margin, excluded)
+        out.miss_bound[cell.key] = mb
         best_label, best_cost = "none", float("inf")
         for policy in cell.curves:
             if policy in excluded:
                 continue
-            c = cell.cost_at_matched(policy, tq, axis)
+            c = cell.cost_at_matched(policy, tq, axis, mb)
             if np.isfinite(c) and c < best_cost:
                 best_cost, best_label = c, policy
         out.per_cell[cell.key] = (best_label, best_cost)
@@ -210,6 +268,7 @@ class FixedBest:
 def best_fixed_baseline(
     cells: Sequence[Cell], target: float = 0.95, axis: str = "cost",
     exclude: Iterable[str] = (), penalty: float = 10.0, mode: str = "relative",
+    miss_margin: float | None = DEFAULT_MISS_MARGIN,
 ) -> FixedBest:
     """Pick the single setting that does best averaged over all cells.
 
@@ -221,7 +280,8 @@ def best_fixed_baseline(
     all. The number of cells a candidate fails in is reported alongside.
     """
     excluded = set(exclude)
-    oracle = per_cell_oracle_best(cells, target, axis, exclude=excluded, mode=mode)
+    oracle = per_cell_oracle_best(cells, target, axis, exclude=excluded, mode=mode,
+                                  miss_margin=miss_margin)
 
     candidates: set[tuple[str, str, Any]] = set()
     for cell in cells:
@@ -237,7 +297,8 @@ def best_fixed_baseline(
             pt = cell.find(policy, param, value)
             ref = oracle.cost(cell.key)
             tq = cell.resolve_target(target, mode, excluded)
-            if pt is None or pt.quality < tq:
+            if (pt is None or pt.quality < tq
+                    or not cell.within_miss_bound(pt, oracle.miss_bound[cell.key])):
                 per_cell[cell.key] = float("inf")
                 ratios.append(penalty)
                 continue
@@ -264,6 +325,7 @@ class ComparisonResult:
     oracle: OracleBest
     fixed: FixedBest
     agent_cost: dict[CellKey, float]
+    miss_margin: float | None = DEFAULT_MISS_MARGIN
 
     @property
     def mean_regret(self) -> float:
@@ -282,7 +344,7 @@ class ComparisonResult:
 
 def compare_policy(
     cells: Sequence[Cell], policy: str, target: float = 0.95, axis: str = "cost",
-    mode: str = "relative",
+    mode: str = "relative", miss_margin: float | None = DEFAULT_MISS_MARGIN,
 ) -> ComparisonResult:
     """Score ``policy`` as regret vs oracle-best and margin over fixed-best.
 
@@ -294,13 +356,15 @@ def compare_policy(
     Both exclude ``policy`` itself from the reference sets, so an agent cannot
     become its own baseline.
     """
-    oracle = per_cell_oracle_best(cells, target, axis, exclude=(policy,), mode=mode)
-    fixed = best_fixed_baseline(cells, target, axis, exclude=(policy,), mode=mode)
+    oracle = per_cell_oracle_best(cells, target, axis, exclude=(policy,), mode=mode,
+                                  miss_margin=miss_margin)
+    fixed = best_fixed_baseline(cells, target, axis, exclude=(policy,), mode=mode,
+                                miss_margin=miss_margin)
 
     agent_cost, regret, margin = {}, {}, {}
     for cell in cells:
         tq = cell.resolve_target(target, mode, {policy})
-        a = cell.cost_at_matched(policy, tq, axis)
+        a = cell.cost_at_matched(policy, tq, axis, oracle.miss_bound[cell.key])
         agent_cost[cell.key] = a
         o, f = oracle.cost(cell.key), fixed.cost(cell.key)
         regret[cell.key] = (a / o - 1.0) if np.isfinite(a) and np.isfinite(o) and o > 0 \
@@ -309,7 +373,7 @@ def compare_policy(
             else float("-inf") if np.isfinite(f) else float("nan")
     return ComparisonResult(axis=axis, target=target, regret_per_cell=regret,
                             margin_per_cell=margin, oracle=oracle, fixed=fixed,
-                            agent_cost=agent_cost)
+                            agent_cost=agent_cost, miss_margin=miss_margin)
 
 
 # ---------------------------------------------------------------------------
@@ -317,16 +381,18 @@ def compare_policy(
 # ---------------------------------------------------------------------------
 def format_reference_table(
     cells: Sequence[Cell], target: float = 0.95, axis: str = "cost",
-    mode: str = "relative",
+    mode: str = "relative", miss_margin: float | None = DEFAULT_MISS_MARGIN,
 ) -> str:
     """The two reference points per cell, before any agent exists."""
-    oracle = per_cell_oracle_best(cells, target, axis, mode=mode)
-    fixed = best_fixed_baseline(cells, target, axis, mode=mode)
+    oracle = per_cell_oracle_best(cells, target, axis, mode=mode, miss_margin=miss_margin)
+    fixed = best_fixed_baseline(cells, target, axis, mode=mode, miss_margin=miss_margin)
     unit = COST_AXES.get(axis, axis)
     band = ("RWCR >= " + format(target, ".2f") if mode == "absolute"
             else "RWCR >= " + format(target, ".0%") + " of each cell ceiling")
+    band += (" (no latency guard)" if miss_margin is None
+             else f" and actionable miss <= cell best + {miss_margin:g}")
 
-    hdr = (f"{'cell':<38}{'ceil':>7}{'target':>8}"
+    hdr = (f"{'cell':<38}{'ceil':>7}{'target':>8}{'miss<=':>8}"
            f"{'oracle-best':>24}{'fixed':>8}{'penalty':>9}")
     lines = ["=" * len(hdr),
              f" REFERENCE POINTS -- {unit}, at {band}",
@@ -343,8 +409,9 @@ def format_reference_table(
         tq = cell.resolve_target(target, mode)
         pen = (f_cost / o_cost) if np.isfinite(f_cost) and np.isfinite(o_cost) and o_cost > 0 \
             else float("inf")
+        mb = oracle.miss_bound.get(cell.key, float("inf"))
         lines.append(
-            f"{str(cell.key):<38}{ceil:>7.3f}{tq:>8.3f}"
+            f"{str(cell.key):<38}{ceil:>7.3f}{tq:>8.3f}{_fmt(mb):>8}"
             f"{o_label + ' ' + _fmt(o_cost):>24}{_fmt(f_cost):>8}"
             f"{_fmt(pen, 'x'):>9}"
         )
@@ -415,7 +482,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--jobs", type=int, default=1,
                     help="cells in parallel worker processes; every run is seeded "
                          "on its own, so results are identical")
+    ap.add_argument("--miss-margin", type=float, default=DEFAULT_MISS_MARGIN,
+                    help="latency guard: actionable-deadline miss rate may exceed the "
+                         "cell's best by at most this much (absolute)")
+    ap.add_argument("--no-miss-guard", action="store_true",
+                    help="RWCR-only matched quality (the pre-guard definition)")
     args = ap.parse_args(argv)
+    miss_margin = None if args.no_miss_guard else args.miss_margin
     if args.quiet:
         logging.getLogger("aiharp").setLevel(logging.WARNING)
 
@@ -439,7 +512,7 @@ def main(argv: list[str] | None = None) -> int:
 
     for axis in ([args.axis] if args.axis != "all" else list(COST_AXES)):
         print()
-        print(format_reference_table(cells, args.target, axis, args.mode))
+        print(format_reference_table(cells, args.target, axis, args.mode, miss_margin))
     return 0
 
 

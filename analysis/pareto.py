@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Iterable, Sequence
+from typing import Any, Callable, Iterable, Sequence
 
 import numpy as np
 
@@ -97,18 +97,31 @@ class PolicyCurve:
     def sorted_by_cost(self) -> list[OperatingPoint]:
         return sorted(self.points, key=lambda p: p.cost)
 
-    def overhead_at(self, target_quality: float) -> float:
+    def overhead_at(
+        self, target_quality: float,
+        eligible: Callable[[OperatingPoint], bool] | None = None,
+    ) -> float:
         """Minimum cost at which this policy attains ``target_quality``.
 
         Interpolated linearly along the policy's own curve between the two
         bracketing operating points. Returns ``inf`` when no setting of the
         knob reaches the target -- which is a real and reportable outcome, not
         a missing value.
+
+        ``eligible`` is an extra condition a setting must meet (the comparator's
+        deadline guard). Only eligible settings can qualify, and the lower
+        interpolation anchor is always the next-cheaper short setting of the
+        FULL curve: if that anchor fails ``eligible``, nothing cheaper than
+        ``best`` is known to satisfy it, so no interpolation is done. Dropping
+        the anchor instead let the crossing jump across an unmeasured gap to a
+        cheaper eligible point -- at rural d=80 ``p_persistence_03`` read 0.90
+        at margin 0.05 but 1.34 at the looser 0.10.
         """
         pts = [p for p in self.points if np.isfinite(p.cost) and np.isfinite(p.quality)]
         if not pts:
             return float("inf")
-        reaching = [p for p in pts if p.quality >= target_quality]
+        reaching = [p for p in pts if p.quality >= target_quality
+                    and (eligible is None or eligible(p))]
         if not reaching:
             return float("inf")
         best = min(reaching, key=lambda p: p.cost)
@@ -119,6 +132,8 @@ class PolicyCurve:
         if not cheaper_short:
             return best.cost
         lo = max(cheaper_short, key=lambda p: p.cost)
+        if eligible is not None and not eligible(lo):
+            return best.cost
         if best.quality == lo.quality:
             return best.cost
         frac = (target_quality - lo.quality) / (best.quality - lo.quality)

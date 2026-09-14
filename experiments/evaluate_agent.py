@@ -35,7 +35,9 @@ from typing import Any, Sequence
 
 import numpy as np
 
-from analysis.comparator import COST_AXES, Cell, compare_policy, load_cells, save_cells
+from analysis.comparator import (
+    COST_AXES, DEFAULT_MISS_MARGIN, Cell, compare_policy, load_cells, save_cells,
+)
 from analysis.pareto import sweep_policy
 from common.config import PROJECT_ROOT, RESULTS_DIR, load_yaml
 from common.logging_utils import get_logger
@@ -134,6 +136,9 @@ def format_result(result, title: str) -> str:
               f" mean margin         : {result.mean_margin * 100:+.1f}%  "
               "(>0% = cheaper than the best fixed baseline)",
               f" cells where the agent never reached the target: {result.cells_failed}",
+              " latency guard       : " + ("off (RWCR only)" if result.miss_margin is None
+                                           else f"actionable miss <= cell best + "
+                                                f"{result.miss_margin:g}"),
               "=" * len(hdr)]
     return "\n".join(lines)
 
@@ -150,6 +155,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cells", type=int, default=None, help="first N cells only")
     ap.add_argument("--skip-gate", action="store_true")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--miss-margin", type=float, default=DEFAULT_MISS_MARGIN,
+                    help="latency guard on matched quality: actionable-deadline miss "
+                         "rate within this (absolute) of the cell's best baseline")
+    ap.add_argument("--no-miss-guard", action="store_true",
+                    help="RWCR-only matched quality (the pre-guard definition)")
     ap.add_argument("--out-dir", default=None,
                     help="where to write outputs (default results/); point a "
                          "partially trained checkpoint elsewhere so a pipeline "
@@ -193,9 +203,12 @@ def main(argv: list[str] | None = None) -> int:
                                "updates": updates, "configured_updates": configured,
                                "tau": tau, "seeds": seeds, "target": args.target,
                                "mode": args.mode, "axes": {}}
+    miss_margin = None if args.no_miss_guard else args.miss_margin
+    summary["miss_margin"] = miss_margin
     print(banner)
     for axis in COST_AXES:
-        res = compare_policy(scored, "ai_harp", args.target, axis, args.mode)
+        res = compare_policy(scored, "ai_harp", args.target, axis, args.mode,
+                             miss_margin=miss_margin)
         print()
         print(format_result(res, f"AI-HARP vs baselines -- {axis}, tau={tau}"))
         summary["axes"][axis] = {

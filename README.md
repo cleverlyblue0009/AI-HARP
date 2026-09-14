@@ -561,9 +561,41 @@ valuable thing in this repository.
   the edge. Consequently the regenerated reference table — best fixed baseline
   `dvcast(n_slots=50)` within 1.00–1.04× of per-cell hindsight tuning in three
   of four cells, 1.30× at rural d=80 — describes baselines that trade latency
-  for cost, and **is not yet a valid headline comparator**. Matched quality
-  needs a latency bound (e.g. on median TIR or actionable-deadline miss rate);
-  that is a methodology decision pending with the user.
+  for cost.
+  **Resolved (user decision): matched quality now carries a deadline guard.**
+  A setting qualifies only if RWCR ≥ 95% of the cell ceiling **and** its
+  actionable-deadline miss rate is at most the cell's best (excluding the
+  policy being scored) + `miss_margin`, default 0.05 absolute
+  (`analysis/comparator.py`; `--miss-margin`, `--no-miss-guard` on both the
+  comparator and `experiments.evaluate_agent`). It disqualifies exactly the
+  waiting points: at rural d=2 the 50-slot `slotted_1p` / DV-CAST points miss
+  0.65 / 0.64 against a best of 0.53, at urban d=20 0.13 against 0.067; at
+  rural d=20 and d=80 every scheme is within ~0.01 of the best and 50 slots
+  cost only ~0.5 s, so nothing there is removed.
+  A first version dropped guard-failing points before interpolating, and the
+  crossing jumped across unmeasured grid: rural d=80 `p_persistence_03` read
+  0.90 at margin 0.05 but 1.34 at 0.10. The lower interpolation anchor is now
+  always the next-cheaper short setting of the full curve, and no
+  interpolation is done if it fails the guard; a test pins that loosening the
+  margin never raises matched cost.
+
+  Reference table on the regenerated curves (cost; oracle-best / best fixed /
+  headroom):
+
+  | cell | no guard | margin 0.02 | **margin 0.05** | margin 0.10 |
+  |---|---|---|---|---|
+  | rural d=2 | 1.45 / 1.45 / 1.00× | 1.65 / 1.69 / 1.02× | **1.56 / 1.56 / 1.00×** | 1.56 / 1.56 / 1.00× |
+  | rural d=20 | 0.70 / 0.72 / 1.02× | 0.70 / 0.77 / 1.09× | **0.70 / 0.73 / 1.04×** | 0.70 / 0.73 / 1.04× |
+  | rural d=80 | 1.27 / 1.66 / 1.30× | 1.51 / 1.84 / 1.22× | **1.51 / 1.70 / 1.13×** | 1.27 / 1.70 / 1.34× |
+  | urban d=20 | 0.53 / 0.55 / 1.04× | 0.53 / 0.58 / 1.09× | **0.53 / 0.57 / 1.06×** | 0.53 / 0.57 / 1.06× |
+  | best fixed | `dvcast(n_slots=50)` | `slotted_1p(n_slots=20)` | **`dvcast(n_slots=30)`** | `dvcast(n_slots=30)` |
+
+  **What this means for the paper's claim:** under a deadline-guarded
+  comparison a single fixed scheme is within 0–13% of per-cell hindsight
+  tuning in every committed cell (0–34% across margins). A learned policy can
+  show a large margin over the best fixed baseline only by beating per-cell
+  hindsight tuning itself. These are four clear-weather fog-bank cells; the
+  headroom elsewhere in the factorial is unmeasured.
 - **The committed baseline curves still reproduce.** `results/pareto_cells.json`
   was generated at `788d5fe`, before six later commits touched simulation,
   metrics or policy code. Eight committed points (all four cells; flooding,
