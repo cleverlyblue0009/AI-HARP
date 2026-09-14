@@ -303,6 +303,31 @@ derived from measured speed.
   a masked action and that `evaluate_actions` reproduces the masked log-prob
   exactly. History now logs `carry_rate` and `decisions_per_informed`. run6
   (42 updates) is superseded.
+- **run7 (200 updates, carry cap, fixed engine, per-group λ): stable, but
+  the sparse constraints are not met.** 3.25 h at `2b239a1`; no crash, no
+  update with a zero-coverage group, no λ at its cap (max 14.95), carry
+  bounded (25–39% of decisions, peak 0.50; 1.3–1.6 decisions per informed
+  vehicle), entropy steady at ~0.9. Mean pooled shortfall over updates
+  161–200 was +0.068 (target met in 8 of 40). Per group over those updates:
+
+  | group | mean shortfall (+ = short) | met | final λ |
+  |---|---|---|---|
+  | rural d=1 | −0.153 | 7/15 | 1.09 |
+  | **rural d=2** | **+0.342** | 0/18 | 9.37 |
+  | **rural d=3** | **+0.171** | 1/12 | 14.95 |
+  | rural d=5 | +0.056 | 5/17 | 8.41 |
+  | rural d=10 / 20 / 40 / 80 | −0.020 / −0.020 / +0.025 / −0.015 | 11/12, 13/15, 5/20, 12/17 | 6.34 / 2.09 / 5.78 / 1.50 |
+  | urban d=1 | −0.281 | 13/16 | **0.00** |
+  | **urban d=2** | **+0.295** | 2/14 | 7.66 |
+  | urban d=3 / 5 | −0.031 / +0.060 | 10/16, 7/17 | 3.94 / 6.49 |
+  | urban d=10 / 20 / 40 / 80 | +0.100 / +0.096 / +0.062 / −0.015 | 2/17, 2/14, 4/16, 8/15 | 13.46 / 11.69 / 10.76 / 2.62 |
+
+  The dense rural groups sit on their targets. The sparsest groups — rural
+  d=2–3 and urban d=2, the paper's regime — are still 0.17–0.34 short with λ
+  climbing, i.e. 200 updates (with those densities appearing only in the last
+  ~80) is not enough to meet them. Urban d=1's target (~0.12–0.19) is so low
+  that its λ fell to 0: satisfying that constraint does not show the policy
+  is useful there (the low-ceiling caveat above).
 - `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
   attention on `neighbour → holder` edges *is* the relay ranking**;
   `relay_top_k` designates the k-th most attended neighbour, so the heatmap
