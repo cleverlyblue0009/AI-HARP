@@ -408,6 +408,77 @@ finding. Collisions are now attributed **per transmitter** by the engine
 
 ---
 
+## Training throughput
+
+Wall-clock per PPO update, measured by `experiments/profile_training.py` on
+the same 3 updates (mixed densities, run7 weights, 8 episodes each) on the
+development laptop (AMD Ryzen 7 7445HS, 6 cores / 12 threads; NVIDIA RTX 4050
+Laptop, 6 GB). Nothing below changes the constrained objective, the reward,
+the action semantics or the oracle/causal boundary.
+
+| step | change | serial | 8 workers | 2,000 updates (8 workers) | profile |
+|---|---|---|---|---|---|
+| 0 | baseline | 45.2 s | 27.6 s | 15.3 h | `results/profile_baseline.txt` |
+| 2 | batched decision inference | 24.4 s (1.85x) | 19.4 s (1.42x) | 10.8 h | `results/profile_step2_batching.txt` |
+| 6 | risk features cached per epoch | 23.2 s | 18.3 s | 10.1 h | `results/profile_step6_cheap.txt` |
+| 3 | PPO step on the GPU, deterministic | 18.4 s | **12.0 s** | **6.7 h** | `results/profile_optimised.txt` |
+
+**2.3x overall at 8 workers.** The staged curriculum caps a run at 1,000
+updates (~3.3 h), and early stopping on the constraints can end it sooner.
+
+What each step found:
+
+- **Baseline profile.** Per-decision inference was 44% of a serial update
+  (15,247 single-graph forward passes, 4.12 ms each, 12.9-node graphs);
+  decisions per engine epoch averaged 52. Amdahl bound for inference-only
+  work: 1.85x. With 8 workers the serial PPO step was 43% of an update.
+- **Batching** (`training.batch_inference`): all of an engine loop's decisions
+  go through one forward pass (369 calls instead of 15,247; 0.93 ms per
+  decision). It cannot be bit-identical to per-decision inference on CPU -- a
+  bare `nn.Linear` over 1,300 rows differs from 13-row chunks by 3.6e-7 --
+  so the correctness gate (user decision) is identical actions, masks,
+  rewards, graphs, order and outcomes with log-prob/value/entropy within 1e-4
+  (`tests/test_batched_inference.py`); 0 action flips in 1,794 decisions.
+  Batched runs are byte-identical to themselves and across worker counts.
+- **Cheap wins.** Kept: computing risk-field features once per epoch rather
+  than per decision (simulator time 20.2 -> 13.5 s instrumented; exact,
+  tested). Reverted: vectorising graph-edge construction (6.3 -> 6.0 s, noise).
+  Reverted: 12 torch threads for PPO (16.1 s vs 14.0 s at 6).
+- **GPU** (`training.device: auto`, `D:\aiharp-gpu`): PPO step on 6,222
+  transitions 13.87 s CPU vs 3.13 s GPU -- but only 7.51 s with deterministic
+  CUDA kernels, which are required so that no number in `results/` comes from a
+  non-reproducible run (two identical non-deterministic GPU runs differed by
+  2.6e-6 after 16 steps). `--nondeterministic-gpu` gives the 3.13 s for
+  exploratory runs; `run_summary.json` records `bit_reproducible`. Rollouts
+  stay on CPU workers.
+- **Workers** (`results/bench_rollouts_laptop.txt`): 3.39x at 6, 3.89x at 8,
+  3.75x at 11. Scaling stops at `rollout_episodes_per_update` (8) because one
+  episode runs in one worker; `rollout_workers: auto` is capped there. A
+  many-core cloud machine does not help unless episodes per update is raised,
+  which changes the PPO batch and is an optimisation decision, not a free
+  speed-up.
+
+**The 5 h target for 2,000 updates is not reached on this laptop (6.7 h).**
+What remains per update is ~6 s of rollouts, bounded by the slowest dense
+urban episode, and ~6 s of deterministic GPU PPO. Remaining levers, none
+applied: non-deterministic GPU kernels (~9 s/update, not reproducible); fewer
+PPO epochs per update (4 -> 2 would cut PPO roughly in half but changes how the
+policy learns); more episodes per update on a many-core machine (changes the
+PPO batch). The staged plan's 1,000-update cap already fits in ~3.3 h.
+
+**Launching the full two-stage run** (pretrain, then sparse-weighted finetune
+with early stopping; resumable):
+
+```bash
+D:/aiharp-gpu/Scripts/python.exe -m agents.train --out checkpoints/run8 --keep-awake
+# after an interruption, continue exactly where it stopped:
+D:/aiharp-gpu/Scripts/python.exe -m agents.train --resume checkpoints/run8/ckpt_latest.pt --keep-awake
+```
+
+`run_summary.json` in the run directory records whether finetuning stopped on
+the constraints or at its cap, the PPO device, and whether the run is
+bit-reproducible.
+
 ## Reproducing
 
 ```bash

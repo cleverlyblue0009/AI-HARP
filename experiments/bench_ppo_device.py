@@ -132,10 +132,20 @@ def main(argv=None) -> int:
     ap.add_argument("--load", default=None)
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--repeats", type=int, default=3)
+    ap.add_argument("--threads", type=int, default=None, help="torch CPU threads")
+    ap.add_argument("--deterministic", action="store_true",
+                    help="torch.use_deterministic_algorithms (bit-reproducible on CUDA)")
     ap.add_argument("--checkpoint", default="checkpoints/run7/ckpt_000200.pt")
     ap.add_argument("--seed", type=int, default=2026)
     args = ap.parse_args(argv)
     logging.getLogger("aiharp").setLevel(logging.WARNING)
+    if args.threads:
+        torch.set_num_threads(args.threads)
+    if args.deterministic:
+        import os
+
+        os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+        torch.use_deterministic_algorithms(True, warn_only=True)
     if args.collect:
         collect(PROJECT_ROOT / args.collect, args.checkpoint, args.seed)
     if args.load:

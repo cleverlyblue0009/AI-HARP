@@ -96,16 +96,25 @@ def _plan(cfg, n_updates: int, seed: int):
     return plan
 
 
+DEVICE = torch.device("cpu")
+
+
 def _ppo(net, cfg, transitions, timer: _Timer | None):
+    """One PPO step as agents.train runs it: on DEVICE, synced back to ``net``."""
     from agents.ai_harp import executed_transitions
 
     tr = executed_transitions(transitions)
     adv, ret = compute_gae(tr, float(cfg["algorithm"]["ppo"]["gamma"]),
                            float(cfg["algorithm"]["ppo"]["gae_lambda"]))
-    opt = torch.optim.Adam(net.parameters(), lr=float(cfg["algorithm"]["ppo"]["lr"]))
+    learner = net if DEVICE.type == "cpu" else __import__("copy").deepcopy(net).to(DEVICE)
+    opt = torch.optim.Adam(learner.parameters(), lr=float(cfg["algorithm"]["ppo"]["lr"]))
     if timer is None:
-        ppo_update(net, opt, tr, adv, ret, cfg)
+        ppo_update(learner, opt, tr, adv, ret, cfg)
+        if learner is not net:
+            torch.cuda.synchronize()
+            net.load_state_dict({k: v.cpu() for k, v in learner.state_dict().items()})
         return
+    net = learner
     # Split forward / backward / optimiser by wrapping the three calls.
     orig_eval = net.evaluate_actions
     net.evaluate_actions = timer.wrap("ppo_forward", orig_eval)
@@ -130,8 +139,20 @@ def main(argv=None) -> int:
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--seed", type=int, default=2026)
     ap.add_argument("--out", default="results/profile_baseline.txt")
+    ap.add_argument("--device", default="cpu",
+                    help="device for the PPO step (cpu, cuda, auto), as training.device")
     args = ap.parse_args(argv)
     logging.getLogger("aiharp").setLevel(logging.WARNING)
+    global DEVICE
+    from agents.train import resolve_device
+    from common.seeding import set_global_determinism
+
+    DEVICE = resolve_device(args.device)
+    # The same determinism training applies, so the PPO timing is what a real
+    # run pays (deterministic CUDA kernels are 2.4x slower than the defaults).
+    cfg0 = load_yaml("agent.yaml")
+    set_global_determinism(int(cfg0["training"]["seed"]),
+                           cuda_deterministic=bool(cfg0["training"].get("cuda_deterministic", True)))
 
     cfg, cfgs, net, stats, objective = _setup(args)
     plan = _plan(cfg, args.updates, args.seed)
@@ -147,8 +168,9 @@ def main(argv=None) -> int:
                                          cwd=PROJECT_ROOT, text=True).strip()
     except Exception:  # pragma: no cover
         commit = "unknown"
+    gpu = f" | PPO on {torch.cuda.get_device_name(0)}" if DEVICE.type == "cuda" else " | PPO on CPU"
     say(f"# commit {commit} | {platform.processor()} | torch {torch.__version__} "
-        f"(threads {torch.get_num_threads()}) | {time.strftime('%Y-%m-%d %H:%M')}")
+        f"(threads {torch.get_num_threads()}){gpu} | {time.strftime('%Y-%m-%d %H:%M')}")
     say(f"# episodes per update {len(plan[0][0])}; curriculum progress 1.0 (mixed densities)")
     for u, (specs, _) in enumerate(plan, 1):
         say(f"#   update {u}: " + ", ".join(f"{s.scenario.split('_')[0]} d={s.density:g}"

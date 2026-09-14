@@ -59,21 +59,32 @@ class SeedBundle:
         return gen
 
 
-def set_global_determinism(seed: int) -> None:
-    """Best-effort global determinism for Phase 5 (PyTorch is optional)."""
+def set_global_determinism(seed: int, cuda_deterministic: bool = True) -> None:
+    """Best-effort global determinism for Phase 5 (PyTorch is optional).
+
+    ``cuda_deterministic=False`` leaves CUDA kernels free to be
+    non-deterministic: measured 2.4x faster PPO on an RTX 4050 (3.13 s vs
+    7.51 s), but two identical runs then differ (2.6e-6 in the weights after
+    16 steps, compounding). Such runs are exploratory and may not feed
+    results/. CPU results are unaffected either way.
+    """
     import os
     import random
 
     random.seed(seed)
     np.random.seed(seed % (2**32))
     os.environ.setdefault("PYTHONHASHSEED", str(seed))
+    # Required for deterministic cuBLAS on CUDA; must be set before the first
+    # CUDA call. Measured: two identical GPU PPO runs differed by 2.6e-6 in the
+    # weights without it (and use_deterministic_algorithms), 0 with both.
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     try:  # pragma: no cover - torch is not a Phase 1-4 dependency
         import torch
 
         torch.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
-        torch.use_deterministic_algorithms(True, warn_only=True)
-        torch.backends.cudnn.deterministic = True
+        torch.use_deterministic_algorithms(bool(cuda_deterministic), warn_only=True)
+        torch.backends.cudnn.deterministic = bool(cuda_deterministic)
         torch.backends.cudnn.benchmark = False
     except ImportError:
         pass

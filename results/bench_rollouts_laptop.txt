@@ -1,0 +1,7 @@
+# python -m experiments.bench_rollouts --workers 1 6 8 11 --stage pretrain
+# commit f6300ee (+ uncommitted GPU/determinism wiring, rollouts unaffected) | AMD Ryzen 7 7445HS, 6 cores / 12 threads | 2026-09-14
+8 episodes (pretrain densities): urban d=80, urban d=20, urban d=80, rural d=20, urban d=40, urban d=80, urban d=80, urban d=40
+workers=  1:    51.1 s  speed-up  1.00x      351 transitions/s  identical=True  pool start   0.0 s
+workers=  6:    15.1 s  speed-up  3.39x     1192 transitions/s  identical=True  pool start  19.1 s
+workers=  8:    13.1 s  speed-up  3.89x     1367 transitions/s  identical=True  pool start  20.1 s
+workers= 11:    13.6 s  speed-up  3.75x     1320 transitions/s  identical=True  pool start  20.6 s  [3 of 11 workers idle at 8 episodes/update]

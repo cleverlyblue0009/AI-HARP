@@ -297,7 +297,9 @@ training:
   rollout_episodes_per_update: 8
   rollout_workers: auto
   # Episodes of one update run in this many worker processes (1 torch thread
-  # each); 1 = serial; auto = os.cpu_count() - 1. Results are identical for any value: each episode's
+  # each); 1 = serial; auto = os.cpu_count() - 1, capped at
+  # rollout_episodes_per_update (one episode per worker; more only idle:
+  # results/bench_rollouts_laptop.txt, 8 workers 13.1 s vs 11 workers 13.6 s). Results are identical for any value: each episode's
   # policy randomness comes from a per-episode seed drawn from the training
   # RNG. Profiled on run7: per-decision inference 44%, simulator 25%, PPO step
   # 25% of an update, so a GPU would give ~1.2x; parallel CPU rollouts are the
@@ -306,6 +308,22 @@ training:
   #         episodes (20,671 transitions): serial 117.1 s; 4 workers 49.3 s
   #         (2.37x); 6 workers 39.8 s (2.94x); 8 workers 29.5 s (3.98x);
   #         identical transitions at every count. Pool start ~35 s, once per run.
+  device: auto
+  # Where the PPO step runs: cpu, cuda, or auto (CUDA when available).
+  # Rollouts always run on CPU copies. Needs a CUDA torch build (the D:
+  # aiharp-env is CPU-only; D:\aiharp-gpu has torch 2.2.2+cu121).
+  # source: [MEASURED] experiments/bench_ppo_device.py, 6,222 transitions,
+  #         4 epochs x minibatch 256: CPU 13.87 s (6 threads; 12 threads was
+  #         slower, 16.13 s) vs RTX 4050 Laptop GPU 3.07 s -> 4.5x.
+  cuda_deterministic: true
+  # Deterministic CUDA kernels (torch.use_deterministic_algorithms +
+  # CUBLAS_WORKSPACE_CONFIG). Required by the standing rule that no number in
+  # results/ comes from a non-reproducible run.
+  # source: [MEASURED] same benchmark: deterministic 7.51 s (1.85x vs CPU),
+  #         non-deterministic 3.13 s (4.4x). Two identical non-deterministic
+  #         GPU runs differed by 2.6e-6 in the weights after 16 PPO steps; with
+  #         this on they were identical. `--nondeterministic-gpu` switches it
+  #         off for exploratory runs, and run_summary.json records it.
   batch_inference: true
   # All learned-agent decisions in one engine loop (receptions, then timers) of
   # one 100 ms epoch go through the network in a single forward pass.

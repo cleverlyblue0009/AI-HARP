@@ -267,12 +267,26 @@ def _rollout_task(work: tuple[dict[str, Any], Any, EpisodeSpec, int]) -> tuple[l
     return run_seeded_episode(_WORKER["policy"], spec, episode_seed, objective, _WORKER["cfgs"])
 
 
-def resolve_workers(value: Any) -> int:
-    """``training.rollout_workers``: an integer, or ``auto`` = cpu_count - 1."""
+def resolve_device(value: Any) -> torch.device:
+    """``training.device``: ``cpu``, ``cuda``, or ``auto`` (CUDA when available)."""
+    v = str(value).strip().lower()
+    if v == "auto":
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    return torch.device(v)
+
+
+def resolve_workers(value: Any, episodes_per_update: int | None = None) -> int:
+    """``training.rollout_workers``: an integer, or ``auto``.
+
+    ``auto`` is ``cpu_count - 1`` capped at ``episodes_per_update``: one episode
+    runs in one worker, so extra workers only idle. Measured on the 12-thread
+    laptop (dense episodes): 8 workers 13.1 s, 11 workers 13.6 s with 3 idle.
+    """
     if isinstance(value, str) and value.strip().lower() == "auto":
         import os
 
-        return max(1, (os.cpu_count() or 2) - 1)
+        n = max(1, (os.cpu_count() or 2) - 1)
+        return min(n, int(episodes_per_update)) if episodes_per_update else n
     return max(1, int(value))
 
 
@@ -372,7 +386,7 @@ def collect_rollouts(
                     for s, e in zip(specs, episode_seeds)]
         finally:
             torch.set_num_threads(threads)
-    state = {k: v.detach().clone() for k, v in net.state_dict().items()}
+    state = {k: v.detach().cpu().clone() for k, v in net.state_dict().items()}
     return list(pool.map(_rollout_task,
                          [(state, objective, s, e) for s, e in zip(specs, episode_seeds)]))
 
@@ -423,6 +437,10 @@ def ppo_update(
     epochs, mb = int(p["epochs_per_update"]), int(p["minibatch_size"])
     max_norm = float(p["max_grad_norm"])
 
+    # The learner may live on a GPU (training.device); graphs are built on the
+    # CPU and each minibatch is moved over. On CPU every .to() is a no-op and
+    # the step is exactly the CPU step it always was.
+    dev = next(net.parameters()).device
     graphs = [t.graph.to_pyg() for t in transitions]
     actions = torch.tensor([t.action for t in transitions], dtype=torch.long)
     # Each decision's available actions, re-applied so new and old log-probs
@@ -436,6 +454,7 @@ def ppo_update(
     # Normalised advantages: with a near-bandit reward the raw scale varies a
     # lot between cells, and unnormalised advantages let dense cells dominate.
     adv_t = (adv_t - adv_t.mean()) / (adv_t.std() + 1e-8)
+    actions, masks, old_lp, adv_t, ret_t = (x.to(dev) for x in (actions, masks, old_lp, adv_t, ret_t))
 
     n = len(transitions)
     stats = {"policy_loss": 0.0, "value_loss": 0.0, "entropy": 0.0, "clip_frac": 0.0}
@@ -447,7 +466,8 @@ def ppo_update(
             sel = order[start:start + mb]
             if sel.numel() < 2:
                 continue
-            batch = Batch.from_data_list([graphs[i] for i in sel.tolist()])
+            batch = Batch.from_data_list([graphs[i] for i in sel.tolist()]).to(dev)
+            sel = sel.to(dev)
             lp, value, entropy = net.evaluate_actions(batch, actions[sel], masks[sel])
 
             ratio = torch.exp(lp - old_lp[sel])
@@ -559,7 +579,8 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int | None,
     finetune``) from another run's checkpoint -- the stage boundary -- so stage 2
     can be re-run with different weightings without repeating stage 1.
     """
-    set_global_determinism(int(cfg["training"]["seed"]))
+    cuda_deterministic = bool(cfg["training"].get("cuda_deterministic", True))
+    set_global_determinism(int(cfg["training"]["seed"]), cuda_deterministic=cuda_deterministic)
     rng = np.random.default_rng(int(cfg["training"]["seed"]))
 
     net = build_network(cfg)
@@ -631,7 +652,13 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int | None,
     # Built by _training_policy, exactly as in the workers: constructing it
     # directly here left serial training unbatched while workers batched.
     policy = _training_policy(net, cfg, norm)
-    opt = torch.optim.Adam(net.parameters(), lr=float(cfg["algorithm"]["ppo"]["lr"]))
+    # Rollouts always run on the CPU copy `net` (serially or in workers); the
+    # PPO step runs on `learner`, which is `net` itself on CPU or a device copy
+    # synced back into `net` after every step. Measured: PPO step 13.87 s on
+    # CPU vs 3.07 s on an RTX 4050 Laptop GPU (experiments/bench_ppo_device.py).
+    device = resolve_device(cfg["training"].get("device", "cpu"))
+    learner = net if device.type == "cpu" else __import__("copy").deepcopy(net).to(device)
+    opt = torch.optim.Adam(learner.parameters(), lr=float(cfg["algorithm"]["ppo"]["lr"]))
     if loaded is not None:
         opt.load_state_dict(loaded["optimiser"])
         if loaded.get("rng_state") is not None:
@@ -695,9 +722,12 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int | None,
                     "torch_rng_state": torch.get_rng_state()},
                    out_dir / f"ckpt_{tag}.pt")
 
-    workers = 1 if smoke else resolve_workers(cfg["training"].get("rollout_workers", 1))
+    workers = 1 if smoke else resolve_workers(cfg["training"].get("rollout_workers", 1), n_eps)
     pool = make_rollout_pool(cfg, cfgs, normaliser_stats, workers)
-    logger.info("rollouts: %s | plan %s", f"{workers} worker processes" if pool else "serial",
+    reproducible = device.type == "cpu" or cuda_deterministic
+    logger.info("rollouts: %s | PPO device %s%s | plan %s",
+                f"{workers} worker processes" if pool else "serial", device,
+                "" if reproducible else " (NON-DETERMINISTIC: exploratory, not for results/)",
                 plan)
 
     # Skip the stages a resumed run already finished.
@@ -765,7 +795,9 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int | None,
             adv, ret = compute_gae(transitions,
                                    float(cfg["algorithm"]["ppo"]["gamma"]),
                                    float(cfg["algorithm"]["ppo"]["gae_lambda"]))
-            losses = ppo_update(net, opt, transitions, adv, ret, cfg)
+            losses = ppo_update(learner, opt, transitions, adv, ret, cfg)
+            if learner is not net:
+                net.load_state_dict({k: v.detach().cpu() for k, v in learner.state_dict().items()})
 
             met_stop = stage_name == "finetune" and early.update(shortfall_by)
             rec = {
@@ -860,6 +892,8 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int | None,
         "final_stage": current["stage"], "final_stage_update": current["stage_update"],
         "early_stop_window": early.window, "early_stop_run": early.run,
         "elapsed_s_this_session": round(time.time() - t0, 1),
+        "ppo_device": str(device),
+        "bit_reproducible": reproducible,
         "resumed_from": str(resume) if resume else None,
         "initialised_from": str(init_from) if init_from else None,
         "last_shortfall_by_group": last.get("shortfall_by_group"),
@@ -890,6 +924,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--sparse-weight", type=float, default=None,
                     help="override curriculum.finetune.sparse_to_dense_weight")
     ap.add_argument("--workers", default=None, help="override training.rollout_workers")
+    ap.add_argument("--device", default=None, help="override training.device (cpu/cuda/auto)")
+    ap.add_argument("--nondeterministic-gpu", action="store_true",
+                    help="fast non-deterministic CUDA kernels (2.4x faster PPO); the run is "
+                         "not bit-reproducible and its numbers may not enter results/")
     args = ap.parse_args(argv)
     if args.quiet:
         logging.getLogger("aiharp").setLevel(logging.WARNING)
@@ -909,6 +947,10 @@ def main(argv: list[str] | None = None) -> int:
         cfg["training"]["curriculum"]["finetune"]["sparse_to_dense_weight"] = args.sparse_weight
     if args.workers is not None:
         cfg["training"]["rollout_workers"] = args.workers
+    if args.device is not None:
+        cfg["training"]["device"] = args.device
+    if args.nondeterministic_gpu:
+        cfg["training"]["cuda_deterministic"] = False
 
     cfgs = {"phy": load_yaml("phy.yaml"), "hazard": load_yaml("hazard.yaml"),
             "experiment": load_yaml("experiment.yaml")}

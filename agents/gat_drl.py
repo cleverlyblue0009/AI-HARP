@@ -162,9 +162,10 @@ def relay_ranking(
     falls back to zeros, which makes ``relay_top_k`` pick by node order -- a
     deliberate handicap that is part of what those ablations measure.
     """
-    scores = torch.full((n_nodes,), float("-inf"))
+    device = holder_nodes.device
+    scores = torch.full((n_nodes,), float("-inf"), device=device)
     if alpha is None or edge_index is None:
-        return torch.zeros(n_nodes)
+        return torch.zeros(n_nodes, device=device)
     src, dst = edge_index[0], edge_index[1]
     into_holder = torch.isin(dst, holder_nodes)
     if into_holder.any():
@@ -197,12 +198,13 @@ class ActorCritic(nn.Module):
 
         # Node 0 of every graph in the batch is its holder.
         batch = getattr(data, "batch", None)
+        dev = emb.device
         if batch is None:
-            holder_nodes = torch.zeros(1, dtype=torch.long)
+            holder_nodes = torch.zeros(1, dtype=torch.long, device=dev)
         else:
             counts = torch.bincount(batch, minlength=int(batch.max()) + 1)
             holder_nodes = torch.cat([
-                torch.zeros(1, dtype=torch.long),
+                torch.zeros(1, dtype=torch.long, device=dev),
                 torch.cumsum(counts, 0)[:-1],
             ])
 
@@ -364,12 +366,13 @@ class DuelingQNetwork(nn.Module):
     def forward(self, data: Data | Batch) -> dict[str, torch.Tensor]:
         emb, alpha, a_index = self.encoder(data.x, data.edge_index, data.edge_attr)
         batch = getattr(data, "batch", None)
+        dev = emb.device
         if batch is None:
-            holder_nodes = torch.zeros(1, dtype=torch.long)
+            holder_nodes = torch.zeros(1, dtype=torch.long, device=dev)
         else:
             counts = torch.bincount(batch, minlength=int(batch.max()) + 1)
             holder_nodes = torch.cat([
-                torch.zeros(1, dtype=torch.long), torch.cumsum(counts, 0)[:-1]
+                torch.zeros(1, dtype=torch.long, device=dev), torch.cumsum(counts, 0)[:-1]
             ])
         holder_emb = emb[holder_nodes]
         v = self.value(holder_emb)

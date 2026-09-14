@@ -72,6 +72,40 @@ interpreter; only the Phase 5 tests require D:.
   will grow; they are written under the project on `C:` and should be moved to
   `D:` if space becomes a problem again.
 
+## The GPU environment (D:\aiharp-gpu)
+
+A second environment with a CUDA build of PyTorch, used only to run the PPO
+step on the laptop's NVIDIA GeForce RTX 4050 (6 GB). `D:\aiharp-env` stays the
+CPU-only reference environment for tests and CPU runs.
+
+```bash
+D:/aiharp-env/python.exe -m venv D:/aiharp-gpu
+D:/aiharp-gpu/Scripts/python.exe -m pip install "numpy<2" torch==2.2.2 --index-url https://download.pytorch.org/whl/cu121
+D:/aiharp-gpu/Scripts/python.exe -m pip install torch-geometric==2.8.0 pyyaml pandas "scipy==1.13.1"
+D:/aiharp-gpu/Scripts/python.exe -m pip install "numpy<2"     # torch-geometric's deps pull NumPy 2
+```
+
+Two pins are load-bearing, and both were hit: installing torch-geometric pulled
+NumPy 2.5.3 (torch 2.2.2 then prints `Failed to initialize NumPy`, the silent
+degradation described below), and SciPy 1.18 requires NumPy >= 2, so SciPy is
+held at 1.13.1.
+
+Train with it exactly as with the CPU environment; `training.device: auto`
+picks the GPU for the PPO step, and rollouts stay on CPU workers:
+
+```bash
+D:/aiharp-gpu/Scripts/python.exe -m agents.train --out checkpoints/run8 --keep-awake
+```
+
+**Determinism costs speed on the GPU.** Measured PPO step on 6,222 transitions
+(`experiments/bench_ppo_device.py`): CPU 13.87 s, GPU deterministic 7.51 s,
+GPU non-deterministic 3.13 s. `training.cuda_deterministic: true` (default)
+keeps runs bit-reproducible, as the rule that no number in `results/` comes from
+a non-reproducible run requires. `--nondeterministic-gpu` is for exploratory
+runs only; `run_summary.json` records `bit_reproducible: false`. A GPU run is
+never bit-identical to a CPU run (weights differ by ~1.6e-6 after 16 steps);
+exact resume is tested on CPU.
+
 ## Training on a many-core cloud machine
 
 Training throughput is CPU-bound (see `results/profile_baseline.txt`), so the

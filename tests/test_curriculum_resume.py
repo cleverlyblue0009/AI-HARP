@@ -108,9 +108,13 @@ def test_early_stop_state_round_trips():
 
 
 # -------------------------------------------------------------- workers -----
-def test_auto_workers_is_cpu_count_minus_one():
-    assert resolve_workers("auto") == max(1, (os.cpu_count() or 2) - 1)
-    assert resolve_workers(3) == 3 and resolve_workers("5") == 5
+def test_auto_workers_is_cpu_count_minus_one_capped_at_episodes():
+    n = max(1, (os.cpu_count() or 2) - 1)
+    assert resolve_workers("auto") == n
+    assert resolve_workers("auto", episodes_per_update=8) == min(n, 8)
+    assert resolve_workers("auto", episodes_per_update=2) == min(n, 2)
+    assert resolve_workers(3, episodes_per_update=2) == 3        # explicit counts are honoured
+    assert resolve_workers("5") == 5
 
 
 # --------------------------------------------------------------- resume -----
@@ -124,6 +128,7 @@ def _tiny_cfg():
     c["finetune"]["sparse_densities"] = [3]
     c["finetune"]["dense_densities"] = [5]
     cfg["training"]["rollout_workers"] = 1
+    cfg["training"]["device"] = "cpu"         # exact resume is a CPU guarantee
     return cfg
 
 
