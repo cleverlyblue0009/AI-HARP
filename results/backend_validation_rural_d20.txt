@@ -1,0 +1,46 @@
+﻿# python -m experiments.backend_validation --seeds 10 --quiet
+# commit df62b5d (engine fix 5f02df7), SUMO 1.19.0, run 2026-09-14
+================================================================================
+ BACKEND VALIDATION -- rural_highway @ 20 veh/km/lane, 10 seeds
+================================================================================
+metric                    policy                fallback        sumo       delta
+--------------------------------------------------------------------------------
+rwcr                      flooding                0.9225      0.8631     -0.0594
+                          slotted_1p              0.9223      0.8647     -0.0576
+                          greedy_farthest         0.9235      0.8661     -0.0574
+                          dvcast                  0.9214      0.8623     -0.0591
+--------------------------------------------------------------------------------
+tir_median_s              flooding                0.3450      0.4100     +0.0650
+                          slotted_1p              0.3700      0.4550     +0.0850
+                          greedy_farthest         0.7600      0.9400     +0.1800
+                          dvcast                  0.3700      0.4500     +0.0800
+--------------------------------------------------------------------------------
+tx_per_at_risk_informed   flooding                3.5198      2.5290     -0.9908
+                          slotted_1p              1.0592      0.7333     -0.3260
+                          greedy_farthest         0.9885      0.6544     -0.3340
+                          dvcast                  1.0658      0.7337     -0.3321
+--------------------------------------------------------------------------------
+pdr                       flooding                0.1413      0.1215     -0.0198
+                          slotted_1p              0.3499      0.3383     -0.0116
+                          greedy_farthest         0.3668      0.3648     -0.0021
+                          dvcast                  0.3442      0.3359     -0.0083
+--------------------------------------------------------------------------------
+
+================================================================================
+ ORDERING (what the comparative claims depend on)
+================================================================================
+  rwcr                        changed within noise    spearman=+0.800  spread=0.0022 vs seed-std=0.0230
+      fallback: greedy_farthest > flooding > slotted_1p > dvcast
+      sumo    : greedy_farthest > slotted_1p > flooding > dvcast
+  tir_median_s                changed within noise    spearman=+0.800  spread=0.4150 vs seed-std=0.0513
+      fallback: flooding > slotted_1p > dvcast > greedy_farthest
+      sumo    : flooding > dvcast > slotted_1p > greedy_farthest
+  tx_per_at_risk_informed     PRESERVED               spearman=+1.000  spread=2.5313 vs seed-std=0.1216
+  pdr                         PRESERVED               spearman=+1.000  spread=0.2255 vs seed-std=0.0172
+================================================================================
+ 2 metric(s) reshuffled WITHIN NOISE: ['rwcr', 'tir_median_s'].
+ The policies are not separable on these at this cell, so the rank
+ change is not a conclusion flipping -- but it does mean the metric
+ cannot support a ranking claim here either, under either backend.
+================================================================================
+

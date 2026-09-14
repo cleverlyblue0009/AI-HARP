@@ -370,28 +370,29 @@ lightness band.
 These are the paper's limitations section, pre-written. They are the most
 valuable thing in this repository.
 
-- **Backend comparison: absolute numbers differ; whether orderings flip is
-  mostly noise, and one metric is unresolved.** Eclipse SUMO 1.19.0 now runs
-  (see ENVIRONMENT.md). At rural d=20 (4 km, 3 seeds) SUMO gives
-  systematically **lower RWCR (-0.16)** -- expected, since the fallback
-  pre-places vehicles and has no lane changing, so its traffic is more
-  platooned and better connected. TIR ordering was preserved (Spearman +1.0).
-  An earlier version of this entry said orderings changed on RWCR, cost and
-  PDR and that the paper must report both backends. **That overstated it.**
-  The verdict judged separability from the spread across *all* policies, so
-  flooding's outlier cost (~2.3 against ~0.6) made reshuffles among
-  near-identical schemes look real. The rule now considers only the policies
-  that moved, and calls a flip real only if their gap exceeds seed noise under
-  **both** backends. Re-applied to the committed means and fallback seed-stds
-  (not re-simulated -- per-seed samples were not saved):
-  - RWCR: the movers span 0.0037 against seed-std 0.0056 -> within noise.
-  - Cost: the non-flooding movers are within 0.06 against seed-std ~0.05 ->
-    within noise.
-  - PDR: spread 0.0245 against seed-std 0.0244 under fallback -> borderline,
-    and the SUMO-side std was never printed. **Unresolved; re-run with more
-    seeds before claiming either way.**
-  Re-run `python -m experiments.backend_validation --seeds 10` before
-  submission. Three seeds cannot separate policies this close.
+- **Backend comparison (10 seeds, fixed engine): orderings hold; absolute
+  numbers are backend-dependent.** Eclipse SUMO 1.19.0 (see ENVIRONMENT.md),
+  rural d=20, seeds 0–9, run at `df62b5d` after the busy-medium fix
+  (`results/backend_validation_rural_d20.txt`):
+
+  | metric | fallback → SUMO (all four policies) | ordering |
+  |---|---|---|
+  | RWCR | 0.921–0.924 → 0.862–0.866 (−0.06) | reshuffled within noise (movers span 0.002 vs seed-std 0.023) |
+  | median TIR | +0.07 to +0.18 s under SUMO | within noise (only slotted/DV-CAST swap, 0.005 s apart; greedy last in both) |
+  | tx per at-risk informed | 30–40% lower under SUMO | **preserved**, Spearman +1.0 |
+  | PDR | −0.002 to −0.020 | **preserved**, Spearman +1.0 (spread 0.226 vs seed-std 0.017) |
+
+  The PDR question left open by the 3-seed run is resolved: preserved. RWCR
+  and TIR cannot rank these four schemes at this cell under *either* backend,
+  so no ranking claim may rest on them here. Absolute levels move materially
+  (SUMO's lane-changing traffic is less platooned than the fallback's), so
+  headline absolute numbers must state their backend. An earlier 3-seed
+  version of this entry, on the pre-fix engine, reported RWCR −0.16 and an
+  unresolved PDR verdict; it is superseded. That version had also overstated
+  flips by judging separability from all policies' spread (flooding's outlier
+  cost made reshuffles among near-identical schemes look real); the rule
+  counts only the policies that moved, and calls a flip real only if their
+  gap exceeds seed noise under both backends.
   A second bug surfaced here: `tx_per_at_risk_informed` was missing from
   `METRIC_DIRECTION`, so cost was ranked higher-is-better and flooding came out
   "best on cost". Ordering *comparisons* were unaffected (both backends were
