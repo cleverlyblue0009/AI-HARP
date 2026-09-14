@@ -343,6 +343,29 @@ derived from measured speed.
   ~80) is not enough to meet them. Urban d=1's target (~0.12–0.19) is so low
   that its λ fell to 0: satisfying that constraint does not show the policy
   is useful there (the low-ceiling caveat above).
+- **run7 evaluation, network only (τ = 0): the claim does not hold at 200
+  updates.** `ckpt_000200.pt` (sha `f23eabbec9f10413`), seeds 0–9, the four
+  committed cells, suppression bias −2…+3, deadline guard (margin 0.05),
+  against the regenerated fixed-engine baselines. Outputs in
+  `checkpoints/run7/eval_tau0` (git-ignored).
+
+  | cell | target RWCR / miss bound | agent best RWCR | at target? | agent cost | per-cell oracle / best fixed |
+  |---|---|---|---|---|---|
+  | rural d=2 | 0.641 / 0.579 | 0.593 (bias −2) | **no** | — | DV-CAST 1.56 / 1.56 |
+  | rural d=20 | 0.879 / 0.364 | 0.916 | yes | **0.95** | greedy 0.70 / 0.73 → regret **+35%**, margin **−23%** |
+  | rural d=80 | 0.870 / 0.368 | 0.848 (bias −1) | **no** | — | weighted_p 1.51 / 1.70 |
+  | urban d=20 | 0.9261 / 0.117 | 0.9258 (bias −2; seed-std 0.020) | **no** — by 0.00034 | 0.89 at bias −2 | counter_based 0.53 / 0.57 |
+
+  It fails the matched-quality test in three of four cells. The urban miss
+  is statistically a tie with the target, but only at the most
+  transmit-happy setting and at ~60–70% more cost than the baselines. Where
+  it qualifies (rural d=20) it is 35% dearer than per-cell hindsight tuning
+  and 30% dearer than the best fixed scheme. **Latency is the one strength**:
+  median TIR 0.30–0.39 s in every cell, and at rural d=20 0.32 s against
+  flooding's 0.35 s (regret −7%). Confound: 200 of the 2,000 configured
+  updates, with the sparse groups still short of target when training
+  stopped — this says "not yet", not "cannot". Per the standing rule the
+  configuration is not being tuned toward the claim.
 - `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
   attention on `neighbour → holder` edges *is* the relay ranking**;
   `relay_top_k` designates the k-th most attended neighbour, so the heatmap
