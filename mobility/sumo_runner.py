@@ -333,7 +333,10 @@ def generate_sumo_trace(
 
         home = tools.sumo_home or str(Path(tools.sumo).resolve().parent.parent)
         net_edges = read_net_edges(str(Path(work) / Path(net).name), home)
-    if net_source == "osm":
+    # Every SUMO grid uses randomTrips demand. The synthetic grid's single
+    # A0A1 -> A1A2 flow reached 0.25 veh/km/lane against a commanded 20 on
+    # urban_nlos (99% off): no vehicle ever reached the hazard and RWCR was 0.
+    if net_source == "osm" or scenario.get("kind") == "grid":
         from mobility.sumo_osm import write_osm_routes
 
         routes = write_osm_routes(scenario, density_veh_km_lane, seed, work, speed_factor,
@@ -369,7 +372,10 @@ def generate_sumo_trace(
     # NOTE: the FCD sampling period is `--device.fcd.period`, NOT
     # `--fcd-output.period` (which does not exist and makes SUMO exit 1).
     # Verified against `sumo --help` for 1.19.0.
+    # Record FCD only after the warm-up: on the 16.5 km US-50 route the full
+    # export was 933 MB, ~90% of it warm-up that parse_fcd discards anyway.
     _run([tools.sumo, "-c", "run.sumocfg", "--fcd-output", fcd.name,
+          "--device.fcd.begin", f"{warmup:.1f}",
           "--device.fcd.period", str(scfg["fcd_period"]), "--no-step-log", "true",
           "--no-warnings", "true"], cwd=work)
 

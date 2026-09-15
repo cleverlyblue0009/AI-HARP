@@ -5,6 +5,11 @@ results/**/*.npz
 results/**/*.png
 results/**/*.pdf
 results/runs.csv
+# ...except the paper's evidence base (campaign brief: "Commit runs.csv"), and
+# the policy-independent risk-estimation table beside it. Both are fully
+# regenerable (experiments/full_sweep.py, experiments/risk_estimation.py).
+!results/runs.csv
+!results/risk_estimation.csv
 cache/
 mobility/_sumo_build/
 runs/

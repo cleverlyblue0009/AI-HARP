@@ -72,7 +72,11 @@ def parse_fcd(
         raise ValueError(f"{fcd_path} contained no <timestep> elements.")
 
     t0 = min(times)
-    keep_from = t0 + warmup_s
+    # warmup_s is an absolute simulation time. SUMO starts at t = 0, so for an
+    # export recorded from the start this equals t0 + warmup_s; an export that
+    # already begins at the warm-up (--device.fcd.begin) must not lose a second
+    # warm-up's worth of measurement.
+    keep_from = max(t0, warmup_s)
     kept_times = [t for t in times if t >= keep_from - 1e-9]
     step_of = {round(t, 4): i for i, t in enumerate(kept_times)}
     T, N = len(kept_times), len(vehicle_ids)
