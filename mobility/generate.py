@@ -125,9 +125,11 @@ def resolve_backend(requested: str | MobilityBackend = MobilityBackend.AUTO):
 #:    FCD recorded from the warm-up.
 #: 3: grid demand calibrated from one measured run (urban_nlos d=20 had come
 #:    out at 33.5 veh/km/lane against 20 under version 2).
+#: 4: up to three demand runs, interpolating after the second (version 3's single
+#:    proportional step landed urban_nlos d=20 at 16.4).
 #: Fallback keys deliberately omit it, so every committed fallback trace (and
 #: results/runs.csv) keeps its key.
-SUMO_PIPELINE_VERSION = 3
+SUMO_PIPELINE_VERSION = 4
 
 
 def trace_cache_key(

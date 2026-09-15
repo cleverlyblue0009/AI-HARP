@@ -52,6 +52,16 @@ def test_overshooting_grid_is_rerun_once_with_scaled_demand(monkeypatch, tmp_pat
     assert [a["achieved_density_veh_km_lane"] for a in cal] == [34.0, 20.0]
 
 
+def test_congested_grid_is_interpolated_on_the_third_run(monkeypatch, tmp_path):
+    """Density not proportional to demand: 33.5 * s^1.6 undershoots after one step."""
+    scales, tools = _fake_pipeline(monkeypatch, tmp_path, lambda s: 33.5 * s ** 1.6)
+    tr = sr.generate_sumo_trace(load_scenario("urban_nlos"), 20.0, 0, tools=tools)
+    cal = tr.meta["demand_calibration"]
+    assert len(scales) == 3 == len(cal)
+    assert abs(cal[1]["achieved_density_veh_km_lane"] - 20.0) / 20.0 > sr.CALIBRATION_TOLERANCE
+    assert abs(cal[2]["achieved_density_veh_km_lane"] - 20.0) / 20.0 <= sr.CALIBRATION_TOLERANCE
+
+
 def test_grid_within_tolerance_is_not_rerun(monkeypatch, tmp_path):
     scales, tools = _fake_pipeline(monkeypatch, tmp_path, lambda s: 21.0 * s)
     tr = sr.generate_sumo_trace(load_scenario("urban_nlos"), 20.0, 0, tools=tools)

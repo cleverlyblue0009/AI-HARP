@@ -66,6 +66,10 @@ DENSITY_TOLERANCE = 0.25
 #: alone gave 33.5 veh/km/lane (+67%). Corridor flows are exact and never re-run.
 CALIBRATION_TOLERANCE = 0.10
 
+#: SUMO runs per grid trace at most: the estimate, one proportional correction,
+#: then one interpolation between the two measurements.
+MAX_DEMAND_ATTEMPTS = 3
+
 
 @dataclass(frozen=True)
 class SumoTools:
@@ -356,7 +360,7 @@ def generate_sumo_trace(
     fcd = work / "fcd.xml"
     demand_scale, attempts = 1.0, []
 
-    for attempt in range(2):
+    for attempt in range(MAX_DEMAND_ATTEMPTS):
         if osm_or_grid:
             from mobility.sumo_osm import write_osm_routes
 
@@ -425,10 +429,20 @@ def generate_sumo_trace(
         attempts.append({"demand_scale": round(demand_scale, 4),
                          "achieved_density_veh_km_lane": round(achieved, 3)})
         miss = abs(achieved - density_veh_km_lane) / max(density_veh_km_lane, 1e-9)
-        if not (scenario.get("kind") == "grid" and attempt == 0 and achieved > 0
-                and miss > CALIBRATION_TOLERANCE):
+        if not (scenario.get("kind") == "grid" and attempt < MAX_DEMAND_ATTEMPTS - 1
+                and achieved > 0 and miss > CALIBRATION_TOLERANCE):
             break
-        demand_scale *= density_veh_km_lane / achieved
+        if len(attempts) < 2:
+            demand_scale *= density_veh_km_lane / achieved
+        else:
+            # Density is not proportional to demand once the grid congests (one
+            # proportional step took urban_nlos d=20 from 33.5 to 16.4):
+            # interpolate between the two most recent measurements instead.
+            (s0, a0), (s1, a1) = [(p["demand_scale"], p["achieved_density_veh_km_lane"])
+                                  for p in attempts[-2:]]
+            demand_scale = (s1 + (density_veh_km_lane - a1) * (s1 - s0) / (a1 - a0)
+                            if a1 != a0 else s1 * density_veh_km_lane / a1)
+            demand_scale = max(demand_scale, 1e-3)
         logger.info("SUMO grid demand calibration: achieved %.3g vs %.3g veh/km/lane; "
                     "re-running with demand x%.3f", achieved, density_veh_km_lane, demand_scale)
 
