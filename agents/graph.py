@@ -75,6 +75,17 @@ class GraphConfig:
     include_rsus: bool = True
     include_neighbour_edges: bool = True
     ttl_s: float = 60.0
+    #: Node features zeroed for every node (ablation: does the policy use
+    #: them?). Zeroed rather than removed, so feature count, normaliser and
+    #: network shape are unchanged and the column simply carries no information.
+    drop_node_features: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        self.drop_node_features = tuple(self.drop_node_features)
+        unknown = [f for f in self.drop_node_features if f not in NODE_FEATURES]
+        if unknown:
+            raise ValueError(f"drop_node_features has unknown features {unknown}; "
+                             f"known: {list(NODE_FEATURES)}")
 
     @classmethod
     def from_config(cls, cfg: dict[str, Any]) -> "GraphConfig":
@@ -84,6 +95,7 @@ class GraphConfig:
             include_rsus=bool(g.get("include_rsus", True)),
             include_neighbour_edges=bool(g.get("include_neighbour_edges", True)),
             ttl_s=float(cfg.get("simulation", {}).get("message_ttl_s", 60.0)),
+            drop_node_features=tuple(g.get("drop_node_features", ()) or ()),
         )
 
 
@@ -207,6 +219,8 @@ def build_decision_graph(
         x[1:, 11] = ctx.age_s
         x[1:, 12] = ttl_remaining
         x[1:, 13] = 0.0  # RSUs are flagged here once the engine models them
+    for name in cfg.drop_node_features:
+        x[:, NODE_FEATURES.index(name)] = 0.0
 
     # --- edges ---------------------------------------------------------------
     src: list[int] = []

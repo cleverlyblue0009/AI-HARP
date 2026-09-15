@@ -233,6 +233,46 @@ def test_evaluate_actions_reproduces_the_masked_log_prob():
     assert float(unmasked_lp[0]) < float(lp[0])       # masking renormalises
 
 
+def test_default_defer_delays_are_one_two_three_epochs():
+    g = build_decision_graph(make_ctx())
+    for k in (1, 2, 3):
+        assert action_to_engine(ACTION_NAMES.index(f"defer_{k}"), g, [1, 2, 3]).delay_steps == k
+
+
+def test_defer_epochs_match_the_config_file():
+    from common.config import load_yaml
+
+    space = load_yaml("agent.yaml")["action_space"]
+    assert AiHarpPolicy.defer_epochs == tuple(space["defer_epochs"])
+
+
+def test_long_wait_ablation_maps_defer_to_configured_epochs():
+    net = _CountingNet("defer_3")
+    pol = AiHarpPolicy(network=net, gate=ConfidenceGate(tau=0.0, enabled=False),
+                       deterministic=True, defer_epochs=(5, 20, 50))
+    a = pol.decide(make_ctx())
+    assert a.kind is ActionType.DEFER and a.delay_steps == 50
+    assert a.cancel_on_duplicates == 1
+    assert _policy(_CountingNet("defer_3")).decide(make_ctx()).delay_steps == 3
+
+
+def test_defer_epochs_are_validated():
+    with pytest.raises(ValueError):
+        AiHarpPolicy(defer_epochs=(5, 20))
+    with pytest.raises(ValueError):
+        AiHarpPolicy(defer_epochs=(0, 2, 3))
+
+
+def test_training_policy_reads_defer_epochs_from_config():
+    from agents.train import _training_policy
+    from common.config import load_yaml
+
+    cfg = load_yaml("agent.yaml")
+    cfg["action_space"]["defer_epochs"] = [5, 20, 50]
+    assert _training_policy(None, cfg, None).defer_epochs == (5, 20, 50)
+    assert _training_policy(None, load_yaml("agent.yaml"), None).defer_epochs == (1, 2, 3)
+
+
 def test_decide_passes_the_cancel_threshold_through():
     """End to end through decide(), not just the mapping function."""
     net = _CountingNet("defer_2")

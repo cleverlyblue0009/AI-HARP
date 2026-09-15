@@ -248,6 +248,7 @@ def _training_policy(net: Any, cfg: dict[str, Any], normaliser: Any) -> AiHarpPo
         gate=ConfidenceGate(tau=0.0, method=cfg["confidence_gate"]["method"], enabled=False),
         normaliser=normaliser, graph_cfg=GraphConfig.from_config(cfg),
         fallback_policy=cfg["confidence_gate"]["fallback_policy"], record=True,
+        defer_epochs=cfg.get("action_space", {}).get("defer_epochs"),
     )
     policy.batch_decisions = bool(cfg["training"].get("batch_inference", True))
     return policy
@@ -930,6 +931,17 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--lambda-init", type=float, default=None,
                     help="override objective.lambda_init: the starting price of every group "
                          "the checkpoint does not already hold")
+    ap.add_argument("--heads", type=int, default=None, help="override encoder.heads")
+    ap.add_argument("--neighbour-cap", type=int, default=None,
+                    help="override graph.neighbour_cap_k")
+    ap.add_argument("--star-graph", action="store_true",
+                    help="no neighbour-to-neighbour edges (graph.include_neighbour_edges: false)")
+    ap.add_argument("--drop-node-feature", action="append", default=None,
+                    help="zero this node feature for every node (repeatable), "
+                         "e.g. relevance_causal")
+    ap.add_argument("--defer-epochs", type=int, nargs=3, default=None,
+                    help="override action_space.defer_epochs (epochs waited by defer_1..3); "
+                         "the long-wait ablation")
     ap.add_argument("--workers", default=None, help="override training.rollout_workers")
     ap.add_argument("--device", default=None, help="override training.device (cpu/cuda/auto)")
     ap.add_argument("--nondeterministic-gpu", action="store_true",
@@ -958,6 +970,16 @@ def main(argv: list[str] | None = None) -> int:
         cfg["objective"]["lambda_max"] = args.lambda_max
     if args.lambda_init is not None:
         cfg["objective"]["lambda_init"] = args.lambda_init
+    if args.defer_epochs is not None:
+        cfg["action_space"]["defer_epochs"] = list(args.defer_epochs)
+    if args.heads is not None:
+        cfg["encoder"]["heads"] = args.heads
+    if args.neighbour_cap is not None:
+        cfg["graph"]["neighbour_cap_k"] = args.neighbour_cap
+    if args.star_graph:
+        cfg["graph"]["include_neighbour_edges"] = False
+    if args.drop_node_feature:
+        cfg["graph"]["drop_node_features"] = list(args.drop_node_feature)
     if args.workers is not None:
         cfg["training"]["rollout_workers"] = args.workers
     if args.device is not None:

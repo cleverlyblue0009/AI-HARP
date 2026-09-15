@@ -7,6 +7,10 @@
 
 graph:
   neighbour_cap_k: 12
+  drop_node_features: []
+  # Ablation only: node features zeroed for every node (e.g. relevance_causal,
+  # to test whether the policy uses causal relevance at all). Zeroed, not
+  # removed, so the network and normaliser shapes are unchanged.
   # source: [ASSUMED] Nearest-k neighbours kept per decision graph, so batches
   #         have bounded size. Swept in the ablations over {4, 8, 12, 20}.
   include_rsus: true
@@ -92,6 +96,12 @@ action_space:
     - relay_top_3
     - carry_and_forward
   defer_epochs: [1, 2, 3]
+  # Epochs (100 ms) waited by defer_1, defer_2, defer_3; carried in the
+  # checkpoint config, so evaluation uses the delays a run was trained with.
+  # Long-wait ablation (user decision): every baseline meeting the urban d=2
+  # training target waits up to 20-50 slots (results/feasibility/), which
+  # defer_3 cannot express. Reported as an ablation; the reference agent keeps
+  # [1, 2, 3].
   defer_cancel_on_duplicates: 1
   # source: [DERIVED] A deferred rebroadcast is cancelled on hearing one
   #         duplicate, exactly as for the slotted baselines
@@ -191,9 +201,13 @@ objective:
   #         multiplier would instead let dense-cell surplus hide sparse-cell
   #         shortfall. Per-cell (96 multipliers) is too sparsely sampled for a
   #         ~200-update run. [] = one global pooled multiplier.
-  lambda_max: 50.0
-  # source: [ASSUMED] Cap. A saturated lambda means the constraint cannot be
-  #         met even at maximum price; it is logged, not hidden.
+  lambda_max: 500.0
+  # source: [MEASURED] Cap. Was 50 (run4-run8). run8 left rural d=2 and urban
+  #         d=2 short with lambda pinned at 50; a sparse-only finetune priced
+  #         at 500 from its first update cut urban d=2's shortfall +0.155 ->
+  #         +0.051 (rural d=2 unchanged, +0.139 -> +0.131), so 50 was binding
+  #         (results/feasibility/lambda_cap_arms.txt; user decision). A
+  #         saturated lambda is still logged, not hidden.
   target_fraction: 0.95
   # source: [DERIVED] Same matched-quality convention as analysis/comparator.py:
   #         95% of each cell's measured ceiling.
@@ -205,9 +219,14 @@ objective:
   #         old reward's collision weight inflated its effective transmission
   #         cost 5.5x before it was caught.
   targets_path: results/coverage_targets.json
-  target_seeds: 2
+  target_seeds: 32
   # Training-pool seeds per cell used to measure ceilings
-  # (experiments/coverage_targets.py).
+  # (experiments/coverage_targets.py): the whole pool training draws from.
+  # source: [MEASURED] Was 2 (seeds 100-101) through run8. On those two seeds
+  #         flooding reached rural d=2 causal coverage 0.909; over all 32 it
+  #         averages 0.778, and no baseline at any of 63 settings met the
+  #         resulting target (results/feasibility/sparse_feasibility.txt;
+  #         user decision to re-measure).
 
 # !!! KNOWN BROKEN -- DO NOT TRAIN ON THIS REWARD. !!!
 # The "calibration" above balanced one transmission against the relevance it

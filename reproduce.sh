@@ -52,21 +52,45 @@ step "3. Baseline comparison (paired, $SEEDS seeds) -> results/runs.csv"
 step "4. Operating curves and reference points -> results/pareto_cells.json"
 "$PY" -m analysis.comparator --seeds "$SEEDS" --quiet
 
+# Training runs on the GPU interpreter when there is one (ENVIRONMENT.md).
+TRAIN_PY="${AIHARP_TRAIN_PYTHON:-D:/aiharp-gpu/Scripts/python.exe}"
+if ! "$TRAIN_PY" -c "import torch" >/dev/null 2>&1; then TRAIN_PY="$PY"; fi
+
+if [[ $SMOKE -eq 0 ]]; then
+  step "4b. Training coverage targets on all 32 training seeds -> results/coverage_targets.json"
+  "$PY" -m experiments.coverage_targets --seeds 32 --jobs 11
+  step "4c. Sparse feasibility: every baseline setting at d=2 -> results/feasibility/"
+  "$PY" -m experiments.sparse_feasibility --jobs 4
+  step "4d. Lambda-cap follow-up (run8 pretrain, cap 500, sparse-only) -> results/feasibility/"
+  for arm in "feas_A_cap500:" "feas_B_init500:--lambda-init 500"; do
+    dir="checkpoints/${arm%%:*}"; extra="${arm#*:}"
+    n=300; [[ "$dir" == *B_init500 ]] && n=600
+    if [[ ! -f "$dir/run_summary.json" ]]; then
+      # shellcheck disable=SC2086
+      "$TRAIN_PY" -m agents.train --stage finetune --init-from checkpoints/run8/ckpt_pretrain.pt \
+        --sparse-only --lambda-max 500 $extra --updates "$n" --out "$dir" --quiet --keep-awake
+    fi
+  done
+  "$PY" -m experiments.lambda_cap_summary
+fi
+
 if [[ $TRAIN -eq 1 ]]; then
-  step "5. Train the agent: dense pretrain, then sparse-weighted finetune -> $RUN_DIR"
+  step "5. Train the agent: dense pretrain, then sparse-weighted finetune"
   # Warm the trace cache first, or every rollout worker regenerates the same
   # traces during the first updates.
   if [[ $SMOKE -eq 0 ]]; then "$PY" -m experiments.warm_traces --jobs 8; fi
   # --keep-awake: without it, idle sleep dominated a multi-hour run on the
   # development laptop (one PPO update took 13,828 s instead of ~170 s).
-  # A run interrupted part-way (ckpt_latest.pt but no run_summary.json) is
-  # resumed exactly rather than restarted.
-  if [[ -f "$RUN_DIR/ckpt_latest.pt" && ! -f "$RUN_DIR/run_summary.json" ]]; then
-    "$PY" -m agents.train --resume "$RUN_DIR/ckpt_latest.pt" --workers auto --quiet --keep-awake
-  else
+  # Interrupted runs (ckpt_latest.pt but no run_summary.json) resume exactly.
+  if [[ $SMOKE -eq 1 ]]; then
     "$PY" -m agents.train "${TRAIN_FLAGS[@]}" --out "$RUN_DIR" --workers auto --quiet --keep-awake
+    cat "$RUN_DIR/run_summary.json"
+  else
+    # Reference agent, then one retrain per architectural ablation.
+    "$TRAIN_PY" -m experiments.campaign_train
+    RUN_DIR=checkpoints/campaign/ref
+    cat "$RUN_DIR/run_summary.json"
   fi
-  cat "$RUN_DIR/run_summary.json"
 else
   step "5. Training skipped (--no-train); reusing $RUN_DIR"
 fi

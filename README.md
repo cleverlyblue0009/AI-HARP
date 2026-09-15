@@ -489,6 +489,50 @@ derived from measured speed.
   feasibility sweep died on it after 25,856 runs and resumed from its CSV.
   Since traces are deterministic in their key, the save now retries and keeps
   the existing copy (`tests/test_mobility.py`).
+- **Decisions after the feasibility checks (user, before any campaign run).**
+  (1) Coverage targets are re-measured on all 32 training seeds
+  (`objective.target_seeds: 32`; same definition: 0.95 × the better of flooding
+  and DV-CAST defaults, causal coverage). (2) `objective.lambda_max: 500`. (3)
+  The action space of the reference agent is unchanged; longer waits are one
+  reported ablation, not a change to the agent. run8 stays in this README as
+  the historical run under the old targets and cap; every campaign number is
+  against the new objective.
+
+  Re-measured ceilings (`results/coverage_targets.json`, 96 cells × 32 seeds;
+  mean over the six weather × hazard cells of each group):
+
+  | group | old (2 seeds) | new (32 seeds) | change |
+  |---|---|---|---|
+  | rural d=1 | 0.298 | 0.253 | −0.046 (one cell −0.276) |
+  | **rural d=2** | 0.938 | **0.787** | **−0.151** |
+  | rural d=3 | 0.956 | 0.876 | −0.080 |
+  | rural d ≥ 5 | 0.962–0.999 | 0.965–0.999 | ≤ 0.009 |
+  | urban d=1 | 0.157 | 0.212 | +0.055 |
+  | urban d=2 | 0.346 | 0.308 | −0.038 |
+  | urban d=3–80 | 0.297–0.362 | 0.298–0.357 | ≤ 0.022 |
+
+  The 2-seed ceilings were high exactly in the sparse rural cells where
+  seed-to-seed variance is largest. The new rural d=2 target (0.95 × 0.787 =
+  0.748) is met by the best fixed baseline's 32-seed coverage (0.781), so it is
+  no longer infeasible for everyone. Dense-cell targets barely moved. Gate
+  before training: `analysis.reward_check` SANE (silence break-even λ 0.679,
+  cap 500); 480 tests pass.
+- **Campaign training queue** (`experiments/campaign_train.py`, sequential,
+  skip-if-done, exact resume; `checkpoints/campaign/<name>/`): the reference
+  agent, then one retrain per architectural ablation, each differing from the
+  reference in exactly one switch — `--encoder gcn`, `--encoder mlp`,
+  `--star-graph` (`graph.include_neighbour_edges: false`), `--heads 1` / `8`,
+  `--neighbour-cap 4` / `20`, `--drop-node-feature relevance_causal`
+  (`graph.drop_node_features`: the column is zeroed, so shapes and the
+  normaliser are unchanged), and `--defer-epochs 5 20 50`
+  (`action_space.defer_epochs`, previously a dead key: `defer_k` now waits the
+  configured epochs; a slotted scheme waits 1 + slot epochs, so the seven
+  settings meeting the urban d=2 target span 1–50 epochs). Graph and
+  action-space switches travel in the checkpoint config, so evaluation uses
+  what a run was trained with (`tests/test_graph_ablations.py`,
+  `tests/test_agent_semantics.py`). "10 seeds" per ablation means the paired
+  evaluation seeds 0–9: every run uses one training seed, and
+  training-seed variance is a limitation of every ablation result.
 - `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
   attention on `neighbour → holder` edges *is* the relay ranking**;
   `relay_top_k` designates the k-th most attended neighbour, so the heatmap

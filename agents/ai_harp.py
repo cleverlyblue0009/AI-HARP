@@ -122,7 +122,7 @@ def executed_transitions(transitions: list[Transition]) -> list[Transition]:
 
 def action_to_engine(
     action_index: int, graph: DecisionGraph, relay_order: list[int], carry_epochs: int = 10,
-    defer_cancel: int = 1,
+    defer_cancel: int = 1, defer_epochs: tuple[int, ...] = (1, 2, 3),
 ) -> Action:
     """Map a discrete action index onto an engine :class:`Action`.
 
@@ -138,6 +138,11 @@ def action_to_engine(
     trained agent's argmax mode drifted to defer and its cost stayed pinned at
     flooding's ~0.97 transmissions per informed vehicle while slotted_1p's
     identical-looking deferral reached 0.229.
+
+    ``defer_k`` waits ``defer_epochs[k - 1]`` epochs (default 1, 2, 3). The
+    long-wait ablation widens it: every baseline meeting the urban d=2
+    training target waits up to 20-50 slots, far beyond defer_3
+    (results/feasibility/sparse_feasibility.txt).
     """
     name = ACTION_NAMES[action_index]
     if name == "suppress":
@@ -145,7 +150,7 @@ def action_to_engine(
     if name == "broadcast_now":
         return BROADCAST_NOW
     if name.startswith("defer_"):
-        return Action(ActionType.DEFER, delay_steps=int(name.split("_")[1]),
+        return Action(ActionType.DEFER, delay_steps=int(defer_epochs[int(name.split("_")[1]) - 1]),
                       cancel_on_duplicates=int(defer_cancel))
     if name == "carry_and_forward":
         return Action(ActionType.CARRY, delay_steps=carry_epochs)
@@ -178,6 +183,7 @@ class AiHarpPolicy(Policy):
         phy: Any | None = None,
         carry_epochs: int = 10,
         suppression_bias: float = 0.0,
+        defer_epochs: tuple[int, ...] | None = None,
     ) -> None:
         super().__init__(fallback_policy=fallback_policy, deterministic=deterministic,
                          suppression_bias=suppression_bias)
@@ -191,6 +197,12 @@ class AiHarpPolicy(Policy):
         self.record = record
         self.phy = phy
         self.carry_epochs = carry_epochs
+        if defer_epochs is not None:
+            defer_epochs = tuple(int(e) for e in defer_epochs)
+            if len(defer_epochs) != 3 or min(defer_epochs) < 1:
+                raise ValueError(f"defer_epochs must be three positive epoch counts "
+                                 f"(defer_1..defer_3), got {defer_epochs}")
+            self.defer_epochs = defer_epochs
         self.transitions: list[Transition] = []
         self.n_relay_actions = 0
         self.n_decisions = 0
@@ -258,6 +270,7 @@ class AiHarpPolicy(Policy):
             graph_cfg=GraphConfig.from_config(cfg),
             fallback_policy=fallback_policy or gcfg["fallback_policy"],
             deterministic=deterministic, suppression_bias=suppression_bias,
+            defer_epochs=cfg.get("action_space", {}).get("defer_epochs"),
         )
         policy.params.update({"checkpoint": str(checkpoint),
                               "checkpoint_sha": checkpoint_sha, "tau": gate.tau})
@@ -268,6 +281,10 @@ class AiHarpPolicy(Policy):
     #: for the slotted baselines; without it the agent's defer could not
     #: express slotted-style suppression at all.
     defer_cancel_on_duplicates: int = 1
+    #: Epochs waited by defer_1, defer_2, defer_3 (configs/agent.yaml ->
+    #: action_space.defer_epochs; an instance may override it for the
+    #: long-wait ablation).
+    defer_epochs: tuple[int, ...] = (1, 2, 3)
     #: A suppress on a received message is final for that vehicle.
     suppress_is_final: bool = True
     #: A vehicle may carry the message at most this many times; after that
@@ -468,7 +485,8 @@ class AiHarpPolicy(Policy):
 
         act = action_to_engine(action, graph, out.get("relay_order", []),
                                self.carry_epochs,
-                               defer_cancel=self.defer_cancel_on_duplicates)
+                               defer_cancel=self.defer_cancel_on_duplicates,
+                               defer_epochs=self.defer_epochs)
         if act.kind is ActionType.RELAY:
             self.n_relay_actions += 1
         if act.kind is ActionType.CARRY:
