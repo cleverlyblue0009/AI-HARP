@@ -1,0 +1,22 @@
+# =============================================================================
+# AI-HARP -- Real urban grid: Midtown Manhattan (OpenStreetMap).
+#
+# User decision: a real grid city rotated onto the axis-aligned grid model.
+# 98.5% of street length lies within 3 degrees of the 61 / 151 degree axes
+# (data/osm/urban_midtown_manhattan.meta.json); edges more than 5 degrees off
+# both axes are dropped from hazard placement and counted. SUMO backend only.
+# (c) OpenStreetMap contributors, ODbL.
+# =============================================================================
+extends: scenario_urban.yaml
+name: urban_grid_osm
+phy_profile: urban_grid
+# Line-of-sight urban channel of the synthetic grid (no building model): the
+# NLOS building grid assumes uniform blocks, which Manhattan's are not.
+
+geometry:
+  grid_rotation_deg: -61.0
+  route_length_m: 2200.0
+  # [MEAS] Network bounding box ~2.2 x 2.1 km after import.
+
+sumo:
+  osm_extract: data/osm/urban_midtown_manhattan.osm.xml

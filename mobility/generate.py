@@ -26,7 +26,17 @@ _SCENARIO_FILES = {
     "rural_highway": "scenario_rural.yaml",
     "urban_grid": "scenario_urban.yaml",
     "urban_nlos": "scenario_urban_nlos.yaml",
+    # Real OpenStreetMap networks (SUMO backend only).
+    "rural_highway_osm": "scenario_rural_osm.yaml",
+    "urban_grid_osm": "scenario_urban_osm.yaml",
 }
+
+
+def _deep_merge(base: dict[str, Any], over: dict[str, Any]) -> dict[str, Any]:
+    out = dict(base)
+    for k, v in over.items():
+        out[k] = _deep_merge(out[k], v) if isinstance(v, dict) and isinstance(out.get(k), dict) else v
+    return out
 
 _BANNER_SHOWN: set[str] = set()
 
@@ -38,8 +48,14 @@ class MobilityBackend(str, Enum):
 
 
 def load_scenario(name: str) -> dict[str, Any]:
-    """Load a scenario config by short name (``rural_highway``/``urban_grid``)."""
-    return load_yaml(_SCENARIO_FILES.get(name, name))
+    """Load a scenario config by short name (``rural_highway``/``urban_grid``).
+
+    A file may declare ``extends: <other scenario file or name>``; it is then
+    deep-merged over that base, so a variant states only what differs.
+    """
+    cfg = dict(load_yaml(_SCENARIO_FILES.get(name, name)))
+    base = cfg.pop("extends", None)
+    return _deep_merge(load_scenario(base), cfg) if base else cfg
 
 
 def weather_mobility_factors(weather: str, phy_cfg: dict[str, Any] | None = None) -> tuple[float, float]:
@@ -131,6 +147,11 @@ def get_trace(
     scfg = load_scenario(scenario) if isinstance(scenario, str) else scenario
     speed_factor, headway_factor = weather_mobility_factors(weather, phy_cfg)
     resolved, tools = resolve_backend(backend)
+    if scfg.get("sumo", {}).get("osm_extract") and resolved is not MobilityBackend.SUMO:
+        raise RuntimeError(
+            f"Scenario {scfg['name']!r} is a real OSM network and needs the SUMO backend "
+            "(set SUMO_HOME); the pure-Python fallback can only build synthetic geometry."
+        )
 
     key = trace_cache_key(scfg, density_veh_km_lane, seed, resolved.value,
                           speed_factor, headway_factor, duration_s)

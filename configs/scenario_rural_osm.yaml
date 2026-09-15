@@ -1,0 +1,26 @@
+# =============================================================================
+# AI-HARP -- Real rural highway: US-50, central Nevada (OpenStreetMap).
+#
+# User decision: a genuinely straight real two-lane road, projected onto the
+# straight-corridor frame. The straightest 10 km window of the extract lies
+# within 1.3 m of its chord (data/osm/rural_us50_nevada.meta.json), so the
+# projection changes no distance measurably. SUMO backend only.
+# (c) OpenStreetMap contributors, ODbL.
+# =============================================================================
+extends: scenario_rural.yaml
+name: rural_highway_osm
+phy_profile: rural_highway
+# Channel parameters of the synthetic rural corridor (configs/phy.yaml).
+
+geometry:
+  length_m: 10000.0
+  # The projected window: the straightest 10 km of the main road's longest edge.
+  route_length_m: 16522.0
+  # [MEAS] Sum of the chained US-50 primary edges per direction in the imported
+  #        network (11,888 + 2,511 + 2,123 m); vehicles enter at the route
+  #        start, so warm-up is sized from this, not from the window.
+  junctions: 0
+
+sumo:
+  osm_extract: data/osm/rural_us50_nevada.osm.xml
+  osm_highway_types: [primary]

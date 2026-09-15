@@ -120,14 +120,18 @@ def required_warmup_s(scenario: dict[str, Any], speed_factor: float = 1.0) -> fl
     """
     geo = scenario["geometry"]
     v = max(_fleet_mean_speed_ms(scenario, speed_factor), 1e-6)
-    if scenario.get("kind") == "grid":
+    if geo.get("route_length_m"):
+        # Real networks: vehicles enter at the route's start, not the window's.
+        span = float(geo["route_length_m"])
+    elif scenario.get("kind") == "grid":
         span = float(geo.get("block_length_m", 200.0)) * float(geo.get("grid_cols", 5))
     else:
         span = float(geo.get("length_m", 0.0))
     return span / v * WARMUP_TRANSITS
 
 
-def _check_density(trace: Trace, scenario: dict[str, Any], commanded: float) -> None:
+def _check_density(trace: Trace, scenario: dict[str, Any], commanded: float,
+                   lane_km_override: float | None = None) -> None:
     """Warn if the achieved density misses the command.
 
     The guard that would have caught the warm-up bug on its own: nothing else
@@ -143,6 +147,8 @@ def _check_density(trace: Trace, scenario: dict[str, Any], commanded: float) -> 
         lane_km = (float(geo.get("length_m", 0.0)) / 1000.0
                    * float(geo.get("lanes_per_direction", 1))
                    * float(geo.get("directions", 2)))
+    if lane_km_override is not None:
+        lane_km = float(lane_km_override)
     if lane_km <= 0:
         return
     achieved = float(trace.active.sum(axis=1).mean()) / lane_km
@@ -319,7 +325,21 @@ def generate_sumo_trace(
         )
 
     net, net_source = _build_network(scenario, tools, work)
-    routes = _write_routes(scenario, density_veh_km_lane, seed, work, speed_factor)
+    # Real OSM networks and every SUMO grid need the network's edges: OSM for
+    # demand and projection, grids for the hazard's edge list.
+    net_edges = None
+    if net_source == "osm" or scenario.get("kind") == "grid":
+        from mobility.osm_geometry import read_net_edges
+
+        home = tools.sumo_home or str(Path(tools.sumo).resolve().parent.parent)
+        net_edges = read_net_edges(str(Path(work) / Path(net).name), home)
+    if net_source == "osm":
+        from mobility.sumo_osm import write_osm_routes
+
+        routes = write_osm_routes(scenario, density_veh_km_lane, seed, work, speed_factor,
+                                  Path(work) / Path(net).name, net_edges, tools, warmup)
+    else:
+        routes = _write_routes(scenario, density_veh_km_lane, seed, work, speed_factor)
     duration = float(sim["duration_s"]) + warmup
     fcd = work / "fcd.xml"
 
@@ -370,7 +390,12 @@ def generate_sumo_trace(
         },
     )
     trace.meta["warmup_s"] = warmup
-    _check_density(trace, scenario, density_veh_km_lane)
+    lane_km = None
+    if net_edges is not None:
+        from mobility.sumo_osm import postprocess_trace
+
+        trace, lane_km = postprocess_trace(trace, scenario, net_source, net_edges)
+    _check_density(trace, scenario, density_veh_km_lane, lane_km_override=lane_km)
     if not keep_fcd:
         fcd.unlink(missing_ok=True)
     return trace

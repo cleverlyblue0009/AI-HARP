@@ -84,7 +84,9 @@ def run_single(
         overrides = {"type": spec.hazard_type} if spec.hazard_type else None
         hazard = hazard_from_config(hz_cfg, trace.meta, overrides=overrides)
 
-    phy = build_phy(phy_cfg, scenario=scenario_cfg["name"], weather=spec.weather,
+    # OSM variants reuse their base scenario's channel parameters (phy_profile).
+    phy = build_phy(phy_cfg, scenario=scenario_cfg.get("phy_profile", scenario_cfg["name"]),
+                    weather=spec.weather,
                     seed=spec.seed, trace_meta=trace.meta)
     mac = build_mac(phy_cfg, phy)
     risk = build_risk_field(hz_cfg, trace, hazard)
