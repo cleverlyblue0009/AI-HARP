@@ -154,6 +154,17 @@ def _lane_km(scenario: dict[str, Any], override: float | None = None) -> float:
             * float(geo.get("directions", 2)))
 
 
+def mask_to_corridor(trace: Trace, length_m: float) -> Trace:
+    """Vehicles on the exit sections (x < 0 or x > length) are not in the scenario."""
+    import dataclasses
+
+    x = np.asarray(trace.x, dtype=float)
+    inside = np.asarray(trace.active, bool) & np.isfinite(x) & (x >= 0.0) & (x <= length_m)
+    return dataclasses.replace(trace, active=inside,
+                               x=np.where(inside, trace.x, np.nan).astype(np.float32),
+                               y=np.where(inside, trace.y, np.nan).astype(np.float32))
+
+
 def _achieved_density(trace: Trace, scenario: dict[str, Any], override: float | None = None) -> float:
     lk = _lane_km(scenario, override)
     return float(trace.active.sum(axis=1).mean()) / lk if lk > 0 else float("nan")
@@ -205,8 +216,49 @@ def _vtype_xml(scenario: dict[str, Any], speed_factor: float) -> str:
     return "\n".join(rows)
 
 
-def _build_highway_network(scenario: dict[str, Any], tools: SumoTools, work: Path) -> Path:
-    """Synthetic straight corridor: one lane per direction, `junctions` splits."""
+#: Length of the speed-limited exit section added beyond each end of a
+#: congested corridor. [ASSUMED] Long enough to hold the discharge queue's head
+#: outside the recorded window.
+EXIT_SECTION_M = 500.0
+
+
+@dataclass(frozen=True)
+class CongestionPlan:
+    """How a synthetic SUMO corridor is made to hold a commanded density.
+
+    A corridor fed only from its ends cannot hold dense congestion: at rural
+    d=80 SUMO stalled at ~30 veh/km/lane (user decision: pre-populate + a
+    downstream bottleneck). Under Krauss car-following a steady queue at speed
+    v has spacing ~ L_veh + minGap + v * tau, so the speed that holds density k
+    is ``v_eq = (1000/k - L_veh - minGap) / tau``. When that is below the free
+    speed the corridor is congested: vehicles are pre-placed at the commanded
+    spacing and an exit section at ``v_eq`` holds the queue. (rural d=80: v_eq
+    = 3.9 m/s = 14 km/h; the fallback's d=80 traffic measured 14.8 km/h.)
+    """
+
+    congested: bool
+    v_eq_ms: float
+    v_free_ms: float
+    spacing_m: float
+
+
+def congestion_plan(scenario: dict[str, Any], density: float, speed_factor: float = 1.0
+                    ) -> CongestionPlan:
+    veh = scenario["vehicles"]
+    classes = veh["classes"]
+    w = [c["share"] for c in classes.values()]
+    L_veh = float(np.average([c["length_m"] for c in classes.values()], weights=w))
+    v_free = _fleet_mean_speed_ms(scenario, speed_factor)
+    spacing = 1000.0 / max(density, 1e-9)
+    v_eq = (spacing - L_veh - float(veh["min_gap_m"])) / float(veh["reaction_time_s"])
+    congested = v_eq < v_free
+    return CongestionPlan(congested=bool(congested), v_eq_ms=float(max(v_eq, 0.5)),
+                          v_free_ms=float(v_free), spacing_m=float(spacing))
+
+
+def _build_highway_network(scenario: dict[str, Any], tools: SumoTools, work: Path,
+                           plan: CongestionPlan | None = None) -> Path:
+    """Synthetic straight corridor: `junctions` splits, plus exit bottlenecks when congested."""
     geo = scenario["geometry"]
     L = float(geo["length_m"])
     lanes = int(geo["lanes_per_direction"])
@@ -227,6 +279,13 @@ def _build_highway_network(scenario: dict[str, Any], tools: SumoTools, work: Pat
             f'  <edge id="-e{i}" from="n{i+1}" to="n{i}" numLanes="{lanes}" '
             f'speed="{vmax:.2f}" priority="2"/>'
         )
+    if plan is not None and plan.congested:
+        nodes.append(f'  <node id="nout" x="{L + EXIT_SECTION_M:.2f}" y="0.0" type="unregulated"/>')
+        nodes.append(f'  <node id="nin" x="{-EXIT_SECTION_M:.2f}" y="0.0" type="unregulated"/>')
+        edges.append(f'  <edge id="xf" from="n{n_seg}" to="nout" numLanes="{lanes}" '
+                     f'speed="{plan.v_eq_ms:.2f}" priority="2"/>')
+        edges.append(f'  <edge id="xb" from="n0" to="nin" numLanes="{lanes}" '
+                     f'speed="{plan.v_eq_ms:.2f}" priority="2"/>')
     nodes.append("</nodes>")
     edges.append("</edges>")
 
@@ -256,7 +315,8 @@ def _build_grid_network(scenario: dict[str, Any], tools: SumoTools, work: Path) 
     return net
 
 
-def _build_network(scenario: dict[str, Any], tools: SumoTools, work: Path) -> tuple[Path, str]:
+def _build_network(scenario: dict[str, Any], tools: SumoTools, work: Path,
+                   plan: CongestionPlan | None = None) -> tuple[Path, str]:
     osm = scenario["sumo"].get("osm_extract")
     if osm:
         osm_path = Path(osm)
@@ -271,7 +331,7 @@ def _build_network(scenario: dict[str, Any], tools: SumoTools, work: Path) -> tu
         return net, "osm"
     if scenario.get("kind") == "grid":
         return _build_grid_network(scenario, tools, work), "synthetic"
-    return _build_highway_network(scenario, tools, work), "synthetic"
+    return _build_highway_network(scenario, tools, work, plan), "synthetic"
 
 
 def _write_routes(
@@ -306,17 +366,43 @@ def _write_routes(
             f'type="car" from="A0A1" to="A1A2" departLane="best" departSpeed="max"/>'
         )
     else:
+        plan = congestion_plan(scenario, density, speed_factor)
+        seg_len = float(geo["length_m"]) / n_seg
+        rng = np.random.default_rng(int(seed) + 7919)
+        names = list(classes)
+        shares = np.array([classes[n]["share"] for n in names], dtype=float)
+        vehicles: list[str] = []
         for d, prefix in ((1, ""), (-1, "-")):
-            route = " ".join(
-                f"{prefix}e{i}" for i in (range(n_seg) if d == 1 else reversed(range(n_seg)))
-            )
-            body.append(f'  <route id="r{d}" edges="{route}"/>')
+            order = list(range(n_seg)) if d == 1 else list(reversed(range(n_seg)))
+            exit_edge = ["xf" if d == 1 else "xb"] if plan.congested else []
+            route_edges = [f"{prefix}e{i}" for i in order] + exit_edge
+            body.append(f'  <route id="r{d}" edges="{" ".join(route_edges)}"/>')
             for name, c in classes.items():
                 body.append(
                     f'  <flow id="f{d}_{name}" route="r{d}" type="{name}" begin="0" '
                     f'end="{duration:.1f}" vehsPerHour="{q_veh_h * c["share"]:.1f}" '
                     f'departLane="best" departSpeed="max"/>'
                 )
+            if plan.congested:
+                # Pre-place the corridor at the commanded spacing, travelling at
+                # the equilibrium speed, so the queue exists from t = 0.
+                s = plan.spacing_m / 2.0
+                k = 0
+                while s < float(geo["length_m"]):
+                    seg = min(int(s // seg_len), n_seg - 1)
+                    pos = s - seg * seg_len
+                    edge_idx = order.index(seg) if d == 1 else order.index(n_seg - 1 - seg)
+                    for lane in range(lanes):
+                        cls = names[int(rng.choice(len(names), p=shares / shares.sum()))]
+                        rest = [f"{prefix}e{i}" for i in order[edge_idx:]] + exit_edge
+                        vehicles.append(
+                            f'  <vehicle id="p{d}_{k}_{lane}" type="{cls}" depart="0" '
+                            f'departPos="{min(pos, seg_len - 1.0):.1f}" departLane="{lane}" '
+                            f'departSpeed="{plan.v_eq_ms:.2f}"><route edges="{" ".join(rest)}"/></vehicle>'
+                        )
+                    k += 1
+                    s += plan.spacing_m
+        body.extend(vehicles)
     return _write(work / "demand.rou.xml", "<routes>\n" + "\n".join(body) + "\n</routes>")
 
 
@@ -343,7 +429,9 @@ def generate_sumo_trace(
             configured_warmup, warmup, WARMUP_TRANSITS,
         )
 
-    net, net_source = _build_network(scenario, tools, work)
+    plan = (congestion_plan(scenario, density_veh_km_lane, speed_factor)
+            if scenario.get("kind") != "grid" and not scenario["sumo"].get("osm_extract") else None)
+    net, net_source = _build_network(scenario, tools, work, plan)
     # Real OSM networks and every SUMO grid need the network's edges: OSM for
     # demand and projection, grids for the hazard's edge list.
     net_edges = None
@@ -420,6 +508,10 @@ def generate_sumo_trace(
             },
         )
         trace.meta["warmup_s"] = warmup
+        if plan is not None:
+            trace = mask_to_corridor(trace, float(scenario["geometry"]["length_m"]))
+            trace.meta["congestion_plan"] = {**plan.__dict__, "exit_section_m": EXIT_SECTION_M
+                                             if plan.congested else 0.0}
         lane_km = None
         if net_edges is not None:
             from mobility.sumo_osm import postprocess_trace

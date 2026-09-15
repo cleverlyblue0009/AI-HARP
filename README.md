@@ -536,7 +536,27 @@ derived from measured speed.
   d=2 +0.069 ± 0.020 (39%), rural d=3 +0.056 ± 0.017, rural d=5 +0.045 ± 0.008,
   rural d=40 +0.048 ± 0.007 (8%), rural d=10 +0.055 ± 0.016; met on average:
   rural d=1 and d=80, urban d=3/5/10/20/40/80. λ peaked at 33 (rural d=2) and
-  31 (urban d=1), far below the 500 cap. Evaluation on seeds 0–9 is pending.
+  31 (urban d=1), far below the 500 cap.
+
+  **Headline evaluation** (`results/agent_ref/sampled/`; seeds 0–9, sampled
+  policy, gate τ = 0.5, deadline guard 0.05, the four committed cells): the
+  agent reaches matched quality in **one of four** cells, down from two for
+  run8.
+
+  | cell | target RWCR | agent best RWCR (cost) | result |
+  |---|---|---|---|
+  | rural d=2 | 0.641 | 0.507 (1.68) | never — short by 0.134 |
+  | rural d=20 | 0.879 | 0.905 (0.74) | **0.72, regret +1.8%, margin +1.9%** |
+  | rural d=80 | 0.870 | 0.846 (0.71) | never — short by 0.023 |
+  | urban d=20 | 0.926 | 0.921 (0.66) | never — short by 0.005 (run8 reached it at 0.70) |
+
+  It is not better than run8 anywhere: even in the one cell it reaches, rural
+  d=20, it is slightly dearer (0.72 vs run8's 0.71; regret +1.8% vs +0.4%,
+  margin +1.9% vs +3.4%), and two further cells fall just below the bar;
+  urban d=20 misses by less than seed noise, and it is reported as a miss
+  because that is the comparator's rule. Latency is again the strength: at
+  rural d=20 its median TIR (0.32 s) beats the per-cell latency-best baseline
+  (flooding, 0.35 s). Gate fallback 14–34% of decisions at the best points.
 - **Simulator validation against a published curve: the low-density plateau
   is reproduced, the density-driven drop is not.** `experiments/validate_amador.py`
   reproduces Table 3 (ETSI CBF) of Amador et al., *Vehicular Communications* 34

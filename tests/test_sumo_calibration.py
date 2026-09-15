@@ -19,7 +19,8 @@ def _fake_pipeline(monkeypatch, tmp_path, kind_scale_to_density):
 
     scales: list[float] = []
     monkeypatch.setattr(sr, "BUILD_DIR", tmp_path)
-    monkeypatch.setattr(sr, "_build_network", lambda scn, tools, work: (Path(work) / "net.net.xml", "synthetic"))
+    monkeypatch.setattr(sr, "_build_network",
+                        lambda scn, tools, work, plan=None: (Path(work) / "net.net.xml", "synthetic"))
     monkeypatch.setattr(og, "read_net_edges", lambda *a, **k: [])
     monkeypatch.setattr(sr, "_run", lambda *a, **k: None)
 
