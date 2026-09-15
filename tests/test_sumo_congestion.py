@@ -33,9 +33,11 @@ def test_congested_network_gets_exit_bottlenecks(monkeypatch, tmp_path):
     sr._build_highway_network(scn, tools, tmp_path, plan)
     edges = (tmp_path / "corridor.edg.xml").read_text()
     assert 'id="xf"' in edges and 'id="xb"' in edges
-    assert f'speed="{plan.v_eq_ms:.2f}"' in edges
+    speeds = set(re.findall(r'speed="([0-9.]+)"', edges))
+    assert speeds == {f"{plan.v_eq_ms:.2f}"}          # corridor AND exits held at v_eq
     sr._build_highway_network(scn, tools, tmp_path, sr.congestion_plan(scn, 20.0))
-    assert 'id="xf"' not in (tmp_path / "corridor.edg.xml").read_text()
+    free = (tmp_path / "corridor.edg.xml").read_text()
+    assert 'id="xf"' not in free and f'speed="{plan.v_eq_ms:.2f}"' not in free
 
 
 def test_congested_routes_prepopulate_the_commanded_density(tmp_path):
@@ -46,8 +48,13 @@ def test_congested_routes_prepopulate_the_commanded_density(tmp_path):
     expected = 80.0 * geo["length_m"] / 1000.0 * geo["lanes_per_direction"] * 2
     assert n == pytest.approx(expected, rel=0.02)
     assert 'edges="e0' in routes and "xf" in routes and "xb" in routes
+    plan = sr.congestion_plan(scn, 80.0)
+    flows = [float(v) for v in re.findall(r'vehsPerHour="([0-9.]+)"', routes)]
+    # per direction, summed over vehicle classes: k * v_eq[km/h] * lanes
+    assert sum(flows) / 2 == pytest.approx(80.0 * plan.v_eq_ms * 3.6 * geo["lanes_per_direction"], rel=0.01)
+    assert f'departSpeed="{plan.v_eq_ms:.2f}"' in routes
     free = sr._write_routes(scn, 20.0, 0, tmp_path, 1.0).read_text()
-    assert "<vehicle " not in free and "xf" not in free
+    assert "<vehicle " not in free and "xf" not in free and 'departSpeed="max"' in free
 
 
 def test_exit_sections_are_masked_out_of_the_trace():

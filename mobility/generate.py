@@ -129,9 +129,12 @@ def resolve_backend(requested: str | MobilityBackend = MobilityBackend.AUTO):
 #:    proportional step landed urban_nlos d=20 at 16.4).
 #: Fallback keys deliberately omit it, so every committed fallback trace (and
 #: results/runs.csv) keeps its key.
-SUMO_PIPELINE_VERSION = 5
+SUMO_PIPELINE_VERSION = 6
 #: 5: congested synthetic corridors are pre-populated and held by an exit
 #:    bottleneck at the Krauss equilibrium speed (rural d=80 had stalled at ~30).
+#: 6: the exit-only bottleneck gave 40.7 veh/km/lane at 48 km/h; the whole
+#:    congested corridor is now limited to v_eq with inflow k * v_eq inserted
+#:    at v_eq.
 
 
 def trace_cache_key(

@@ -232,8 +232,15 @@ class CongestionPlan:
     v has spacing ~ L_veh + minGap + v * tau, so the speed that holds density k
     is ``v_eq = (1000/k - L_veh - minGap) / tau``. When that is below the free
     speed the corridor is congested: vehicles are pre-placed at the commanded
-    spacing and an exit section at ``v_eq`` holds the queue. (rural d=80: v_eq
-    = 3.9 m/s = 14 km/h; the fallback's d=80 traffic measured 14.8 km/h.)
+    spacing, the whole corridor (and the exit sections beyond it) is limited to
+    ``v_eq``, and inflow is ``k * v_eq * lanes`` inserted at ``v_eq``, so density,
+    speed and flow are held together. (rural d=80: v_eq = 3.9 m/s = 14 km/h; the
+    fallback's d=80 traffic measured 14.8 km/h.)
+
+    An exit-only bottleneck was tried first and does not work: the queue spills
+    back far too slowly to fill a 10 km corridor within the warm-up, and the
+    pre-placed vehicles ahead of it accelerate away (rural d=80 seed 0: 40.7
+    veh/km/lane at 48.3 km/h).
     """
 
     congested: bool
@@ -270,16 +277,18 @@ def _build_highway_network(scenario: dict[str, Any], tools: SumoTools, work: Pat
     for i in range(n_seg + 1):
         kind = "priority" if 0 < i < n_seg else "unregulated"
         nodes.append(f'  <node id="n{i}" x="{i * L / n_seg:.2f}" y="0.0" type="{kind}"/>')
+    congested = plan is not None and plan.congested
+    edge_speed = plan.v_eq_ms if congested else vmax
     for i in range(n_seg):
         edges.append(
             f'  <edge id="e{i}" from="n{i}" to="n{i+1}" numLanes="{lanes}" '
-            f'speed="{vmax:.2f}" priority="2"/>'
+            f'speed="{edge_speed:.2f}" priority="2"/>'
         )
         edges.append(
             f'  <edge id="-e{i}" from="n{i+1}" to="n{i}" numLanes="{lanes}" '
-            f'speed="{vmax:.2f}" priority="2"/>'
+            f'speed="{edge_speed:.2f}" priority="2"/>'
         )
-    if plan is not None and plan.congested:
+    if congested:
         nodes.append(f'  <node id="nout" x="{L + EXIT_SECTION_M:.2f}" y="0.0" type="unregulated"/>')
         nodes.append(f'  <node id="nin" x="{-EXIT_SECTION_M:.2f}" y="0.0" type="unregulated"/>')
         edges.append(f'  <edge id="xf" from="n{n_seg}" to="nout" numLanes="{lanes}" '
@@ -377,11 +386,15 @@ def _write_routes(
             exit_edge = ["xf" if d == 1 else "xb"] if plan.congested else []
             route_edges = [f"{prefix}e{i}" for i in order] + exit_edge
             body.append(f'  <route id="r{d}" edges="{" ".join(route_edges)}"/>')
+            # Congested: q = k * v_eq * lanes, inserted at v_eq, so the inflow
+            # arrives at the commanded density rather than at free-flow spacing.
+            q_dir = (density * plan.v_eq_ms * 3.6 * lanes) if plan.congested else q_veh_h
+            depart_speed = f"{plan.v_eq_ms:.2f}" if plan.congested else "max"
             for name, c in classes.items():
                 body.append(
                     f'  <flow id="f{d}_{name}" route="r{d}" type="{name}" begin="0" '
-                    f'end="{duration:.1f}" vehsPerHour="{q_veh_h * c["share"]:.1f}" '
-                    f'departLane="best" departSpeed="max"/>'
+                    f'end="{duration:.1f}" vehsPerHour="{q_dir * c["share"]:.1f}" '
+                    f'departLane="best" departSpeed="{depart_speed}"/>'
                 )
             if plan.congested:
                 # Pre-place the corridor at the commanded spacing, travelling at
