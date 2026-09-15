@@ -366,6 +366,66 @@ derived from measured speed.
   updates, with the sparse groups still short of target when training
   stopped — this says "not yet", not "cannot". Per the standing rule the
   configuration is not being tuned toward the claim.
+- **run8 (staged curriculum, 1,000 updates, GPU PPO deterministic): the
+  sparse constraints are not met, and the claim does not hold.** Pretrain 200
+  dense updates, then finetune to the 800-update cap (early stopping never
+  triggered); 3.17 h at `566f2ad`, `bit_reproducible: true`.
+
+  Training, mean shortfall over the last 100 finetune updates (run7 = its last
+  40 updates):
+
+  | group | run7 | run8 | run8 final λ |
+  |---|---|---|---|
+  | rural d=2 | +0.342 | **+0.153** (met 13/50) | **50 (cap)** |
+  | rural d=3 | +0.171 | +0.046 (20/52) | 49.6 |
+  | urban d=2 | +0.295 | **+0.144** (9/52) | **50 (cap)** |
+  | rural d=5, urban d=1/3/5/10/80, dense rural | −0.25 … +0.06 | −0.25 … +0.02 | 0 … 13 |
+  | urban d=20 / 40 | +0.096 / +0.062 | +0.038 / +0.025 | 28.2 / 21.8 |
+  | pooled | +0.068 (met 8/40) | +0.026 (met 35/100) | |
+
+  The staged curriculum roughly halved the sparse shortfall, but rural d=2 and
+  urban d=2 plateaued ~0.15 short with λ at its cap from update ~600 — the
+  configured finding that these targets are not met at maximum price. Cost
+  per at-risk vehicle rose 0.46 → 0.73 as coverage was bought.
+
+  Evaluation of `ckpt_final.pt` (seeds 0–9, four committed cells, deadline
+  guard 0.05). **Headline = sampled policy with the confidence gate (τ = 0.5)**
+  (user decision; see the next entry):
+
+  | cell | target RWCR | gated sampled | gated argmax | network-only sampled | network-only argmax | cheapest baseline / best fixed |
+  |---|---|---|---|---|---|---|
+  | rural d=2 | 0.641 | never (best 0.603) | never | never (0.599) | never (0.604) | 1.56 / 1.56 |
+  | rural d=20 | 0.879 | **0.71** (regret +0.4%, margin **+3.4%**) | 0.71 (+1.0%, +2.7%) | 0.95 (+35%) | 0.84 (+20%) | 0.70 / 0.73 |
+  | rural d=80 | 0.870 | never (best 0.857) | never | never (**0.868**) | never (0.716) | 1.51 / 1.70 |
+  | urban d=20 | 0.926 | 0.70 (+31%, −19%) | 0.69 (+29%, −18%) | 0.83 (+56%) | 1.05 (+96%) | 0.53 / 0.57 |
+  | mean regret / margin | | **+15.7% / −7.7%** | +15.0% / −7.4% | +45.5% / −27.5% | +58.0% / −29.5% | |
+
+  - The agent reaches matched quality in two of four cells and is competitive
+    in one (rural d=20: within 0.4% of per-cell hindsight tuning, 3.4% cheaper
+    than the best fixed scheme). It is 31% dearer in urban d=20 and never
+    reaches rural d=2 or d=80.
+  - The gate is doing much of the work: at τ = 0.5 it hands 13–55% of
+    decisions to `weighted_p` and cuts network-only cost from 0.95 to 0.71
+    (rural d=20) and 0.83 to 0.70 (urban d=20).
+  - Latency remains the strength: median TIR 0.20–0.39 s at the best points.
+  - Outputs: `checkpoints/run8/eval{,_tau0}{,_sampled}` (git-ignored).
+- **Evaluation was scoring a different policy from the one trained.**
+  `evaluate_agent` used argmax actions, but the coverage constraint was
+  trained on the stochastic policy. On rural d=80 (seeds 0–4, τ = 0) argmax
+  reached oracle RWCR 0.642 against 0.814 sampled at the same cost; rural d=2
+  was identical either way. The run7 and run8 argmax evaluations understate
+  the dense cell. `--policy-mode sampled` is now the default; sampled
+  evaluation draws its uniforms from a generator seeded per run from a hash of
+  the run's policy RNG (without advancing it), so results depend only on the
+  run seed (`tests/test_eval_sampling.py`).
+- **Two further training-side limitations surfaced in run8.** (1) Early
+  stopping could not fire: it needs 30 consecutive updates with every sampled
+  group at target, but with 8 episodes per update each group gets one or two
+  episodes, so almost every update has a noisy short group (the counter never
+  left 0, even while most groups met target on average). (2) Groups whose
+  target is tiny (rural and urban d=1) drove λ to 0, and at zero price the
+  policy occasionally went near-silent (coverage 0.6–0.7 short in single
+  episodes) before λ recovered. Neither was changed mid-run.
 - `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
   attention on `neighbour → holder` edges *is* the relay ranking**;
   `relay_top_k` designates the k-th most attended neighbour, so the heatmap
