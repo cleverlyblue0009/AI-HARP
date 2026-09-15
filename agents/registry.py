@@ -64,6 +64,17 @@ def _build_ai_harp(**params: Any) -> Policy:
 
 _REGISTRY["ai_harp"] = _build_ai_harp
 
+
+def _build_etsi_cbf(**params: Any) -> Policy:
+    from agents.cbf import EtsiCbf
+
+    return EtsiCbf(**params)
+
+
+# Simulator validation only (experiments/validate_amador.py); deliberately NOT
+# in BASELINE_POLICIES, so no sweep or comparison picks it up.
+_REGISTRY["etsi_cbf"] = _build_etsi_cbf
+
 #: The seven baselines of Phase 4, in the order the brief lists them. Used as
 #: the default policy set for sweeps and comparison tables.
 BASELINE_POLICIES: tuple[str, ...] = (
