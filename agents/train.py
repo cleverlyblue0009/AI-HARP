@@ -89,8 +89,8 @@ def stage_densities(cfg: dict[str, Any], stage: str) -> tuple[list[float], np.nd
         sparse = [float(x) for x in f["sparse_densities"]]
         dense = [float(x) for x in f["dense_densities"]]
         w = float(f.get("sparse_to_dense_weight", 3.0))
-        p_sparse = w / (w + 1.0)
-        probs = [p_sparse / len(sparse)] * len(sparse) + [(1.0 - p_sparse) / len(dense)] * len(dense)
+        p_sparse = w / (w + 1.0) if dense else 1.0      # sparse-only finetune
+        probs = [p_sparse / len(sparse)] * len(sparse) + [(1.0 - p_sparse) / max(len(dense), 1)] * len(dense)
         return sparse + dense, np.asarray(probs, dtype=float)
     raise ValueError(f"unknown curriculum stage {stage!r}")
 
@@ -923,6 +923,13 @@ def main(argv: list[str] | None = None) -> int:
                     help="start a new run from another run's checkpoint (e.g. ckpt_pretrain.pt)")
     ap.add_argument("--sparse-weight", type=float, default=None,
                     help="override curriculum.finetune.sparse_to_dense_weight")
+    ap.add_argument("--sparse-only", action="store_true",
+                    help="finetune on the sparse densities alone (no dense episodes)")
+    ap.add_argument("--lambda-max", type=float, default=None,
+                    help="override objective.lambda_max (the multiplier cap)")
+    ap.add_argument("--lambda-init", type=float, default=None,
+                    help="override objective.lambda_init: the starting price of every group "
+                         "the checkpoint does not already hold")
     ap.add_argument("--workers", default=None, help="override training.rollout_workers")
     ap.add_argument("--device", default=None, help="override training.device (cpu/cuda/auto)")
     ap.add_argument("--nondeterministic-gpu", action="store_true",
@@ -945,6 +952,12 @@ def main(argv: list[str] | None = None) -> int:
         cfg["confidence_gate"]["tau"] = args.tau
     if args.sparse_weight is not None:
         cfg["training"]["curriculum"]["finetune"]["sparse_to_dense_weight"] = args.sparse_weight
+    if args.sparse_only:
+        cfg["training"]["curriculum"]["finetune"]["dense_densities"] = []
+    if args.lambda_max is not None:
+        cfg["objective"]["lambda_max"] = args.lambda_max
+    if args.lambda_init is not None:
+        cfg["objective"]["lambda_init"] = args.lambda_init
     if args.workers is not None:
         cfg["training"]["rollout_workers"] = args.workers
     if args.device is not None:

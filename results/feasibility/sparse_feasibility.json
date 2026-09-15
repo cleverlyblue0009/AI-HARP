@@ -1,0 +1,990 @@
+{
+ "training": {
+  "rural_highway|2": {
+   "mean_target": 0.8910717044163855,
+   "n_seeds": 32,
+   "n_episodes": 192,
+   "best_fixed": {
+    "setting": "dvcast(n_slots=2)",
+    "pooled_shortfall": 0.12316746437885721,
+    "mean_coverage": 0.7813206620036728
+   },
+   "hindsight_envelope": {
+    "pooled_shortfall": -0.05007572708736917,
+    "mean_coverage": 0.9356927679020174
+   },
+   "settings_meeting_target": [],
+   "run8_mean_shortfall_last200": 0.1391644517290308,
+   "ranked": [
+    {
+     "setting": "dvcast(n_slots=2)",
+     "pooled_shortfall": 0.12316746437885721,
+     "mean_coverage": 0.7813206620036728,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=1)",
+     "pooled_shortfall": 0.12715938056246961,
+     "mean_coverage": 0.7777635784460539,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=2)",
+     "pooled_shortfall": 0.12722891277235204,
+     "mean_coverage": 0.7777016202612822,
+     "n": 192
+    },
+    {
+     "setting": "flooding(default)",
+     "pooled_shortfall": 0.12733409250138153,
+     "mean_coverage": 0.7776078975808658,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=1.0)",
+     "pooled_shortfall": 0.12733409250138153,
+     "mean_coverage": 0.7776078975808658,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=1)",
+     "pooled_shortfall": 0.12733409250138153,
+     "mean_coverage": 0.7776078975808658,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=8)",
+     "pooled_shortfall": 0.12767107045197476,
+     "mean_coverage": 0.7773076260640798,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=8)",
+     "pooled_shortfall": 0.12887343753126498,
+     "mean_coverage": 0.7762362307814028,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=12)",
+     "pooled_shortfall": 0.1604790122222501,
+     "mean_coverage": 0.748073397472447,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(default)",
+     "pooled_shortfall": 0.16540635152630795,
+     "mean_coverage": 0.7436827848405426,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=5)",
+     "pooled_shortfall": 0.16540635152630795,
+     "mean_coverage": 0.7436827848405426,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=12)",
+     "pooled_shortfall": 0.16951840939012836,
+     "mean_coverage": 0.7400186464311692,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(default)",
+     "pooled_shortfall": 0.1699415427835157,
+     "mean_coverage": 0.7396416042371281,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=5)",
+     "pooled_shortfall": 0.1699415427835157,
+     "mean_coverage": 0.7396416042371281,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=3)",
+     "pooled_shortfall": 0.174394767039256,
+     "mean_coverage": 0.7356734621094172,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=3)",
+     "pooled_shortfall": 0.17796184001629495,
+     "mean_coverage": 0.7324949443119895,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=50)",
+     "pooled_shortfall": 0.18527765157986634,
+     "mean_coverage": 0.7259760316328489,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=20)",
+     "pooled_shortfall": 0.18933600626577252,
+     "mean_coverage": 0.722359746605752,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=4)",
+     "pooled_shortfall": 0.19158931034099397,
+     "mean_coverage": 0.720351891102876,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=3)",
+     "pooled_shortfall": 0.1917202695100089,
+     "mean_coverage": 0.7202351970929332,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(default)",
+     "pooled_shortfall": 0.1917202695100089,
+     "mean_coverage": 0.7202351970929332,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=30)",
+     "pooled_shortfall": 0.19590431281180817,
+     "mean_coverage": 0.7165069144966468,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=10)",
+     "pooled_shortfall": 0.19864878262603455,
+     "mean_coverage": 0.7140613951015649,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=6)",
+     "pooled_shortfall": 0.19864878262603455,
+     "mean_coverage": 0.7140613951015649,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=20)",
+     "pooled_shortfall": 0.19946114154774125,
+     "mean_coverage": 0.7133375250526018,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=30)",
+     "pooled_shortfall": 0.20393927822291824,
+     "mean_coverage": 0.7093471841728424,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=50)",
+     "pooled_shortfall": 0.20396206784535761,
+     "mean_coverage": 0.7093268769851321,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=1)",
+     "pooled_shortfall": 0.2108999983799989,
+     "mean_coverage": 0.7031446833985071,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=2)",
+     "pooled_shortfall": 0.24829528199752895,
+     "mean_coverage": 0.6698228042883003,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(default)",
+     "pooled_shortfall": 0.25086838017906804,
+     "mean_coverage": 0.6675299893060456,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=4)",
+     "pooled_shortfall": 0.25086838017906804,
+     "mean_coverage": 0.6675299893060456,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=16)",
+     "pooled_shortfall": 0.25263374199579575,
+     "mean_coverage": 0.6659569253431025,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.9)",
+     "pooled_shortfall": 0.2601126374868989,
+     "mean_coverage": 0.6592926931906932,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=32)",
+     "pooled_shortfall": 0.2615540428909975,
+     "mean_coverage": 0.658008297620508,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=8)",
+     "pooled_shortfall": 0.2654921861169835,
+     "mean_coverage": 0.6544991296238929,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=1)",
+     "pooled_shortfall": 0.31132589538878047,
+     "mean_coverage": 0.6136580081833477,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=2)",
+     "pooled_shortfall": 0.31132589538878047,
+     "mean_coverage": 0.6136580081833477,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.7)",
+     "pooled_shortfall": 0.46472424286857006,
+     "mean_coverage": 0.4769690812398745,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_07(default)",
+     "pooled_shortfall": 0.46472424286857006,
+     "mean_coverage": 0.4769690812398745,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(default)",
+     "pooled_shortfall": 0.5010678629793313,
+     "mean_coverage": 0.44458430972311697,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=1.0)",
+     "pooled_shortfall": 0.5010678629793313,
+     "mean_coverage": 0.44458430972311697,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.85)",
+     "pooled_shortfall": 0.5234204121755273,
+     "mean_coverage": 0.42466658561281134,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.7)",
+     "pooled_shortfall": 0.5541663960120025,
+     "mean_coverage": 0.3972697093916848,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.5)",
+     "pooled_shortfall": 0.6113633952034875,
+     "mean_coverage": 0.3463030818346256,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_05(default)",
+     "pooled_shortfall": 0.6113633952034875,
+     "mean_coverage": 0.3463030818346256,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.5)",
+     "pooled_shortfall": 0.6309656315981835,
+     "mean_coverage": 0.328836083640031,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.35)",
+     "pooled_shortfall": 0.6759479769836882,
+     "mean_coverage": 0.28875358846872273,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(default)",
+     "pooled_shortfall": 0.6878192496265695,
+     "mean_coverage": 0.278175433321239,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.3)",
+     "pooled_shortfall": 0.6878192496265695,
+     "mean_coverage": 0.278175433321239,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.2)",
+     "pooled_shortfall": 0.7110716798506465,
+     "mean_coverage": 0.25745585068964755,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.2)",
+     "pooled_shortfall": 0.7150144607228202,
+     "mean_coverage": 0.2539425502177394,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.15)",
+     "pooled_shortfall": 0.7192044138633971,
+     "mean_coverage": 0.25020900153134074,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.15)",
+     "pooled_shortfall": 0.721714738317412,
+     "mean_coverage": 0.24797212244146358,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.1)",
+     "pooled_shortfall": 0.7299482993971612,
+     "mean_coverage": 0.24063542913671498,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.08)",
+     "pooled_shortfall": 0.7317976763177685,
+     "mean_coverage": 0.23898750169196115,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.1)",
+     "pooled_shortfall": 0.7324586238511761,
+     "mean_coverage": 0.23839855004683777,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.07)",
+     "pooled_shortfall": 0.7393026741297181,
+     "mean_coverage": 0.232300010500026,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.06)",
+     "pooled_shortfall": 0.7399269340516997,
+     "mean_coverage": 0.23174375014734694,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.07)",
+     "pooled_shortfall": 0.741812998583733,
+     "mean_coverage": 0.2300631314101488,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.05)",
+     "pooled_shortfall": 0.7491617555413732,
+     "mean_coverage": 0.22351486202256254,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.05)",
+     "pooled_shortfall": 0.7509753171948951,
+     "mean_coverage": 0.22189884854889466,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.03)",
+     "pooled_shortfall": 0.7585482891589581,
+     "mean_coverage": 0.21515078751337946,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.03)",
+     "pooled_shortfall": 0.7585482891589581,
+     "mean_coverage": 0.21515078751337946,
+     "n": 192
+    }
+   ]
+  },
+  "urban_nlos|2": {
+   "mean_target": 0.328625164650262,
+   "n_seeds": 32,
+   "n_episodes": 192,
+   "best_fixed": {
+    "setting": "slotted_1p(n_slots=50)",
+    "pooled_shortfall": -0.19698446090779323,
+    "mean_coverage": 0.39335921554962855
+   },
+   "hindsight_envelope": {
+    "pooled_shortfall": -0.37498705843889674,
+    "mean_coverage": 0.4518553484714618
+   },
+   "settings_meeting_target": [
+    "slotted_1p(n_slots=50)",
+    "dvcast(n_slots=50)",
+    "greedy_farthest(fallback_n_slots=32)",
+    "slotted_1p(n_slots=30)",
+    "dvcast(n_slots=30)",
+    "dvcast(n_slots=20)",
+    "slotted_1p(n_slots=20)"
+   ],
+   "run8_mean_shortfall_last200": 0.15534689801853313,
+   "ranked": [
+    {
+     "setting": "slotted_1p(n_slots=50)",
+     "pooled_shortfall": -0.19698446090779323,
+     "mean_coverage": 0.39335921554962855,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=50)",
+     "pooled_shortfall": -0.17062252884846482,
+     "mean_coverage": 0.3846960212861328,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=32)",
+     "pooled_shortfall": -0.14488018801960914,
+     "mean_coverage": 0.3762364402927669,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=30)",
+     "pooled_shortfall": -0.1359699400038264,
+     "mean_coverage": 0.37330830857150565,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=30)",
+     "pooled_shortfall": -0.10837146013448819,
+     "mean_coverage": 0.36423875358034746,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=20)",
+     "pooled_shortfall": -0.04690104674169196,
+     "mean_coverage": 0.3440380288580201,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=20)",
+     "pooled_shortfall": -0.027687427204988162,
+     "mean_coverage": 0.33772394997424343,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=16)",
+     "pooled_shortfall": 0.006816077395886779,
+     "mean_coverage": 0.32638523009376974,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=8)",
+     "pooled_shortfall": 0.033389209329790406,
+     "mean_coverage": 0.3176526302367175,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=12)",
+     "pooled_shortfall": 0.04542351433131739,
+     "mean_coverage": 0.3136978547741392,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=12)",
+     "pooled_shortfall": 0.05245752998985979,
+     "mean_coverage": 0.31138630022019825,
+     "n": 192
+    },
+    {
+     "setting": "flooding(default)",
+     "pooled_shortfall": 0.06307401820925203,
+     "mean_coverage": 0.3078974550310929,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=1.0)",
+     "pooled_shortfall": 0.06307401820925203,
+     "mean_coverage": 0.3078974550310929,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=1)",
+     "pooled_shortfall": 0.06307401820925203,
+     "mean_coverage": 0.3078974550310929,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=1)",
+     "pooled_shortfall": 0.07059086793368585,
+     "mean_coverage": 0.30542722905274955,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(default)",
+     "pooled_shortfall": 0.08728662587450096,
+     "mean_coverage": 0.29994058285048825,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=5)",
+     "pooled_shortfall": 0.08728662587450096,
+     "mean_coverage": 0.29994058285048825,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=1)",
+     "pooled_shortfall": 0.09591290402506839,
+     "mean_coverage": 0.2971057707729391,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(default)",
+     "pooled_shortfall": 0.09675873165053522,
+     "mean_coverage": 0.2968278105302543,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=5)",
+     "pooled_shortfall": 0.09675873165053522,
+     "mean_coverage": 0.2968278105302543,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=3)",
+     "pooled_shortfall": 0.09913438026837207,
+     "mean_coverage": 0.2960471126120665,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=2)",
+     "pooled_shortfall": 0.10036228016009033,
+     "mean_coverage": 0.2956435938079766,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=8)",
+     "pooled_shortfall": 0.10534200445678028,
+     "mean_coverage": 0.2940071310910639,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(default)",
+     "pooled_shortfall": 0.10557000972032062,
+     "mean_coverage": 0.29393220282379184,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=4)",
+     "pooled_shortfall": 0.10557000972032062,
+     "mean_coverage": 0.29393220282379184,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=2)",
+     "pooled_shortfall": 0.1083880442570085,
+     "mean_coverage": 0.29300612576018265,
+     "n": 192
+    },
+    {
+     "setting": "greedy_farthest(fallback_n_slots=2)",
+     "pooled_shortfall": 0.1087971574224591,
+     "mean_coverage": 0.29287168087882587,
+     "n": 192
+    },
+    {
+     "setting": "dvcast(n_slots=8)",
+     "pooled_shortfall": 0.11097302685557824,
+     "mean_coverage": 0.2921566354281096,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.9)",
+     "pooled_shortfall": 0.11912769637872794,
+     "mean_coverage": 0.2894768058133961,
+     "n": 192
+    },
+    {
+     "setting": "slotted_1p(n_slots=3)",
+     "pooled_shortfall": 0.12196826145454909,
+     "mean_coverage": 0.2885433246476546,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=10)",
+     "pooled_shortfall": 0.15580688657830372,
+     "mean_coverage": 0.2774231008948222,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=6)",
+     "pooled_shortfall": 0.15580688657830372,
+     "mean_coverage": 0.2774231008948222,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=4)",
+     "pooled_shortfall": 0.15817834976657766,
+     "mean_coverage": 0.27664377841411364,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=3)",
+     "pooled_shortfall": 0.17274919132204034,
+     "mean_coverage": 0.27185543320885686,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(default)",
+     "pooled_shortfall": 0.17274919132204034,
+     "mean_coverage": 0.27185543320885686,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=1)",
+     "pooled_shortfall": 0.224855022189742,
+     "mean_coverage": 0.2547321459607197,
+     "n": 192
+    },
+    {
+     "setting": "counter_based(counter_threshold=2)",
+     "pooled_shortfall": 0.224855022189742,
+     "mean_coverage": 0.2547321459607197,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.7)",
+     "pooled_shortfall": 0.22818723349772338,
+     "mean_coverage": 0.2536370974709849,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_07(default)",
+     "pooled_shortfall": 0.22818723349772338,
+     "mean_coverage": 0.2536370974709849,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.5)",
+     "pooled_shortfall": 0.39469346950531475,
+     "mean_coverage": 0.19891895824769476,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_05(default)",
+     "pooled_shortfall": 0.39469346950531475,
+     "mean_coverage": 0.19891895824769476,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(default)",
+     "pooled_shortfall": 0.41044725242350455,
+     "mean_coverage": 0.19374186874234015,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=1.0)",
+     "pooled_shortfall": 0.41044725242350455,
+     "mean_coverage": 0.19374186874234015,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.85)",
+     "pooled_shortfall": 0.41712978430795344,
+     "mean_coverage": 0.1915458206015325,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.7)",
+     "pooled_shortfall": 0.5025910913862877,
+     "mean_coverage": 0.1634610844916883,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.5)",
+     "pooled_shortfall": 0.5434517736111228,
+     "mean_coverage": 0.15003323606782978,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(default)",
+     "pooled_shortfall": 0.6021554953352561,
+     "mean_coverage": 0.1307417158506534,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.3)",
+     "pooled_shortfall": 0.6021554953352561,
+     "mean_coverage": 0.1307417158506534,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.35)",
+     "pooled_shortfall": 0.6153499207680595,
+     "mean_coverage": 0.12640569562033274,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.2)",
+     "pooled_shortfall": 0.6721879241464681,
+     "mean_coverage": 0.1077272974017111,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.2)",
+     "pooled_shortfall": 0.6930877410567567,
+     "mean_coverage": 0.10085909162840716,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.15)",
+     "pooled_shortfall": 0.7032927810603113,
+     "mean_coverage": 0.09750545867697653,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.15)",
+     "pooled_shortfall": 0.710805432554855,
+     "mean_coverage": 0.09503661234262208,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.1)",
+     "pooled_shortfall": 0.7244047069291178,
+     "mean_coverage": 0.09056754856225584,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.1)",
+     "pooled_shortfall": 0.7313058492467618,
+     "mean_coverage": 0.08829965953184522,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.08)",
+     "pooled_shortfall": 0.7381902345129967,
+     "mean_coverage": 0.08603727729021292,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.07)",
+     "pooled_shortfall": 0.7435372801629254,
+     "mean_coverage": 0.08428010353311262,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.06)",
+     "pooled_shortfall": 0.7462933346823692,
+     "mean_coverage": 0.08337439466287529,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.07)",
+     "pooled_shortfall": 0.7465650356393626,
+     "mean_coverage": 0.08328510689114772,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.05)",
+     "pooled_shortfall": 0.7554747621399764,
+     "mean_coverage": 0.08035714655289472,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.05)",
+     "pooled_shortfall": 0.7605652621141378,
+     "mean_coverage": 0.07868428016073377,
+     "n": 192
+    },
+    {
+     "setting": "p_persistence_03(p=0.03)",
+     "pooled_shortfall": 0.7703644692443539,
+     "mean_coverage": 0.0754640141041245,
+     "n": 192
+    },
+    {
+     "setting": "weighted_p(max_p=0.03)",
+     "pooled_shortfall": 0.7723228642393865,
+     "mean_coverage": 0.07482043622643168,
+     "n": 192
+    }
+   ]
+  }
+ },
+ "evaluation": {
+  "rural_highway|2|clear|crash": {
+   "ceiling": 0.6279981554439988,
+   "ceiling_setting": "dvcast(n_slots=30)",
+   "ceiling_std": 0.16278411950848382,
+   "target": 0.5965982476717989,
+   "n_settings": 63,
+   "n_meeting": 10,
+   "median_setting_rwcr": 0.49322785156855187,
+   "per_seed_envelope_mean": 0.7655547462618544,
+   "cheapest_meeting": "dvcast(n_slots=50)"
+  },
+  "rural_highway|2|clear|fog_bank": {
+   "ceiling": 0.6746886783351622,
+   "ceiling_setting": "dvcast(n_slots=50)",
+   "ceiling_std": 0.15515990686937145,
+   "target": 0.6409542444184041,
+   "n_settings": 63,
+   "n_meeting": 14,
+   "median_setting_rwcr": 0.5572191391030693,
+   "per_seed_envelope_mean": 0.8054327165976736,
+   "cheapest_meeting": "dvcast(n_slots=50)"
+  },
+  "rural_highway|2|clear|landslide": {
+   "ceiling": 0.6605169690593358,
+   "ceiling_setting": "dvcast(n_slots=50)",
+   "ceiling_std": 0.1582822164453579,
+   "target": 0.6274911206063689,
+   "n_settings": 63,
+   "n_meeting": 14,
+   "median_setting_rwcr": 0.5419664334555025,
+   "per_seed_envelope_mean": 0.7943995873132653,
+   "cheapest_meeting": "dvcast(n_slots=50)"
+  },
+  "rural_highway|2|heavy_rain|crash": {
+   "ceiling": 0.6891081992869362,
+   "ceiling_setting": "dvcast(n_slots=20)",
+   "ceiling_std": 0.26887397488903275,
+   "target": 0.6546527893225894,
+   "n_settings": 63,
+   "n_meeting": 5,
+   "median_setting_rwcr": 0.5108989889891477,
+   "per_seed_envelope_mean": 0.879184367726183,
+   "cheapest_meeting": "dvcast(n_slots=50)"
+  },
+  "rural_highway|2|heavy_rain|fog_bank": {
+   "ceiling": 0.7386910306842219,
+   "ceiling_setting": "dvcast(n_slots=2)",
+   "ceiling_std": 0.1938604015891684,
+   "target": 0.7017564791500108,
+   "n_settings": 63,
+   "n_meeting": 4,
+   "median_setting_rwcr": 0.5801436484118074,
+   "per_seed_envelope_mean": 0.904181186367027,
+   "cheapest_meeting": "dvcast(n_slots=20)"
+  },
+  "rural_highway|2|heavy_rain|landslide": {
+   "ceiling": 0.7255999484603259,
+   "ceiling_setting": "dvcast(n_slots=2)",
+   "ceiling_std": 0.19026812725470657,
+   "target": 0.6893199510373096,
+   "n_settings": 63,
+   "n_meeting": 4,
+   "median_setting_rwcr": 0.5689440823256164,
+   "per_seed_envelope_mean": 0.8931956749173086,
+   "cheapest_meeting": "dvcast(n_slots=20)"
+  },
+  "urban_nlos|2|clear|crash": {
+   "ceiling": 0.9658426459425662,
+   "ceiling_setting": "dvcast(n_slots=5)",
+   "ceiling_std": 0.017812849764144725,
+   "target": 0.9175505136454378,
+   "n_settings": 63,
+   "n_meeting": 19,
+   "median_setting_rwcr": 0.8350674180123306,
+   "per_seed_envelope_mean": 0.9788768727130256,
+   "cheapest_meeting": "dvcast(n_slots=20)"
+  },
+  "urban_nlos|2|clear|fog_bank": {
+   "ceiling": 0.9447128800894873,
+   "ceiling_setting": "slotted_1p(n_slots=2)",
+   "ceiling_std": 0.05912324624288261,
+   "target": 0.8974772360850128,
+   "n_settings": 63,
+   "n_meeting": 27,
+   "median_setting_rwcr": 0.846290696993278,
+   "per_seed_envelope_mean": 0.9816849694476826,
+   "cheapest_meeting": "dvcast(n_slots=20)"
+  },
+  "urban_nlos|2|clear|landslide": {
+   "ceiling": 0.9434201028003288,
+   "ceiling_setting": "greedy_farthest(fallback_n_slots=1)",
+   "ceiling_std": 0.032672692993387355,
+   "target": 0.8962490976603124,
+   "n_settings": 63,
+   "n_meeting": 27,
+   "median_setting_rwcr": 0.8446704325300216,
+   "per_seed_envelope_mean": 0.9803427634080064,
+   "cheapest_meeting": "dvcast(n_slots=20)"
+  },
+  "urban_nlos|2|heavy_rain|crash": {
+   "ceiling": 0.9550858153497976,
+   "ceiling_setting": "slotted_1p(n_slots=1)",
+   "ceiling_std": 0.027696085412047437,
+   "target": 0.9073315245823077,
+   "n_settings": 63,
+   "n_meeting": 6,
+   "median_setting_rwcr": 0.8150225713251096,
+   "per_seed_envelope_mean": 0.9679495825794499,
+   "cheapest_meeting": "slotted_1p(n_slots=3)"
+  },
+  "urban_nlos|2|heavy_rain|fog_bank": {
+   "ceiling": 0.9571931833325102,
+   "ceiling_setting": "slotted_1p(n_slots=1)",
+   "ceiling_std": 0.031953325832312564,
+   "target": 0.9093335241658846,
+   "n_settings": 63,
+   "n_meeting": 6,
+   "median_setting_rwcr": 0.7812379501934001,
+   "per_seed_envelope_mean": 0.966840747418851,
+   "cheapest_meeting": "greedy_farthest(fallback_n_slots=2)"
+  },
+  "urban_nlos|2|heavy_rain|landslide": {
+   "ceiling": 0.9556942667136481,
+   "ceiling_setting": "slotted_1p(n_slots=1)",
+   "ceiling_std": 0.03277612606778445,
+   "target": 0.9079095533779656,
+   "n_settings": 63,
+   "n_meeting": 6,
+   "median_setting_rwcr": 0.7791008518561128,
+   "per_seed_envelope_mean": 0.9650573051527885,
+   "cheapest_meeting": "greedy_farthest(fallback_n_slots=2)"
+  }
+ },
+ "provenance": {
+  "n_runs": 31752,
+  "settings": 63,
+  "train_seeds": [
+   100,
+   101,
+   102,
+   103,
+   104,
+   105,
+   106,
+   107,
+   108,
+   109,
+   110,
+   111,
+   112,
+   113,
+   114,
+   115,
+   116,
+   117,
+   118,
+   119,
+   120,
+   121,
+   122,
+   123,
+   124,
+   125,
+   126,
+   127,
+   128,
+   129,
+   130,
+   131
+  ],
+  "eval_seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "targets_path": "results/coverage_targets.json",
+  "target_seeds_used_for_ceiling": 2
+ }
+}

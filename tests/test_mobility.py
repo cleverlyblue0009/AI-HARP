@@ -130,6 +130,26 @@ def test_save_leaves_no_temp_file_behind(trace, tmp_path):
     assert [p.name for p in tmp_path.iterdir()] == ["t.npz"]
 
 
+def test_concurrent_writer_of_the_same_trace_is_tolerated(trace, tmp_path, monkeypatch):
+    """Windows refuses os.replace onto a cache file another worker has open;
+    the sparse-feasibility sweep died on it. Same key = same trace, so keep it."""
+    import mobility.trace as mt
+
+    p = tmp_path / "t.npz"
+    save_trace(trace, p)
+
+    def locked(src, dst):
+        raise PermissionError("Access is denied")
+
+    monkeypatch.setattr(mt.os, "replace", locked)
+    monkeypatch.setattr(mt.time, "sleep", lambda s: None)
+    save_trace(trace, p)                       # must not raise
+    assert np.array_equal(load_trace(p).active, trace.active)
+    assert [q.name for q in tmp_path.iterdir()] == ["t.npz"]
+    with pytest.raises(PermissionError):       # no existing copy: still an error
+        save_trace(trace, tmp_path / "other.npz")
+
+
 def test_truncated_cache_file_is_reported_as_corrupt(trace, tmp_path):
     """run4 crashed on an .npz cut off when run3 was stopped mid-save."""
     from mobility.trace import CorruptTraceError

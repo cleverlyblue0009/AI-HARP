@@ -1,0 +1,103 @@
+====================================================================================================
+ TRAINING SIDE -- causal coverage on the training seed pool vs the training target
+ pooled shortfall = (sum target - sum coverage) / sum target over every episode of
+ the group (training weather x training hazard x seed), as the multiplier sees it
+====================================================================================================
+
+rural_highway|2: 192 episodes (32 seeds x 6 cells), mean target 0.891
+   dvcast(n_slots=2)                        coverage 0.781  pooled shortfall +0.123
+   dvcast(n_slots=1)                        coverage 0.778  pooled shortfall +0.127
+   slotted_1p(n_slots=2)                    coverage 0.778  pooled shortfall +0.127
+   flooding(default)                        coverage 0.778  pooled shortfall +0.127
+   p_persistence_03(p=1.0)                  coverage 0.778  pooled shortfall +0.127
+   hindsight envelope (best per episode)    coverage 0.936  pooled shortfall -0.050
+   fixed settings meeting the target: 0 of 63
+   run8 agent, mean pooled shortfall over updates 801-1000: +0.139
+
+urban_nlos|2: 192 episodes (32 seeds x 6 cells), mean target 0.329
+   slotted_1p(n_slots=50)                   coverage 0.393  pooled shortfall -0.197
+   dvcast(n_slots=50)                       coverage 0.385  pooled shortfall -0.171
+   greedy_farthest(fallback_n_slots=32)     coverage 0.376  pooled shortfall -0.145
+   slotted_1p(n_slots=30)                   coverage 0.373  pooled shortfall -0.136
+   dvcast(n_slots=30)                       coverage 0.364  pooled shortfall -0.108
+   hindsight envelope (best per episode)    coverage 0.452  pooled shortfall -0.375
+   fixed settings meeting the target: 7 of 63
+   run8 agent, mean pooled shortfall over updates 801-1000: +0.155
+
+====================================================================================================
+ EVALUATION SIDE -- oracle RWCR on the evaluation seeds, per cell
+ comparator target = 0.95 x best setting's mean (so some setting meets it by
+ construction); the point is how far above the typical setting that ceiling sits
+====================================================================================================
+
+rural_highway|2|clear|crash: ceiling 0.628 +/- 0.163 (dvcast(n_slots=30)), target 0.597
+   settings meeting target: 10 of 63 | median setting 0.493 | per-seed envelope 0.766
+   dvcast(n_slots=30)                       RWCR 0.628 +/- 0.163  cost 1.96  miss 0.610
+   dvcast(n_slots=50)                       RWCR 0.626 +/- 0.176  cost 1.86  miss 0.706
+   slotted_1p(n_slots=30)                   RWCR 0.625 +/- 0.184  cost 2.10  miss 0.628
+
+rural_highway|2|clear|fog_bank: ceiling 0.675 +/- 0.155 (dvcast(n_slots=50)), target 0.641
+   settings meeting target: 14 of 63 | median setting 0.557 | per-seed envelope 0.805
+   dvcast(n_slots=50)                       RWCR 0.675 +/- 0.155  cost 1.45  miss 0.643
+   dvcast(n_slots=30)                       RWCR 0.658 +/- 0.156  cost 1.56  miss 0.565
+   dvcast(n_slots=3)                        RWCR 0.657 +/- 0.137  cost 1.76  miss 0.529
+
+rural_highway|2|clear|landslide: ceiling 0.661 +/- 0.158 (dvcast(n_slots=50)), target 0.627
+   settings meeting target: 14 of 63 | median setting 0.542 | per-seed envelope 0.794
+   dvcast(n_slots=50)                       RWCR 0.661 +/- 0.158  cost 1.45  miss 0.649
+   dvcast(n_slots=30)                       RWCR 0.646 +/- 0.154  cost 1.56  miss 0.574
+   dvcast(n_slots=3)                        RWCR 0.644 +/- 0.137  cost 1.76  miss 0.537
+
+rural_highway|2|heavy_rain|crash: ceiling 0.689 +/- 0.269 (dvcast(n_slots=20)), target 0.655
+   settings meeting target: 5 of 63 | median setting 0.511 | per-seed envelope 0.879
+   dvcast(n_slots=20)                       RWCR 0.689 +/- 0.269  cost 2.48  miss 0.526
+   dvcast(n_slots=2)                        RWCR 0.689 +/- 0.217  cost 2.88  miss 0.511
+   slotted_1p(n_slots=2)                    RWCR 0.689 +/- 0.217  cost 2.87  miss 0.511
+
+rural_highway|2|heavy_rain|fog_bank: ceiling 0.739 +/- 0.194 (dvcast(n_slots=2)), target 0.702
+   settings meeting target: 4 of 63 | median setting 0.580 | per-seed envelope 0.904
+   dvcast(n_slots=2)                        RWCR 0.739 +/- 0.194  cost 2.20  miss 0.446
+   slotted_1p(n_slots=2)                    RWCR 0.739 +/- 0.194  cost 2.19  miss 0.446
+   dvcast(n_slots=20)                       RWCR 0.737 +/- 0.242  cost 1.83  miss 0.464
+
+rural_highway|2|heavy_rain|landslide: ceiling 0.726 +/- 0.190 (dvcast(n_slots=2)), target 0.689
+   settings meeting target: 4 of 63 | median setting 0.569 | per-seed envelope 0.893
+   dvcast(n_slots=2)                        RWCR 0.726 +/- 0.190  cost 2.20  miss 0.476
+   slotted_1p(n_slots=2)                    RWCR 0.726 +/- 0.190  cost 2.19  miss 0.476
+   dvcast(n_slots=20)                       RWCR 0.725 +/- 0.242  cost 1.83  miss 0.488
+
+urban_nlos|2|clear|crash: ceiling 0.966 +/- 0.018 (dvcast(n_slots=5)), target 0.918
+   settings meeting target: 19 of 63 | median setting 0.835 | per-seed envelope 0.979
+   dvcast(n_slots=5)                        RWCR 0.966 +/- 0.018  cost 1.47  miss 0.101
+   dvcast(default)                          RWCR 0.966 +/- 0.018  cost 1.47  miss 0.101
+   slotted_1p(n_slots=8)                    RWCR 0.949 +/- 0.037  cost 1.52  miss 0.117
+
+urban_nlos|2|clear|fog_bank: ceiling 0.945 +/- 0.059 (slotted_1p(n_slots=2)), target 0.897
+   settings meeting target: 27 of 63 | median setting 0.846 | per-seed envelope 0.982
+   slotted_1p(n_slots=2)                    RWCR 0.945 +/- 0.059  cost 1.56  miss 0.116
+   dvcast(n_slots=8)                        RWCR 0.945 +/- 0.052  cost 1.33  miss 0.110
+   greedy_farthest(fallback_n_slots=1)      RWCR 0.945 +/- 0.032  cost 1.63  miss 0.108
+
+urban_nlos|2|clear|landslide: ceiling 0.943 +/- 0.033 (greedy_farthest(fallback_n_slots=1)), target 0.896
+   settings meeting target: 27 of 63 | median setting 0.845 | per-seed envelope 0.980
+   greedy_farthest(fallback_n_slots=1)      RWCR 0.943 +/- 0.033  cost 1.63  miss 0.111
+   dvcast(n_slots=8)                        RWCR 0.943 +/- 0.053  cost 1.33  miss 0.113
+   slotted_1p(n_slots=1)                    RWCR 0.943 +/- 0.073  cost 2.07  miss 0.112
+
+urban_nlos|2|heavy_rain|crash: ceiling 0.955 +/- 0.028 (slotted_1p(n_slots=1)), target 0.907
+   settings meeting target: 6 of 63 | median setting 0.815 | per-seed envelope 0.968
+   slotted_1p(n_slots=1)                    RWCR 0.955 +/- 0.028  cost 2.22  miss 0.107
+   p_persistence_03(p=1.0)                  RWCR 0.955 +/- 0.028  cost 2.22  miss 0.107
+   flooding(default)                        RWCR 0.955 +/- 0.028  cost 2.22  miss 0.107
+
+urban_nlos|2|heavy_rain|fog_bank: ceiling 0.957 +/- 0.032 (slotted_1p(n_slots=1)), target 0.909
+   settings meeting target: 6 of 63 | median setting 0.781 | per-seed envelope 0.967
+   slotted_1p(n_slots=1)                    RWCR 0.957 +/- 0.032  cost 2.06  miss 0.104
+   p_persistence_03(p=1.0)                  RWCR 0.957 +/- 0.032  cost 2.06  miss 0.104
+   flooding(default)                        RWCR 0.957 +/- 0.032  cost 2.06  miss 0.104
+
+urban_nlos|2|heavy_rain|landslide: ceiling 0.956 +/- 0.033 (slotted_1p(n_slots=1)), target 0.908
+   settings meeting target: 6 of 63 | median setting 0.779 | per-seed envelope 0.965
+   slotted_1p(n_slots=1)                    RWCR 0.956 +/- 0.033  cost 2.06  miss 0.104
+   p_persistence_03(p=1.0)                  RWCR 0.956 +/- 0.033  cost 2.06  miss 0.104
+   flooding(default)                        RWCR 0.956 +/- 0.033  cost 2.06  miss 0.104

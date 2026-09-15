@@ -426,6 +426,69 @@ derived from measured speed.
   target is tiny (rural and urban d=1) drove λ to 0, and at zero price the
   policy occasionally went near-silent (coverage 0.6–0.7 short in single
   episodes) before λ recovered. Neither was changed mid-run.
+- **Was run8's sparse plateau a cap artefact or infeasibility? Both, split by
+  group.** Two checks, before any further experiment.
+
+  *(1) λ cap.* Sparse-only finetunes (densities {1, 2, 3, 5}) from run8's
+  `ckpt_pretrain.pt`, cap raised 50 → 500
+  (`results/feasibility/lambda_cap_arms.txt`, `experiments/lambda_cap_summary.py`;
+  deterministic CUDA, `bit_reproducible: true`). **A**, as specified (λ climbs
+  from its initial value, 300 updates), cannot answer the question: at
+  λ_lr = 1 its λ reached 49.7 / 48.6, never exceeding the old cap. **B** prices
+  every sparse group at 500 from the first update, 600 updates. Pooled
+  shortfall, mean ± s.e. over the last 200 finetune updates:
+
+  | group | run8 (cap 50) | B (λ = 500) |
+  |---|---|---|
+  | rural d=2 | +0.139 ± 0.020 | **+0.131 ± 0.019** — unchanged |
+  | urban d=2 | +0.155 ± 0.019 | **+0.051 ± 0.016** — cut by two thirds, still short |
+  | rural d=3 | +0.077 ± 0.016 | +0.037 ± 0.012 |
+
+  B's shortfall is flat from update ~200 to 600, so neither group closes with
+  more updates at this price. At λ = 500 transmissions per update rose
+  ~30 → ~54 and the carry rate fell 0.24 → 0.02. The cap was binding for
+  urban d=2 (partly) and not for rural d=2.
+
+  *(2) Is the target reachable by anyone?* `experiments/sparse_feasibility.py`
+  runs every baseline at every knob setting (63 settings: the Pareto sweeps plus
+  each registry default) in all six training weather × hazard cells at d = 2,
+  on all 32 training seeds (causal coverage, what training optimises) and on
+  evaluation seeds 0–9 (oracle RWCR). 31,752 runs;
+  `results/feasibility/sparse_feasibility{.txt,.json,_runs.csv}`. Its runner
+  reproduces the committed ceilings and Pareto points exactly.
+
+  | group | training target (mean) | best fixed baseline, pooled shortfall | settings meeting it | per-episode hindsight envelope | agent: run8 / B |
+  |---|---|---|---|---|---|
+  | rural d=2 | 0.891 | +0.123 (`dvcast` n_slots=2) | **0 of 63** | −0.050 | +0.139 / +0.131 |
+  | urban d=2 | 0.329 | −0.197 (`slotted_1p` n_slots=50) | 7 of 63 | −0.375 | +0.155 / +0.051 |
+
+  - **rural d=2: the training target is infeasible for every fixed baseline at
+    any cost.** It is 0.95 × a ceiling measured on two seeds (100–101), where
+    flooding reached causal coverage 0.909; over the 32-seed pool flooding
+    averages 0.778. The agent (+0.131) sits at the best fixed baseline
+    (+0.123) within one standard error. Only a policy choosing the best setting
+    per episode in hindsight could meet it. The agent is not being singled out
+    here: the target was a measurement artefact of `objective.target_seeds: 2`.
+  - **urban d=2: the target is feasible, and the agent misses it.** Seven fixed
+    settings clear it, the best by 20%, and all of them wait long before
+    rebroadcasting (`slotted_1p` / `dvcast` n_slots 20–50, `greedy_farthest`
+    fallback 32). The agent
+    stays 0.05 short even at ten times the price. Its longest wait is
+    `defer_3` plus at most three carries, which cannot express those waits.
+    That is a hypothesis about the action space, not yet tested.
+  - **Evaluation-side ceilings are optimistic in rural d=2.** Each comparator
+    target is 0.95 × the best of 63 means, and rural d=2 seeds vary by
+    ±0.16–0.27 RWCR, so the ceiling (e.g. 0.675 at clear/fog_bank) sits
+    ~0.12 above the median setting (0.557) and is 4–14 settings deep. Urban
+    d=2 ceilings are tight (±0.02–0.06).
+  - Consequence: every training target in `results/coverage_targets.json` was
+    measured on the same two seeds, so dense-cell targets may be biased too;
+    this has not been checked. Nothing has been re-measured or retuned.
+- **Trace cache race (fixed).** Two processes caching the same trace could
+  crash on Windows (`os.replace` refused while the other copy was open); the
+  feasibility sweep died on it after 25,856 runs and resumed from its CSV.
+  Since traces are deterministic in their key, the save now retries and keeps
+  the existing copy (`tests/test_mobility.py`).
 - `agents/gat_drl.py` — 3×GATv2 with edge features. **The final layer's
   attention on `neighbour → holder` edges *is* the relay ranking**;
   `relay_top_k` designates the k-th most attended neighbour, so the heatmap

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -192,6 +193,29 @@ _ARRAY_FIELDS = (
 )
 
 
+def _replace_tolerating_concurrent_writer(tmp: Path, path: Path, attempts: int = 10) -> None:
+    """``os.replace`` that survives another process caching the same trace.
+
+    Traces are deterministic in their cache key, so two workers generating the
+    same one write identical files. On Windows the second rename fails with
+    PermissionError while the first file is open for reading
+    (experiments/sparse_feasibility.py died on urban_nlos d=2 seed 5 after
+    25,856 runs). Retry briefly; if the target still cannot be replaced but
+    exists, keep it -- it is the same trace.
+    """
+    for i in range(attempts):
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            if i == attempts - 1:
+                if path.exists():
+                    logger.info("Trace %s was cached concurrently; keeping that copy", path.name)
+                    return
+                raise
+            time.sleep(0.05 * (i + 1))
+
+
 def save_trace(trace: Trace, path: Path) -> Path:
     ensure_dir(path.parent)
     arrays = {name: getattr(trace, name) for name in _ARRAY_FIELDS}
@@ -210,7 +234,7 @@ def save_trace(trace: Trace, path: Path) -> Path:
     try:
         with open(tmp, "wb") as fh:
             np.savez_compressed(fh, _meta=np.array(json.dumps(meta)), **arrays)
-        os.replace(tmp, path)
+        _replace_tolerating_concurrent_writer(tmp, path)
     finally:
         tmp.unlink(missing_ok=True)
     size_mb = path.stat().st_size / 1e6
