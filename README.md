@@ -106,12 +106,22 @@ mention ground truth. A comment cannot satisfy those tests.
 
 ### Risk estimation difficulty is itself a result
 
-`estimation_agreement()` reports how well the causal field recovers the oracle:
+`estimation_agreement()` reports how well the causal field recovers the oracle.
+Over the full grid (`experiments/risk_estimation.py` →
+`results/risk_estimation.csv`: 8 densities × 4 weathers × 5 hazards × 10 seeds
+= 1,600 cells per scenario; mean ± std across cells; the estimate does not
+depend on the dissemination policy):
 
 | scenario | precision | recall | peak-relevance correlation |
 |---|---|---|---|
-| rural_highway | 0.78 | 1.00 | **0.81** |
-| urban_nlos | 0.57 | 1.00 | **0.13** |
+| rural_highway | 0.78 ± 0.12 | 0.91 ± 0.19 | **0.74 ± 0.14** |
+| urban_grid | 0.57 ± 0.09 | 1.00 | **0.17 ± 0.14** |
+| urban_nlos | 0.53 ± 0.08 | 1.00 | **0.19 ± 0.12** |
+
+(Earlier single-cell figures were 0.81 for the corridor and 0.13 for
+urban_nlos.) By density the corridor correlation holds at 0.75–0.79 up to
+d = 40 and falls to 0.54 at d = 80; the grids improve with density, from
+0.09–0.14 at d = 1 to 0.33 at d = 80.
 
 On a corridor heading determines destiny. In a grid it does not. That gap
 quantifies the difficulty the learned policy is being asked to overcome, and
@@ -286,8 +296,9 @@ derived from measured speed.
   trade silence for flooding. Two caveats:
   1. **In grid cells the constraint is enforced on a weak proxy.** Every
      urban_nlos policy scores causal coverage 0.28–0.29 against ~0.98 oracle
-     RWCR, because the causal grid estimator correlates only 0.13 with ground
-     truth. Per-cell targets keep the constraint feasible, but there the agent
+     RWCR, because the causal grid estimator correlates only 0.19 with ground
+     truth (urban_nlos, mean over the full grid in
+     `results/risk_estimation.csv`; an earlier single cell gave 0.13). Per-cell targets keep the constraint feasible, but there the agent
      learns which vehicles the proxy flags, not which are truly at risk.
      Training may not use the oracle, so this is the honest limit of the
      causal-only rule; evaluation measures the gap.
@@ -587,7 +598,14 @@ derived from measured speed.
   model silently assumed 5 × 5 blocks for the 6 × 6 `urban_nlos` grid. (2) The
   synthetic SUMO grid's only demand was one flow over two edges: `urban_nlos`
   reached 0.25 veh/km/lane against 20 commanded, no vehicle reached the hazard,
-  RWCR 0. Every SUMO grid now uses `randomTrips`. Also: FCD is recorded only
+  RWCR 0. Every SUMO grid now uses `randomTrips`, whose insertion rate is an
+  estimate, so a grid trace is calibrated from its own measured density: up to
+  three SUMO runs, a proportional step and then interpolation, because density
+  is not proportional to demand once the grid congests. `urban_nlos` d = 20
+  seed 0: 33.5 → 16.4 → **19.8 veh/km/lane** (commanded 20), recorded in
+  `trace.meta["demand_calibration"]`; flooding then reaches RWCR 0.514. SUMO
+  trace cache keys carry a pipeline version, so no pre-fix SUMO trace is
+  served (fallback keys are unchanged). Also: FCD is recorded only
   after the warm-up (`--device.fcd.begin`); the US-50 export had been 933 MB,
   ~90% of it warm-up.
 - **Campaign training queue** (`experiments/campaign_train.py`, sequential,
@@ -1020,7 +1038,9 @@ valuable thing in this repository.
   it has not been changed or tested.
 - **Grid risk estimation is approximate.** The causal field in a grid is
   route-unaware (Manhattan distance + bearing gate), which is why its
-  correlation with ground truth is 0.13 there. The oracle fixes *evaluation*;
+  correlation with ground truth is 0.17 (urban_grid) / 0.19 (urban_nlos) over
+  the full grid, against 0.74 on the corridor (`results/risk_estimation.csv`).
+  The corridor estimate itself degrades in dense traffic (0.54 at d = 80). The oracle fixes *evaluation*;
   the agent still has to work from the weak causal estimate, which is the
   honest problem statement.
 - **Deferring schemes pay a 100 ms slot granularity.** A real slotted scheme
