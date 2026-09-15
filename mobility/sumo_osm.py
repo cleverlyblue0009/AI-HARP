@@ -76,7 +76,12 @@ def _typed(scenario: dict[str, Any], net_edges: Sequence[dict[str, Any]]) -> lis
 
 def write_osm_routes(scenario: dict[str, Any], density: float, seed: int, work: Path,
                      speed_factor: float, net: Path, net_edges: Sequence[dict[str, Any]],
-                     tools: Any, warmup_s: float) -> Path:
+                     tools: Any, warmup_s: float, demand_scale: float = 1.0) -> Path:
+    """Demand for an imported OSM network, or any SUMO grid.
+
+    ``demand_scale`` multiplies the grid insertion density; generate_sumo_trace
+    sets it from one measured run when the estimate misses (grids only).
+    """
     from mobility.sumo_runner import _vtype_xml, _write
 
     geo, sim = scenario["geometry"], scenario["simulation"]
@@ -94,7 +99,7 @@ def write_osm_routes(scenario: dict[str, Any], density: float, seed: int, work: 
         ys = [p[1] for e in net_edges for p in e["shape"]]
         trip_km = max(((max(xs) - min(xs)) + (max(ys) - min(ys))) / 2.0 / 1000.0, 0.2)
         lanes = float(np.average([e["lanes"] for e in net_edges], weights=[e["length"] for e in net_edges]))
-        insertion = density * lanes * v_mean_kmh / trip_km
+        insertion = density * lanes * v_mean_kmh / trip_km * float(demand_scale)
         routes = work / "demand.rou.xml"
         home = Path(tools.sumo_home) if getattr(tools, "sumo_home", None) else Path(tools.sumo).parent.parent
         cmd = [sys.executable, str(home / "tools" / "randomTrips.py"), "-n", str(net),

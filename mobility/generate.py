@@ -123,9 +123,11 @@ def resolve_backend(requested: str | MobilityBackend = MobilityBackend.AUTO):
 #: urban_nlos trace (0.25 veh/km/lane) was still returned for the new code.
 #: 2: grid edges + real dimensions, randomTrips grid demand, OSM projection,
 #:    FCD recorded from the warm-up.
+#: 3: grid demand calibrated from one measured run (urban_nlos d=20 had come
+#:    out at 33.5 veh/km/lane against 20 under version 2).
 #: Fallback keys deliberately omit it, so every committed fallback trace (and
 #: results/runs.csv) keeps its key.
-SUMO_PIPELINE_VERSION = 2
+SUMO_PIPELINE_VERSION = 3
 
 
 def trace_cache_key(

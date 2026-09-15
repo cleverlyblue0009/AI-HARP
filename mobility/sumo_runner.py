@@ -60,6 +60,12 @@ WARMUP_TRANSITS = 1.5
 #: Achieved density may miss the command by this fraction before we warn.
 DENSITY_TOLERANCE = 0.25
 
+#: Grid demand is an estimate (randomTrips insertion rate x an assumed trip
+#: length), so a grid trace that misses by more than this is re-run once with
+#: its demand scaled by commanded / achieved. On urban_nlos d=20 the estimate
+#: alone gave 33.5 veh/km/lane (+67%). Corridor flows are exact and never re-run.
+CALIBRATION_TOLERANCE = 0.10
+
 
 @dataclass(frozen=True)
 class SumoTools:
@@ -130,6 +136,25 @@ def required_warmup_s(scenario: dict[str, Any], speed_factor: float = 1.0) -> fl
     return span / v * WARMUP_TRANSITS
 
 
+def _lane_km(scenario: dict[str, Any], override: float | None = None) -> float:
+    """Lane-kilometres the density is measured over (override: real networks)."""
+    if override is not None:
+        return float(override)
+    geo = scenario["geometry"]
+    if scenario.get("kind") == "grid":
+        return (float(geo.get("block_length_m", 200.0))
+                * float(geo.get("grid_rows", 5)) * float(geo.get("grid_cols", 5))
+                * 4.0 / 1000.0)
+    return (float(geo.get("length_m", 0.0)) / 1000.0
+            * float(geo.get("lanes_per_direction", 1))
+            * float(geo.get("directions", 2)))
+
+
+def _achieved_density(trace: Trace, scenario: dict[str, Any], override: float | None = None) -> float:
+    lk = _lane_km(scenario, override)
+    return float(trace.active.sum(axis=1).mean()) / lk if lk > 0 else float("nan")
+
+
 def _check_density(trace: Trace, scenario: dict[str, Any], commanded: float,
                    lane_km_override: float | None = None) -> None:
     """Warn if the achieved density misses the command.
@@ -138,17 +163,7 @@ def _check_density(trace: Trace, scenario: dict[str, Any], commanded: float,
     downstream re-checks that SUMO actually produced the density it was asked
     for, and a quietly empty corridor looks like a valid result.
     """
-    geo = scenario["geometry"]
-    if scenario.get("kind") == "grid":
-        lane_km = (float(geo.get("block_length_m", 200.0))
-                   * float(geo.get("grid_rows", 5)) * float(geo.get("grid_cols", 5))
-                   * 4.0 / 1000.0)
-    else:
-        lane_km = (float(geo.get("length_m", 0.0)) / 1000.0
-                   * float(geo.get("lanes_per_direction", 1))
-                   * float(geo.get("directions", 2)))
-    if lane_km_override is not None:
-        lane_km = float(lane_km_override)
+    lane_km = _lane_km(scenario, lane_km_override)
     if lane_km <= 0:
         return
     achieved = float(trace.active.sum(axis=1).mean()) / lane_km
@@ -336,20 +351,25 @@ def generate_sumo_trace(
     # Every SUMO grid uses randomTrips demand. The synthetic grid's single
     # A0A1 -> A1A2 flow reached 0.25 veh/km/lane against a commanded 20 on
     # urban_nlos (99% off): no vehicle ever reached the hazard and RWCR was 0.
-    if net_source == "osm" or scenario.get("kind") == "grid":
-        from mobility.sumo_osm import write_osm_routes
-
-        routes = write_osm_routes(scenario, density_veh_km_lane, seed, work, speed_factor,
-                                  Path(work) / Path(net).name, net_edges, tools, warmup)
-    else:
-        routes = _write_routes(scenario, density_veh_km_lane, seed, work, speed_factor)
+    osm_or_grid = net_source == "osm" or scenario.get("kind") == "grid"
     duration = float(sim["duration_s"]) + warmup
     fcd = work / "fcd.xml"
+    demand_scale, attempts = 1.0, []
 
-    _write(work / "run.sumocfg", f"""<configuration>
+    for attempt in range(2):
+        if osm_or_grid:
+            from mobility.sumo_osm import write_osm_routes
+
+            routes = write_osm_routes(scenario, density_veh_km_lane, seed, work, speed_factor,
+                                      Path(work) / Path(net).name, net_edges, tools, warmup,
+                                      demand_scale=demand_scale)
+        else:
+            routes = _write_routes(scenario, density_veh_km_lane, seed, work, speed_factor)
+
+        _write(work / "run.sumocfg", f"""<configuration>
   <input>
-    <net-file value="{net.name}"/>
-    <route-files value="{routes.name}"/>
+    <net-file value="{Path(net).name}"/>
+    <route-files value="{Path(routes).name}"/>
   </input>
   <time>
     <begin value="0"/>
@@ -367,40 +387,52 @@ def generate_sumo_trace(
   </random_number>
 </configuration>""")
 
-    logger.info("Running SUMO (%s network, density=%g veh/km/lane, seed=%d)",
-                net_source, density_veh_km_lane, seed)
-    # NOTE: the FCD sampling period is `--device.fcd.period`, NOT
-    # `--fcd-output.period` (which does not exist and makes SUMO exit 1).
-    # Verified against `sumo --help` for 1.19.0.
-    # Record FCD only after the warm-up: on the 16.5 km US-50 route the full
-    # export was 933 MB, ~90% of it warm-up that parse_fcd discards anyway.
-    _run([tools.sumo, "-c", "run.sumocfg", "--fcd-output", fcd.name,
-          "--device.fcd.begin", f"{warmup:.1f}",
-          "--device.fcd.period", str(scfg["fcd_period"]), "--no-step-log", "true",
-          "--no-warnings", "true"], cwd=work)
+        logger.info("Running SUMO (%s network, density=%g veh/km/lane, seed=%d, demand x%.3f)",
+                    net_source, density_veh_km_lane, seed, demand_scale)
+        # NOTE: the FCD sampling period is `--device.fcd.period`, NOT
+        # `--fcd-output.period` (which does not exist and makes SUMO exit 1).
+        # Verified against `sumo --help` for 1.19.0.
+        # Record FCD only after the warm-up: on the 16.5 km US-50 route the full
+        # export was 933 MB, ~90% of it warm-up that parse_fcd discards anyway.
+        _run([tools.sumo, "-c", "run.sumocfg", "--fcd-output", fcd.name,
+              "--device.fcd.begin", f"{warmup:.1f}",
+              "--device.fcd.period", str(scfg["fcd_period"]), "--no-step-log", "true",
+              "--no-warnings", "true"], cwd=work)
 
-    trace = parse_fcd(
-        fcd,
-        scenario_name=scenario["name"],
-        dt=float(sim["timestep_s"]),
-        warmup_s=warmup,
-        meta={
-            "kind": scenario.get("kind", "highway"),
-            "length_m": float(scenario["geometry"].get("length_m", 0.0)),
-            "lane_width_m": float(scenario["geometry"]["lane_width_m"]),
-            "median_width_m": float(scenario["geometry"].get("median_width_m", 0.0)),
-            "density_veh_km_lane": float(density_veh_km_lane),
-            "network_source": net_source,
-            "speed_factor": speed_factor,
-            "car_following": scfg["car_following_model"],
-        },
-    )
-    trace.meta["warmup_s"] = warmup
-    lane_km = None
-    if net_edges is not None:
-        from mobility.sumo_osm import postprocess_trace
+        trace = parse_fcd(
+            fcd,
+            scenario_name=scenario["name"],
+            dt=float(sim["timestep_s"]),
+            warmup_s=warmup,
+            meta={
+                "kind": scenario.get("kind", "highway"),
+                "length_m": float(scenario["geometry"].get("length_m", 0.0)),
+                "lane_width_m": float(scenario["geometry"]["lane_width_m"]),
+                "median_width_m": float(scenario["geometry"].get("median_width_m", 0.0)),
+                "density_veh_km_lane": float(density_veh_km_lane),
+                "network_source": net_source,
+                "speed_factor": speed_factor,
+                "car_following": scfg["car_following_model"],
+            },
+        )
+        trace.meta["warmup_s"] = warmup
+        lane_km = None
+        if net_edges is not None:
+            from mobility.sumo_osm import postprocess_trace
 
-        trace, lane_km = postprocess_trace(trace, scenario, net_source, net_edges)
+            trace, lane_km = postprocess_trace(trace, scenario, net_source, net_edges)
+        achieved = _achieved_density(trace, scenario, lane_km)
+        attempts.append({"demand_scale": round(demand_scale, 4),
+                         "achieved_density_veh_km_lane": round(achieved, 3)})
+        miss = abs(achieved - density_veh_km_lane) / max(density_veh_km_lane, 1e-9)
+        if not (scenario.get("kind") == "grid" and attempt == 0 and achieved > 0
+                and miss > CALIBRATION_TOLERANCE):
+            break
+        demand_scale *= density_veh_km_lane / achieved
+        logger.info("SUMO grid demand calibration: achieved %.3g vs %.3g veh/km/lane; "
+                    "re-running with demand x%.3f", achieved, density_veh_km_lane, demand_scale)
+
+    trace.meta["demand_calibration"] = attempts
     _check_density(trace, scenario, density_veh_km_lane, lane_km_override=lane_km)
     if not keep_fcd:
         fcd.unlink(missing_ok=True)
