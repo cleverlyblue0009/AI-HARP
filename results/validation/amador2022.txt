@@ -1,0 +1,18 @@
+Validation against Amador et al., Veh. Commun. 34 (2022) 100454, Table 3 (ETSI CBF); Artery/Veins/OMNeT++; 5 runs x 30 DENMs per density
+
+ density         ours PDR   strict   paper     diff    n
+      10    0.9977 +/- 0.0008   0.9980  0.9998  -0.0021   30
+      20    0.9980 +/- 0.0003   0.9987  0.9961  +0.0019   30
+      30    0.9987 +/- 0.0003   0.9986  0.9280  +0.0707   30
+      40    0.9990 +/- 0.0002   0.9992  0.9371  +0.0619   30
+      50    0.9993 +/- 0.0002   0.9994  0.9372  +0.0621   30
+
+mean |ours - paper| = 0.0398
+
+Deviations:
+  - Receiver sensitivity/noise not stated: derived so free-space range = 778 m.
+  - Vehicle speeds not stated (SUMO defaults): cars only, 100-130 km/h assumed.
+  - CAM rate not stated: modelled as our background beacon load at 10 Hz with DCC.
+  - One DENM per run from a moving detecting vehicle, not 30 DENMs at 1 Hz from a stationary one; statistics pooled over seeds instead.
+  - Epoch-based engine at 10 ms: every transmission in an epoch is concurrent; 802.11p backoff is abstracted (sim/mac.py), not simulated per 13 us slot.
+  - Mobility: our fallback generator (or SUMO if present), not the paper's SUMO network.

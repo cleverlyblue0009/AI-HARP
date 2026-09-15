@@ -1,0 +1,58 @@
+{
+ "reference": "Amador et al., Veh. Commun. 34 (2022) 100454, Table 3 (ETSI CBF); Artery/Veins/OMNeT++; 5 runs x 30 DENMs per density",
+ "deviations": [
+  "Receiver sensitivity/noise not stated: derived so free-space range = 778 m.",
+  "Vehicle speeds not stated (SUMO defaults): cars only, 100-130 km/h assumed.",
+  "CAM rate not stated: modelled as our background beacon load at 10 Hz with DCC.",
+  "One DENM per run from a moving detecting vehicle, not 30 DENMs at 1 Hz from a stationary one; statistics pooled over seeds instead.",
+  "Epoch-based engine at 10 ms: every transmission in an epoch is concurrent; 802.11p backoff is abstracted (sim/mac.py), not simulated per 13 us slot.",
+  "Mobility: our fallback generator (or SUMO if present), not the paper's SUMO network."
+ ],
+ "derived": {
+  "sensitivity_dbm": -92.67411543788022,
+  "noise_figure_db": 3.325884562119782
+ },
+ "per_density": {
+  "10": {
+   "pdr_mean": 0.9976584148855152,
+   "pdr_se": 0.000821840365302944,
+   "pdr_strict_mean": 0.9979659175265907,
+   "paper": 0.9998,
+   "diff": -0.002141585114484812,
+   "n": 30
+  },
+  "20": {
+   "pdr_mean": 0.9980124852495609,
+   "pdr_se": 0.0003449748219395521,
+   "pdr_strict_mean": 0.998724663799051,
+   "paper": 0.9961,
+   "diff": 0.0019124852495608913,
+   "n": 30
+  },
+  "30": {
+   "pdr_mean": 0.998707809146908,
+   "pdr_se": 0.00027262219180433417,
+   "pdr_strict_mean": 0.9986383867733168,
+   "paper": 0.928,
+   "diff": 0.070707809146908,
+   "n": 30
+  },
+  "40": {
+   "pdr_mean": 0.9990492418210829,
+   "pdr_se": 0.00020140442081185254,
+   "pdr_strict_mean": 0.9992031547050304,
+   "paper": 0.9371,
+   "diff": 0.06194924182108286,
+   "n": 30
+  },
+  "50": {
+   "pdr_mean": 0.999279017182262,
+   "pdr_se": 0.00016511233152538738,
+   "pdr_strict_mean": 0.9994236371046786,
+   "paper": 0.9372,
+   "diff": 0.06207901718226194,
+   "n": 30
+  }
+ },
+ "mean_abs_diff": 0.0397580277028597
+}

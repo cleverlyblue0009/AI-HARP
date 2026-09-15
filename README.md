@@ -517,6 +517,61 @@ derived from measured speed.
   no longer infeasible for everyone. Dense-cell targets barely moved. Gate
   before training: `analysis.reward_check` SANE (silence break-even λ 0.679,
   cap 500); 480 tests pass.
+- **Reference agent under the new objective (`checkpoints/campaign/ref`, 1,000
+  updates, 3.45 h, bit-reproducible): closer, still not met.** Pooled shortfall
+  over the last 200 finetune updates +0.022 (run8: +0.026 against the old,
+  partly infeasible targets); early stopping never fired. Per group, mean ± s.e.
+  (fraction of updates meeting target): rural d=2 +0.030 ± 0.022 (54%), urban
+  d=2 +0.069 ± 0.020 (39%), rural d=3 +0.056 ± 0.017, rural d=5 +0.045 ± 0.008,
+  rural d=40 +0.048 ± 0.007 (8%), rural d=10 +0.055 ± 0.016; met on average:
+  rural d=1 and d=80, urban d=3/5/10/20/40/80. λ peaked at 33 (rural d=2) and
+  31 (urban d=1), far below the 500 cap. Evaluation on seeds 0–9 is pending.
+- **Simulator validation against a published curve: the low-density plateau
+  is reproduced, the density-driven drop is not.** `experiments/validate_amador.py`
+  reproduces Table 3 (ETSI CBF) of Amador et al., *Vehicular Communications* 34
+  (2022) 100454 (Artery/Veins/OMNeT++): 5 km, 4 lanes per direction, 20 mW,
+  α = 2.0 free-space path loss, 6 Mbit/s, 10 MHz, DENM 301 B, hop limit 10,
+  lifetime 10 s, destination area 4 km behind the source + 100 m ahead, ETSI CBF
+  timers 1–100 ms over DIST_MAX 1000 m (`agents/cbf.py`). Run at a 10 ms step so
+  the timers are resolved (user decision). 30 seeds per density
+  (`results/validation/amador2022.{txt,json}`):
+
+  | veh/km/lane | ours (PDR ± s.e.) | paper | ours − paper |
+  |---|---|---|---|
+  | 10 | 0.9977 ± 0.0008 | 0.9998 | −0.002 |
+  | 20 | 0.9980 ± 0.0003 | 0.9961 | +0.002 |
+  | 30 | 0.9987 ± 0.0003 | 0.9280 | **+0.071** |
+  | 40 | 0.9990 ± 0.0002 | 0.9371 | **+0.062** |
+  | 50 | 0.9993 ± 0.0002 | 0.9372 | **+0.062** |
+
+  Mean |difference| 0.040. At 10–20 veh/km/lane we agree within 0.002; at
+  30–50 the paper loses ~6–7% of the area and we lose almost none. Not a
+  counting error (vehicles in the area match the commanded density: 326 vs 328
+  expected at d = 10), and not a loss-free channel: at d = 50 one run logged
+  76,435 SINR failures and 32,291 background-beacon losses, but with ~1,630
+  vehicles in range and 201 CBF rebroadcasts nearly every vehicle still hears
+  some copy. The paper attributes its drop to ETSI CBF's own behaviour; our
+  engine abstracts 802.11p contention (every frame of a 10 ms epoch is
+  concurrent; backoff is a tie probability, not per-13 µs slots) and implements
+  CBF duplicate handling as cancel-on-one-duplicate, and the paper does not give
+  enough detail to tell which mechanism is missing. **Implication for this
+  paper:** coverage in dense cells is likely optimistic, which flatters every
+  policy but most of all the high-redundancy ones (flooding, counter-based).
+  Unstated in the reference and therefore [ASSUMED] here: receiver sensitivity
+  (derived as −92.67 dBm so the range equals the stated 778 m; verified 778.0 m),
+  noise figure (3.33 dB, same derivation), vehicle speeds (100–130 km/h), CAM
+  rate (10 Hz with DCC), source placement. Nothing was tuned toward the paper's
+  numbers.
+- **Real OSM extracts (user decision: straight real road + projection).**
+  Rural: US-50, central Nevada (`data/osm/rural_us50_nevada.osm.xml`, ©
+  OpenStreetMap contributors, ODbL). Two lanes, undivided; the straightest
+  10 km window runs 10,394 m (39.3130 N 117.9425 W → 39.3819 N 117.8607 W) and
+  never deviates more than 1.3 m from its chord, so projecting positions onto
+  distance along the chord changes no distance measurably. Urban grid: Midtown
+  Manhattan; 98.5% of street length lies within 3° of two perpendicular axes
+  (61° / 151° from east), so a −61° rotation aligns it with the grid model.
+  Integration (projection, demand on the real network, the four headline cells
+  on SUMO) is in progress.
 - **Campaign training queue** (`experiments/campaign_train.py`, sequential,
   skip-if-done, exact resume; `checkpoints/campaign/<name>/`): the reference
   agent, then one retrain per architectural ablation, each differing from the

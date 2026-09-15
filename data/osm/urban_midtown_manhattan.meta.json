@@ -1,0 +1,8 @@
+{
+ "bbox": [40.752, -73.992, 40.764, -73.972],
+ "grid_axes_deg_from_east": [61, 151],
+ "rotation_to_axis_deg": -61,
+ "street_length_within_3deg_of_axes_frac": 0.985,
+ "measured_on": "highway primary|secondary|tertiary|residential ways in bbox, 1333 segments",
+ "source": "OpenStreetMap via Overpass API; (c) OpenStreetMap contributors, ODbL"
+}
