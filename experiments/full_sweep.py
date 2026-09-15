@@ -92,7 +92,7 @@ def _init() -> None:
 
 
 def run_task(task: dict[str, Any], checkpoint: str | None = None,
-             duration_s: float | None = None) -> dict[str, Any]:
+             duration_s: float | None = None, deterministic: bool = False) -> dict[str, Any]:
     from experiments.evaluate_agent import agent_params
     from experiments.run_sim import RunSpec, run_single
 
@@ -100,7 +100,7 @@ def run_task(task: dict[str, Any], checkpoint: str | None = None,
         _init()
     params: dict[str, Any] = {}
     if task["policy"] == "ai_harp":
-        params = agent_params(checkpoint, tau=float(task["tau"]), deterministic=False)
+        params = agent_params(checkpoint, tau=float(task["tau"]), deterministic=deterministic)
     spec = RunSpec(scenario=task["scenario"], density_veh_km_lane=task["density"],
                    weather=task["weather"], policy=task["policy"], policy_params=params,
                    seed=task["seed"], hazard_type=task["hazard_type"], duration_s=duration_s)
@@ -115,12 +115,13 @@ def run_task(task: dict[str, Any], checkpoint: str | None = None,
     return row
 
 
-def _run_star(args: tuple[dict[str, Any], str | None, float | None]) -> dict[str, Any]:
+def _run_star(args: tuple[dict[str, Any], str | None, float | None, bool]) -> dict[str, Any]:
     return run_task(*args)
 
 
 def sweep(out_csv: Path, tasks: list[dict[str, Any]], checkpoint: str | None, jobs: int,
-          duration_s: float | None = None, log_every: int = 200) -> int:
+          duration_s: float | None = None, log_every: int = 200,
+          deterministic: bool = False) -> int:
     """Run every task not already in ``out_csv``; returns how many were run."""
     done: set[tuple[str, ...]] = set()
     if out_csv.exists():
@@ -134,7 +135,7 @@ def sweep(out_csv: Path, tasks: list[dict[str, Any]], checkpoint: str | None, jo
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     new = not out_csv.exists()
     t0 = time.time()
-    work = [(t, checkpoint, duration_s) for t in todo]
+    work = [(t, checkpoint, duration_s, deterministic) for t in todo]
     with out_csv.open("a", newline="", encoding="utf-8") as fh:
         wr = csv.DictWriter(fh, fieldnames=FIELDS, extrasaction="ignore")
         if new:
@@ -174,7 +175,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--weathers", nargs="*", default=list(WEATHERS))
     ap.add_argument("--hazards", nargs="*", default=list(HAZARDS))
     ap.add_argument("--out", default="results/runs.csv")
+    ap.add_argument("--policy-mode", choices=["sampled", "argmax"], default="sampled",
+                    help="agent action selection; argmax rows go to their own file")
     args = ap.parse_args(argv)
+    deterministic = args.policy_mode == "argmax"
+    if deterministic and Path(args.out).name == "runs.csv":
+        raise SystemExit("--policy-mode argmax must write elsewhere (e.g. --out "
+                         "results/runs_argmax.csv): runs.csv holds the sampled headline "
+                         "and its rows carry no mode column")
 
     sha = ""
     if args.checkpoint:
@@ -184,7 +192,7 @@ def main(argv: list[str] | None = None) -> int:
     policies = [] if args.no_baselines else list(BASELINE_POLICIES)
     tasks = grid(policies, args.taus, range(args.seeds), args.checkpoint, sha,
                  args.scenarios, args.densities, args.weathers, args.hazards)
-    sweep(PROJECT_ROOT / args.out, tasks, args.checkpoint, args.jobs)
+    sweep(PROJECT_ROOT / args.out, tasks, args.checkpoint, args.jobs, deterministic=deterministic)
     return 0
 
 

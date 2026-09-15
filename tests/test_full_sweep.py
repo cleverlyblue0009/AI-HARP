@@ -33,6 +33,15 @@ def test_split_labels_follow_the_training_config():
     assert splits("urban_nlos", "waterlogging", "moderate_rain", t)["hazard_split"] == "held_out"
 
 
+def test_argmax_mode_refuses_to_write_into_runs_csv():
+    import pytest
+
+    from experiments.full_sweep import main
+
+    with pytest.raises(SystemExit):
+        main(["--policy-mode", "argmax", "--no-baselines", "--checkpoint", "x.pt"])
+
+
 def test_sweep_writes_paired_rows_and_resumes(tmp_path):
     out = tmp_path / "runs.csv"
     tasks = grid(["flooding", "slotted_1p"], [], range(2), None, "",
