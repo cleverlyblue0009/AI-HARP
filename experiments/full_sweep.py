@@ -43,7 +43,10 @@ DENSITIES = (1.0, 2.0, 3.0, 5.0, 10.0, 20.0, 40.0, 80.0)
 WEATHERS = ("clear", "heavy_rain", "moderate_rain", "dense_fog")
 HAZARDS = ("fog_bank", "landslide", "crash", "waterlogging", "black_ice")
 
-ID_FIELDS = ("scenario", "density", "weather", "hazard_type", "policy", "tau", "seed",
+#: ``density_veh_km_lane`` duplicates ``density`` under the name analysis/report.py
+#: and analysis/tables.py read.
+ID_FIELDS = ("scenario", "density", "density_veh_km_lane", "weather", "hazard_type",
+             "policy", "tau", "seed",
              "topology_split", "hazard_split", "weather_split", "checkpoint_sha")
 EXTRA_FIELDS = ("gate_fallback_rate", "gate_confidence_mean", "backend", "config_hash",
                 "comm_range_m", "cs_range_m", "hazard_severity", "metrics_version")
@@ -105,6 +108,7 @@ def run_task(task: dict[str, Any], checkpoint: str | None = None,
                       exp_cfg=_CFGS["experiment"])
     row = {k: m.get(k, np.nan) for k in FIELDS}
     row.update(task)
+    row["density_veh_km_lane"] = task["density"]
     row.update(splits(task["scenario"], task["hazard_type"], task["weather"],
                       _CFGS["agent"]["training"]))
     row["metrics_version"] = METRICS_VERSION

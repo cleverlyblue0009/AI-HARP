@@ -44,5 +44,7 @@ def test_sweep_writes_paired_rows_and_resumes(tmp_path):
     assert len(rows) == 4 and set(rows[0]) == set(FIELDS)
     assert {r["seed"] for r in rows} == {"0", "1"}
     assert all(r["topology_split"] == "train" and r["metrics_version"] for r in rows)
+    # analysis/report.py and tables.py select on this column name
+    assert all(float(r["density_veh_km_lane"]) == float(r["density"]) == 2.0 for r in rows)
     assert {row_key(r) for r in rows} == {row_key(t) for t in tasks}
     assert sweep(out, tasks, None, jobs=1, duration_s=20.0) == 0      # resumed: nothing to do
