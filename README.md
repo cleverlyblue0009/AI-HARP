@@ -570,8 +570,26 @@ derived from measured speed.
   distance along the chord changes no distance measurably. Urban grid: Midtown
   Manhattan; 98.5% of street length lies within 3° of two perpendicular axes
   (61° / 151° from east), so a −61° rotation aligns it with the grid model.
-  Integration (projection, demand on the real network, the four headline cells
-  on SUMO) is in progress.
+  Integration: `mobility/osm_geometry.py` (straightest window, chord
+  projection, grid rotation, axis-classified edges), `mobility/sumo_osm.py`
+  (carriageway routes for the real highway, `randomTrips` demand for grids,
+  post-processing), scenarios `rural_highway_osm` / `urban_grid_osm`
+  (`extends` their synthetic base and reuse its channel via `phy_profile`; the
+  pure-Python fallback is refused). **US-50 on SUMO, d = 20, seed 0:** achieved
+  21.3 veh/km/lane (commanded 20), projection window 10,000 m with 1.42 m
+  maximum polyline deviation, 99th-percentile lateral offset 4.6 m, 213 / 213
+  vehicles per carriageway at every sampled step; a flooding run completed
+  end to end (RWCR 0.867).
+- **Two SUMO-backend defects found on the way (fixed; neither affected any
+  committed result, which all used the fallback backend).** (1) SUMO grid
+  traces carried no `edges` list, so a grid hazard could not be placed at all,
+  and no `grid_rows` / `grid_cols` / `block_length_m`, so the NLOS building
+  model silently assumed 5 × 5 blocks for the 6 × 6 `urban_nlos` grid. (2) The
+  synthetic SUMO grid's only demand was one flow over two edges: `urban_nlos`
+  reached 0.25 veh/km/lane against 20 commanded, no vehicle reached the hazard,
+  RWCR 0. Every SUMO grid now uses `randomTrips`. Also: FCD is recorded only
+  after the warm-up (`--device.fcd.begin`); the US-50 export had been 933 MB,
+  ~90% of it warm-up.
 - **Campaign training queue** (`experiments/campaign_train.py`, sequential,
   skip-if-done, exact resume; `checkpoints/campaign/<name>/`): the reference
   agent, then one retrain per architectural ablation, each differing from the

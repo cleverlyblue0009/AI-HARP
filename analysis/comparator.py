@@ -454,12 +454,31 @@ def load_cells(path: Path | None = None) -> list[Cell]:
     return cells
 
 
-def _build_one_cell(work: tuple[dict[str, Any], int, dict[str, Any]]) -> list[Cell]:
+def _build_one_cell(work: tuple[dict[str, Any], int, dict[str, Any], str]) -> list[Cell]:
     """One cell's sweep. Module-level so worker processes can import it."""
     from analysis.pareto import build_cells
 
-    spec, n_seeds, cfgs = work
-    return build_cells([spec], range(n_seeds), cfgs=cfgs)
+    spec, n_seeds, cfgs, backend = work
+    return build_cells([spec], range(n_seeds), cfgs=cfgs, backend=backend)
+
+
+def parse_scenario_map(text: str | None) -> dict[str, str]:
+    """``"rural_highway=rural_highway_osm,urban_nlos=urban_grid_osm"`` -> dict."""
+    out: dict[str, str] = {}
+    for part in (text or "").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "=" not in part:
+            raise ValueError(f"scenario map entry {part!r} is not old=new")
+        old, new = (s.strip() for s in part.split("=", 1))
+        out[old] = new
+    return out
+
+
+def remap_specs(specs: Sequence[dict[str, Any]], mapping: dict[str, str]) -> list[dict[str, Any]]:
+    """Cell specs with scenarios renamed; cells whose scenario is unmapped are kept as-is."""
+    return [{**s, "scenario": mapping.get(s["scenario"], s["scenario"])} for s in specs]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -487,16 +506,27 @@ def main(argv: list[str] | None = None) -> int:
                          "cell's best by at most this much (absolute)")
     ap.add_argument("--no-miss-guard", action="store_true",
                     help="RWCR-only matched quality (the pre-guard definition)")
+    ap.add_argument("--out", default=None,
+                    help="cells file (default results/pareto_cells.json); SUMO and OSM "
+                         "re-runs must write elsewhere so the committed cells survive")
+    ap.add_argument("--backend", default="auto", choices=["auto", "sumo", "fallback"],
+                    help="mobility backend for every run")
+    ap.add_argument("--scenario-map", default=None,
+                    help="rename cell scenarios, e.g. rural_highway=rural_highway_osm")
     args = ap.parse_args(argv)
     miss_margin = None if args.no_miss_guard else args.miss_margin
     if args.quiet:
         logging.getLogger("aiharp").setLevel(logging.WARNING)
+    out = Path(args.out) if args.out else None
+    if out is None and (args.backend != "auto" or args.scenario_map) and not args.reuse:
+        raise SystemExit("--backend/--scenario-map runs must set --out, or they would "
+                         "overwrite results/pareto_cells.json")
 
     if args.reuse:
-        cells = load_cells()
+        cells = load_cells(out)
     else:
         exp = load_yaml("experiment.yaml")
-        specs = exp["comparator"]["cells"]
+        specs = remap_specs(exp["comparator"]["cells"], parse_scenario_map(args.scenario_map))
         cfgs = {"phy": load_yaml("phy.yaml"), "hazard": load_yaml("hazard.yaml"),
                 "experiment": exp}
         if args.jobs > 1:
@@ -504,11 +534,11 @@ def main(argv: list[str] | None = None) -> int:
 
             with ProcessPoolExecutor(max_workers=args.jobs) as ex:
                 parts = list(ex.map(_build_one_cell,
-                                    [(s, args.seeds, cfgs) for s in specs]))
+                                    [(s, args.seeds, cfgs, args.backend) for s in specs]))
             cells = [c for part in parts for c in part]
         else:
-            cells = build_cells(specs, range(args.seeds), cfgs=cfgs)
-        save_cells(cells)
+            cells = build_cells(specs, range(args.seeds), cfgs=cfgs, backend=args.backend)
+        save_cells(cells, out)
 
     for axis in ([args.axis] if args.axis != "all" else list(COST_AXES)):
         print()

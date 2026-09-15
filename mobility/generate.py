@@ -117,11 +117,22 @@ def resolve_backend(requested: str | MobilityBackend = MobilityBackend.AUTO):
     return backend, tools
 
 
+#: Bumped whenever SUMO trace construction changes, so a SUMO trace built by an
+#: older pipeline is never served from the cache. The key covers configuration,
+#: not code: after grids gained edges and randomTrips demand, the cached broken
+#: urban_nlos trace (0.25 veh/km/lane) was still returned for the new code.
+#: 2: grid edges + real dimensions, randomTrips grid demand, OSM projection,
+#:    FCD recorded from the warm-up.
+#: Fallback keys deliberately omit it, so every committed fallback trace (and
+#: results/runs.csv) keeps its key.
+SUMO_PIPELINE_VERSION = 2
+
+
 def trace_cache_key(
     scenario: dict[str, Any], density: float, seed: int, backend: str,
     speed_factor: float, headway_factor: float, duration_s: float | None,
 ) -> str:
-    return config_hash({
+    payload = {
         "scenario": scenario,
         "density": density,
         "seed": seed,
@@ -129,7 +140,10 @@ def trace_cache_key(
         "speed_factor": speed_factor,
         "headway_factor": headway_factor,
         "duration_s": duration_s,
-    })
+    }
+    if backend == MobilityBackend.SUMO.value:
+        payload["sumo_pipeline"] = SUMO_PIPELINE_VERSION
+    return config_hash(payload)
 
 
 def get_trace(

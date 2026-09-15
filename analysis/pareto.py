@@ -192,6 +192,7 @@ def sweep_policy(
                                     "gate_fallback_rate", "gate_confidence_mean"),
     sweep: tuple[str, Sequence[Any]] | None = None,
     fixed_params: dict[str, Any] | None = None,
+    backend: str = "auto",
 ) -> PolicyCurve:
     """Trace one policy's operating curve by sweeping its suppression knob.
 
@@ -220,6 +221,7 @@ def sweep_policy(
             spec = RunSpec(
                 scenario=scenario, density_veh_km_lane=density, weather=weather,
                 policy=policy, policy_params=params, seed=seed, hazard_type=hazard_type,
+                backend=backend,
             )
             m, _ = run_single(spec, phy_cfg=phy_cfg, hz_cfg=hz_cfg, exp_cfg=exp_cfg)
             rows.append(m)
@@ -255,6 +257,7 @@ def build_cells(
     *,
     policies: Sequence[str] = tuple(POLICY_SWEEPS),
     cfgs: dict[str, Any] | None = None,
+    backend: str = "auto",
 ):
     """Run the operating-curve sweep over several factorial cells.
 
@@ -275,7 +278,7 @@ def build_cells(
         logger.info("=== cell %s (%d seeds) ===", key, len(seeds))
         curves = sweep_all(
             seeds, scenario=key.scenario, density=key.density, policies=policies,
-            weather=key.weather, hazard_type=key.hazard_type, cfgs=cfgs,
+            weather=key.weather, hazard_type=key.hazard_type, cfgs=cfgs, backend=backend,
         )
         cells.append(Cell(key=key, curves=curves))
     return cells

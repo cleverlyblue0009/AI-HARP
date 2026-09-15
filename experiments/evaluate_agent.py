@@ -73,6 +73,7 @@ def agent_params(checkpoint: Path | str, **extra: Any) -> dict[str, Any]:
 def agent_cells(
     checkpoint: Path, cells: Sequence[Cell], seeds: Sequence[int],
     biases: Sequence[float], tau: float, cfgs: dict[str, Any], deterministic: bool = False,
+    backend: str = "auto",
 ) -> list[Cell]:
     """Each cell with an ``ai_harp`` operating curve added beside the baselines."""
     out = []
@@ -84,6 +85,7 @@ def agent_cells(
             weather=k.weather, hazard_type=k.hazard_type, cfgs=cfgs,
             sweep=("suppression_bias", tuple(biases)),
             fixed_params=agent_params(checkpoint, tau=tau, deterministic=deterministic),
+            backend=backend,
         )
         out.append(Cell(key=k, curves={**cell.curves, "ai_harp": curve}))
     return out
@@ -92,6 +94,7 @@ def agent_cells(
 def gate_sweep(
     checkpoint: Path, cells: Sequence[Cell], seeds: Sequence[int],
     taus: Sequence[float], cfgs: dict[str, Any], deterministic: bool = False,
+    backend: str = "auto",
 ) -> dict[str, list[dict[str, float]]]:
     """Fallback rate and quality against tau, at zero suppression bias."""
     out: dict[str, list[dict[str, float]]] = {}
@@ -103,6 +106,7 @@ def gate_sweep(
             sweep=("tau", tuple(taus)),
             fixed_params=agent_params(checkpoint, suppression_bias=0.0,
                                       deterministic=deterministic),
+            backend=backend,
         )
         out[str(k)] = [{
             "tau": float(p.value), "rwcr": p.quality, "rwcr_std": p.quality_std,
@@ -147,6 +151,11 @@ def format_result(result, title: str) -> str:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Evaluate an AI-HARP checkpoint")
     ap.add_argument("--checkpoint", default="checkpoints/ckpt_latest.pt")
+    ap.add_argument("--cells-path", default=None,
+                    help="baseline cells to score against (default results/pareto_cells.json), "
+                         "e.g. the SUMO or OSM re-run from analysis.comparator --out")
+    ap.add_argument("--backend", default="auto", choices=["auto", "sumo", "fallback"],
+                    help="mobility backend for the agent's runs; must match the cells'")
     ap.add_argument("--seeds", type=int, default=10)
     ap.add_argument("--target", type=float, default=0.95)
     ap.add_argument("--mode", default="relative", choices=["relative", "absolute"])
@@ -184,7 +193,7 @@ def main(argv: list[str] | None = None) -> int:
     tau = float(args.tau if args.tau is not None else agent_cfg["confidence_gate"]["tau"])
     cfgs = {"phy": load_yaml("phy.yaml"), "hazard": load_yaml("hazard.yaml"),
             "experiment": load_yaml("experiment.yaml")}
-    cells = load_cells()
+    cells = load_cells(Path(args.cells_path) if args.cells_path else None)
     if args.cells:
         cells = cells[: args.cells]
     seeds = list(range(args.seeds))
@@ -214,7 +223,8 @@ def main(argv: list[str] | None = None) -> int:
 
     deterministic = args.policy_mode == "argmax"
     banner += f" | policy {args.policy_mode}"
-    scored = agent_cells(ckpt, cells, seeds, args.biases, tau, cfgs, deterministic=deterministic)
+    scored = agent_cells(ckpt, cells, seeds, args.biases, tau, cfgs, deterministic=deterministic,
+                         backend=args.backend)
     save_cells(scored, out_dir / "pareto_cells_agent.json")
 
     summary: dict[str, Any] = {"checkpoint": str(ckpt), "checkpoint_sha": checkpoint_sha(ckpt),
@@ -243,7 +253,8 @@ def main(argv: list[str] | None = None) -> int:
         }
 
     if not args.skip_gate:
-        sweep = gate_sweep(ckpt, cells, seeds, args.taus, cfgs, deterministic=deterministic)
+        sweep = gate_sweep(ckpt, cells, seeds, args.taus, cfgs, deterministic=deterministic,
+                           backend=args.backend)
         (out_dir / "gate_sweep.json").write_text(json.dumps(sweep, indent=1),
                                                 encoding="utf-8")
         summary["gate_sweep"] = str(out_dir / "gate_sweep.json")
