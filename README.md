@@ -678,10 +678,24 @@ derived from measured speed.
   this is not a blanket offset: the sparse corridor and the grid are where the
   mobility model decides the answer. **Every row in `results/runs.csv`, every
   target in `coverage_targets.json` and every agent result so far is
-  fallback-backend**, so they describe one traffic model, not two. The cause of
-  the rural d=2 collapse (0.675 → 0.221) is not yet established — the achieved
-  density matches (1.98 vs 2), so it is distribution, not count. Nothing has
-  been re-tuned.
+  fallback-backend**, so they describe one traffic model, not two.
+
+  **Cause of the rural d=2 collapse: platooning, not density.** Both backends
+  put ~40 vehicles on the corridor (fallback 40.0, SUMO 39.7 per step) and both
+  look well connected on average (99% / 95% of vehicles have a neighbour within
+  the 562 m nominal range). The spacing distribution is what differs: median
+  gap 188 m (fallback) against 34 m (SUMO), with a longer tail (p90 596 m vs
+  808 m; 12% vs 19% of gaps beyond range). SUMO's vehicles bunch into platoons
+  separated by out-of-range gaps. At the hazard's onset step the fallback
+  corridor is 2 connected clusters, the originator's holding 25 vehicles across
+  5.4 km, so **62%** of the oracle at-risk set is reachable without crossing a
+  gap; SUMO's is 11 clusters, the originator's holding 4 vehicles across 103 m,
+  leaving **11%** reachable. A ceiling of 0.221 is what that allows.
+  `mobility/fallback.py` regulates vehicle *count* per lane and spawns at the
+  tail's speed, which spreads traffic far more evenly than car-following from a
+  boundary inflow does. The sparse regime this paper is about is therefore the
+  regime where the mobility model decides the answer. Nothing has been
+  re-tuned; the choice of what to re-run is open (see the campaign note below).
 - **MLP also beats GATv2 on the training constraint.** Pooled shortfall over
   the last 200 finetune updates: reference (GATv2) +0.022, **GCN +0.006**,
   **MLP +0.013**. MLP has no graph at all, so on the quantity training
