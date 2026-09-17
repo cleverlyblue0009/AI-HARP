@@ -46,8 +46,18 @@ step "1. Pipeline smoke test"
 step "2. Constants provenance table"
 "$PY" -m analysis.constants_table | tee results/constants_provenance.txt
 
-step "3. Baseline comparison (paired, $SEEDS seeds) -> results/runs.csv"
-"$PY" -m experiments.compare --quiet --seeds "$SEEDS"
+step "3. Full factorial baseline grid (paired, $SEEDS seeds) -> results/runs.csv"
+# The paper's evidence base: 3 scenarios x 8 densities x 4 weathers x 5 hazards
+# x 9 baselines x seeds, with train/held-out labels on every row.
+# experiments/compare.py writes the SAME file from one cell family, so it is
+# deliberately not used here -- it would leave runs.csv holding a different grid
+# from the one analysis/grid_stats.py and the figures assume.
+if [[ $SMOKE -eq 1 ]]; then
+  "$PY" -m experiments.full_sweep --jobs 2 --seeds "$SEEDS" \
+    --scenarios rural_highway --densities 2 20 --weathers clear --hazards fog_bank
+else
+  "$PY" -m experiments.full_sweep --jobs 3 --seeds "$SEEDS"
+fi
 
 step "4. Operating curves and reference points -> results/pareto_cells.json"
 "$PY" -m analysis.comparator --seeds "$SEEDS" --quiet
@@ -72,6 +82,13 @@ if [[ $SMOKE -eq 0 ]]; then
     fi
   done
   "$PY" -m experiments.lambda_cap_summary
+
+  step "4e. Causal-vs-oracle risk estimation agreement -> results/risk_estimation.csv"
+  # Independent of any policy, so it is one sweep rather than a runs.csv column.
+  "$PY" -m experiments.risk_estimation --jobs 3
+
+  step "4f. Simulator validation against a published curve -> results/validation/"
+  "$PY" -m experiments.validate_amador --seeds 30 --jobs 3
 fi
 
 if [[ $TRAIN -eq 1 ]]; then
@@ -96,11 +113,46 @@ else
 fi
 
 step "5b. Evaluate the trained agent against the baselines -> results/agent"
+# Sampled is the headline: it is the policy the coverage constraint trained.
 "$PY" -m experiments.evaluate_agent --checkpoint "$RUN_DIR/ckpt_final.pt" --seeds "$SEEDS" \
-  --out-dir results/agent
+  --policy-mode sampled --out-dir results/agent
+
+if [[ $SMOKE -eq 0 ]]; then
+  # Argmax beside it: the mode moves a cell by up to ~0.03 RWCR and decides
+  # whether urban d=20 clears the matched-quality bar at all.
+  "$PY" -m experiments.evaluate_agent --checkpoint "$RUN_DIR/ckpt_final.pt" --seeds "$SEEDS" \
+    --policy-mode argmax --out-dir results/agent_argmax
+
+  step "5c. Agent rows for the full grid -> results/runs.csv"
+  "$PY" -m experiments.full_sweep --no-baselines --checkpoint "$RUN_DIR/ckpt_final.pt" \
+    --taus 0 0.5 --jobs 3 --seeds "$SEEDS"
+
+  step "5d. Ablation evaluations -> results/agent_<ablation>/"
+  "$PY" -m experiments.evaluate_ablations --skip-ref --seeds "$SEEDS"
+
+  step "5e. Slot-granularity sensitivity -> results/slot_granularity.csv"
+  "$PY" -m experiments.slot_granularity --jobs 2 --seeds "$SEEDS"
+
+  step "5f. Paired statistics over the grid -> results/stats/"
+  "$PY" -m analysis.grid_stats
+
+  if [[ -n "${SUMO_HOME:-}" ]]; then
+    step "5g. Headline cells on SUMO, then on the real OSM maps"
+    # Separate cell files: the committed results/pareto_cells.json is the
+    # fallback-backend evidence the rest of the paper is built on.
+    "$PY" -m analysis.comparator --seeds "$SEEDS" --quiet --backend sumo \
+      --out results/pareto_cells_sumo.json
+    "$PY" -m analysis.comparator --seeds "$SEEDS" --quiet --backend sumo \
+      --scenario-map rural_highway=rural_highway_osm,urban_nlos=urban_grid_osm \
+      --out results/pareto_cells_osm.json
+  else
+    echo "SUMO_HOME is not set: skipping the SUMO and real-map headline re-runs."
+  fi
+fi
 
 step "6. Figures and tables -> results/figures, results/tables"
 "$PY" -m analysis.report
 
 step "Done"
-echo "results/  figures/ tables/ runs.csv pareto_cells.json constants_provenance.txt"
+echo "results/  figures/ tables/ runs.csv risk_estimation.csv slot_granularity.csv"
+echo "          stats/ validation/ feasibility/ pareto_cells*.json agent*/"
