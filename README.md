@@ -659,6 +659,34 @@ derived from measured speed.
   earning its place. This is the training side only: cost at matched quality
   decides it, and the ablation evaluations are pending. Reported as measured,
   per the standing rule.
+- **The headline conclusions are backend-dependent, and that is a result about
+  the evidence base.** The four committed cells re-run with SUMO mobility
+  (`results/pareto_cells_sumo.json`; synthetic networks, same PHY, same seeds,
+  every cell within its commanded density — 40/40 runs OK, rural d=80 held at
+  ~76 veh/km/lane by the congestion plan):
+
+  | cell | ceiling, fallback → SUMO | oracle-best cost | best-fixed cost |
+  |---|---|---|---|
+  | rural d=2 | 0.675 → **0.221** | dvcast 1.56 → slotted_1p 1.15 | 1.56 → 1.15 |
+  | rural d=20 | 0.925 → 0.875 | greedy_farthest 0.70 → dvcast 0.51 | 0.73 → 0.52 |
+  | rural d=80 | 0.915 → 0.915 | weighted_p 1.51 → p_persistence 0.96 | 1.70 → 1.59 |
+  | urban d=20 | 0.975 → **0.540** | counter_based 0.53 → slotted_1p 1.20 | 0.57 → **inf** |
+
+  The single best fixed baseline changes identity (`dvcast(n_slots=30)` →
+  `slotted_1p(n_slots=50)`), and in urban d=20 no fixed setting reaches 95% of
+  the SUMO ceiling at all. The dense corridor agrees (identical ceiling), so
+  this is not a blanket offset: the sparse corridor and the grid are where the
+  mobility model decides the answer. **Every row in `results/runs.csv`, every
+  target in `coverage_targets.json` and every agent result so far is
+  fallback-backend**, so they describe one traffic model, not two. The cause of
+  the rural d=2 collapse (0.675 → 0.221) is not yet established — the achieved
+  density matches (1.98 vs 2), so it is distribution, not count. Nothing has
+  been re-tuned.
+- **MLP also beats GATv2 on the training constraint.** Pooled shortfall over
+  the last 200 finetune updates: reference (GATv2) +0.022, **GCN +0.006**,
+  **MLP +0.013**. MLP has no graph at all, so on the quantity training
+  optimises neither the graph nor the attention is earning its place. Cost at
+  matched quality still decides it; the ablation evaluations are pending.
 - **Campaign training queue** (`experiments/campaign_train.py`, sequential,
   skip-if-done, exact resume; `checkpoints/campaign/<name>/`): the reference
   agent, then one retrain per architectural ablation, each differing from the
