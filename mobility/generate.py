@@ -129,7 +129,10 @@ def resolve_backend(requested: str | MobilityBackend = MobilityBackend.AUTO):
 #:    proportional step landed urban_nlos d=20 at 16.4).
 #: Fallback keys deliberately omit it, so every committed fallback trace (and
 #: results/runs.csv) keeps its key.
-SUMO_PIPELINE_VERSION = 7
+SUMO_PIPELINE_VERSION = 8
+#: 8: real OSM highways are held at the commanded density the same way as the
+#:    synthetic corridor (inflow k*v_eq at v_eq, pre-placed route, route lanes
+#:    limited by a variableSpeedSign).
 #: 7: pre-placed congested vehicles are spaced by their own length + minGap +
 #:    v_eq * tau; uniform 12.5 m spacing could not fit 12 m trucks, SUMO refused
 #:    most insertions and rural d=80 recorded 22.9 veh/km/lane under version 6.

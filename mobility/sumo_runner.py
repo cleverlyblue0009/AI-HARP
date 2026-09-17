@@ -216,6 +216,12 @@ def _vtype_xml(scenario: dict[str, Any], speed_factor: float) -> str:
     return "\n".join(rows)
 
 
+#: Speed-sign file a congested OSM highway leaves beside its routes: an
+#: imported network's edge speeds cannot be rewritten as the synthetic builder
+#: rewrites its own, so the equilibrium speed is imposed with a
+#: variableSpeedSign over the route's lanes.
+VSS_FILE = "vss.add.xml"
+
 #: Extra gap, metres, between pre-placed congested vehicles beyond the safe
 #: minimum (positions are written to 0.1 m).
 INSERTION_MARGIN_M = 0.5
@@ -465,8 +471,10 @@ def generate_sumo_trace(
             configured_warmup, warmup, WARMUP_TRANSITS,
         )
 
+    # Highways -- synthetic or real -- are held at the commanded density; grids
+    # are fed by randomTrips and calibrated from their measured density instead.
     plan = (congestion_plan(scenario, density_veh_km_lane, speed_factor)
-            if scenario.get("kind") != "grid" and not scenario["sumo"].get("osm_extract") else None)
+            if scenario.get("kind") != "grid" else None)
     net, net_source = _build_network(scenario, tools, work, plan)
     # Real OSM networks and every SUMO grid need the network's edges: OSM for
     # demand and projection, grids for the hazard's edge list.
@@ -490,14 +498,19 @@ def generate_sumo_trace(
 
             routes = write_osm_routes(scenario, density_veh_km_lane, seed, work, speed_factor,
                                       Path(work) / Path(net).name, net_edges, tools, warmup,
-                                      demand_scale=demand_scale)
+                                      demand_scale=demand_scale, plan=plan)
         else:
             routes = _write_routes(scenario, density_veh_km_lane, seed, work, speed_factor)
 
+        # A congested OSM highway cannot have its edge speeds rewritten the way
+        # the synthetic builder does, so write_osm_routes leaves a speed-sign
+        # file beside the routes instead.
+        vss = work / VSS_FILE
+        extra = f'\n    <additional-files value="{VSS_FILE}"/>' if vss.exists() else ""
         _write(work / "run.sumocfg", f"""<configuration>
   <input>
     <net-file value="{Path(net).name}"/>
-    <route-files value="{Path(routes).name}"/>
+    <route-files value="{Path(routes).name}"/>{extra}
   </input>
   <time>
     <begin value="0"/>

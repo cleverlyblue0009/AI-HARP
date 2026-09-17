@@ -76,13 +76,21 @@ def _typed(scenario: dict[str, Any], net_edges: Sequence[dict[str, Any]]) -> lis
 
 def write_osm_routes(scenario: dict[str, Any], density: float, seed: int, work: Path,
                      speed_factor: float, net: Path, net_edges: Sequence[dict[str, Any]],
-                     tools: Any, warmup_s: float, demand_scale: float = 1.0) -> Path:
+                     tools: Any, warmup_s: float, demand_scale: float = 1.0,
+                     plan: Any | None = None) -> Path:
     """Demand for an imported OSM network, or any SUMO grid.
 
     ``demand_scale`` multiplies the grid insertion density; generate_sumo_trace
     sets it from one measured run when the estimate misses (grids only).
+
+    ``plan`` is the corridor's :class:`~mobility.sumo_runner.CongestionPlan`.
+    When it says congested, the real highway is held exactly as the synthetic
+    one is: inflow ``k * v_eq * lanes`` inserted at ``v_eq``, the route
+    pre-placed at leader-length spacing, and the route's lanes limited to
+    ``v_eq`` -- written beside the routes as a speed-sign file, since an
+    imported network's edge speeds cannot be rewritten in place.
     """
-    from mobility.sumo_runner import _vtype_xml, _write
+    from mobility.sumo_runner import INSERTION_MARGIN_M, VSS_FILE, _vtype_xml, _write
 
     geo, sim = scenario["geometry"], scenario["simulation"]
     classes = scenario["vehicles"]["classes"]
@@ -113,14 +121,69 @@ def write_osm_routes(scenario: dict[str, Any], density: float, seed: int, work: 
     chains = highway_chains(_typed(scenario, net_edges))[:2]
     if len(chains) < 2:
         raise ValueError(f"expected two carriageway chains on the OSM highway, found {chains}")
-    q_veh_h = density * v_mean_kmh * int(geo["lanes_per_direction"])
+    by_id = {e["sumo_id"]: e for e in net_edges}
+    lanes = int(geo["lanes_per_direction"])
+    congested = bool(plan is not None and plan.congested)
+    q_veh_h = (density * plan.v_eq_ms * 3.6 * lanes) if congested else density * v_mean_kmh * lanes
+    depart_speed = f"{plan.v_eq_ms:.2f}" if congested else "max"
+
     body = [_vtype_xml(scenario, speed_factor)]
+    vehicles: list[str] = []
+    rng = np.random.default_rng(int(seed) + 7919)
+    names = list(classes)
+    shares = np.array([classes[n]["share"] for n in names], dtype=float)
+    veh_cfg = scenario["vehicles"]
+    gap = (float(veh_cfg["min_gap_m"]) + (plan.v_eq_ms if congested else 0.0)
+           * float(veh_cfg["reaction_time_s"]) + INSERTION_MARGIN_M)
+
     for k, chain in enumerate(chains):
         body.append(f'  <route id="r{k}" edges="{" ".join(chain)}"/>')
         for name, c in classes.items():
             body.append(f'  <flow id="f{k}_{name}" route="r{k}" type="{name}" begin="0" '
                         f'end="{duration:.1f}" vehsPerHour="{q_veh_h * c["share"]:.1f}" '
-                        f'departLane="best" departSpeed="max"/>')
+                        f'departLane="best" departSpeed="{depart_speed}"/>')
+        if not congested:
+            continue
+        # Pre-place the whole route from its downstream end backwards, exactly
+        # as the synthetic corridor is pre-placed.
+        lengths = [float(by_id[e]["length"]) for e in chain]
+        starts, acc = [], 0.0
+        for L in lengths:
+            starts.append(acc)
+            acc += L
+        for lane in range(lanes):
+            s, idx = acc - 1.0, 0
+            # `s` is the front position along the route; the edge lookup below
+            # needs it on the route, so stop once the walk passes its start.
+            while s > 0:
+                cls = names[int(rng.choice(len(names), p=shares / shares.sum()))]
+                veh_len = float(classes[cls]["length_m"])
+                j = max(i for i, st in enumerate(starts) if s >= st)
+                if s - starts[j] < veh_len:
+                    s = starts[j] - 0.5          # wholly on its edge, or move back
+                    if s <= 0:
+                        break
+                    j = max(i for i, st in enumerate(starts) if s >= st)
+                if s - veh_len <= 0:
+                    break
+                vehicles.append(
+                    f'  <vehicle id="p{k}_{idx}_{lane}" type="{cls}" depart="0" '
+                    f'departPos="{s - starts[j]:.1f}" departLane="{min(lane, by_id[chain[j]]["lanes"] - 1)}" '
+                    f'departSpeed="{plan.v_eq_ms:.2f}">'
+                    f'<route edges="{" ".join(chain[j:])}"/></vehicle>'
+                )
+                s -= veh_len + gap
+                idx += 1
+
+    if congested:
+        signs = [f'  <variableSpeedSign id="vss{k}" lanes="'
+                 + " ".join(f'{e}_{i}' for e in chain for i in range(int(by_id[e]["lanes"])))
+                 + f'"><step time="0" speed="{plan.v_eq_ms:.2f}"/></variableSpeedSign>'
+                 for k, chain in enumerate(chains)]
+        _write(work / VSS_FILE, "<additional>\n" + "\n".join(signs) + "\n</additional>")
+    else:
+        (work / VSS_FILE).unlink(missing_ok=True)
+    body.extend(vehicles)
     return _write(work / "demand.rou.xml", "<routes>\n" + "\n".join(body) + "\n</routes>")
 
 
