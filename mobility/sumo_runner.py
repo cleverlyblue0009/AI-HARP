@@ -216,6 +216,10 @@ def _vtype_xml(scenario: dict[str, Any], speed_factor: float) -> str:
     return "\n".join(rows)
 
 
+#: Extra gap, metres, between pre-placed congested vehicles beyond the safe
+#: minimum (positions are written to 0.1 m).
+INSERTION_MARGIN_M = 0.5
+
 #: Length of the speed-limited exit section added beyond each end of a
 #: congested corridor. [ASSUMED] Long enough to hold the discharge queue's head
 #: outside the recorded window.
@@ -397,24 +401,43 @@ def _write_routes(
                     f'departLane="best" departSpeed="{depart_speed}"/>'
                 )
             if plan.congested:
-                # Pre-place the corridor at the commanded spacing, travelling at
-                # the equilibrium speed, so the queue exists from t = 0.
-                s = plan.spacing_m / 2.0
-                k = 0
-                while s < float(geo["length_m"]):
-                    seg = min(int(s // seg_len), n_seg - 1)
-                    pos = s - seg * seg_len
-                    edge_idx = order.index(seg) if d == 1 else order.index(n_seg - 1 - seg)
-                    for lane in range(lanes):
+                # Pre-place the corridor travelling at the equilibrium speed, so
+                # the queue exists from t = 0. Each vehicle sits its LEADER's
+                # length + minGap + v_eq * tau behind it: a uniform 12.5 m (the
+                # fleet-average spacing) cannot fit a 12 m truck, SUMO refused
+                # those insertions and rural d=80 recorded 22.9 veh/km/lane.
+                # `s` is the front position along the direction of travel,
+                # laid out from the downstream end backwards.
+                veh_cfg = scenario["vehicles"]
+                # +0.5 m: departPos is written to 0.1 m, and a gap exactly at the
+                # safe minimum was still refused.
+                gap = (float(veh_cfg["min_gap_m"]) + plan.v_eq_ms * float(veh_cfg["reaction_time_s"])
+                       + INSERTION_MARGIN_M)
+                L_corr = float(geo["length_m"])
+                for lane in range(lanes):
+                    s, k = L_corr - 1.0, 0
+                    while True:
                         cls = names[int(rng.choice(len(names), p=shares / shares.sum()))]
+                        length = float(classes[cls]["length_m"])
+                        seg = min(int(s // seg_len), n_seg - 1)
+                        if s - seg * seg_len < length:
+                            # SUMO only inserts a vehicle wholly on its edge: one
+                            # that would straddle a junction starts at the end of
+                            # the previous edge instead.
+                            s = seg * seg_len - 0.5
+                            seg -= 1
+                        if seg < 0 or s - length < 0.0:
+                            break
+                        pos = s - seg * seg_len
+                        edge_idx = order.index(seg) if d == 1 else order.index(n_seg - 1 - seg)
                         rest = [f"{prefix}e{i}" for i in order[edge_idx:]] + exit_edge
                         vehicles.append(
                             f'  <vehicle id="p{d}_{k}_{lane}" type="{cls}" depart="0" '
-                            f'departPos="{min(pos, seg_len - 1.0):.1f}" departLane="{lane}" '
+                            f'departPos="{pos:.1f}" departLane="{lane}" '
                             f'departSpeed="{plan.v_eq_ms:.2f}"><route edges="{" ".join(rest)}"/></vehicle>'
                         )
-                    k += 1
-                    s += plan.spacing_m
+                        s -= float(classes[cls]["length_m"]) + gap
+                        k += 1
         body.extend(vehicles)
     return _write(work / "demand.rou.xml", "<routes>\n" + "\n".join(body) + "\n</routes>")
 

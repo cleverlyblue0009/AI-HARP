@@ -46,7 +46,11 @@ def test_congested_routes_prepopulate_the_commanded_density(tmp_path):
     n = len(re.findall(r"<vehicle ", routes))
     geo = scn["geometry"]
     expected = 80.0 * geo["length_m"] / 1000.0 * geo["lanes_per_direction"] * 2
-    assert n == pytest.approx(expected, rel=0.02)
+    # Slightly under the command by construction: every gap carries a 0.5 m
+    # insertion margin and vehicles that would straddle a junction move back to
+    # the previous edge (measured: 1,538 of 1,600 = 76.9 veh/km/lane; the
+    # fallback's own d=80 traces hold 77.9). Never over.
+    assert 0.95 * expected <= n <= expected
     assert 'edges="e0' in routes and "xf" in routes and "xb" in routes
     plan = sr.congestion_plan(scn, 80.0)
     flows = [float(v) for v in re.findall(r'vehsPerHour="([0-9.]+)"', routes)]
@@ -55,6 +59,31 @@ def test_congested_routes_prepopulate_the_commanded_density(tmp_path):
     assert f'departSpeed="{plan.v_eq_ms:.2f}"' in routes
     free = sr._write_routes(scn, 20.0, 0, tmp_path, 1.0).read_text()
     assert "<vehicle " not in free and "xf" not in free and 'departSpeed="max"' in free
+
+
+def test_prepopulated_vehicles_never_overlap_even_behind_trucks(tmp_path):
+    """Uniform 12.5 m spacing cannot fit a 12 m truck + 2.5 m minGap: SUMO refused
+    those insertions and rural d=80 recorded 22.9 veh/km/lane."""
+    scn = load_scenario("rural_highway")
+    routes = sr._write_routes(scn, 80.0, 0, tmp_path, 1.0).read_text()
+    veh = scn["vehicles"]
+    lengths = {n: c["length_m"] for n, c in veh["classes"].items()}
+    plan = sr.congestion_plan(scn, 80.0)
+    rows = re.findall(r'<vehicle id="p(-?1)_\d+_(\d+)" type="(\w+)" depart="0" departPos="([0-9.]+)" '
+                      r'departLane="(\d+)"[^>]*><route edges="([^ "]+)', routes)
+    assert rows
+    by_edge: dict[tuple, list] = {}
+    for d, _, cls, pos, lane, edge in rows:
+        by_edge.setdefault((edge, lane), []).append((float(pos), lengths[cls]))
+    needed = veh["min_gap_m"] + plan.v_eq_ms * veh["reaction_time_s"]
+    for items in by_edge.values():
+        items.sort()
+        assert all(p >= length - 0.05 for p, length in items)      # wholly on its edge
+        for (p0, _), (p1, l1) in zip(items, items[1:]):
+            # departPos is the vehicle's front: the leader (p1) occupies
+            # [p1 - l1, p1], so the follower's front must be >= minGap + v*tau
+            # behind that. Positions are written to 0.1 m.
+            assert p1 - p0 >= l1 + needed - 0.1
 
 
 def test_exit_sections_are_masked_out_of_the_trace():
