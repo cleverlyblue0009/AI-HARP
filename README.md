@@ -628,6 +628,17 @@ derived from measured speed.
   served (fallback keys are unchanged). Also: FCD is recorded only
   after the warm-up (`--device.fcd.begin`); the US-50 export had been 933 MB,
   ~90% of it warm-up.
+- **First ablation result (training side): GCN satisfies the constraint better
+  than GATv2.** `checkpoints/campaign/gcn`, 1,000 updates, bit-reproducible,
+  identical to the reference except `--encoder gcn`. Pooled shortfall over the
+  last 200 finetune updates **+0.006 against the reference's +0.022**; per
+  group (mean ± s.e., fraction of updates meeting target): rural d=3
+  +0.021 ± 0.015 (53%) vs +0.056 ± 0.017 (40%), rural d=40 +0.017 ± 0.009
+  (51%) vs +0.048 ± 0.007 (**8%**), urban d=2 +0.060 vs +0.069, rural d=2
+  +0.037 vs +0.030. So on the quantity training optimises, attention is not
+  earning its place. This is the training side only: cost at matched quality
+  decides it, and the ablation evaluations are pending. Reported as measured,
+  per the standing rule.
 - **Campaign training queue** (`experiments/campaign_train.py`, sequential,
   skip-if-done, exact resume; `checkpoints/campaign/<name>/`): the reference
   agent, then one retrain per architectural ablation, each differing from the
