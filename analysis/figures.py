@@ -285,6 +285,121 @@ def fig_pareto(
 
 
 # ---------------------------------------------------------------------------
+# Causal-vs-oracle estimation agreement (results/risk_estimation.csv)
+# ---------------------------------------------------------------------------
+def fig_estimation_agreement(
+    df, width: float = SINGLE_COL, name: str = "fig04_estimation_agreement",
+    metric: str = "risk_peak_corr",
+) -> list[Path]:
+    """How well the causal risk estimate recovers the oracle, against density.
+
+    The estimation problem the learned policy is asked to overcome, and it is
+    reported before any policy result: on a corridor heading determines
+    destiny (correlation ~0.75), in a grid it does not (~0.17). Independent of
+    the dissemination policy, so it has its own sweep.
+    """
+    import matplotlib.pyplot as plt
+
+    apply_ieee_style()
+    fig, ax = plt.subplots(figsize=(width, width * 0.72))
+    panel = sorted(df["scenario"].unique())
+    for scenario in panel:
+        sub = df[df["scenario"] == scenario]
+        g = sub.groupby("density")[metric]
+        mu, sd = g.mean(), g.std()
+        ax.errorbar(mu.index, mu.to_numpy(), yerr=sd.to_numpy(),
+                    label=label_for(scenario), **style_for(scenario, panel))
+    ax.set_xscale("log")
+    ax.set_xticks(sorted(df["density"].unique()))
+    ax.get_xaxis().set_major_formatter(plt.matplotlib.ticker.ScalarFormatter())
+    ax.set_xlabel("Density (veh/km/lane)")
+    ax.set_ylabel("Causal vs oracle peak-relevance correlation")
+    ax.set_ylim(-0.05, 1.0)
+    ax.legend(loc="best")
+    return save(fig, name)
+
+
+# ---------------------------------------------------------------------------
+# Latency / overhead inversion (results/runs.csv)
+# ---------------------------------------------------------------------------
+def fig_latency_cost_inversion(
+    df, scenario: str, density: float, width: float = SINGLE_COL,
+    name: str = "fig09_latency_cost_inversion",
+) -> list[Path]:
+    """Cost against latency for every scheme in one cell.
+
+    Flooding buys the best latency with the worst overhead and the suppression
+    schemes do the reverse, which is why neither axis alone ranks them. Nine
+    schemes exceed the four validated colour slots, so the points are neutral
+    and labelled directly rather than cycling the palette.
+    """
+    import matplotlib.pyplot as plt
+
+    apply_ieee_style()
+    fig, ax = plt.subplots(figsize=(width, width * 0.78))
+    sub = df[(df["scenario"] == scenario) & (df["density_veh_km_lane"] == density)]
+    for pol, g in sub.groupby("policy"):
+        x, y = float(g["tx_per_at_risk_informed"].mean()), float(g["tir_median_s"].mean())
+        if not (np.isfinite(x) and np.isfinite(y)):
+            continue
+        st = reference_style() if pol == REFERENCE_POLICY else {
+            "color": GREY, "marker": "o", "linestyle": "none", "markersize": 3.5}
+        ax.plot([x], [y], **st)
+        ax.annotate(label_for(pol).replace(" (reference)", ""), (x, y),
+                    textcoords="offset points", xytext=(4, 3), fontsize=6, color=GREY)
+    ax.set_xscale("log")
+    ax.set_xlabel("Transmissions per at-risk vehicle informed")
+    ax.set_ylabel("Median time to inform (s)")
+    ax.set_title(f"{scenario.replace('_', ' ')}, {density:g} veh/km/lane", pad=3)
+    return save(fig, name)
+
+
+# ---------------------------------------------------------------------------
+# Per-cell headroom: hindsight tuning vs one shipped baseline
+# ---------------------------------------------------------------------------
+def fig_headroom(
+    cells, target: float = 0.95, axis: str = "cost", width: float = DOUBLE_COL,
+    name: str = "fig03_headroom",
+) -> list[Path]:
+    """Per-cell oracle-best against the best single fixed baseline.
+
+    The gap is what per-cell hindsight tuning buys, and the winner's name above
+    each pair is the point: it changes from cell to cell, so no fixed scheme
+    collects it.
+    """
+    import matplotlib.pyplot as plt
+
+    from analysis.comparator import best_fixed_baseline, per_cell_oracle_best
+
+    apply_ieee_style()
+    oracle = per_cell_oracle_best(cells, target, axis)
+    fixed = best_fixed_baseline(cells, target, axis)
+    labels, o_costs, f_costs, winners = [], [], [], []
+    for cell in cells:
+        win, o_cost = oracle.per_cell[cell.key]
+        labels.append(f"{cell.key.scenario.replace('_highway', '').replace('_', ' ')}\n"
+                      f"d={cell.key.density:g}")
+        o_costs.append(o_cost)
+        f_costs.append(fixed.cost(cell.key))
+        winners.append(label_for(win))
+
+    fig, ax = plt.subplots(figsize=(width, width * 0.34))
+    idx = np.arange(len(cells), dtype=float)
+    ax.bar(idx - 0.19, o_costs, width=0.36, color=PALETTE[0], label="per-cell oracle-best")
+    ax.bar(idx + 0.19, f_costs, width=0.36, color=PALETTE[1], hatch="//",
+           edgecolor="white", linewidth=0.4, label=f"best fixed: {label_for(fixed.policy)}")
+    for i, (o, w) in enumerate(zip(o_costs, winners)):
+        if np.isfinite(o):
+            ax.annotate(w, (i - 0.19, o), textcoords="offset points", xytext=(0, 2),
+                        ha="center", fontsize=6, color=GREY)
+    ax.set_xticks(idx, labels)
+    ax.set_ylabel("Transmissions per at-risk vehicle informed")
+    ax.set_title(f"Cost at RWCR >= {target:.0%} of each cell's ceiling", pad=3)
+    ax.legend(loc="upper left")
+    return save(fig, name)
+
+
+# ---------------------------------------------------------------------------
 # Figures 3 and 4: metric vs density, with error bands
 # ---------------------------------------------------------------------------
 def fig_metric_vs_density(
