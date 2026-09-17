@@ -557,6 +557,26 @@ derived from measured speed.
   because that is the comparator's rule. Latency is again the strength: at
   rural d=20 its median TIR (0.32 s) beats the per-cell latency-best baseline
   (flooding, 0.35 s). Gate fallback 14–34% of decisions at the best points.
+
+  **Argmax vs sampled, same checkpoint** (`results/agent_ref/{sampled,argmax}`),
+  best RWCR over the suppression-bias sweep in each cell:
+
+  | cell | target | sampled | argmax | sampled − argmax |
+  |---|---|---|---|---|
+  | rural d=2 | 0.641 | 0.507 | 0.477 | +0.030 |
+  | rural d=20 | 0.879 | 0.905 ✓ | 0.904 ✓ | +0.001 |
+  | rural d=80 | 0.870 | 0.846 | 0.825 | +0.021 |
+  | urban d=20 | 0.926 | 0.921 | **0.927 ✓** | −0.006 |
+
+  Sampling is still the better mode in three cells, but the gap has collapsed:
+  run8's argmax lost 0.17 RWCR at rural d=80 (0.642 vs 0.814), this agent loses
+  0.021. The retrained policy is sharp enough that the action-selection mode
+  barely matters. It also makes the headline count mode-dependent: **urban d=20
+  clears the bar under argmax (by 0.001) and misses it under sampling (by
+  0.005)**, so "reaches matched quality in 1 of 4 cells" would read 2 of 4 had
+  the argmax run been the headline. Sampled remains the headline because it is
+  the policy the constraint trained (user decision); the swing is reported
+  rather than used to pick the flattering mode.
 - **Simulator validation against a published curve: the low-density plateau
   is reproduced, the density-driven drop is not.** `experiments/validate_amador.py`
   reproduces Table 3 (ETSI CBF) of Amador et al., *Vehicular Communications* 34
