@@ -696,11 +696,24 @@ derived from measured speed.
   boundary inflow does. The sparse regime this paper is about is therefore the
   regime where the mobility model decides the answer. Nothing has been
   re-tuned; the choice of what to re-run is open (see the campaign note below).
-- **MLP also beats GATv2 on the training constraint.** Pooled shortfall over
-  the last 200 finetune updates: reference (GATv2) +0.022, **GCN +0.006**,
-  **MLP +0.013**. MLP has no graph at all, so on the quantity training
-  optimises neither the graph nor the attention is earning its place. Cost at
-  matched quality still decides it; the ablation evaluations are pending.
+- **Every architecture ablation so far beats the reference on the training
+  constraint.** Pooled shortfall over the last 200 finetune updates, each run
+  identical to the reference but for one switch:
+
+  | run | switch | pooled | rural d=2 | urban d=2 | rural d=3 | rural d=40 |
+  |---|---|---|---|---|---|---|
+  | ref | — (GATv2) | +0.022 | +0.030 | +0.069 | +0.056 | +0.048 |
+  | gcn | `--encoder gcn` | **+0.006** | +0.037 | +0.060 | +0.021 | +0.017 |
+  | star | `--star-graph` | **+0.007** | +0.024 | +0.060 | +0.016 | +0.058 |
+  | mlp | `--encoder mlp` | **+0.013** | +0.041 | +0.072 | +0.052 | +0.063 |
+
+  Attention (gcn), neighbour-to-neighbour edges (star) and the graph itself
+  (mlp) can each be removed and the constraint is satisfied *better*. The star
+  result is the sharpest: this README claims a star graph makes GATv2
+  degenerate to attention pooling, and degenerating it helps. On the quantity
+  training optimises, the architecture is not earning its place. Cost at
+  matched quality still decides it and the ablation evaluations are pending —
+  but if they agree, the paper's architecture section is a negative result.
 - **Campaign training queue** (`experiments/campaign_train.py`, sequential,
   skip-if-done, exact resume; `checkpoints/campaign/<name>/`): the reference
   agent, then one retrain per architectural ablation, each differing from the
