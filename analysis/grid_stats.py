@@ -14,11 +14,23 @@ against two references:
   ship), chosen per metric by its mean over the fully-training cells only
   (training topology, hazard and weather), so held-out data never picks it.
 
-Families: one per (comparison, tau, topology_split, hazard_split,
-weather_split). Holm-Bonferroni is applied across all cells x metrics of a
-family, and train and held-out rows are never pooled. Every row reports the
-median paired difference and the matched-pairs rank-biserial correlation next
-to p. Writes results/stats/grid_tests.csv and grid_tests_summary.txt.
+Families: one per (comparison, tau, metric, topology_split, hazard_split,
+weather_split) -- Holm-Bonferroni across the CELLS of one metric, which is the
+question asked ("does the agent beat this reference on this metric across
+cells?"). Train and held-out rows are never pooled.
+
+The family must be stated because it decides what can be found at all. With 10
+paired seeds the smallest two-sided Wilcoxon p is 2^-9 = 0.00195, so a family
+of more than 25 tests cannot produce a Holm-corrected p below 0.05 whatever the
+effect size. Pooling all four metrics (128-384 tests) did exactly that: 4,078
+of 7,073 tests had raw p < 0.05 and none survived, including the agent
+undercutting counter_based by 5.19 transmissions per informed vehicle at rural
+d=80 while losing every pair (p = 0.00195, corrected to 0.74). Per-metric
+families are 32-96 tests, so large consistent effects can survive; the family
+size is printed beside every group. **Effect sizes are the primary evidence**:
+the rank-biserial correlation and the median paired difference are reported
+next to p, and a significance marker without them means nothing at this seed
+count. Writes results/stats/grid_tests.csv and grid_tests_summary.txt.
 """
 
 from __future__ import annotations
@@ -100,7 +112,9 @@ def grid_tests(df, metrics: Sequence[str] = HEADLINE_METRICS, alpha: float = 0.0
                     rows.append({"comparison": comparison, "tau": tau, **cell, "metric": m,
                                  "reference_policy": ref, "test": t})
     out = pd.DataFrame(rows)
-    fam_cols = ["comparison", "tau"] + SPLITS
+    # One family per metric: Holm across the cells of a single claim. Pooling
+    # metrics made every test unrejectable at 10 seeds (see the module docstring).
+    fam_cols = ["comparison", "tau", "metric"] + SPLITS
     for _, fam in out.groupby(fam_cols):
         holm_bonferroni(list(fam["test"]), alpha)
     for col, attr in (("n_pairs", "n_pairs"), ("median_difference", "median_difference"),
@@ -117,7 +131,10 @@ def summarise(tests) -> str:
     """Significant wins / losses per family and metric."""
     if tests.empty:
         return "no agent rows in runs.csv"
-    lines = ["Agent vs references: significant (Holm) wins / losses / n.s., per family", ""]
+    lines = ["Agent vs references: significant (Holm) wins / losses / n.s., per family.",
+             "Holm runs across the cells of ONE metric; family size in brackets. At 10",
+             "paired seeds the smallest possible p is 0.00195, so read r_rb (rank-biserial,",
+             "+1 = the agent wins every seed) as the evidence and p as a filter.", ""]
     fam_cols = ["comparison", "tau"] + SPLITS
     for key, fam in tests.groupby(fam_cols):
         lines.append(" | ".join(f"{c}={v}" for c, v in zip(fam_cols, key)))
@@ -125,8 +142,10 @@ def summarise(tests) -> str:
             sig = g[g["significant"]]
             win = int(sig["agent_better"].sum())
             loss = int(len(sig) - win)
-            lines.append(f"   {m:32s} wins {win:3d}  losses {loss:3d}  n.s. {len(g) - len(sig):3d}"
-                         f"  median r_rb {g['rank_biserial'].median():+.2f}")
+            lines.append(f"   {m:32s} [{len(g):3d}] wins {win:3d}  losses {loss:3d}  "
+                         f"n.s. {len(g) - len(sig):3d}  median r_rb "
+                         f"{g['rank_biserial'].median():+.2f}  median |diff| "
+                         f"{g['median_difference'].abs().median():.3f}")
     return "\n".join(lines)
 
 

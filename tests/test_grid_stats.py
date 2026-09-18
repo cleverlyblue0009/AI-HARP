@@ -71,6 +71,32 @@ def test_cost_direction_is_respected():
     assert not cost["agent_better"].any()
 
 
+def test_holm_family_is_one_metric_not_all_of_them():
+    """Pooling metrics made every test unrejectable at 10 seeds: with the same p in
+    3 cells, the smallest corrected p must be p x 3 (this metric's cells), not p x 6."""
+    rng = np.random.default_rng(1)
+    rows = []
+    for d in (2.0, 20.0, 80.0):
+        for seed in range(10):
+            base = {"scenario": "rural_highway", "density": d, "weather": "clear",
+                    "hazard_type": "fog_bank", "seed": seed, "topology_split": "train",
+                    "hazard_split": "train", "weather_split": "train"}
+            n = rng.normal(0, 1e-4)
+            rows.append({**base, "policy": "slotted_1p", "tau": np.nan,
+                         "rwcr": 0.70 + n, "tx_per_at_risk_informed": 1.0})
+            rows.append({**base, "policy": "ai_harp", "tau": "0.5",
+                         "rwcr": 0.80 + n, "tx_per_at_risk_informed": 1.0})
+    t = grid_tests(pd.DataFrame(rows), METRICS)
+    rw = t[(t["metric"] == "rwcr") & (t["comparison"] == "oracle_best")]
+    assert (rw["n_pairs"] == 10).all() and rw["agent_better"].all()
+    assert rw["p_value"].min() == pytest.approx(2 ** -9, rel=1e-6)   # the floor at 10 seeds
+    assert rw["p_holm"].min() == pytest.approx(rw["p_value"].min() * 3, rel=1e-6)
+    assert rw["significant"].all()
+    # the tied cost metric is its own family and stays non-significant
+    cost = t[(t["metric"] == "tx_per_at_risk_informed") & (t["comparison"] == "oracle_best")]
+    assert not cost["significant"].any()
+
+
 def test_no_agent_rows_gives_empty_result():
     g = _grid()
     assert grid_tests(g[g["policy"] != "ai_harp"], METRICS).empty
