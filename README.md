@@ -696,6 +696,28 @@ derived from measured speed.
   boundary inflow does. The sparse regime this paper is about is therefore the
   regime where the mobility model decides the answer. Nothing has been
   re-tuned; the choice of what to re-run is open (see the campaign note below).
+
+  **The real maps side with SUMO, not with the fallback**
+  (`results/pareto_cells_osm.json`: US-50 for the corridor, Midtown Manhattan
+  for the grid, 40/40 runs within their commanded density). Achievable ceiling
+  per cell:
+
+  | cell | fallback | SUMO (synthetic net) | real OSM map |
+  |---|---|---|---|
+  | rural d=2 | **0.675** | 0.221 | 0.209 |
+  | rural d=20 | 0.925 | 0.875 | 0.877 |
+  | rural d=80 | 0.915 | 0.915 | 0.914 |
+  | urban d=20 | **0.975** | 0.540 (urban_nlos) | 0.831 (Midtown) |
+
+  Two independent car-following backends land within 0.012 of each other at
+  d=2 and both sit ~0.46 below the fallback; at d=80 all three agree to 0.001.
+  The fallback is the outlier, and only where the corridor is sparse. The best
+  fixed baseline differs in every backend (`dvcast(30)` / `slotted_1p(50)` /
+  `greedy_farthest(32)`), and so does the oracle-best cost at rural d=2 (1.56 /
+  1.15 / 0.32). The urban comparison is between *different* scenarios
+  (`urban_nlos` vs Midtown), so only the corridor rows are strictly
+  backend-to-backend. This is now a question about the evidence base rather
+  than about one figure, and it is with the user.
 - **Every architecture ablation so far beats the reference on the training
   constraint.** Pooled shortfall over the last 200 finetune updates, each run
   identical to the reference but for one switch:
@@ -714,6 +736,26 @@ derived from measured speed.
   training optimises, the architecture is not earning its place. Cost at
   matched quality still decides it and the ablation evaluations are pending —
   but if they agree, the paper's architecture section is a negative result.
+- **Slot granularity inflates latency only where slots are used**
+  (`experiments/slot_granularity.py` → `results/slot_granularity.{csv,txt}`;
+  `slot_epochs` × 100 ms per slot, 10 seeds, the four committed cells). Median
+  TIR against slot length, `slotted_1p` / DV-CAST:
+
+  | cell | 1× | 2× | 5× | 10× |
+  |---|---|---|---|---|
+  | rural d=2 | 0.55 s | 1.63× | 2.39× | **3.72×** (dvcast 4.12×) |
+  | rural d=20 | 0.37 s | 0.97× | 1.05× | 1.19× |
+  | rural d=80 | 0.21 s | 1.00× | 1.00× | 1.00× |
+  | urban d=20 | 0.54 s | 1.30× | 1.82× | **2.54×** |
+
+  Cost and RWCR barely move (rural d=2: cost 1.74 → 1.70, RWCR 0.638 → 0.674),
+  so the slot length buys nothing and costs latency. In the dense corridor TIR
+  is flat: a relay is always close enough that the first slot fires, so the
+  granularity is invisible there. **The reported absolute latency of every
+  deferring scheme is therefore a property of the 100 ms epoch in the sparse
+  and urban cells, and not in the dense one** — which is where the agent's
+  latency advantage was claimed, so that advantage is not a granularity
+  artefact.
 - **Campaign training queue** (`experiments/campaign_train.py`, sequential,
   skip-if-done, exact resume; `checkpoints/campaign/<name>/`): the reference
   agent, then one retrain per architectural ablation, each differing from the

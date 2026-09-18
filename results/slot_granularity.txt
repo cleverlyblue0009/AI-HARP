@@ -1,0 +1,14 @@
+Slot granularity: one slot = slot_epochs x 100 ms (the engine's epoch).
+
+rural_highway d=2
+   slotted_1p    1x: TIR  0.55s (1.00x) cost 1.74 RWCR 0.638 |  2x: TIR  0.90s (1.63x) cost 1.63 RWCR 0.665 |  5x: TIR  1.32s (2.39x) cost 1.65 RWCR 0.651 | 10x: TIR  2.05s (3.72x) cost 1.70 RWCR 0.674 |
+   dvcast        1x: TIR  0.55s (1.00x) cost 1.75 RWCR 0.627 |  2x: TIR  0.89s (1.62x) cost 1.60 RWCR 0.665 |  5x: TIR  1.33s (2.42x) cost 1.64 RWCR 0.678 | 10x: TIR  2.27s (4.12x) cost 1.63 RWCR 0.700 |
+rural_highway d=20
+   slotted_1p    1x: TIR  0.37s (1.00x) cost 1.06 RWCR 0.922 |  2x: TIR  0.36s (0.97x) cost 1.01 RWCR 0.922 |  5x: TIR  0.39s (1.05x) cost 0.98 RWCR 0.920 | 10x: TIR  0.44s (1.19x) cost 1.01 RWCR 0.921 |
+   dvcast        1x: TIR  0.37s (1.00x) cost 1.07 RWCR 0.921 |  2x: TIR  0.36s (0.97x) cost 0.99 RWCR 0.921 |  5x: TIR  0.39s (1.05x) cost 0.97 RWCR 0.921 | 10x: TIR  0.44s (1.19x) cost 0.97 RWCR 0.919 |
+rural_highway d=80
+   slotted_1p    1x: TIR  0.21s (1.00x) cost 2.86 RWCR 0.914 |  2x: TIR  0.21s (1.00x) cost 2.52 RWCR 0.914 |  5x: TIR  0.21s (1.00x) cost 2.35 RWCR 0.913 | 10x: TIR  0.21s (1.00x) cost 2.38 RWCR 0.915 |
+   dvcast        1x: TIR  0.21s (1.00x) cost 2.85 RWCR 0.913 |  2x: TIR  0.21s (1.00x) cost 2.46 RWCR 0.915 |  5x: TIR  0.21s (1.00x) cost 2.34 RWCR 0.914 | 10x: TIR  0.21s (1.00x) cost 2.35 RWCR 0.913 |
+urban_nlos d=20
+   slotted_1p    1x: TIR  0.54s (1.00x) cost 0.69 RWCR 0.967 |  2x: TIR  0.70s (1.30x) cost 0.62 RWCR 0.967 |  5x: TIR  0.99s (1.82x) cost 0.60 RWCR 0.966 | 10x: TIR  1.37s (2.54x) cost 0.59 RWCR 0.967 |
+   dvcast        1x: TIR  0.54s (1.00x) cost 0.69 RWCR 0.969 |  2x: TIR  0.70s (1.30x) cost 0.63 RWCR 0.967 |  5x: TIR  0.99s (1.83x) cost 0.59 RWCR 0.964 | 10x: TIR  1.38s (2.56x) cost 0.59 RWCR 0.966 |

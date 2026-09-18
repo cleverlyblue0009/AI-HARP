@@ -57,10 +57,11 @@ def training_cells(cfg: dict[str, Any]) -> list[tuple[str, float, str, str]]:
 
 def cell_coverage(
     scenario: str, density: float, weather: str, hazard_type: str, seed: int,
-    policy: str, cfgs: dict[str, Any],
+    policy: str, cfgs: dict[str, Any], backend: str = "auto",
 ) -> float:
     scenario_cfg = load_scenario(scenario)
-    trace = get_trace(scenario_cfg, density, seed, weather=weather, phy_cfg=cfgs["phy"])
+    trace = get_trace(scenario_cfg, density, seed, weather=weather, phy_cfg=cfgs["phy"],
+                      backend=backend)
     hazard = hazard_from_config(cfgs["hazard"], trace.meta, overrides={"type": hazard_type})
     phy = build_phy(cfgs["phy"], scenario_cfg["name"], weather, seed, trace_meta=trace.meta)
     mac = build_mac(cfgs["phy"], phy)
@@ -76,10 +77,10 @@ def cell_coverage(
 def _cell_row(work: tuple[tuple[str, float, str, str], list[int], dict[str, Any]]
               ) -> tuple[str, dict[str, Any]]:
     """One cell's ceiling. Module-level so worker processes can import it."""
-    (sc, d, w, h), seeds, cfgs = work
+    (sc, d, w, h), seeds, cfgs, backend = work
     per_policy = {}
     for pol in REFERENCE_POLICIES:
-        vals = [cell_coverage(sc, d, w, h, s, pol, cfgs) for s in seeds]
+        vals = [cell_coverage(sc, d, w, h, s, pol, cfgs, backend) for s in seeds]
         vals = [v for v in vals if np.isfinite(v)]
         per_policy[pol] = float(np.mean(vals)) if vals else float("nan")
     finite = [v for v in per_policy.values() if np.isfinite(v)]
@@ -89,11 +90,12 @@ def _cell_row(work: tuple[tuple[str, float, str, str], list[int], dict[str, Any]
 
 
 def build_targets(cfg: dict[str, Any], cfgs: dict[str, Any], n_seeds: int,
-                  cells: list[tuple[str, float, str, str]], jobs: int = 1) -> dict[str, Any]:
+                  cells: list[tuple[str, float, str, str]], jobs: int = 1,
+                  backend: str = "auto") -> dict[str, Any]:
     """Every run is seeded on its own, so ``jobs`` changes wall-clock time only."""
     pool = cfg["training"].get("train_seed_pool", {"start": 100, "count": 32})
     seeds = list(range(int(pool["start"]), int(pool["start"]) + n_seeds))
-    work = [(c, seeds, cfgs) for c in cells]
+    work = [(c, seeds, cfgs, backend) for c in cells]
     table: dict[str, Any] = {}
     t0 = time.time()
 
@@ -120,6 +122,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", default=None)
     ap.add_argument("--jobs", type=int, default=1,
                     help="cells in parallel worker processes; results are identical")
+    ap.add_argument("--backend", default="auto", choices=["auto", "sumo", "fallback"],
+                    help="mobility backend the ceilings are measured on; 'auto' takes SUMO "
+                         "when SUMO_HOME is set, so state it explicitly for a result")
+    ap.add_argument("--densities", nargs="*", type=float, default=None,
+                    help="measure only these densities (e.g. the sparse re-run: 1 2 3 5)")
     args = ap.parse_args(argv)
 
     cfg = load_yaml("agent.yaml")
@@ -128,10 +135,13 @@ def main(argv: list[str] | None = None) -> int:
     objective = cfg.get("objective", {})
     cells = training_cells(cfg)
     n_seeds = int(args.seeds or objective.get("target_seeds", 2))
+    if args.densities:
+        keep = {float(d) for d in args.densities}
+        cells = [c for c in cells if float(c[1]) in keep]
     if args.quick:
         cells, n_seeds = cells[:4], 1
 
-    table = build_targets(cfg, cfgs, n_seeds, cells, jobs=args.jobs)
+    table = build_targets(cfg, cfgs, n_seeds, cells, jobs=args.jobs, backend=args.backend)
     out = PROJECT_ROOT / (args.out or objective.get("targets_path", "results/coverage_targets.json"))
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({
