@@ -456,10 +456,18 @@ def generate_sumo_trace(
     tools: SumoTools,
     speed_factor: float = 1.0,
     keep_fcd: bool = False,
+    tag: str = "",
 ) -> Trace:
     """Build the network + demand, run SUMO, and parse the FCD export."""
     sim, scfg = scenario["simulation"], scenario["sumo"]
-    work = ensure_dir(BUILD_DIR / f"{scenario['name']}_d{density_veh_km_lane:g}_s{seed}")
+    # The build directory must separate everything that changes the run, not just
+    # (scenario, density, seed): two weathers of one cell differ only in their
+    # speed/headway factors, and with parallel jobs they ran SUMO in the SAME
+    # directory, clobbering each other's net/routes/fcd (WinError 32 killed the
+    # sparse SUMO sweep 80 s in). `tag` carries the trace cache key, which
+    # already distinguishes weather, backend and pipeline version.
+    work = ensure_dir(BUILD_DIR / (f"{scenario['name']}_d{density_veh_km_lane:g}_s{seed}"
+                                   + (f"_{tag}" if tag else "")))
 
     configured_warmup = float(sim["warmup_s"])
     needed = required_warmup_s(scenario, speed_factor)

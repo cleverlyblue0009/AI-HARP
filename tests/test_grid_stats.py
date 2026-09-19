@@ -71,9 +71,10 @@ def test_cost_direction_is_respected():
     assert not cost["agent_better"].any()
 
 
-def test_holm_family_is_one_metric_not_all_of_them():
-    """Pooling metrics made every test unrejectable at 10 seeds: with the same p in
-    3 cells, the smallest corrected p must be p x 3 (this metric's cells), not p x 6."""
+def test_holm_family_is_one_cell_not_the_whole_grid():
+    """At 10 seeds the floor is p = 2^-9, so only a family of <= 25 can ever clear
+    0.05: Holm must correct across the metrics of ONE cell (here 2), not across
+    the 3 cells as well (which would give p x 6 and never be significant)."""
     rng = np.random.default_rng(1)
     rows = []
     for d in (2.0, 20.0, 80.0):
@@ -90,7 +91,8 @@ def test_holm_family_is_one_metric_not_all_of_them():
     rw = t[(t["metric"] == "rwcr") & (t["comparison"] == "oracle_best")]
     assert (rw["n_pairs"] == 10).all() and rw["agent_better"].all()
     assert rw["p_value"].min() == pytest.approx(2 ** -9, rel=1e-6)   # the floor at 10 seeds
-    assert rw["p_holm"].min() == pytest.approx(rw["p_value"].min() * 3, rel=1e-6)
+    # 2 metrics in this fixture's cell -> p x 2, not p x 6 (metrics x cells)
+    assert rw["p_holm"].min() == pytest.approx(rw["p_value"].min() * 2, rel=1e-6)
     assert rw["significant"].all()
     # the tied cost metric is its own family and stays non-significant
     cost = t[(t["metric"] == "tx_per_at_risk_informed") & (t["comparison"] == "oracle_best")]

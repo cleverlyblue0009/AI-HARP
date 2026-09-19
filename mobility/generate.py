@@ -206,8 +206,11 @@ def get_trace(
     if resolved is MobilityBackend.SUMO:
         from mobility.sumo_runner import generate_sumo_trace
 
+        # `tag` keys the build directory: weather reaches SUMO only as a
+        # speed/headway factor, so without it two weathers of one cell shared a
+        # working directory under parallel jobs and clobbered each other.
         trace = generate_sumo_trace(
-            scfg, density_veh_km_lane, seed, tools=tools, speed_factor=speed_factor
+            scfg, density_veh_km_lane, seed, tools=tools, speed_factor=speed_factor, tag=key
         )
     else:
         rng = make_rng(seed, "mobility")

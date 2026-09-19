@@ -736,6 +736,28 @@ derived from measured speed.
   training optimises, the architecture is not earning its place. Cost at
   matched quality still decides it and the ablation evaluations are pending —
   but if they agree, the paper's architecture section is a negative result.
+- **The ablation evaluations agree: the architecture section is a negative
+  result.** Each checkpoint scored exactly as the reference was (same cells,
+  seeds, biases, τ = 0.5, deadline guard, sampled policy;
+  `experiments/evaluate_ablations.py` → `results/agent_<run>/sampled/`):
+
+  | run | cells failed (of 4) | regret vs per-cell oracle | margin vs best fixed | margin, median TIR |
+  |---|---|---|---|---|
+  | ref (GATv2) | **3** | +1.8% | +1.9% | +6.2% |
+  | gcn | **1** | +3.1% | **+17.2%** | +16.6% |
+  | mlp | **1** | +26.5% | **+22.3%** | +13.2% |
+  | star | 2 | +17.4% | −8.5% | **+27.3%** |
+
+  GCN reaches matched quality in 3 of 4 cells against the reference's 1, and is
+  17.2% cheaper than the best fixed baseline where the reference manages 1.9%.
+  MLP — no graph at all — fails the same single cell and has the best margin
+  (+22.3%), though the worst hindsight regret (+26.5%), i.e. it is far from
+  what per-cell tuning could achieve while still beating anything shippable.
+  The reference's low regret (+1.8%) is measured over the one cell it reaches,
+  so it is not comparable to a number averaged over three. **On the paper's own
+  headline metric, removing the attention mechanism improves the agent.**
+  Remaining ablations (heads 1/8, k 4/20, no causal relevance, long waits) are
+  training or awaiting evaluation.
 - **Slot granularity inflates latency only where slots are used**
   (`experiments/slot_granularity.py` → `results/slot_granularity.{csv,txt}`;
   `slot_epochs` × 100 ms per slot, 10 seeds, the four committed cells). Median

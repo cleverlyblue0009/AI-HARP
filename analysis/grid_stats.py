@@ -14,20 +14,29 @@ against two references:
   ship), chosen per metric by its mean over the fully-training cells only
   (training topology, hazard and weather), so held-out data never picks it.
 
-Families: one per (comparison, tau, metric, topology_split, hazard_split,
-weather_split) -- Holm-Bonferroni across the CELLS of one metric, which is the
-question asked ("does the agent beat this reference on this metric across
-cells?"). Train and held-out rows are never pooled.
+Families: one per (comparison, tau, cell) -- Holm-Bonferroni across the four
+METRICS tested in that cell, and nothing else. Train and held-out rows are
+never pooled (a cell belongs to exactly one split).
 
-The family must be stated because it decides what can be found at all. With 10
-paired seeds the smallest two-sided Wilcoxon p is 2^-9 = 0.00195, so a family
-of more than 25 tests cannot produce a Holm-corrected p below 0.05 whatever the
-effect size. Pooling all four metrics (128-384 tests) did exactly that: 4,078
-of 7,073 tests had raw p < 0.05 and none survived, including the agent
-undercutting counter_based by 5.19 transmissions per informed vehicle at rural
-d=80 while losing every pair (p = 0.00195, corrected to 0.74). Per-metric
-families are 32-96 tests, so large consistent effects can survive; the family
-size is printed beside every group. **Effect sizes are the primary evidence**:
+The family must be stated because at this seed count it decides what can be
+found at all. With 10 paired seeds the smallest two-sided Wilcoxon p is
+2^-9 = 0.00195, so **no family larger than 25 tests can produce a
+Holm-corrected p below 0.05 at any effect size**. Two larger families were
+tried and both were unrejectable by construction:
+
+* all four metrics x all cells of a split (128-384 tests): 4,078 of 7,073
+  tests had raw p < 0.05 and none survived -- including the agent undercutting
+  counter_based by 5.19 transmissions per informed vehicle at rural d=80 while
+  losing every seed pair (p = 0.00195 -> 0.74);
+* one metric x all cells of a split (32-96 tests): zero of 7,680 survived,
+  since 0.00195 x 32 = 0.0625.
+
+Per-cell families are 4 tests (0.00195 x 4 = 0.0078), so a consistent effect
+in one cell can be significant. The price is stated rather than hidden: **no
+correction is applied across the ~100 cells**, because 10 paired seeds cannot
+support one. A marker therefore means "this cell's four metrics were corrected
+together", not "corrected across the grid" (user decision).
+**Effect sizes are the primary evidence**:
 the rank-biserial correlation and the median paired difference are reported
 next to p, and a significance marker without them means nothing at this seed
 count. Writes results/stats/grid_tests.csv and grid_tests_summary.txt.
@@ -112,9 +121,9 @@ def grid_tests(df, metrics: Sequence[str] = HEADLINE_METRICS, alpha: float = 0.0
                     rows.append({"comparison": comparison, "tau": tau, **cell, "metric": m,
                                  "reference_policy": ref, "test": t})
     out = pd.DataFrame(rows)
-    # One family per metric: Holm across the cells of a single claim. Pooling
-    # metrics made every test unrejectable at 10 seeds (see the module docstring).
-    fam_cols = ["comparison", "tau", "metric"] + SPLITS
+    # One family per cell: Holm across the metrics tested in it. Anything wider
+    # is unrejectable at 10 seeds -- 0.00195 x 26 > 0.05 (see the docstring).
+    fam_cols = ["comparison", "tau"] + CELL
     for _, fam in out.groupby(fam_cols):
         holm_bonferroni(list(fam["test"]), alpha)
     for col, attr in (("n_pairs", "n_pairs"), ("median_difference", "median_difference"),
@@ -131,10 +140,11 @@ def summarise(tests) -> str:
     """Significant wins / losses per family and metric."""
     if tests.empty:
         return "no agent rows in runs.csv"
-    lines = ["Agent vs references: significant (Holm) wins / losses / n.s., per family.",
-             "Holm runs across the cells of ONE metric; family size in brackets. At 10",
-             "paired seeds the smallest possible p is 0.00195, so read r_rb (rank-biserial,",
-             "+1 = the agent wins every seed) as the evidence and p as a filter.", ""]
+    lines = ["Agent vs references: significant (Holm) wins / losses / n.s., per split.",
+             "Holm runs across the 4 metrics WITHIN each cell; [n] counts the cells",
+             "summarised on that line, which are NOT corrected across (10 paired seeds",
+             "cannot support it: 0.00195 x 26 > 0.05). Read r_rb (rank-biserial, +1 = the",
+             "agent wins every seed) as the evidence and p as a filter.", ""]
     fam_cols = ["comparison", "tau"] + SPLITS
     for key, fam in tests.groupby(fam_cols):
         lines.append(" | ".join(f"{c}={v}" for c, v in zip(fam_cols, key)))
