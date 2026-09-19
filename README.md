@@ -778,6 +778,27 @@ derived from measured speed.
   and urban cells, and not in the dense one** — which is where the agent's
   latency advantage was claimed, so that advantage is not a granularity
   artefact.
+- **Paired statistics over the full grid** (`analysis/grid_stats.py` →
+  `results/stats/`; Wilcoxon signed-rank, 10 paired seeds, Holm across the four
+  metrics within each cell, effect size = matched-pairs rank-biserial).
+  3,828 of 7,680 tests are significant; **the agent wins 615 and loses 3,213**.
+  By metric, counting only significant tests:
+
+  | metric | vs best fixed baseline | vs per-cell oracle-best |
+  |---|---|---|
+  | RWCR | 0 wins / 579 | 0 wins / 601 |
+  | actionable miss rate | 0 wins / 577 | 0 wins / 604 |
+  | transmissions per informed | **407 wins** / 636 | **187 wins** / 703 |
+  | median TIR | **21 wins** / 21 | 0 wins / 107 |
+
+  The pattern is consistent with the headline cells and sharper: the agent is
+  cheaper than the shipped baseline in most cells where cost differs
+  significantly, and never better on coverage or on the actionable-deadline
+  miss rate — it loses those wherever they separate at all. A policy that buys
+  cost by informing fewer at-risk vehicles is exactly what the constrained
+  objective was meant to prevent, and at 10 seeds this is the strongest
+  statement the evidence supports (no correction across cells is possible; see
+  the module docstring).
 - **Campaign training queue** (`experiments/campaign_train.py`, sequential,
   skip-if-done, exact resume; `checkpoints/campaign/<name>/`): the reference
   agent, then one retrain per architectural ablation, each differing from the

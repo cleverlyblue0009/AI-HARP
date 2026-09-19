@@ -1,0 +1,166 @@
+Agent vs references: significant (Holm) wins / losses / n.s., per split.
+Holm runs across the 4 metrics WITHIN each cell; [n] counts the cells
+summarised on that line, which are NOT corrected across (10 paired seeds
+cannot support it: 0.00195 x 26 > 0.05). Read r_rb (rank-biserial, +1 = the
+agent wins every seed) as the evidence and p as a filter.
+
+comparison=fixed_best | tau=0.0 | topology_split=held_out | hazard_split=held_out | weather_split=held_out
+   actionable_deadline_miss_rate    [ 32] wins   0  losses  16  n.s.  16  median r_rb +0.82  median |diff| 0.003
+   rwcr                             [ 32] wins   0  losses  16  n.s.  16  median r_rb -0.82  median |diff| 0.004
+   tir_median_s                     [ 32] wins   0  losses   0  n.s.  32  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 32] wins   8  losses  20  n.s.   4  median r_rb +1.00  median |diff| 0.649
+comparison=fixed_best | tau=0.0 | topology_split=held_out | hazard_split=held_out | weather_split=train
+   actionable_deadline_miss_rate    [ 32] wins   0  losses  16  n.s.  16  median r_rb +1.00  median |diff| 0.005
+   rwcr                             [ 32] wins   0  losses  16  n.s.  16  median r_rb -1.00  median |diff| 0.006
+   tir_median_s                     [ 32] wins   0  losses   0  n.s.  32  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 32] wins   8  losses  20  n.s.   4  median r_rb +1.00  median |diff| 0.589
+comparison=fixed_best | tau=0.0 | topology_split=held_out | hazard_split=train | weather_split=held_out
+   actionable_deadline_miss_rate    [ 48] wins   0  losses  24  n.s.  24  median r_rb +0.96  median |diff| 0.002
+   rwcr                             [ 48] wins   0  losses  24  n.s.  24  median r_rb -0.96  median |diff| 0.003
+   tir_median_s                     [ 48] wins   0  losses   0  n.s.  48  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 48] wins  12  losses  30  n.s.   6  median r_rb +1.00  median |diff| 0.711
+comparison=fixed_best | tau=0.0 | topology_split=held_out | hazard_split=train | weather_split=train
+   actionable_deadline_miss_rate    [ 48] wins   0  losses  21  n.s.  27  median r_rb +1.00  median |diff| 0.005
+   rwcr                             [ 48] wins   0  losses  22  n.s.  26  median r_rb -1.00  median |diff| 0.006
+   tir_median_s                     [ 48] wins   0  losses   0  n.s.  48  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 48] wins  12  losses  30  n.s.   6  median r_rb +1.00  median |diff| 0.664
+comparison=fixed_best | tau=0.0 | topology_split=train | hazard_split=held_out | weather_split=held_out
+   actionable_deadline_miss_rate    [ 64] wins   0  losses  40  n.s.  24  median r_rb +1.00  median |diff| 0.036
+   rwcr                             [ 64] wins   0  losses  40  n.s.  24  median r_rb -1.00  median |diff| 0.042
+   tir_median_s                     [ 64] wins   0  losses   0  n.s.  64  median r_rb -0.21  median |diff| 0.000
+   tx_per_at_risk_informed          [ 64] wins  20  losses   6  n.s.  38  median r_rb -0.07  median |diff| 0.217
+comparison=fixed_best | tau=0.0 | topology_split=train | hazard_split=held_out | weather_split=train
+   actionable_deadline_miss_rate    [ 64] wins   0  losses  38  n.s.  26  median r_rb +1.00  median |diff| 0.036
+   rwcr                             [ 64] wins   0  losses  38  n.s.  26  median r_rb -1.00  median |diff| 0.038
+   tir_median_s                     [ 64] wins   5  losses   0  n.s.  59  median r_rb -0.34  median |diff| 0.000
+   tx_per_at_risk_informed          [ 64] wins  18  losses  14  n.s.  32  median r_rb -0.09  median |diff| 0.205
+comparison=fixed_best | tau=0.0 | topology_split=train | hazard_split=train | weather_split=held_out
+   actionable_deadline_miss_rate    [ 96] wins   0  losses  60  n.s.  36  median r_rb +1.00  median |diff| 0.036
+   rwcr                             [ 96] wins   0  losses  60  n.s.  36  median r_rb -1.00  median |diff| 0.041
+   tir_median_s                     [ 96] wins   1  losses   0  n.s.  95  median r_rb -0.29  median |diff| 0.000
+   tx_per_at_risk_informed          [ 96] wins  31  losses  11  n.s.  54  median r_rb -0.12  median |diff| 0.227
+comparison=fixed_best | tau=0.0 | topology_split=train | hazard_split=train | weather_split=train
+   actionable_deadline_miss_rate    [ 96] wins   0  losses  57  n.s.  39  median r_rb +1.00  median |diff| 0.040
+   rwcr                             [ 96] wins   0  losses  58  n.s.  38  median r_rb -1.00  median |diff| 0.040
+   tir_median_s                     [ 96] wins   6  losses   0  n.s.  90  median r_rb -0.46  median |diff| 0.000
+   tx_per_at_risk_informed          [ 96] wins  30  losses  19  n.s.  47  median r_rb -0.11  median |diff| 0.219
+comparison=fixed_best | tau=0.5 | topology_split=held_out | hazard_split=held_out | weather_split=held_out
+   actionable_deadline_miss_rate    [ 32] wins   0  losses  16  n.s.  16  median r_rb +1.00  median |diff| 0.014
+   rwcr                             [ 32] wins   0  losses  16  n.s.  16  median r_rb -1.00  median |diff| 0.017
+   tir_median_s                     [ 32] wins   0  losses   0  n.s.  32  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 32] wins  12  losses  16  n.s.   4  median r_rb +0.84  median |diff| 0.339
+comparison=fixed_best | tau=0.5 | topology_split=held_out | hazard_split=held_out | weather_split=train
+   actionable_deadline_miss_rate    [ 32] wins   0  losses  16  n.s.  16  median r_rb +1.00  median |diff| 0.017
+   rwcr                             [ 32] wins   0  losses  16  n.s.  16  median r_rb -1.00  median |diff| 0.018
+   tir_median_s                     [ 32] wins   0  losses   0  n.s.  32  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 32] wins  12  losses  16  n.s.   4  median r_rb +0.76  median |diff| 0.312
+comparison=fixed_best | tau=0.5 | topology_split=held_out | hazard_split=train | weather_split=held_out
+   actionable_deadline_miss_rate    [ 48] wins   0  losses  24  n.s.  24  median r_rb +1.00  median |diff| 0.013
+   rwcr                             [ 48] wins   0  losses  24  n.s.  24  median r_rb -1.00  median |diff| 0.017
+   tir_median_s                     [ 48] wins   0  losses   0  n.s.  48  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 48] wins  18  losses  23  n.s.   7  median r_rb +0.74  median |diff| 0.335
+comparison=fixed_best | tau=0.5 | topology_split=held_out | hazard_split=train | weather_split=train
+   actionable_deadline_miss_rate    [ 48] wins   0  losses  24  n.s.  24  median r_rb +1.00  median |diff| 0.013
+   rwcr                             [ 48] wins   0  losses  24  n.s.  24  median r_rb -1.00  median |diff| 0.015
+   tir_median_s                     [ 48] wins   0  losses   0  n.s.  48  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 48] wins  18  losses  24  n.s.   6  median r_rb +0.71  median |diff| 0.330
+comparison=fixed_best | tau=0.5 | topology_split=train | hazard_split=held_out | weather_split=held_out
+   actionable_deadline_miss_rate    [ 64] wins   0  losses  44  n.s.  20  median r_rb +1.00  median |diff| 0.061
+   rwcr                             [ 64] wins   0  losses  44  n.s.  20  median r_rb -1.00  median |diff| 0.073
+   tir_median_s                     [ 64] wins   0  losses   0  n.s.  64  median r_rb -0.31  median |diff| 0.000
+   tx_per_at_risk_informed          [ 64] wins  38  losses   0  n.s.  26  median r_rb -1.00  median |diff| 0.278
+comparison=fixed_best | tau=0.5 | topology_split=train | hazard_split=held_out | weather_split=train
+   actionable_deadline_miss_rate    [ 64] wins   0  losses  46  n.s.  18  median r_rb +1.00  median |diff| 0.057
+   rwcr                             [ 64] wins   0  losses  46  n.s.  18  median r_rb -1.00  median |diff| 0.067
+   tir_median_s                     [ 64] wins   4  losses   0  n.s.  60  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 64] wins  44  losses   0  n.s.  20  median r_rb -1.00  median |diff| 0.294
+comparison=fixed_best | tau=0.5 | topology_split=train | hazard_split=train | weather_split=held_out
+   actionable_deadline_miss_rate    [ 96] wins   0  losses  65  n.s.  31  median r_rb +1.00  median |diff| 0.062
+   rwcr                             [ 96] wins   0  losses  65  n.s.  31  median r_rb -1.00  median |diff| 0.073
+   tir_median_s                     [ 96] wins   0  losses   0  n.s.  96  median r_rb -0.26  median |diff| 0.000
+   tx_per_at_risk_informed          [ 96] wins  60  losses   0  n.s.  36  median r_rb -1.00  median |diff| 0.300
+comparison=fixed_best | tau=0.5 | topology_split=train | hazard_split=train | weather_split=train
+   actionable_deadline_miss_rate    [ 96] wins   0  losses  70  n.s.  26  median r_rb +1.00  median |diff| 0.059
+   rwcr                             [ 96] wins   0  losses  70  n.s.  26  median r_rb -1.00  median |diff| 0.068
+   tir_median_s                     [ 96] wins   5  losses   0  n.s.  91  median r_rb -0.12  median |diff| 0.000
+   tx_per_at_risk_informed          [ 96] wins  66  losses   0  n.s.  30  median r_rb -1.00  median |diff| 0.295
+comparison=oracle_best | tau=0.0 | topology_split=held_out | hazard_split=held_out | weather_split=held_out
+   actionable_deadline_miss_rate    [ 32] wins   0  losses  16  n.s.  16  median r_rb +1.00  median |diff| 0.004
+   rwcr                             [ 32] wins   0  losses  16  n.s.  16  median r_rb -1.00  median |diff| 0.005
+   tir_median_s                     [ 32] wins   0  losses   0  n.s.  32  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 32] wins   4  losses  28  n.s.   0  median r_rb +1.00  median |diff| 0.906
+comparison=oracle_best | tau=0.0 | topology_split=held_out | hazard_split=held_out | weather_split=train
+   actionable_deadline_miss_rate    [ 32] wins   0  losses  16  n.s.  16  median r_rb +1.00  median |diff| 0.007
+   rwcr                             [ 32] wins   0  losses  16  n.s.  16  median r_rb -1.00  median |diff| 0.007
+   tir_median_s                     [ 32] wins   0  losses   0  n.s.  32  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 32] wins   4  losses  28  n.s.   0  median r_rb +1.00  median |diff| 0.926
+comparison=oracle_best | tau=0.0 | topology_split=held_out | hazard_split=train | weather_split=held_out
+   actionable_deadline_miss_rate    [ 48] wins   0  losses  24  n.s.  24  median r_rb +1.00  median |diff| 0.003
+   rwcr                             [ 48] wins   0  losses  24  n.s.  24  median r_rb -1.00  median |diff| 0.004
+   tir_median_s                     [ 48] wins   0  losses   0  n.s.  48  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 48] wins   6  losses  42  n.s.   0  median r_rb +1.00  median |diff| 0.967
+comparison=oracle_best | tau=0.0 | topology_split=held_out | hazard_split=train | weather_split=train
+   actionable_deadline_miss_rate    [ 48] wins   0  losses  24  n.s.  24  median r_rb +1.00  median |diff| 0.005
+   rwcr                             [ 48] wins   0  losses  24  n.s.  24  median r_rb -1.00  median |diff| 0.006
+   tir_median_s                     [ 48] wins   0  losses   0  n.s.  48  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 48] wins   6  losses  41  n.s.   1  median r_rb +1.00  median |diff| 0.994
+comparison=oracle_best | tau=0.0 | topology_split=train | hazard_split=held_out | weather_split=held_out
+   actionable_deadline_miss_rate    [ 64] wins   0  losses  42  n.s.  22  median r_rb +1.00  median |diff| 0.037
+   rwcr                             [ 64] wins   0  losses  44  n.s.  20  median r_rb -1.00  median |diff| 0.040
+   tir_median_s                     [ 64] wins   0  losses  12  n.s.  52  median r_rb +0.38  median |diff| 0.000
+   tx_per_at_risk_informed          [ 64] wins  14  losses  28  n.s.  22  median r_rb +0.93  median |diff| 0.553
+comparison=oracle_best | tau=0.0 | topology_split=train | hazard_split=held_out | weather_split=train
+   actionable_deadline_miss_rate    [ 64] wins   0  losses  42  n.s.  22  median r_rb +1.00  median |diff| 0.033
+   rwcr                             [ 64] wins   0  losses  42  n.s.  22  median r_rb -1.00  median |diff| 0.037
+   tir_median_s                     [ 64] wins   0  losses  12  n.s.  52  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 64] wins  16  losses  34  n.s.  14  median r_rb +0.94  median |diff| 0.441
+comparison=oracle_best | tau=0.0 | topology_split=train | hazard_split=train | weather_split=held_out
+   actionable_deadline_miss_rate    [ 96] wins   0  losses  61  n.s.  35  median r_rb +1.00  median |diff| 0.037
+   rwcr                             [ 96] wins   0  losses  64  n.s.  32  median r_rb -1.00  median |diff| 0.040
+   tir_median_s                     [ 96] wins   0  losses  15  n.s.  81  median r_rb +0.43  median |diff| 0.000
+   tx_per_at_risk_informed          [ 96] wins  22  losses  41  n.s.  33  median r_rb +0.93  median |diff| 0.508
+comparison=oracle_best | tau=0.0 | topology_split=train | hazard_split=train | weather_split=train
+   actionable_deadline_miss_rate    [ 96] wins   0  losses  63  n.s.  33  median r_rb +1.00  median |diff| 0.039
+   rwcr                             [ 96] wins   0  losses  63  n.s.  33  median r_rb -1.00  median |diff| 0.040
+   tir_median_s                     [ 96] wins   0  losses  15  n.s.  81  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 96] wins  24  losses  48  n.s.  24  median r_rb +0.93  median |diff| 0.431
+comparison=oracle_best | tau=0.5 | topology_split=held_out | hazard_split=held_out | weather_split=held_out
+   actionable_deadline_miss_rate    [ 32] wins   0  losses  16  n.s.  16  median r_rb +1.00  median |diff| 0.014
+   rwcr                             [ 32] wins   0  losses  16  n.s.  16  median r_rb -1.00  median |diff| 0.017
+   tir_median_s                     [ 32] wins   0  losses   0  n.s.  32  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 32] wins   4  losses  28  n.s.   0  median r_rb +1.00  median |diff| 0.543
+comparison=oracle_best | tau=0.5 | topology_split=held_out | hazard_split=held_out | weather_split=train
+   actionable_deadline_miss_rate    [ 32] wins   0  losses  16  n.s.  16  median r_rb +1.00  median |diff| 0.019
+   rwcr                             [ 32] wins   0  losses  16  n.s.  16  median r_rb -1.00  median |diff| 0.020
+   tir_median_s                     [ 32] wins   0  losses   0  n.s.  32  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 32] wins   4  losses  28  n.s.   0  median r_rb +1.00  median |diff| 0.557
+comparison=oracle_best | tau=0.5 | topology_split=held_out | hazard_split=train | weather_split=held_out
+   actionable_deadline_miss_rate    [ 48] wins   0  losses  24  n.s.  24  median r_rb +1.00  median |diff| 0.013
+   rwcr                             [ 48] wins   0  losses  24  n.s.  24  median r_rb -1.00  median |diff| 0.017
+   tir_median_s                     [ 48] wins   0  losses   0  n.s.  48  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 48] wins   6  losses  42  n.s.   0  median r_rb +1.00  median |diff| 0.553
+comparison=oracle_best | tau=0.5 | topology_split=held_out | hazard_split=train | weather_split=train
+   actionable_deadline_miss_rate    [ 48] wins   0  losses  24  n.s.  24  median r_rb +1.00  median |diff| 0.014
+   rwcr                             [ 48] wins   0  losses  24  n.s.  24  median r_rb -1.00  median |diff| 0.017
+   tir_median_s                     [ 48] wins   0  losses   0  n.s.  48  median r_rb +0.00  median |diff| 0.000
+   tx_per_at_risk_informed          [ 48] wins   6  losses  42  n.s.   0  median r_rb +1.00  median |diff| 0.572
+comparison=oracle_best | tau=0.5 | topology_split=train | hazard_split=held_out | weather_split=held_out
+   actionable_deadline_miss_rate    [ 64] wins   0  losses  46  n.s.  18  median r_rb +1.00  median |diff| 0.063
+   rwcr                             [ 64] wins   0  losses  44  n.s.  20  median r_rb -1.00  median |diff| 0.076
+   tir_median_s                     [ 64] wins   0  losses  12  n.s.  52  median r_rb +0.37  median |diff| 0.000
+   tx_per_at_risk_informed          [ 64] wins  14  losses  18  n.s.  32  median r_rb +0.53  median |diff| 0.374
+comparison=oracle_best | tau=0.5 | topology_split=train | hazard_split=held_out | weather_split=train
+   actionable_deadline_miss_rate    [ 64] wins   0  losses  48  n.s.  16  median r_rb +1.00  median |diff| 0.059
+   rwcr                             [ 64] wins   0  losses  46  n.s.  18  median r_rb -1.00  median |diff| 0.069
+   tir_median_s                     [ 64] wins   0  losses  12  n.s.  52  median r_rb +0.57  median |diff| 0.000
+   tx_per_at_risk_informed          [ 64] wins  14  losses  16  n.s.  34  median r_rb +0.64  median |diff| 0.242
+comparison=oracle_best | tau=0.5 | topology_split=train | hazard_split=train | weather_split=held_out
+   actionable_deadline_miss_rate    [ 96] wins   0  losses  69  n.s.  27  median r_rb +1.00  median |diff| 0.063
+   rwcr                             [ 96] wins   0  losses  67  n.s.  29  median r_rb -1.00  median |diff| 0.074
+   tir_median_s                     [ 96] wins   0  losses  14  n.s.  82  median r_rb +0.37  median |diff| 0.000
+   tx_per_at_risk_informed          [ 96] wins  22  losses  27  n.s.  47  median r_rb +0.52  median |diff| 0.358
+comparison=oracle_best | tau=0.5 | topology_split=train | hazard_split=train | weather_split=train
+   actionable_deadline_miss_rate    [ 96] wins   0  losses  73  n.s.  23  median r_rb +1.00  median |diff| 0.061
+   rwcr                             [ 96] wins   0  losses  71  n.s.  25  median r_rb -1.00  median |diff| 0.070
+   tir_median_s                     [ 96] wins   0  losses  15  n.s.  81  median r_rb +0.26  median |diff| 0.000
+   tx_per_at_risk_informed          [ 96] wins  21  losses  25  n.s.  50  median r_rb +0.64  median |diff| 0.247
