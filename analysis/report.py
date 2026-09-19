@@ -195,7 +195,13 @@ def _attention_matrix(
             matrix[i, j] = weights[i]
 
     row_labels = [f"rank {i + 1}" for i in range(depth)]
-    col_labels = [f"t{step}" for step, _, _ in ranked]
+    # Several decisions can fall in one simulation step. Label the first column
+    # of each step and leave the rest blank: repeating "t52" three times reads
+    # as three identical columns rather than three decisions within one step.
+    col_labels, previous = [], None
+    for step, _, _ in ranked:
+        col_labels.append("" if step == previous else f"t{step}")
+        previous = step
     return matrix, row_labels, col_labels, len(ranked)
 
 
@@ -360,6 +366,11 @@ def build_all(skip_agent: bool = False) -> dict[str, list[str]]:
             [r["regret"][0] for r in ablations], [r["regret"][1] for r in ablations],
             ylabel="Mean regret vs per-cell oracle-best (spread across cells)",
             baseline=full["regret"][0] if full else None,
+            # Each mean covers only the cells that variant matched, so the
+            # counts must travel with the bars: a variant that matched more
+            # cells is doing better even at higher regret.
+            notes=[f"{int(r['cells_matched'][0])}/{r['n_cells']} cells matched"
+                   for r in ablations],
         )
         made["figures"].append("fig08_ablation")
         made["tables"].append(

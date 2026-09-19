@@ -395,7 +395,9 @@ def fig_headroom(
     ax.set_xticks(idx, labels)
     ax.set_ylabel("Transmissions per at-risk vehicle informed")
     ax.set_title(f"Cost at RWCR >= {target:.0%} of each cell's ceiling", pad=3)
-    ax.legend(loc="upper left")
+    # Upper right: the winner's name sits above the left-most oracle bar, and a
+    # legend in the left corner landed on top of it.
+    ax.legend(loc="upper right")
     return save(fig, name)
 
 
@@ -654,9 +656,17 @@ def fig_ablation(
     labels: Sequence[str], means: Sequence[float], stds: Sequence[float],
     ylabel: str, baseline: float | None = None,
     width: float = DOUBLE_COL, name: str = "fig08_ablation",
+    notes: Sequence[str] | None = None,
 ) -> list[Path]:
     """Horizontal bars: the labels are long, and horizontal keeps them readable
-    without rotation."""
+    without rotation.
+
+    ``notes`` is printed at each bar's end and is not decoration. When a mean
+    is taken over only the cells a variant actually matched, variants average
+    over different subsets, and the bar alone invites the wrong comparison: a
+    variant that matched more cells is doing better even at higher regret. The
+    note carries that count.
+    """
     import matplotlib.pyplot as plt
 
     apply_ieee_style()
@@ -665,6 +675,11 @@ def fig_ablation(
     ax.barh(y, means, xerr=stds, height=0.62, color=PALETTE[0],
             edgecolor="white", linewidth=0.6, error_kw={"elinewidth": 0.7,
                                                         "ecolor": GREY})
+    if notes is not None:
+        span = float(np.nanmax(np.abs(np.asarray(means, dtype=float))) or 1.0)
+        for i, note in enumerate(notes):
+            ax.annotate(note, (float(means[i]) + 0.02 * span, i), fontsize=6,
+                        color=GREY, va="center", ha="left")
     if baseline is not None:
         ax.axvline(baseline, color=GREY, linestyle="--", linewidth=0.8)
         ax.annotate("full model", (baseline, len(labels) - 0.35),
