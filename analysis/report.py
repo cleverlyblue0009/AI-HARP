@@ -462,9 +462,13 @@ def build_all(skip_agent: bool = False) -> dict[str, list[str]]:
         xs = [float(k) for k in keys]
         ours = [float(per_density[k]["pdr_mean"]) for k in keys]
         published = [float(per_density[k]["paper"]) for k in keys]
+        # Short citation: the full reference truncated mid-volume in the legend.
+        reference = str(validation.get("reference", "published"))
+        source = reference.split(",")[0].strip() or "published"
+        if "2022" in reference and "(" not in source:
+            source += " (2022)"
         F.fig_validation(xs, ours, published, xlabel="Vehicle density (veh/km)",
-                         ylabel="Packet delivery ratio",
-                         source=str(validation.get("reference", "published"))[:40])
+                         ylabel="Packet delivery ratio", source=source)
         made["figures"].append("fig10_validation")
     else:
         made["skipped"].append("fig10 validation: no results/validation/amador2022.json")

@@ -774,8 +774,14 @@ def fig_validation(
 
     resid = np.asarray(ours, dtype=float) - np.asarray(published, dtype=float)
     rmse = float(np.sqrt(np.nanmean(resid ** 2)))
-    ax.annotate(f"RMSE {rmse:.3f}", xy=(0.97, 0.95), xycoords="axes fraction",
-                ha="right", va="top", fontsize=6, color=GREY)
+    worst = int(np.nanargmax(np.abs(resid)))
+    # The largest signed residual, not just the RMSE: a curve that matches in
+    # level but not in shape has a small RMSE and a large, one-sided worst
+    # case, and it is the worst case that tells the reader where to distrust
+    # this simulator.
+    ax.annotate(f"RMSE {rmse:.3f}; worst {resid[worst]:+.3f} at {x[worst]:g}",
+                xy=(0.03, 0.05), xycoords="axes fraction",
+                ha="left", va="bottom", fontsize=6, color=GREY)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.legend(loc="best")
