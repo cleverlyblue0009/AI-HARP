@@ -145,6 +145,15 @@ if [[ $SMOKE -eq 0 ]]; then
     "$PY" -m analysis.comparator --seeds "$SEEDS" --quiet --backend sumo \
       --scenario-map rural_highway=rural_highway_osm,urban_nlos=urban_grid_osm \
       --out results/pareto_cells_osm.json
+
+    step "5g2. The sparse band on SUMO -> results/runs_sparse_sumo.csv"
+    # 14,400 runs. The point is not the absolute numbers but whether the
+    # ORDERING of policies survives the backend change, which is what every
+    # comparative claim in the paper depends on.
+    "$PY" -m experiments.full_sweep --backend sumo --jobs 2 --seeds "$SEEDS" \
+      --scenarios rural_highway urban_nlos --densities 1 2 3 5 \
+      --out results/runs_sparse_sumo.csv
+    "$PY" -m analysis.backend_compare
   else
     echo "SUMO_HOME is not set: skipping the SUMO and real-map headline re-runs."
   fi
