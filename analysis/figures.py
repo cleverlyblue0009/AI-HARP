@@ -221,10 +221,10 @@ def greyscale_check(path: Path) -> dict[str, float]:
 
 
 # ---------------------------------------------------------------------------
-# Figure 2 (headline): overhead vs RWCR Pareto front
+# Figure 1 (headline): overhead vs RWCR Pareto front
 # ---------------------------------------------------------------------------
 def fig_pareto(
-    cells, cell_index: int = 1, width: float = DOUBLE_COL, name: str = "fig02_pareto"
+    cells, cell_index: int = 1, width: float = DOUBLE_COL, name: str = "fig01_pareto"
 ) -> list[Path]:
     """Operating curves and the Pareto front, faceted by policy family.
 
@@ -359,7 +359,7 @@ def fig_latency_cost_inversion(
 # ---------------------------------------------------------------------------
 def fig_headroom(
     cells, target: float = 0.95, axis: str = "cost", width: float = DOUBLE_COL,
-    name: str = "fig03_headroom",
+    name: str = "fig02_headroom",
 ) -> list[Path]:
     """Per-cell oracle-best against the best single fixed baseline.
 
@@ -400,7 +400,61 @@ def fig_headroom(
 
 
 # ---------------------------------------------------------------------------
-# Figures 3 and 4: metric vs density, with error bands
+# Figure 3: agent regret and margin, every cell
+# ---------------------------------------------------------------------------
+def fig_regret_margin(
+    per_cell: dict[str, Any], width: float = DOUBLE_COL,
+    name: str = "fig03_regret_margin",
+) -> list[Path]:
+    """Regret against the per-cell oracle-best, and margin over the best fixed
+    baseline, one pair of bars per cell.
+
+    Read straight from ``agent_evaluation.json`` (``axes.<axis>.per_cell``), the
+    same artefact the tables read, so the figure cannot disagree with them.
+
+    Cells the agent never matched at the quality target carry infinite regret.
+    They are drawn as a marked gap, not clipped to a tall bar: a clipped
+    infinity reads as a merely bad cell rather than as a failure to reach the
+    target at all, which is the opposite of what happened.
+    """
+    import matplotlib.pyplot as plt
+
+    apply_ieee_style()
+    keys = list(per_cell)
+    regret = np.array([float(per_cell[k].get("regret", np.nan)) for k in keys])
+    margin = np.array([float(per_cell[k].get("margin", np.nan)) for k in keys])
+    labels = [k.replace("_highway", "").replace("/clear", "").replace("_", " ")
+              for k in keys]
+
+    fig, axes = plt.subplots(2, 1, figsize=(width, width * 0.50), sharex=True)
+    idx = np.arange(len(keys), dtype=float)
+
+    for ax, vals, ylabel, note in (
+        (axes[0], regret, "Regret vs oracle-best", "0 = matched hindsight tuning"),
+        (axes[1], margin, "Margin vs best fixed", "positive = agent cheaper"),
+    ):
+        finite = np.isfinite(vals)
+        wins = finite & (vals > 0) if ylabel.startswith("Margin") else np.zeros_like(finite)
+        ax.bar(idx[finite & ~wins], vals[finite & ~wins], width=0.6, color=PALETTE[0],
+               edgecolor="white", linewidth=0.4)
+        if wins.any():                      # the one win, kept visible
+            ax.bar(idx[wins], vals[wins], width=0.6, color=PALETTE[2], hatch="//",
+                   edgecolor="white", linewidth=0.4)
+        ax.axhline(0.0, color=GREY, linewidth=0.6)
+        for i in np.flatnonzero(~finite):
+            ax.annotate("never matched\nthe target", (i, 0.0), ha="center", va="bottom",
+                        fontsize=5.5, color=GREY)
+        ax.set_ylabel(ylabel)
+        ax.annotate(note, xy=(0.99, 0.94), xycoords="axes fraction", ha="right",
+                    va="top", fontsize=6, color=GREY)
+
+    axes[1].set_xticks(idx, labels, rotation=18, ha="right")
+    fig.align_ylabels(axes)
+    return save(fig, name)
+
+
+# ---------------------------------------------------------------------------
+# Supporting figures (not in the paper's ten): metric vs density, error bands
 # ---------------------------------------------------------------------------
 def fig_metric_vs_density(
     df, metric: str, scenario: str, ylabel: str, name: str,
@@ -458,7 +512,8 @@ def fig_metric_vs_density(
 # ---------------------------------------------------------------------------
 def fig_attention_heatmap(
     attention: np.ndarray, neighbour_labels: Sequence[str], epoch_labels: Sequence[str],
-    width: float = SINGLE_COL, name: str = "fig06_attention",
+    width: float = SINGLE_COL, name: str = "fig07_attention",
+    xlabel: str = "Decision epoch", ylabel: str = "Neighbour",
 ) -> list[Path]:
     """Attention the holder placed on each neighbour, per decision epoch.
 
@@ -474,8 +529,8 @@ def fig_attention_heatmap(
                    vmin=0.0, vmax=float(np.nanmax(attention)) or 1.0)
     ax.set_xticks(range(len(epoch_labels)), epoch_labels, rotation=0)
     ax.set_yticks(range(len(neighbour_labels)), neighbour_labels)
-    ax.set_xlabel("Decision epoch")
-    ax.set_ylabel("Neighbour")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
     ax.grid(False)
     cb = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.03)
     cb.set_label("Attention weight", rotation=90)
@@ -484,12 +539,65 @@ def fig_attention_heatmap(
 
 
 # ---------------------------------------------------------------------------
-# Figure 7: training convergence with confidence bands over seeds
+# Figure 6: training curves -- shortfall and lambda per constraint group
+# ---------------------------------------------------------------------------
+def fig_training_constraint(
+    history: Sequence[dict[str, Any]], width: float = DOUBLE_COL,
+    name: str = "fig06_training", lambda_cap: float | None = None,
+) -> list[Path]:
+    """Per-group coverage shortfall and its Lagrange multiplier, over training.
+
+    The constraint is enforced per (scenario, density) group, so a single
+    pooled curve hides the result: the sparse groups plateau with their
+    multiplier pinned at the cap while the dense groups converge. Groups are
+    drawn in neutral ink with direct labels -- there are more of them than the
+    validated colour slots, and cycling hues would invent distinctions between
+    them that the reader would then try to interpret.
+    """
+    import matplotlib.pyplot as plt
+
+    apply_ieee_style()
+    rows = [r for r in history if r.get("shortfall_by_group")]
+    if not rows:
+        raise ValueError("history has no shortfall_by_group; nothing to plot")
+    groups = sorted({g for r in rows for g in r["shortfall_by_group"]})
+    x = np.array([int(r["update"]) for r in rows], dtype=float)
+
+    fig, axes = plt.subplots(2, 1, figsize=(width, width * 0.52), sharex=True)
+    for g in groups:
+        sf = np.array([float(r["shortfall_by_group"].get(g, np.nan)) for r in rows])
+        lam = np.array([float(r.get("lambda_by_group", {}).get(g, np.nan)) for r in rows])
+        for ax, ys in ((axes[0], sf), (axes[1], lam)):
+            ax.plot(x, ys, color=GREY, linewidth=0.7, alpha=0.85)
+            fin = np.flatnonzero(np.isfinite(ys))
+            if fin.size:
+                ax.annotate(g.replace("|", " d="), (x[fin[-1]], ys[fin[-1]]),
+                            textcoords="offset points", xytext=(2, 0),
+                            fontsize=5.5, color=GREY, va="center")
+
+    axes[0].axhline(0.0, color=PALETTE[1], linewidth=0.8, linestyle="--")
+    axes[0].annotate("constraint met", xy=(0.01, 0.06), xycoords="axes fraction",
+                     fontsize=6, color=PALETTE[1])
+    axes[0].set_ylabel("Coverage shortfall")
+    if lambda_cap:
+        axes[1].axhline(float(lambda_cap), color=PALETTE[1], linewidth=0.8,
+                        linestyle="--")
+        axes[1].annotate(f"cap {float(lambda_cap):g}", xy=(0.01, 0.86),
+                         xycoords="axes fraction", fontsize=6, color=PALETTE[1])
+    axes[1].set_yscale("symlog")
+    axes[1].set_ylabel(r"Multiplier $\lambda$")
+    axes[1].set_xlabel("PPO update")
+    fig.align_ylabels(axes)
+    return save(fig, name)
+
+
+# ---------------------------------------------------------------------------
+# Supporting figure: pooled training reward, median with an inter-seed band
 # ---------------------------------------------------------------------------
 def fig_training_curves(
     histories: Sequence[Sequence[dict[str, Any]]], metric: str = "reward_mean",
     ylabel: str = "Mean reward", width: float = SINGLE_COL,
-    name: str = "fig07_training",
+    name: str = "figS4_training_reward",
 ) -> list[Path]:
     """Median with an inter-seed band. Median, not mean: RL runs produce
     outliers and a mean curve would be dragged by one diverged seed."""
@@ -546,12 +654,12 @@ def fig_ablation(
 
 
 # ---------------------------------------------------------------------------
-# Figure 9: confidence-gate trade-off
+# Figure 5: confidence-gate trade-off
 # ---------------------------------------------------------------------------
 def fig_gate_tradeoff(
     taus: Sequence[float], fallback_rate: Sequence[float],
     performance: Sequence[float], perf_label: str = "RWCR",
-    width: float = SINGLE_COL, name: str = "fig09_gate",
+    width: float = SINGLE_COL, name: str = "fig05_gate",
 ) -> list[Path]:
     """Fallback rate and performance against tau, as SMALL MULTIPLES.
 

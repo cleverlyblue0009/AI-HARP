@@ -220,7 +220,7 @@ class ActorCritic(nn.Module):
     @torch.no_grad()
     def act(
         self, data: Data, deterministic: bool = False, action_mask: Any | None = None,
-        uniform: float | None = None,
+        uniform: float | None = None, return_scores: bool = False,
     ) -> dict[str, Any]:
         """Sample (or argmax) one action. ``action_mask`` (True = available) is
         applied before sampling, so log-prob and entropy describe the
@@ -242,7 +242,7 @@ class ActorCritic(nn.Module):
         else:
             u = torch.rand(()) if uniform is None else torch.as_tensor(float(uniform))
             action = int(sample_inverse_cdf(probs[None, :], u[None])[0])
-        return {
+        row = {
             "action": action,
             "log_prob": float(dist.log_prob(torch.tensor(action))),
             "value": float(out["value"][0]),
@@ -250,11 +250,19 @@ class ActorCritic(nn.Module):
             "probs": probs.numpy(),
             "relay_order": _relay_order(out["relay_scores"]),
         }
+        if return_scores:
+            # Opt-in, for the figure that shows attention over one real
+            # dissemination event. Off by default: it copies a tensor out of
+            # the graph on every decision, and the ranking above is all the
+            # policy itself needs.
+            row["relay_scores"] = out["relay_scores"].detach().cpu().numpy()
+        return row
 
     @torch.no_grad()
     def act_batch(
         self, batch: Batch, deterministic: bool = False,
         action_masks: torch.Tensor | None = None, uniforms: torch.Tensor | None = None,
+        return_scores: bool = False,
     ) -> list[dict[str, Any]]:
         """One forward pass for a whole batch of decision graphs.
 
@@ -279,7 +287,7 @@ class ActorCritic(nn.Module):
         entropies = dist.entropy()
         ptr = batch.ptr.tolist()
         scores = out["relay_scores"]
-        return [{
+        rows = [{
             "action": int(actions[j]),
             "log_prob": float(log_probs[j]),
             "value": float(out["value"][j]),
@@ -287,6 +295,10 @@ class ActorCritic(nn.Module):
             "probs": probs[j].numpy(),
             "relay_order": _relay_order(scores[ptr[j]:ptr[j + 1]]),
         } for j in range(n)]
+        if return_scores:                     # see act(): opt-in, figure only
+            for j, row in enumerate(rows):
+                row["relay_scores"] = scores[ptr[j]:ptr[j + 1]].detach().cpu().numpy()
+        return rows
 
     def evaluate_actions(
         self, data: Batch, actions: torch.Tensor, action_masks: torch.Tensor | None = None,

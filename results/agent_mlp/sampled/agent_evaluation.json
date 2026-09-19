@@ -1,0 +1,146 @@
+{
+ "checkpoint": "C:\\Users\\UPASANA\\AI-HARP\\checkpoints\\campaign\\mlp\\ckpt_final.pt",
+ "checkpoint_sha": "20b6c8942ebfab28",
+ "updates": 1000,
+ "configured_updates": 2000,
+ "tau": 0.5,
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
+ ],
+ "target": 0.95,
+ "mode": "relative",
+ "axes": {
+  "cost": {
+   "mean_regret": 0.2645169340690053,
+   "mean_margin": 0.22334679286151846,
+   "cells_failed": 1,
+   "fixed_best": "dvcast(n_slots=30)",
+   "per_cell": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "agent": Infinity,
+     "oracle": 1.5597111711817593,
+     "oracle_policy": "dvcast",
+     "fixed": 1.5597111711817593,
+     "regret": Infinity,
+     "margin": -Infinity
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "agent": 1.1491233110934804,
+     "oracle": 0.7038311764998229,
+     "oracle_policy": "greedy_farthest",
+     "fixed": 0.7304126873207141,
+     "regret": 0.632668954518484,
+     "margin": -0.36437397077458167
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "agent": 0.7079139139910617,
+     "oracle": 1.5117679168316374,
+     "oracle_policy": "weighted_p",
+     "fixed": 1.7033746785407176,
+     "regret": -0.5317310903946768,
+     "margin": 1.4061890081203074
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "agent": 0.9019642032370829,
+     "oracle": 0.5328827299751755,
+     "oracle_policy": "counter_based",
+     "fixed": 0.5666367693638255,
+     "regret": 0.6926129380832087,
+     "margin": -0.37177465876117044
+    }
+   }
+  },
+  "tir_median_s": {
+   "mean_regret": -0.027848820687695414,
+   "mean_margin": 0.1315389924085567,
+   "cells_failed": 1,
+   "fixed_best": "slotted_1p(n_slots=3)",
+   "per_cell": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "agent": Infinity,
+     "oracle": 0.7700000000000002,
+     "oracle_policy": "slotted_1p",
+     "fixed": 0.48500000000000043,
+     "regret": Infinity,
+     "margin": -Infinity
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "agent": 0.35000000000000053,
+     "oracle": 0.34500000000000053,
+     "oracle_policy": "flooding",
+     "fixed": 0.3400000000000006,
+     "regret": 0.01449275362318847,
+     "margin": -0.02857142857142836
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "agent": 0.23000000000000034,
+     "oracle": 0.25500000000000045,
+     "oracle_policy": "p_persistence_03",
+     "fixed": 0.22000000000000028,
+     "regret": -0.09803921568627472,
+     "margin": -0.04347826086956541
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "agent": 0.3000000000000007,
+     "oracle": 0.3000000000000007,
+     "oracle_policy": "flooding",
+     "fixed": 0.4400000000000002,
+     "regret": 0.0,
+     "margin": 0.4666666666666639
+    }
+   }
+  },
+  "tir_p95_s": {
+   "mean_regret": -0.04078110368432971,
+   "mean_margin": 0.2048666542648495,
+   "cells_failed": 1,
+   "fixed_best": "slotted_1p(n_slots=3)",
+   "per_cell": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "agent": Infinity,
+     "oracle": 1.6085,
+     "oracle_policy": "slotted_1p",
+     "fixed": 0.8640000000000002,
+     "regret": Infinity,
+     "margin": -Infinity
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "agent": 0.5575000000000001,
+     "oracle": 0.5735000000000003,
+     "oracle_policy": "flooding",
+     "fixed": 0.5500000000000002,
+     "regret": -0.02789886660854446,
+     "margin": -0.013452914798206206
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "agent": 0.4075000000000001,
+     "oracle": 0.4500000000000002,
+     "oracle_policy": "weighted_p",
+     "fixed": 0.43300000000000016,
+     "regret": -0.09444444444444466,
+     "margin": 0.0625766871165645
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "agent": 0.42000000000000026,
+     "oracle": 0.42000000000000026,
+     "oracle_policy": "flooding",
+     "fixed": 0.6575000000000003,
+     "regret": 0.0,
+     "margin": 0.5654761904761902
+    }
+   }
+  }
+ },
+ "miss_margin": 0.05,
+ "policy_mode": "sampled",
+ "gate_sweep": "C:\\Users\\UPASANA\\AI-HARP\\results\\agent_mlp\\sampled\\gate_sweep.json"
+}

@@ -39,6 +39,9 @@ METRIC_LABELS: dict[str, tuple[str, str]] = {
     "pdr": ("PDR", "{:.3f}"),
     "collisions_per_delivered": ("Coll./deliv.", "{:.2f}"),
     "transmissions": ("Tx", "{:.0f}"),
+    "regret": ("Regret", "{:.3f}"),
+    "margin": ("Margin", "{:.3f}"),
+    "cells_matched": ("Cells matched", "{:.0f}"),
 }
 
 POLICY_LABELS: dict[str, str] = {
@@ -60,6 +63,19 @@ def escape(text: str) -> str:
                  ("&", r"\&"), ("#", r"\#")):
         text = text.replace(a, b)
     return text
+
+
+def _policy_label(pol: str) -> str:
+    """Display name. An agent row carries the gate threshold it ran at.
+
+    ``runs.csv`` holds the agent at more than one tau, and those are different
+    policies: averaging them into one row would report a scheme that was never
+    run.
+    """
+    if "@" in pol:
+        base, tau = pol.split("@", 1)
+        return POLICY_LABELS.get(base, escape(base)) + f" ($\\tau{{=}}{float(tau):g}$)"
+    return POLICY_LABELS.get(pol, escape(pol))
 
 
 def _fmt(mu: float, sd: float, fmt: str) -> str:
@@ -95,8 +111,17 @@ def main_comparison_table(
     ``tests`` maps ``policy -> {metric: PairedTest}`` and supplies significance
     markers; the best value per metric is bolded in its own preferred direction.
     """
-    sub = df[(df["scenario"] == scenario) & (df["density_veh_km_lane"] == density)]
-    policies = [p for p in POLICY_LABELS if p in set(sub["policy"])]
+    sub = df[(df["scenario"] == scenario) & (df["density_veh_km_lane"] == density)].copy()
+    # The agent appears at several gate thresholds. They are separate policies,
+    # so they get separate rows rather than being averaged together.
+    if "tau" in sub.columns and (sub["policy"] == "ai_harp").any():
+        is_agent = sub["policy"] == "ai_harp"
+        sub.loc[is_agent, "policy"] = [
+            f"ai_harp@{float(t):g}" for t in sub.loc[is_agent, "tau"]
+        ]
+    present = set(sub["policy"])
+    policies = [p for p in POLICY_LABELS if p in present]
+    policies += sorted(p for p in present if p.startswith("ai_harp@"))
 
     stats: dict[str, dict[str, tuple[float, float]]] = {}
     for pol in policies:
@@ -130,9 +155,11 @@ def main_comparison_table(
             if best.get(m) == pol:
                 txt = f"\\bfseries {txt}"
             if tests and pol in tests and m in tests[pol]:
-                txt += f"$^{{{tests[pol][m].marker}}}$" if tests[pol][m].marker else ""
+                mk = tests[pol][m]
+                mk = mk if isinstance(mk, str) else getattr(mk, "marker", "")
+                txt += f"$^{{{mk}}}$" if mk else ""
             cells.append(txt)
-        lines.append(f"{POLICY_LABELS.get(pol, escape(pol))} & " + " & ".join(cells) + r" \\")
+        lines.append(f"{_policy_label(pol)} & " + " & ".join(cells) + r" \\")
 
     lines += ["\\bottomrule", "\\end{tabular}"]
     return write("\n".join(lines), name)

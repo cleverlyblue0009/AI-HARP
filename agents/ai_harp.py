@@ -180,6 +180,7 @@ class AiHarpPolicy(Policy):
         fallback_policy: str = "weighted_p",
         deterministic: bool = False,
         record: bool = False,
+        capture_attention: bool = False,
         phy: Any | None = None,
         carry_epochs: int = 10,
         suppression_bias: float = 0.0,
@@ -195,6 +196,10 @@ class AiHarpPolicy(Policy):
         self.fallback = build_policy(fallback_policy)
         self.deterministic = deterministic
         self.record = record
+        #: Opt-in capture for the attention figure: one row per network
+        #: decision, naming the neighbours it scored. Never on while training.
+        self.capture_attention = bool(capture_attention)
+        self.attention_log: list[dict[str, Any]] = []
         self.phy = phy
         self.carry_epochs = carry_epochs
         if defer_epochs is not None:
@@ -216,6 +221,7 @@ class AiHarpPolicy(Policy):
         deterministic: bool = True,
         fallback_policy: str | None = None,
         checkpoint_sha: str | None = None,
+        capture_attention: bool = False,
         **_unused: Any,
     ) -> "AiHarpPolicy":
         """Build an EVALUATION policy from a training checkpoint.
@@ -271,6 +277,7 @@ class AiHarpPolicy(Policy):
             fallback_policy=fallback_policy or gcfg["fallback_policy"],
             deterministic=deterministic, suppression_bias=suppression_bias,
             defer_epochs=cfg.get("action_space", {}).get("defer_epochs"),
+            capture_attention=capture_attention,
         )
         policy.params.update({"checkpoint": str(checkpoint),
                               "checkpoint_sha": checkpoint_sha, "tau": gate.tau})
@@ -380,6 +387,8 @@ class AiHarpPolicy(Policy):
         # The mask is applied INSIDE the network's sampling so the recorded
         # log-prob and entropy describe the distribution actually sampled.
         kwargs: dict[str, Any] = {"deterministic": self.deterministic}
+        if self.capture_attention:
+            kwargs["return_scores"] = True
         if mask is not None:
             kwargs["action_mask"] = mask
         gen = self.__dict__.get("_eval_gen")
@@ -421,7 +430,8 @@ class AiHarpPolicy(Policy):
             gen = self.__dict__.get("_eval_gen")
             uniforms = torch.rand(len(need), generator=gen) if gen is not None else None
             results = self.network.act_batch(batch, deterministic=self.deterministic,
-                                             action_masks=masks, uniforms=uniforms)
+                                             action_masks=masks, uniforms=uniforms,
+                                             return_scores=self.capture_attention)
             outs = dict(zip(need, results))
 
         return [pres[k] if pres[k] is not None
@@ -466,6 +476,22 @@ class AiHarpPolicy(Policy):
             probs, action = self._apply_suppression_bias(probs, ctx.rng, mask)
         decision = self.gate.evaluate(probs)
         self.n_decisions += 1
+
+        if self.capture_attention and "relay_scores" in out:
+            # Node 0 is the holder, nodes 1..N-1 its neighbours in the order
+            # graph.neighbour_ids names them, so a row of the heatmap is a real
+            # vehicle rather than a position in an array. Scores are -inf for
+            # nodes with no edge into the holder; those are gaps, not zeros.
+            scores = np.asarray(out["relay_scores"], dtype=float)[1:]
+            self.attention_log.append({
+                "step": int(ctx.step),
+                "holder": int(graph.holder_id),
+                "neighbours": [int(v) for v in graph.neighbour_ids],
+                "attention": [float(s) for s in scores],
+                "action": ACTION_NAMES[action],
+                "used_fallback": bool(decision.used_fallback),
+                "confidence": float(decision.confidence),
+            })
 
         if self.record:
             self.transitions.append(Transition(

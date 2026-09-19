@@ -10,6 +10,11 @@ results/runs.csv
 # regenerable (experiments/full_sweep.py, experiments/risk_estimation.py).
 !results/runs.csv
 !results/risk_estimation.csv
+# ...and the paper's figures. The campaign brief names results/figures/ as a
+# deliverable, so a reader must be able to see them without first running the
+# pipeline. Regenerable with analysis/report.py; PDF is the vector original.
+!results/figures/*.pdf
+!results/figures/*.png
 cache/
 mobility/_sumo_build/
 runs/
