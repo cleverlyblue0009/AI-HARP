@@ -1021,7 +1021,7 @@ yet earned, the row says so rather than being omitted.
 | The learned policy does not win: at τ=0.5 it matched the quality target in **1 of 4** cells, and where it matched (rural d=20) its regret was 0.018 against a per-cell oracle-best of `greedy_farthest` | `fig03`, `results/agent_ref/sampled/agent_evaluation.json` |
 | Where differences are significant, the agent is cheaper or faster but never better on coverage or miss rate | `results/stats/grid_tests.csv`, `grid_tests_summary.txt` (3,828 of 7,680 tests significant; 615 agent wins, 3,213 losses) |
 | The estimation problem, not the policy, separates corridor from grid: causal-vs-oracle peak-relevance correlation 0.744 on the rural corridor against 0.168 (urban grid) and 0.186 (urban NLOS) | `fig04`, `results/risk_estimation.csv` — policy-independent, measured before any agent |
-| The sparse constraint is not reachable by tightening λ: sparse groups plateau with λ pinned at the cap | `fig06`, `checkpoints/campaign/ref/history.jsonl`, `results/feasibility/` |
+| The sparse constraint is **not** limited by the multiplier cap — see the correction below | `fig06`, `checkpoints/campaign/ref/history.jsonl`, `results/feasibility/` |
 | Attention is not sharply selecting a relay: the top-ranked neighbour takes 0.172 of a decision's attention mass where uniform over 12 neighbours is 0.083 | `fig07`, `results/attention_event.json` |
 | The GATv2 architecture is not what earns the result — GCN and MLP encoders match or beat it | `fig08`, `results/tables/table_ablation.tex`, `results/agent_<variant>/` |
 | Flooding is oracle-best on latency and worst on cost, so neither axis alone ranks the schemes | `fig09`, `results/runs.csv` |
@@ -1029,6 +1029,29 @@ yet earned, the row says so rather than being omitted.
 | Per-cell comparisons, not pooled ones, are what 10 paired seeds can support | `analysis/grid_stats.py` (a family of 26 tests is unrejectable at 10 seeds: 0.00195 × 26 > 0.05) |
 | **Pending** — the no-relevance and long-wait ablations, which test the paper's premises directly | training in progress; `checkpoints/campaign/{no_relevance,long_wait}/` |
 | **Pending** — sparse cells re-run on the SUMO backend, against the fallback-backend sparse cells | sweep in progress; `results/runs_sparse_sumo.csv` |
+
+#### Correction: λ is not pinned at the cap
+
+An earlier reading of this project held that the sparse groups plateau with
+their Lagrange multiplier pinned at the cap, and the cap was raised from 50 to
+500 on that basis. With cap 500 the reference run says otherwise, and the
+figure was rebuilt to show it:
+
+* `lambda_saturated` was **never true** across all 1,000 updates.
+* The largest multiplier anywhere was **33.1 — 6.6% of the cap**, on
+  rural d=2. The sparse groups do carry the largest multipliers
+  (rural d=2 33.1, urban d=1 31.9, urban d=2 29.2), but at an interior
+  equilibrium, not against a ceiling.
+* Sparse-group shortfall nevertheless ends slightly positive over the last 200
+  updates (+0.027 rural d=2, +0.046 urban d=1): the constraint is still not
+  quite met, and raising the cap further cannot be the fix, because the cap
+  was never what bound it.
+
+So "λ pinned at the cap" was an artefact of cap 50. The honest statement is
+that the sparse groups are hard for a reason the multiplier does not reach:
+per `fig04`, heading does not determine destiny off the corridor, so there is
+less to learn from, and per `results/feasibility/` the rural d=2 target was
+itself unreachable by every baseline.
 
 ---
 

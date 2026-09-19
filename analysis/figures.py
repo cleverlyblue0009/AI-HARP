@@ -544,17 +544,22 @@ def fig_attention_heatmap(
 def fig_training_constraint(
     history: Sequence[dict[str, Any]], width: float = DOUBLE_COL,
     name: str = "fig06_training", lambda_cap: float | None = None,
+    sparse_max_density: float = 3.0,
 ) -> list[Path]:
     """Per-group coverage shortfall and its Lagrange multiplier, over training.
 
-    The constraint is enforced per (scenario, density) group, so a single
-    pooled curve hides the result: the sparse groups plateau with their
-    multiplier pinned at the cap while the dense groups converge. Groups are
-    drawn in neutral ink with direct labels -- there are more of them than the
-    validated colour slots, and cycling hues would invent distinctions between
-    them that the reader would then try to interpret.
+    The constraint is enforced per (scenario, density) group, so one pooled
+    curve cannot answer the question this figure asks: whether the sparse
+    groups behave differently from the dense ones.
+
+    Sparse groups are drawn as ink and dense ones recede, with a two-entry
+    legend. Sixteen direct labels collided into an unreadable smear, and there
+    are four times more groups than validated colour slots, so cycling hues
+    would invent sixteen distinctions the reader would then try to interpret.
+    The one distinction that matters is sparse against dense.
     """
     import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
 
     apply_ieee_style()
     rows = [r for r in history if r.get("shortfall_by_group")]
@@ -563,27 +568,46 @@ def fig_training_constraint(
     groups = sorted({g for r in rows for g in r["shortfall_by_group"]})
     x = np.array([int(r["update"]) for r in rows], dtype=float)
 
+    def is_sparse(group: str) -> bool:
+        try:
+            return float(group.split("|")[-1]) <= sparse_max_density
+        except ValueError:
+            return False
+
     fig, axes = plt.subplots(2, 1, figsize=(width, width * 0.52), sharex=True)
+    peak = 0.0
     for g in groups:
         sf = np.array([float(r["shortfall_by_group"].get(g, np.nan)) for r in rows])
-        lam = np.array([float(r.get("lambda_by_group", {}).get(g, np.nan)) for r in rows])
-        for ax, ys in ((axes[0], sf), (axes[1], lam)):
-            ax.plot(x, ys, color=GREY, linewidth=0.7, alpha=0.85)
-            fin = np.flatnonzero(np.isfinite(ys))
-            if fin.size:
-                ax.annotate(g.replace("|", " d="), (x[fin[-1]], ys[fin[-1]]),
-                            textcoords="offset points", xytext=(2, 0),
-                            fontsize=5.5, color=GREY, va="center")
+        lam = np.array([float(r.get("lambda_by_group", {}).get(g, np.nan))
+                        for r in rows])
+        if np.isfinite(lam).any():
+            peak = max(peak, float(np.nanmax(lam)))
+        style = ({"color": PALETTE[0], "linewidth": 0.9, "alpha": 0.95}
+                 if is_sparse(g) else
+                 {"color": GREY, "linewidth": 0.55, "alpha": 0.40})
+        axes[0].plot(x, sf, **style)
+        axes[1].plot(x, lam, **style)
 
     axes[0].axhline(0.0, color=PALETTE[1], linewidth=0.8, linestyle="--")
     axes[0].annotate("constraint met", xy=(0.01, 0.06), xycoords="axes fraction",
                      fontsize=6, color=PALETTE[1])
     axes[0].set_ylabel("Coverage shortfall")
+    axes[0].legend(handles=[
+        Line2D([], [], color=PALETTE[0], linewidth=0.9,
+               label=f"sparse groups ($d \\leq {sparse_max_density:g}$)"),
+        Line2D([], [], color=GREY, linewidth=0.55, alpha=0.6, label="dense groups"),
+    ], loc="upper right", ncol=2)
+
     if lambda_cap:
-        axes[1].axhline(float(lambda_cap), color=PALETTE[1], linewidth=0.8,
-                        linestyle="--")
-        axes[1].annotate(f"cap {float(lambda_cap):g}", xy=(0.01, 0.86),
-                         xycoords="axes fraction", fontsize=6, color=PALETTE[1])
+        cap = float(lambda_cap)
+        axes[1].axhline(cap, color=PALETTE[1], linewidth=0.8, linestyle="--")
+        # State the headroom rather than leaving the reader to read it off a
+        # log axis: at cap 500 the largest multiplier reached 6.6% of it, so
+        # the cap is not what limits the sparse groups.
+        axes[1].annotate(f"cap {cap:g} -- never reached "
+                         f"(peak {peak:.3g}, {100 * peak / cap:.1f}% of cap)",
+                         xy=(0.01, 0.86), xycoords="axes fraction",
+                         fontsize=6, color=PALETTE[1])
     axes[1].set_yscale("symlog")
     axes[1].set_ylabel(r"Multiplier $\lambda$")
     axes[1].set_xlabel("PPO update")
