@@ -39,7 +39,11 @@ QUEUE: dict[str, list[str]] = {
     "heads1": ["--heads", "1"],
     "heads8": ["--heads", "8"],
     "k4": ["--neighbour-cap", "4"],
-    "k20": ["--neighbour-cap", "20"],
+    # "k20": ["--neighbour-cap", "20"] -- dropped on cost (user decision).
+    # Measured 35.6 s per update against 4.9-8.6 s for every other run: raising
+    # the cap from 12 to 20 roughly triples the neighbour-to-neighbour edges and
+    # the attention over them, so its 1,000 updates cost ~9 h against ~2 h. The
+    # cap axis keeps two points, k4 = 4 against the reference's 12.
     "no_relevance": ["--drop-node-feature", "relevance_causal"],
     # Every baseline meeting the urban d=2 training target waits up to 20-50
     # slots (1 + slot epochs); defer_3 = 3 epochs cannot express that.

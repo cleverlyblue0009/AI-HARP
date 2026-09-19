@@ -799,6 +799,19 @@ derived from measured speed.
   objective was meant to prevent, and at 10 seeds this is the strongest
   statement the evidence supports (no correction across cells is possible; see
   the module docstring).
+- **The neighbour-cap-20 ablation was dropped on cost, not on its result.**
+  Measured training cost per update, each run identical but for one switch:
+  k4 **4.9 s**, mlp 6.0, gcn 6.3, heads1/heads8 7.0, ref (cap 12) 8.3, star
+  8.6, **k20 35.6 s**. Raising the cap from 12 to 20 roughly triples the
+  neighbour-to-neighbour edges and the attention over them, so its 1,000
+  updates would have cost ~9 h against ~2 h for any other run — more than the
+  two remaining ablations combined. It was stopped at 187 updates and has no
+  `run_summary.json`, so nothing downstream can mistake it for a result (user
+  decision). The cap axis keeps two points: k4 = 4 against the reference's 12.
+  Also measured while investigating: the machine was 2.9 of 12 cores busy, so
+  this is the ablation's own cost, not contention, and switching the laptop
+  from its "Silent" power plan to "Performance"/"Turbo" left the reported clock
+  unchanged at 2497 MHz.
 - **Campaign training queue** (`experiments/campaign_train.py`, sequential,
   skip-if-done, exact resume; `checkpoints/campaign/<name>/`): the reference
   agent, then one retrain per architectural ablation, each differing from the
