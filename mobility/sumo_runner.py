@@ -466,8 +466,14 @@ def generate_sumo_trace(
     # directory, clobbering each other's net/routes/fcd (WinError 32 killed the
     # sparse SUMO sweep 80 s in). `tag` carries the trace cache key, which
     # already distinguishes weather, backend and pipeline version.
+    # ... and the PID. Two workers can miss the trace cache for the SAME key at
+    # the same moment -- every hazard and policy of one cell needs one trace --
+    # and both then ran SUMO into one fcd.xml, so the parser read a file the
+    # other process was still writing ("unclosed token", which killed the sparse
+    # sweep after 908 rows). The cache dedupes the result afterwards; the cost
+    # is an occasional duplicated SUMO run.
     work = ensure_dir(BUILD_DIR / (f"{scenario['name']}_d{density_veh_km_lane:g}_s{seed}"
-                                   + (f"_{tag}" if tag else "")))
+                                   + (f"_{tag}" if tag else "") + f"_p{os.getpid()}"))
 
     configured_warmup = float(sim["warmup_s"])
     needed = required_warmup_s(scenario, speed_factor)

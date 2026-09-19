@@ -42,7 +42,7 @@ def test_two_weathers_of_one_cell_do_not_share_a_build_directory(monkeypatch, tm
     assert len(seen) == 2 and seen[0] != seen[1], seen
 
 
-def test_same_run_reuses_its_directory(monkeypatch, tmp_path):
+def test_same_run_in_one_process_reuses_its_directory(monkeypatch, tmp_path):
     seen = _capture_workdirs(monkeypatch, tmp_path)
     scn = load_scenario("rural_highway")
     tools = sr.SumoTools(sumo="sumo", netconvert="nc", netgenerate="ng", sumo_home=None)
@@ -50,6 +50,21 @@ def test_same_run_reuses_its_directory(monkeypatch, tmp_path):
     for _ in range(2):
         sr.generate_sumo_trace(scn, 20.0, 0, tools=tools, speed_factor=1.0, tag=tag)
     assert seen[0] == seen[1]
+
+
+def test_concurrent_workers_generating_one_trace_do_not_share_a_directory(monkeypatch, tmp_path):
+    """Every hazard and policy of a cell needs the same trace, so two workers can
+    miss the cache for one key at once. Sharing fcd.xml made the parser read a
+    half-written file ('unclosed token') and killed the sparse sweep."""
+    seen = _capture_workdirs(monkeypatch, tmp_path)
+    scn = load_scenario("rural_highway")
+    tools = sr.SumoTools(sumo="sumo", netconvert="nc", netgenerate="ng", sumo_home=None)
+    tag = trace_cache_key(scn, 20.0, 0, "sumo", 1.0, 1.0, None)
+    for pid in (1234, 5678):                       # the same key in two processes
+        monkeypatch.setattr(sr.os, "getpid", lambda pid=pid: pid)
+        sr.generate_sumo_trace(scn, 20.0, 0, tools=tools, speed_factor=1.0, tag=tag)
+    assert seen[0] != seen[1], seen
+    assert str(seen[0]).endswith("_p1234") and str(seen[1]).endswith("_p5678")
 
 
 def test_untagged_call_still_works():
