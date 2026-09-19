@@ -234,6 +234,26 @@ def _ablation_rows(mode: str = "sampled", axis: str = "cost") -> list[dict[str, 
     return rows
 
 
+def _flooding_note(df) -> str:
+    """How often flooding is fastest, and how often it is dearest.
+
+    One cell cannot carry a general claim, and the general claim here is not
+    the expected one: flooding pays the most in most cells without buying the
+    best latency, so it is dominated rather than trading latency for overhead.
+    """
+    agent_at_gate = (df["policy"] != "ai_harp") | (df["tau"] == 0.5)
+    cells = (df[agent_at_gate]
+             .groupby(["scenario", "density_veh_km_lane", "policy"])
+             [["tir_median_s", "tx_per_at_risk_informed"]].mean().reset_index())
+    by_cell = cells.groupby(["scenario", "density_veh_km_lane"])
+    fastest = cells.loc[by_cell["tir_median_s"].idxmin()]["policy"]
+    dearest = cells.loc[by_cell["tx_per_at_risk_informed"].idxmax()]["policy"]
+    n = int(by_cell.ngroups)
+    return (f"Across all {n} cells: flooding is fastest in "
+            f"{int((fastest == 'flooding').sum())}, dearest in "
+            f"{int((dearest == 'flooding').sum())}.")
+
+
 def _fig_weather(F, df, scenario: str, name: str) -> None:
     """RWCR by weather -- traffic-mediated, and the caption says so."""
     import matplotlib.pyplot as plt
@@ -387,7 +407,8 @@ def build_all(skip_agent: bool = False) -> dict[str, list[str]]:
         has_headline = bool(((df["scenario"] == head_scenario)
                              & (df["density_veh_km_lane"] == head_density)).any())
         if has_headline:
-            F.fig_latency_cost_inversion(df, head_scenario, head_density)
+            F.fig_latency_cost_inversion(df, head_scenario, head_density,
+                                         note=_flooding_note(df))
             made["figures"].append("fig09_latency_cost_inversion")
         else:
             made["skipped"].append("fig09 latency/cost inversion: headline cell absent")

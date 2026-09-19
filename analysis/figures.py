@@ -324,33 +324,59 @@ def fig_estimation_agreement(
 # ---------------------------------------------------------------------------
 def fig_latency_cost_inversion(
     df, scenario: str, density: float, width: float = SINGLE_COL,
-    name: str = "fig09_latency_cost_inversion",
+    name: str = "fig09_latency_cost_inversion", note: str | None = None,
 ) -> list[Path]:
     """Cost against latency for every scheme in one cell.
 
-    Flooding buys the best latency with the worst overhead and the suppression
-    schemes do the reverse, which is why neither axis alone ranks them. Nine
-    schemes exceed the four validated colour slots, so the points are neutral
-    and labelled directly rather than cycling the palette.
+    The expected story was an inversion -- flooding buying the best latency
+    with the worst overhead, the suppression schemes doing the reverse. The
+    measurement does not support the first half: flooding is the most
+    expensive scheme in most cells but is rarely the fastest, so it is
+    dominated rather than trading off. ``note`` carries the across-cell counts
+    so the figure states that instead of leaving one cell to imply it.
+
+    Nine schemes exceed the four validated colour slots, so points are neutral
+    ink with direct labels rather than a cycled palette.
     """
     import matplotlib.pyplot as plt
+    from matplotlib.ticker import ScalarFormatter
 
     apply_ieee_style()
     fig, ax = plt.subplots(figsize=(width, width * 0.78))
     sub = df[(df["scenario"] == scenario) & (df["density_veh_km_lane"] == density)]
+
+    points = []
     for pol, g in sub.groupby("policy"):
         x, y = float(g["tx_per_at_risk_informed"].mean()), float(g["tir_median_s"].mean())
-        if not (np.isfinite(x) and np.isfinite(y)):
-            continue
+        if np.isfinite(x) and np.isfinite(y):
+            points.append((x, y, str(pol)))
+    points.sort()
+
+    # Points are keyed by number and named in an index below the axes. Direct
+    # labels were tried first and cannot work here: in the headline cell four
+    # schemes sit within 0.02 s of each other, so their names printed on top of
+    # one another however the offsets were rotated.
+    for i, (x, y, pol) in enumerate(points):
         st = reference_style() if pol == REFERENCE_POLICY else {
             "color": GREY, "marker": "o", "linestyle": "none", "markersize": 3.5}
         ax.plot([x], [y], **st)
-        ax.annotate(label_for(pol).replace(" (reference)", ""), (x, y),
-                    textcoords="offset points", xytext=(4, 3), fontsize=6, color=GREY)
+        ax.annotate(str(i + 1), (x, y), textcoords="offset points",
+                    xytext=(3.5, 3), fontsize=5.5, color=GREY)
+
     ax.set_xscale("log")
+    ax.get_xaxis().set_major_formatter(ScalarFormatter())   # not 2 x 10^0
+    ax.get_xaxis().set_minor_formatter(ScalarFormatter())
     ax.set_xlabel("Transmissions per at-risk vehicle informed")
     ax.set_ylabel("Median time to inform (s)")
     ax.set_title(f"{scenario.replace('_', ' ')}, {density:g} veh/km/lane", pad=3)
+    entries = [f"{i + 1} {label_for(p).replace(' (reference)', '')}"
+               for i, (_, _, p) in enumerate(points)]
+    per_line = 3
+    index = "\n".join("   ".join(entries[i:i + per_line])
+                      for i in range(0, len(entries), per_line))
+    caption = index + (f"\n{note}" if note else "")
+    ax.annotate(caption, xy=(0.0, -0.20), xycoords="axes fraction", ha="left",
+                va="top", fontsize=5.5, color=GREY, linespacing=1.5)
     return save(fig, name)
 
 

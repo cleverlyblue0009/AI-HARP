@@ -1024,7 +1024,7 @@ yet earned, the row says so rather than being omitted.
 | The sparse constraint is **not** limited by the multiplier cap — see the correction below | `fig06`, `checkpoints/campaign/ref/history.jsonl`, `results/feasibility/` |
 | Attention is not sharply selecting a relay: the top-ranked neighbour takes 0.172 of a decision's attention mass where uniform over 12 neighbours is 0.083 | `fig07`, `results/attention_event.json` |
 | The GATv2 architecture is not what earns the result — GCN and MLP encoders match or beat it | `fig08`, `results/tables/table_ablation.tex`, `results/agent_<variant>/` |
-| Flooding is oracle-best on latency and worst on cost, so neither axis alone ranks the schemes | `fig09`, `results/runs.csv` |
+| Flooding is dominated, not a latency/overhead trade: it is dearest in 15 of 24 cells but fastest in only 3 (the fastest is usually `p_persistence_03`, 9 of 24, or the agent, 8 of 24) | `fig09`, `results/runs.csv` |
 | The simulator reproduces a published curve to a mean absolute PDR deviation of 0.0398 | `fig10`, `results/validation/amador2022.json`, `experiments/validate_amador.py` |
 | Per-cell comparisons, not pooled ones, are what 10 paired seeds can support | `analysis/grid_stats.py` (a family of 26 tests is unrejectable at 10 seeds: 0.00195 × 26 > 0.05) |
 | **Pending** — the no-relevance and long-wait ablations, which test the paper's premises directly | training in progress; `checkpoints/campaign/{no_relevance,long_wait}/` |
