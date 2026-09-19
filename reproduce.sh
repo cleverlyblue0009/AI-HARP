@@ -148,6 +148,11 @@ if [[ $SMOKE -eq 0 ]]; then
   else
     echo "SUMO_HOME is not set: skipping the SUMO and real-map headline re-runs."
   fi
+
+  step "5h. Attention over one dissemination event -> results/attention_event.json"
+  # Figure 7 is drawn from this file. It used to be made by hand, which meant
+  # this script could not regenerate a figure the paper publishes.
+  "$PY" -m experiments.attention_event --checkpoint "$RUN_DIR/ckpt_final.pt"
 fi
 
 step "6. Figures and tables -> results/figures, results/tables"

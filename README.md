@@ -983,6 +983,53 @@ decoration: it is what makes the palette legal at ΔE 7.6 all-pairs, and what
 keeps the figures readable in greyscale, since Okabe-Ito sits in a narrow
 lightness band.
 
+#### The ten, and what each is drawn from
+
+`fig01`–`fig10` are the paper's figures. Anything else is `figS*`: supporting
+material is useful, but it is not a paper figure, and a shared numbering would
+let one be mistaken for the other. All are rebuilt by `analysis/report.py`,
+which reads committed artefacts only and never re-runs the simulator.
+
+| Figure | Shows | Drawn from |
+| --- | --- | --- |
+| `fig01_pareto_<cell>` | overhead vs RWCR Pareto front, per cell (headline) | `results/pareto_cells.json` |
+| `fig02_headroom` | per-cell oracle-best vs best-fixed; the winner changes per cell | `results/pareto_cells.json` |
+| `fig03_regret_margin` | agent regret and margin over every cell, wins and losses both visible | `results/agent_ref/sampled/agent_evaluation.json` |
+| `fig04_estimation_agreement` | causal vs oracle relevance agreement against density | `results/risk_estimation.csv` |
+| `fig05_gate` | cost and fallback rate against τ | `results/agent_ref/sampled/gate_sweep.json` |
+| `fig06_training` | per-group shortfall and λ, with the cap line | `checkpoints/campaign/ref/history.jsonl` |
+| `fig07_attention` | attention over one real dissemination event | `results/attention_event.json` |
+| `fig08_ablation` | ablation bars, spread **across cells** | `results/agent_<variant>/sampled/` |
+| `fig09_latency_cost_inversion` | flooding best on latency, worst on cost | `results/runs.csv` |
+| `fig10_validation` | this simulator against a published curve | `results/validation/amador2022.json` |
+
+Two notes on what these figures deliberately do *not* do. `fig03` draws cells
+the agent never matched as a marked gap rather than a tall bar: infinite regret
+clipped to a finite bar reads as a merely bad cell instead of a failure to
+reach the target at all. `fig07` excludes gate fallbacks, where the analytic
+policy chose the action and attention selected nothing.
+
+### Claim → artefact map
+
+Each row names the claim and the artefact that earns it. Where a claim is not
+yet earned, the row says so rather than being omitted.
+
+| Claim | Earned by |
+| --- | --- |
+| Cost at matched coverage is the question; RWCR saturates | `fig01`, `results/pareto_cells.json`, `analysis/pareto.py` |
+| The best baseline changes from cell to cell, so no fixed scheme collects the headroom | `fig02`, `results/tables/table_reference.tex` |
+| The learned policy does not win: at τ=0.5 it matched the quality target in **1 of 4** cells, and where it matched (rural d=20) its regret was 0.018 against a per-cell oracle-best of `greedy_farthest` | `fig03`, `results/agent_ref/sampled/agent_evaluation.json` |
+| Where differences are significant, the agent is cheaper or faster but never better on coverage or miss rate | `results/stats/grid_tests.csv`, `grid_tests_summary.txt` (3,828 of 7,680 tests significant; 615 agent wins, 3,213 losses) |
+| The estimation problem, not the policy, separates corridor from grid: causal-vs-oracle peak-relevance correlation 0.744 on the rural corridor against 0.168 (urban grid) and 0.186 (urban NLOS) | `fig04`, `results/risk_estimation.csv` — policy-independent, measured before any agent |
+| The sparse constraint is not reachable by tightening λ: sparse groups plateau with λ pinned at the cap | `fig06`, `checkpoints/campaign/ref/history.jsonl`, `results/feasibility/` |
+| Attention is not sharply selecting a relay: the top-ranked neighbour takes 0.172 of a decision's attention mass where uniform over 12 neighbours is 0.083 | `fig07`, `results/attention_event.json` |
+| The GATv2 architecture is not what earns the result — GCN and MLP encoders match or beat it | `fig08`, `results/tables/table_ablation.tex`, `results/agent_<variant>/` |
+| Flooding is oracle-best on latency and worst on cost, so neither axis alone ranks the schemes | `fig09`, `results/runs.csv` |
+| The simulator reproduces a published curve to a mean absolute PDR deviation of 0.0398 | `fig10`, `results/validation/amador2022.json`, `experiments/validate_amador.py` |
+| Per-cell comparisons, not pooled ones, are what 10 paired seeds can support | `analysis/grid_stats.py` (a family of 26 tests is unrejectable at 10 seeds: 0.00195 × 26 > 0.05) |
+| **Pending** — the no-relevance and long-wait ablations, which test the paper's premises directly | training in progress; `checkpoints/campaign/{no_relevance,long_wait}/` |
+| **Pending** — sparse cells re-run on the SUMO backend, against the fallback-backend sparse cells | sweep in progress; `results/runs_sparse_sumo.csv` |
+
 ---
 
 ## Known limitations
