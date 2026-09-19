@@ -10,6 +10,11 @@ results/runs.csv
 # regenerable (experiments/full_sweep.py, experiments/risk_estimation.py).
 !results/runs.csv
 !results/risk_estimation.csv
+# ...the sparse band re-run on the SUMO backend, which is the evidence for the
+# backend comparison (analysis/backend_compare.py) the paper reports, and that
+# comparison's own output. Regenerable, but expensive: 14,400 SUMO runs.
+!results/runs_sparse_sumo.csv
+!results/backend_sparse_comparison.csv
 # ...and the paper's figures. The campaign brief names results/figures/ as a
 # deliverable, so a reader must be able to see them without first running the
 # pipeline. Regenerable with analysis/report.py; PDF is the vector original.

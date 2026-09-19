@@ -697,6 +697,53 @@ derived from measured speed.
   regime where the mobility model decides the answer. Nothing has been
   re-tuned; the choice of what to re-run is open (see the campaign note below).
 
+  **The sparse cells, re-run in full on SUMO.** The table above rests on four
+  cells. `results/runs_sparse_sumo.csv` is the whole sparse band re-run on the
+  SUMO backend — 14,400 runs: 8 cells (rural and urban NLOS at d = 1, 2, 3, 5)
+  × 9 baselines × 5 hazards × 4 weathers × 10 paired seeds. The agent is not in
+  it; these are baselines, so the comparison is about the evidence base rather
+  than about the policy.
+
+  Achievable ceiling (best mean RWCR any baseline reaches) and the cheapest
+  baseline, per cell:
+
+  | cell | ceiling fb → SUMO | Δ | cheapest, fallback → SUMO |
+  |---|---|---|---|
+  | rural d=1 | 0.091 → 0.187 | +0.097 | counter_based → counter_based |
+  | rural d=2 | 0.650 → **0.168** | −0.482 | flooding → counter_based |
+  | rural d=3 | 0.848 → **0.120** | −0.728 | greedy_farthest → weighted_p |
+  | rural d=5 | 0.889 → 0.817 | −0.072 | greedy_farthest → greedy_farthest |
+  | urban d=1 | 0.605 → **0.169** | −0.436 | counter_based → counter_based |
+  | urban d=2 | 0.931 → **0.327** | −0.604 | weighted_p → counter_based |
+  | urban d=3 | 0.945 → **0.409** | −0.536 | counter_based → counter_based |
+  | urban d=5 | 0.943 → **0.442** | −0.500 | counter_based → p_persistence_05 |
+
+  Seven of eight ceilings collapse, by up to 0.73. Only rural d=1 rises, and
+  both of its values are hopeless. This is the platooning mechanism above,
+  measured across the whole sparse band rather than in one cell.
+
+  **The orderings, though, largely survive** (`analysis/backend_compare.py`,
+  `results/backend_sparse_comparison.txt`). Every claim in the paper is
+  comparative, so what matters is whether policies keep their relative places:
+
+  * the best policy changes in 63 of 128 (cell, split, metric) strata — but
+    **only 18 of those flips exceed 5%**. RWCR saturates, so the rest are
+    near-ties trading places, and counting them as changed conclusions would
+    be counting noise;
+  * median Kendall tau of the policy ordering is **+0.67**, positive in 105 of
+    113 strata;
+  * on actionable deadline miss rate, **0 of 32** flips are material;
+  * the material flips concentrate on **cost** (10 of 18) and in the sparsest
+    cells — rural d=1, d=2, d=3 above all, e.g. rural d=2's cheapest baseline
+    moves from `flooding`/`dvcast` to `counter_based` by 52–73%.
+
+  So the comparative structure is backend-robust, and the *level* of coverage
+  and the identity of the **cheapest** policy in the sparsest cells are not.
+  Since the per-cell oracle-best is exactly "the cheapest policy that reaches
+  the target", the sparse-cell reference points are backend-dependent, and the
+  paper reports them as fallback-backend numbers with these SUMO numbers
+  beside them rather than as facts about VANETs in general.
+
   **The real maps side with SUMO, not with the fallback**
   (`results/pareto_cells_osm.json`: US-50 for the corridor, Midtown Manhattan
   for the grid, 40/40 runs within their commanded density). Achievable ceiling
@@ -1028,7 +1075,7 @@ yet earned, the row says so rather than being omitted.
 | The simulator matches a published PDR curve in **level but not in shape**: mean absolute deviation 0.0398, but the deviation is one-sided and grows with density — −0.002 at 10 veh/km and +0.002 at 20, against +0.071 at 30, +0.062 at 40 and +0.062 at 50. The published curve falls to 0.928 at 30 veh/km; ours stays near 0.999. **This simulator is optimistic in dense traffic** and the paper must say so | `fig10`, `results/validation/amador2022.json`, `experiments/validate_amador.py` |
 | Per-cell comparisons, not pooled ones, are what 10 paired seeds can support | `analysis/grid_stats.py` (a family of 26 tests is unrejectable at 10 seeds: 0.00195 × 26 > 0.05) |
 | **Pending** — the no-relevance and long-wait ablations, which test the paper's premises directly | training in progress; `checkpoints/campaign/{no_relevance,long_wait}/` |
-| **Pending** — sparse cells re-run on the SUMO backend, against the fallback-backend sparse cells | sweep in progress; `results/runs_sparse_sumo.csv` |
+| Comparative claims are backend-robust but sparse-cell *levels* are not: across 14,400 SUMO runs the policy ordering holds (median Kendall tau +0.67; only 18 of 128 strata flip by more than 5%; 0 of 32 on miss rate) while 7 of 8 sparse ceilings collapse, by up to 0.73 | `results/runs_sparse_sumo.csv`, `results/backend_sparse_comparison.txt`, `analysis/backend_compare.py` |
 
 #### Correction: λ is not pinned at the cap
 

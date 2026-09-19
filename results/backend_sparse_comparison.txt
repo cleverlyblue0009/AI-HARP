@@ -1,0 +1,44 @@
+==============================================================================
+ BACKEND COMPARISON -- fallback vs SUMO, sparse cells
+==============================================================================
+Absolute values are expected to differ (the fallback spreads vehicles
+evenly; SUMO platoons them). What decides the paper's comparative
+claims is whether the ORDERING of policies survives the change.
+
+--- hazard_split=held_out, weather_split=held_out (32 strata) ----------------
+  best policy changed in 16 of 32 (cell, metric) strata; 4 by more than 5%
+  Kendall tau of the policy ordering: median +0.67, min -0.07, max +0.94
+    actionable_deadline_miss_rate    0/8 material (4 flips, all below 5%)
+    rwcr                             1/8 material | rural d=2: flooding -> slotted_1p (14%)
+    tir_median_s                     0/8 material (3 flips, all below 5%)
+    tx_per_at_risk_informed          3/8 material | rural d=1: counter_based -> p_persistence_03 (37%), rural d=2: greedy_farthest -> counter_based (58%), rural d=3: greedy_farthest -> weighted_p (15%)
+
+--- hazard_split=held_out, weather_split=train (32 strata) -------------------
+  best policy changed in 17 of 32 (cell, metric) strata; 4 by more than 5%
+  Kendall tau of the policy ordering: median +0.66, min -0.28, max +1.00
+    actionable_deadline_miss_rate    0/8 material (3 flips, all below 5%)
+    rwcr                             1/8 material | rural d=2: slotted_1p -> greedy_farthest (40%)
+    tir_median_s                     1/8 material | urban_nlos d=5: flooding -> p_persistence_03 (38%)
+    tx_per_at_risk_informed          2/8 material | rural d=2: dvcast -> counter_based (52%), rural d=3: greedy_farthest -> counter_based (16%)
+
+--- hazard_split=train, weather_split=held_out (32 strata) -------------------
+  best policy changed in 13 of 32 (cell, metric) strata; 5 by more than 5%
+  Kendall tau of the policy ordering: median +0.77, min -0.07, max +0.94
+    actionable_deadline_miss_rate    0/8 material (3 flips, all below 5%)
+    rwcr                             1/8 material | rural d=2: flooding -> slotted_1p (9%)
+    tir_median_s                     1/8 material | rural d=1: p_persistence_07 -> p_persistence_03 (20%)
+    tx_per_at_risk_informed          3/8 material | rural d=1: counter_based -> p_persistence_03 (37%), rural d=2: flooding -> counter_based (73%), rural d=3: greedy_farthest -> weighted_p (17%)
+
+--- hazard_split=train, weather_split=train (32 strata) ----------------------
+  best policy changed in 17 of 32 (cell, metric) strata; 5 by more than 5%
+  Kendall tau of the policy ordering: median +0.66, min -0.31, max +1.00
+    actionable_deadline_miss_rate    0/8 material (3 flips, all below 5%)
+    rwcr                             1/8 material | rural d=2: slotted_1p -> greedy_farthest (29%)
+    tir_median_s                     2/8 material | rural d=1: p_persistence_07 -> p_persistence_03 (28%), urban_nlos d=5: flooding -> p_persistence_03 (41%)
+    tx_per_at_risk_informed          2/8 material | rural d=2: dvcast -> counter_based (53%), rural d=3: greedy_farthest -> weighted_p (19%)
+
+------------------------------------------------------------------------------
+ OVERALL: best policy changed in 63 of 128 strata (49%)
+ OVERALL: 18 of those flips exceed 5% (14% of all strata); the rest swap near-tied policies
+ OVERALL: median Kendall tau +0.67 (105 of 113 strata positive)
+------------------------------------------------------------------------------
