@@ -63,7 +63,14 @@ else
 fi
 
 step "4. Operating curves and reference points -> results/pareto_cells.json"
-"$PY" -m analysis.comparator --seeds "$SEEDS" --quiet
+# A smoke run must never overwrite the committed 10-seed evidence file
+# (revision-1 E1 found --smoke replacing results/pareto_cells.json with 2-seed curves).
+CELLS_ARGS=(); AGENT_OUT=results/agent
+if [[ $SMOKE -eq 1 ]]; then
+  mkdir -p results/smoke
+  CELLS_ARGS=(--out results/smoke/pareto_cells.json); AGENT_OUT=results/smoke/agent
+fi
+"$PY" -m analysis.comparator --seeds "$SEEDS" --quiet "${CELLS_ARGS[@]}"
 
 # Training runs on the GPU interpreter when there is one (ENVIRONMENT.md).
 TRAIN_PY="${AIHARP_TRAIN_PYTHON:-D:/aiharp-gpu/Scripts/python.exe}"
@@ -115,12 +122,21 @@ else
   step "5. Training skipped (--no-train); reusing $RUN_DIR"
 fi
 
-step "5b. Evaluate the trained agent against the baselines -> results/agent"
+step "5b. Evaluate the trained agent against the baselines -> $AGENT_OUT"
 # Sampled is the headline: it is the policy the coverage constraint trained.
-"$PY" -m experiments.evaluate_agent --checkpoint "$RUN_DIR/ckpt_final.pt" --seeds "$SEEDS" \
-  --policy-mode sampled --out-dir results/agent
+SKIP_AGENT=0
+if [[ ! -f "$RUN_DIR/ckpt_final.pt" ]]; then
+  # --no-train on a fresh clone: checkpoints are git-ignored, so there is nothing
+  # to evaluate. Say so and skip the agent steps rather than abort the script.
+  echo "!! $RUN_DIR/ckpt_final.pt not found (checkpoints are not committed); skipping agent steps"
+  SKIP_AGENT=1
+else
+  CELLS_PATH=(); [[ $SMOKE -eq 1 ]] && CELLS_PATH=(--cells-path results/smoke/pareto_cells.json)
+  "$PY" -m experiments.evaluate_agent --checkpoint "$RUN_DIR/ckpt_final.pt" --seeds "$SEEDS" \
+    --policy-mode sampled --out-dir "$AGENT_OUT" "${CELLS_PATH[@]}"
+fi
 
-if [[ $SMOKE -eq 0 ]]; then
+if [[ $SMOKE -eq 0 && $SKIP_AGENT -eq 0 ]]; then
   # Argmax beside it: the mode moves a cell by up to ~0.03 RWCR and decides
   # whether urban d=20 clears the matched-quality bar at all.
   "$PY" -m experiments.evaluate_agent --checkpoint "$RUN_DIR/ckpt_final.pt" --seeds "$SEEDS" \

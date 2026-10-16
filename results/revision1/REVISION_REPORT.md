@@ -326,9 +326,50 @@ slots, TIR 1.06 s), raising the agent's regret from +1.8% to +2.1%.
 
 ### B3. Feasibility under every target definition
 
-Pending the training-seed sweep (`results/revision1/B_sweeps/train_runs.csv`, 63
-settings × 32 seeds × 3 cells, causal coverage). Script:
-`python -m experiments.revision1.b3_feasibility`.
+Regenerate: `python -m experiments.revision1.sweeps headline` and `... sweeps train`, then
+`python -m experiments.revision1.b3_feasibility` → `results/revision1/B3/b3_feasibility.json`.
+Inputs: 63 settings (55 knob + 8 registry defaults) per headline cell. Eval side:
+`results/revision1/B_sweeps/headline_runs.csv` (oracle RWCR, seeds 0–9). Training side:
+`results/revision1/B_sweeps/train_runs.csv` (causal coverage, seeds 100–131; rural d=2
+from the committed `results/feasibility/sparse_feasibility_runs.csv`). Definitions
+(A1): E = Algorithm 1 (with and without deadline guard); F63 = 0.95 × best of 63;
+T32 = current 32-seed training target; T2 = stale 2-seed target the §VII-F sweep used
+(`git show a378bcf:results/coverage_targets.json`). Envelope = best setting chosen
+separately for every seed; shortfall = (Σ target − Σ envelope)/Σ target (negative = reachable).
+
+| cell | def. | q* | fixed settings meeting q* | best fixed (mean) | hindsight envelope (shortfall) |
+|---|---|---|---|---|---|
+| rural d=2 | E | 0.6410 | 14 / 63 (11 with guard) | dvcast(50) 0.6747 | 0.8054 (−0.257) |
+| | F63 | 0.6410 | 14 / 63 | dvcast(50) 0.6747 | 0.8054 (−0.257) |
+| | T32 | 0.7201 | **12 / 63** | dvcast(5) 0.7580 | 0.8970 (−0.246) |
+| | T2 (stale) | 0.8640 | **0 / 63** | dvcast(5) 0.7580 | 0.8970 (−0.038) |
+| rural d=20 | E / F63 | 0.8787 | 49 / 63 | p_persist(0.9) 0.9250 | 0.9267 (−0.055) |
+| | T32 / T2 | 0.9256 / 0.9280 | 48 / 63 | counter(6) 0.9747 | 0.9766 (−0.055 / −0.052) |
+| rural d=80 | E / F63 | 0.8695 | 53 / 63 | slotted(3) 0.9153 | 0.9156 (−0.053) |
+| | T32 / T2 | 0.9484 / 0.9481 | 55 / 63 | counter(6) 0.9999 | 0.9999 (−0.054) |
+| urban d=20 | E | 0.9261 | 47 / 63 (45 with guard) | counter(4) 0.9749 | 0.9803 (−0.059) |
+| | T32 | 0.2656 | 41 / 63 | slotted(50) 0.3944 | 0.4020 (−0.514) |
+| | T2 (stale) | 0.2918 | 5 / 63 | slotted(50) 0.3944 | 0.4020 (−0.378) |
+
+**Classification of every agent miss** (reference agent, τ=0.5, sampled):
+
+| cell | eval side (E, F63): agent best RWCR vs q* | class | training side (T32): agent group shortfall, last 200 updates | class |
+|---|---|---|---|---|
+| rural d=2 | 0.507 vs 0.641 | **policy failure** (14/63 fixed settings reach it) | +0.030 (short) | **policy failure** (12/63 reach the clear/fog_bank cell's target) |
+| rural d=20 | 0.905 vs 0.879 | reaches | +0.026 (short) | policy failure (48/63) |
+| rural d=80 | 0.846 vs 0.870 | **policy failure** (53/63) | −0.0002 (met) | — |
+| urban d=20 | 0.921 vs 0.926 | **policy failure** (47/63) | −0.008 (met) | — |
+
+**No agent miss is "target unreachable" under any definition now in force.** The only
+definition under which no fixed setting qualifies is the stale 2-seed rural d=2 target
+(0.864): that is the §VII-F "0 of 63" result, and it does not describe the target the
+agent was trained or evaluated against. Even there the per-seed hindsight envelope
+reaches the target (−0.038). Under the current target, 12 of 63 fixed settings meet it.
+Caveats: the training-side agent number is a group mean over 6 weather × hazard cells,
+and feasibility is counted on the clear/fog_bank cell. A bug in a first version of this
+script (urban rows overwrote rural ones at rural d=2) was caught by cross-checking
+flooding's coverage against `coverage_targets.json` (0.7517 in both) and fixed before
+these numbers.
 
 ### B4. Statistics Section VI promises (headline cells)
 

@@ -145,8 +145,9 @@ def main() -> int:
             "F63": feasibility(rw, {k: FRAC * best63 for k in seeds}),
         }
         if sc == "rural_highway" and d == 2.0:
-            t_rows = [dict(r, param=r["param"], value=r["value"]) for r in fz
-                      if r["split"] == "train" and r["weather"] == "clear" and r["hazard_type"] == "fog_bank"]
+            t_rows = [r for r in fz if r["scenario"] == sc and float(r["density"]) == d
+                      and r["split"] == "train" and r["weather"] == "clear"
+                      and r["hazard_type"] == "fog_bank"]
             t_source = "results/feasibility/sparse_feasibility_runs.csv"
         else:
             t_rows = [r for r in tr_rows if r["scenario"] == sc and float(r["density"]) == d]
