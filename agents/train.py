@@ -947,7 +947,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--nondeterministic-gpu", action="store_true",
                     help="fast non-deterministic CUDA kernels (2.4x faster PPO); the run is "
                          "not bit-reproducible and its numbers may not enter results/")
+    ap.add_argument("--seed", type=int, default=None,
+                    help="override training.seed (network init, episode draws); "
+                         "refused with --resume, which keeps its run's seed")
+    ap.add_argument("--finetune-max-updates", type=int, default=None,
+                    help="override curriculum.finetune.max_updates; with --resume this "
+                         "extends a finished run exactly from where it stopped")
     args = ap.parse_args(argv)
+    if args.seed is not None and args.resume:
+        raise SystemExit("--seed cannot change a resumed run's seed")
     if args.quiet:
         logging.getLogger("aiharp").setLevel(logging.WARNING)
 
@@ -986,6 +994,10 @@ def main(argv: list[str] | None = None) -> int:
         cfg["training"]["device"] = args.device
     if args.nondeterministic_gpu:
         cfg["training"]["cuda_deterministic"] = False
+    if args.seed is not None:
+        cfg["training"]["seed"] = int(args.seed)
+    if args.finetune_max_updates is not None:
+        cfg["training"]["curriculum"]["finetune"]["max_updates"] = int(args.finetune_max_updates)
 
     cfgs = {"phy": load_yaml("phy.yaml"), "hazard": load_yaml("hazard.yaml"),
             "experiment": load_yaml("experiment.yaml")}
