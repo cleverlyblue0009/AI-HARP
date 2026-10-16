@@ -20,7 +20,7 @@ def git_commit() -> str:
                                       text=True).strip()
         dirty = subprocess.run(["git", "diff", "--quiet", "--", "agents", "analysis", "common",
                                 "configs", "experiments", "hazard", "mobility", "sim"],
-                               cwd=PROJECT_ROOT).returncode != 0
+                               cwd=PROJECT_ROOT, stderr=subprocess.DEVNULL).returncode != 0
         return sha + ("-dirty" if dirty else "")
     except Exception:  # pragma: no cover
         return "unknown"
@@ -43,7 +43,13 @@ def rel(path: Path | str) -> str:
 
 def stamp(task: str, config: dict[str, Any], seeds: Any = None, **extra: Any) -> dict[str, Any]:
     """The provenance block written beside every output of ``task``."""
+    import platform
+
+    import numpy
+
     return {"task": task, "git_commit": git_commit(),
+            "python": platform.python_version(), "numpy": numpy.__version__,
+            "interpreter": Path(sys.executable).as_posix().split("/")[-3:],
             "command": " ".join(["python", "-m", _module()] + sys.argv[1:]),
             "config_hash": config_hash(config), "config": config, "seeds": seeds,
             "generated": time.strftime("%Y-%m-%d %H:%M:%S"), **extra}

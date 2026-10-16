@@ -52,3 +52,11 @@ tb_logs/
 results/feature_stats.json
 results/feature_stats_smoke.json
 logs/
+
+# --- revision-1 (reviewer tasks): per-run summaries and figures ARE committed.
+# Every file here is a per-run CSV/JSON summary or a figure, all < 50 MB.
+!results/revision1/**/
+!results/revision1/**/*.csv
+!results/revision1/**/*.png
+!results/revision1/**/*.pdf
+logs/revision1/

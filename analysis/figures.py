@@ -109,6 +109,9 @@ PRETTY: dict[str, str] = {
 
 
 def label_for(name: str) -> str:
+    if "@" in name:                       # an agent gate arm, e.g. ai_harp@0.5
+        base, tau = name.split("@", 1)
+        return f"{label_for(base)} (τ={tau})"
     return PRETTY.get(name, name.replace("_", " "))
 
 
@@ -343,7 +346,12 @@ def fig_latency_cost_inversion(
 
     apply_ieee_style()
     fig, ax = plt.subplots(figsize=(width, width * 0.78))
-    sub = df[(df["scenario"] == scenario) & (df["density_veh_km_lane"] == density)]
+    sub = df[(df["scenario"] == scenario) & (df["density_veh_km_lane"] == density)].copy()
+    # The agent's gate arms are separate policies (as in Table 2); grouping on
+    # "policy" alone averaged tau=0 and tau=0.5 into one point.
+    if "tau" in sub.columns and (sub["policy"] == "ai_harp").any():
+        is_agent = sub["policy"] == "ai_harp"
+        sub.loc[is_agent, "policy"] = [f"ai_harp@{float(t):g}" for t in sub.loc[is_agent, "tau"]]
 
     points = []
     for pol, g in sub.groupby("policy"):
@@ -360,10 +368,28 @@ def fig_latency_cost_inversion(
         st = reference_style() if pol == REFERENCE_POLICY else {
             "color": GREY, "marker": "o", "linestyle": "none", "markersize": 3.5}
         ax.plot([x], [y], **st)
-        ax.annotate(str(i + 1), (x, y), textcoords="offset points",
-                    xytext=(3.5, 3), fontsize=5.5, color=GREY)
 
     ax.set_xscale("log")
+    # Number labels: points 4 and 5 (DV-CAST, slotted 1-persistence) sat 0.01
+    # apart and their numbers printed on top of each other. Place each label at
+    # the first candidate offset whose box does not overlap a placed label or
+    # another point, in display coordinates.
+    fig.canvas.draw()
+    to_px = ax.transData.transform
+    pts_px = [to_px((x, y)) for x, y, _ in points]
+    dpi_scale = fig.dpi / 72.0
+    candidates = [(3.5, 3), (-9, 3), (3.5, -9), (-9, -9), (3.5, 10), (-9, 10), (10, -2), (-15, -2)]
+    placed: list[np.ndarray] = []
+    for i, ((x, y, _), p) in enumerate(zip(points, pts_px)):
+        for dx, dy in candidates:
+            c = p + np.array([dx, dy]) * dpi_scale
+            clash = any(np.all(np.abs(c - q) < 7 * dpi_scale) for q in placed) or any(
+                np.all(np.abs(c - q) < 4 * dpi_scale) for j, q in enumerate(pts_px) if j != i)
+            if not clash:
+                break
+        placed.append(c)
+        ax.annotate(str(i + 1), (x, y), textcoords="offset points", xytext=(dx, dy),
+                    fontsize=5.5, color=GREY)
     ax.get_xaxis().set_major_formatter(ScalarFormatter())   # not 2 x 10^0
     ax.get_xaxis().set_minor_formatter(ScalarFormatter())
     ax.set_xlabel("Transmissions per at-risk vehicle informed")
@@ -603,13 +629,14 @@ def fig_training_constraint(
             return False
 
     fig, axes = plt.subplots(2, 1, figsize=(width, width * 0.52), sharex=True)
-    peak = 0.0
+    peak, peak_group, peak_update = 0.0, "", 0
     for g in groups:
         sf = np.array([float(r["shortfall_by_group"].get(g, np.nan)) for r in rows])
         lam = np.array([float(r.get("lambda_by_group", {}).get(g, np.nan))
                         for r in rows])
-        if np.isfinite(lam).any():
-            peak = max(peak, float(np.nanmax(lam)))
+        if np.isfinite(lam).any() and float(np.nanmax(lam)) > peak:
+            i = int(np.nanargmax(lam))
+            peak, peak_group, peak_update = float(lam[i]), g, int(x[i])
         style = ({"color": PALETTE[0], "linewidth": 0.9, "alpha": 0.95}
                  if is_sparse(g) else
                  {"color": GREY, "linewidth": 0.55, "alpha": 0.40})
@@ -631,9 +658,14 @@ def fig_training_constraint(
         axes[1].axhline(cap, color=PALETTE[1], linewidth=0.8, linestyle="--")
         # State the headroom rather than leaving the reader to read it off a
         # log axis: at cap 500 the largest multiplier reached 6.6% of it, so
-        # the cap is not what limits the sparse groups.
-        axes[1].annotate(f"cap {cap:g} -- never reached "
-                         f"(peak {peak:.3g}, {100 * peak / cap:.1f}% of cap)",
+        # the cap is not what limits the sparse groups. Say WHERE the peak is:
+        # in the reference run it falls on the final update, i.e. the
+        # multiplier was still rising, not settled at an interior plateau.
+        still = " -- still rising at the last update" if peak_update >= int(x[-1]) - 1 else ""
+        sc, _, d = peak_group.partition("|")
+        axes[1].annotate(f"cap {cap:g} never reached: peak $\\lambda$ = {peak:.3g} "
+                         f"({100 * peak / cap:.1f}% of cap; {sc.replace('_', ' ')} d={d}, "
+                         f"update {peak_update}){still}",
                          xy=(0.01, 0.86), xycoords="axes fraction",
                          fontsize=6, color=PALETTE[1])
     axes[1].set_yscale("symlog")

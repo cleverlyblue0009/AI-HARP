@@ -185,6 +185,7 @@ class AiHarpPolicy(Policy):
         carry_epochs: int = 10,
         suppression_bias: float = 0.0,
         defer_epochs: tuple[int, ...] | None = None,
+        random_gate_rate: float | None = None,
     ) -> None:
         super().__init__(fallback_policy=fallback_policy, deterministic=deterministic,
                          suppression_bias=suppression_bias)
@@ -211,6 +212,13 @@ class AiHarpPolicy(Policy):
         self.transitions: list[Transition] = []
         self.n_relay_actions = 0
         self.n_decisions = 0
+        #: Control for the gate ablation (revision-1 C3): when set, the
+        #: confidence test is replaced by a coin with this fallback probability,
+        #: drawn from a private generator, so the learned gate's *rate* is kept
+        #: but its *choice* of which decisions to defer is not.
+        self.random_gate_rate = None if random_gate_rate is None else float(random_gate_rate)
+        if self.random_gate_rate is not None and not 0.0 <= self.random_gate_rate <= 1.0:
+            raise ValueError(f"random_gate_rate must be in [0, 1], got {random_gate_rate}")
 
     @classmethod
     def from_checkpoint(
@@ -222,6 +230,7 @@ class AiHarpPolicy(Policy):
         fallback_policy: str | None = None,
         checkpoint_sha: str | None = None,
         capture_attention: bool = False,
+        random_gate_rate: float | None = None,
         **_unused: Any,
     ) -> "AiHarpPolicy":
         """Build an EVALUATION policy from a training checkpoint.
@@ -269,18 +278,21 @@ class AiHarpPolicy(Policy):
             )
 
         gcfg = cfg["confidence_gate"]
-        gate = ConfidenceGate(tau=float(gcfg["tau"] if tau is None else tau),
-                              method=str(gcfg.get("method", "entropy")), enabled=True)
+        # A random gate replaces the confidence test, so the confidence gate is off.
+        gate_tau = 0.0 if random_gate_rate is not None else float(gcfg["tau"] if tau is None else tau)
+        gate = ConfidenceGate(tau=gate_tau, method=str(gcfg.get("method", "entropy")), enabled=True)
         policy = cls(
             network=net, gate=gate, normaliser=norm,
             graph_cfg=GraphConfig.from_config(cfg),
             fallback_policy=fallback_policy or gcfg["fallback_policy"],
             deterministic=deterministic, suppression_bias=suppression_bias,
             defer_epochs=cfg.get("action_space", {}).get("defer_epochs"),
-            capture_attention=capture_attention,
+            capture_attention=capture_attention, random_gate_rate=random_gate_rate,
         )
         policy.params.update({"checkpoint": str(checkpoint),
                               "checkpoint_sha": checkpoint_sha, "tau": gate.tau})
+        if random_gate_rate is not None:
+            policy.params["random_gate_rate"] = float(random_gate_rate)
         return policy
 
     #: Mirrors configs/agent.yaml -> action_space (asserted equal by tests).
@@ -306,6 +318,9 @@ class AiHarpPolicy(Policy):
     def reset(self, n_vehicles: int, rng: np.random.Generator) -> None:
         self.fallback.reset(n_vehicles, rng)
         self.gate.reset()
+        if self.__dict__.get("random_gate_rate") is not None:
+            # Drawn only in the C3 control, so the default path's RNG use is unchanged.
+            self._gate_rng = np.random.default_rng(int(rng.integers(2**63 - 1)))
         self.transitions = []
         self.n_relay_actions = 0
         self.n_decisions = 0
@@ -476,6 +491,10 @@ class AiHarpPolicy(Policy):
             probs, action = self._apply_suppression_bias(probs, ctx.rng, mask)
         decision = self.gate.evaluate(probs)
         self.n_decisions += 1
+        if self.__dict__.get("random_gate_rate") is not None:
+            if self._gate_rng.random() < self.random_gate_rate:
+                decision.used_fallback = True
+                self.gate.n_fallbacks += 1
 
         if self.capture_attention and "relay_scores" in out:
             # Node 0 is the holder, nodes 1..N-1 its neighbours in the order
