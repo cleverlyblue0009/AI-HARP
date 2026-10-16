@@ -3,7 +3,7 @@
 #
 #   ./reproduce.sh            full run (hours)
 #   ./reproduce.sh --smoke    end-to-end on tiny settings (minutes)
-#   ./reproduce.sh --no-train reuse the committed checkpoint instead of training
+#   ./reproduce.sh --no-train reuse checkpoints already in checkpoints/ (git-ignored) instead of training
 #   ./reproduce.sh --revision1 also regenerate results/revision1/ (reviewer tasks)
 #
 # Nothing here takes a number on faith: every stage writes into results/ with a

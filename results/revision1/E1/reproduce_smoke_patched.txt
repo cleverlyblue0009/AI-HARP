@@ -1,0 +1,13 @@
+=== 0. Environment and test suite ===
+566 passed in 272.89s (0:04:32)
+=== 1. Pipeline smoke test ===
+=== 2. Constants provenance table ===
+=== 3. Full factorial baseline grid (paired, 2 seeds) -> results/runs.csv ===
+=== 4. Operating curves and reference points -> results/pareto_cells.json ===
+=== 5. Training skipped (--no-train); reusing checkpoints/reproduce_smoke ===
+=== 5b. Evaluate the trained agent against the baselines -> results/smoke/agent ===
+!! checkpoints/reproduce_smoke/ckpt_final.pt not found (checkpoints are not committed); skipping agent steps
+=== 6. Figures and tables -> results/figures, results/tables ===
+=== Done ===
+reproduce exit 0
+566 passed in 421.08s (0:07:01)

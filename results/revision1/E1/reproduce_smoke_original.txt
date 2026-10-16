@@ -1,0 +1,9 @@
+=== 0. Environment and test suite ===
+=== 1. Pipeline smoke test ===
+=== 2. Constants provenance table ===
+=== 3. Full factorial baseline grid (paired, 2 seeds) -> results/runs.csv ===
+=== 4. Operating curves and reference points -> results/pareto_cells.json ===
+=== 5. Training skipped (--no-train); reusing checkpoints/reproduce_smoke ===
+=== 5b. Evaluate the trained agent against the baselines -> results/agent ===
+checkpoint not found: <clone>\checkpoints\reproduce_smoke\ckpt_final.pt
+reproduce exit 1

@@ -1,0 +1,9 @@
+{
+ "note": "copies of checkpoints/campaign/<variant>/ckpt_final.pt (training seed 0) and, once trained, checkpoints/revision1/<run>/ckpt_final.pt; sha = experiments.evaluate_agent.checkpoint_sha",
+ "sha": {
+  "gcn_s0_ckpt_final.pt": "4090fd9374db4d4c",
+  "mlp_s0_ckpt_final.pt": "20b6c8942ebfab28",
+  "ref_s0_ckpt_final.pt": "b589be512827fcbb",
+  "star_s0_ckpt_final.pt": "b3536e1a471535a4"
+ }
+}

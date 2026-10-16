@@ -993,7 +993,7 @@ bit-reproducible.
 ```bash
 ./reproduce.sh --smoke      # minutes
 ./reproduce.sh              # hours
-./reproduce.sh --no-train   # reuse the committed checkpoint
+./reproduce.sh --no-train   # reuse checkpoints already in checkpoints/ (not committed)
 ```
 
 Every run is seed-controlled: one master seed derives independent named RNG
@@ -1055,6 +1055,30 @@ the agent never matched as a marked gap rather than a tall bar: infinite regret
 clipped to a finite bar reads as a merely bad cell instead of a failure to
 reach the target at all. `fig07` excludes gate fallbacks, where the analytic
 policy chose the action and attention selected nothing.
+
+#### Tables, and what each is drawn from
+
+All written to `results/tables/` by `analysis/report.py` (step 6 of `reproduce.sh`),
+from committed artefacts only:
+
+| Table | Shows | Drawn from |
+| --- | --- | --- |
+| `table_main.tex`, `table_main_<scenario>_d<density>.tex` | per-scheme RWCR, TIR, cost, miss, PDR for one (scenario, density), **pooled over all 4 weathers × 5 hazards × 10 seeds** (200 runs per scheme); significance markers from the grid tests | `results/runs.csv`, `results/stats/grid_tests.csv` |
+| `table_reference.tex` | per-cell oracle-best vs best fixed at matched coverage | `results/pareto_cells.json` |
+| `table_ablation.tex` | ablation regret / margin / cells matched | `results/agent_<variant>/sampled/agent_evaluation.json` |
+| `table_parameters.tex` | PHY/MAC parameters with provenance tags | `configs/phy.yaml` |
+| `table_notation.tex` | notation | `analysis/tables.py` |
+
+Checkpoints are **not** committed (`checkpoints/` is git-ignored), so on a fresh
+clone `./reproduce.sh --no-train` regenerates every baseline number and table but
+skips the agent steps, and says so. Agent numbers need either training
+(`./reproduce.sh`) or the checkpoint files copied into `checkpoints/`.
+
+#### Revision 1 (reviewer tasks)
+
+`./reproduce.sh --revision1` (or `bash experiments/revision1/reproduce_revision1.sh`)
+regenerates everything under `results/revision1/`; `results/revision1/REVISION_REPORT.md`
+gives each number with the file it comes from and the command that rebuilds it.
 
 ### Claim → artefact map
 

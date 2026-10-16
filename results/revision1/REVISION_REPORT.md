@@ -500,3 +500,58 @@ What this says:
    0.926, +31.5% regret), so the 0.717 there is learned behaviour, not fallback.
 4. Caveat: one training seed, 10 eval seeds; C1 adds seeds 1–2 for the learned-gate
    and network-only arms (random gate is not repeated per seed).
+
+
+---
+
+## E1. Reproduction from a fresh clone (headline numbers)
+
+Fresh `git clone --branch revision-1` from GitHub into an empty directory: no
+`cache/` (mobility traces regenerated from scratch) and no `checkpoints/`.
+Environment: the rebuilt `aiharp-gpu` (torch 2.2.2+cu121, NumPy 1.26.4).
+Artefacts: `results/revision1/E1/`.
+
+| check | result |
+|---|---|
+| `analysis.comparator --reuse` reference table | identical: ceilings 0.675 / 0.925 / 0.915 / 0.975; oracle dvcast 1.56, greedy 0.70, weighted_p 1.51, counter 0.53; fixed dvcast(30) 1.56 / 0.73 / 1.70 / 0.57 |
+| re-simulate every headline reference setting (oracle k* + fixed, 4 cells × 10 seeds, empty trace cache): `python -m experiments.revision1.e1_headline` | **max abs diff 1.1e-16** vs `results/pareto_cells.json` (`e1_headline.json`) |
+| re-evaluate the two agent anchors behind 0.717 (bias −2 and +1, τ=0.5, sampled; checkpoint copied in) | rwcr 0.904851 / 0.878182, cost 0.736182 / 0.716404: **identical** |
+| all 220 headline baseline points (55 settings × 4 cells), re-simulated per seed | max abs diff **3.6e-15** (RWCR, cost, median TIR, miss) |
+| all 48 committed agent points (τ=0.5, sampled + argmax); GCN and MLP seed-0 curves (24 points each) | max abs diff ≤ 4.4e-16 |
+| test suite | 566 passed |
+| `reproduce.sh --smoke --no-train`, as committed | **failed** at step 5b: `checkpoint not found: checkpoints/reproduce_smoke/ckpt_final.pt` (exit 1); and step 4 had **overwritten the committed `results/pareto_cells.json` with 2-seed curves** (`reproduce_smoke_original.txt`) |
+| same, after fixing `reproduce.sh` | **exit 0**; `results/pareto_cells.json` untouched (smoke curves go to `results/smoke/`); agent steps skipped with a message (`reproduce_smoke_patched.txt`) |
+| figures rebuilt by step 6 | pixel-identical to the committed PNGs except `fig03` and `fig09`, which carry the D2 fixes; `fig06` (paper Fig. 12) is **not rebuilt on a clone** because `checkpoints/campaign/ref/history.jsonl` is git-ignored |
+
+What does not regenerate from a clone as committed: **every agent number and Fig. 12**,
+because `checkpoints/` (weights and training histories) is git-ignored. Fixed for this
+revision by committing copies of the four seed-0 final checkpoints (0.3–0.5 MB each)
+and their training histories (1.5 MB each) under `results/revision1/checkpoints/`, with
+SHAs in `SHA.json` (`ref_s0` = `b589be512827fcbb`, the SHA the committed evaluation
+records). Not run in E1 (user scope: headline numbers only): the full 52,800-run grid,
+training, the SUMO/OSM re-runs (SUMO is not installed on this machine any more), and
+the Amador validation.
+
+## E2. Public readiness
+
+* **Secrets:** none found (`git grep` for key/token/password/private-key patterns:
+  only code comments about tokens).
+* **Absolute local paths in tracked files:**
+  * usage docstrings and `reproduce.sh` defaults name `D:/aiharp-env/python.exe` /
+    `D:/aiharp-gpu/...` (documented local interpreters; `reproduce.sh` takes
+    `AIHARP_PYTHON` / `AIHARP_TRAIN_PYTHON` and fails with a clear message if the
+    default is missing). ENVIRONMENT.md describes environments that **no longer exist on
+    this machine**; the build recipe in it was followed verbatim to rebuild `aiharp-gpu`,
+    with two extra pins it lacks: `contourpy<1.3` and `pandas<3` (both otherwise resolve to
+    NumPy-2-only / breaking versions);
+  * committed results that embed `C:\Users\UPASANA\...`: `results/profile_*.txt` (25
+    lines each, cProfile paths), `results/agent_{ref,gcn,mlp,star}/*/agent_evaluation.json`
+    (checkpoint path), `results/attention_event.json`. Left as they are (rule: never
+    overwrite existing results); they leak only a Windows user name;
+  * revision-1 outputs: none (provenance records the environment name, not a path).
+* **README:** documents every figure's source; it now also lists every table's source,
+  states that checkpoints are not committed and what `--no-train` does on a clone, and
+  points to `--revision1`. The previous line "`--no-train` reuse the committed
+  checkpoint" was wrong (fixed in README and `reproduce.sh`).
+* **Large files:** largest revision-1 file is `results/revision1/B_sweeps/grid24_runs.csv`
+  (~5 MB when complete); nothing over 50 MB is committed.

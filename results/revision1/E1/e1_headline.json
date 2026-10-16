@@ -1,0 +1,125 @@
+{
+ "points": [
+  {
+   "cell": "rural_highway/d=2/clear/fog_bank",
+   "setting": "dvcast(n_slots=30)",
+   "committed_rwcr": 0.6584632274949404,
+   "rerun_rwcr": 0.6584632274949404,
+   "committed_cost": 1.5597111711817593,
+   "rerun_cost": 1.5597111711817593,
+   "max_abs_diff": 0.0
+  },
+  {
+   "cell": "rural_highway/d=2/clear/fog_bank",
+   "setting": "dvcast(n_slots=30)",
+   "committed_rwcr": 0.6584632274949404,
+   "rerun_rwcr": 0.6584632274949404,
+   "committed_cost": 1.5597111711817593,
+   "rerun_cost": 1.5597111711817593,
+   "max_abs_diff": 0.0
+  },
+  {
+   "cell": "rural_highway/d=20/clear/fog_bank",
+   "setting": "greedy_farthest(fallback_n_slots=32)",
+   "committed_rwcr": 0.9184652874112528,
+   "rerun_rwcr": 0.9184652874112528,
+   "committed_cost": 0.7038311764998229,
+   "rerun_cost": 0.7038311764998229,
+   "max_abs_diff": 0.0
+  },
+  {
+   "cell": "rural_highway/d=20/clear/fog_bank",
+   "setting": "dvcast(n_slots=30)",
+   "committed_rwcr": 0.9215255239638462,
+   "rerun_rwcr": 0.9215255239638462,
+   "committed_cost": 0.7304126873207141,
+   "rerun_cost": 0.7304126873207141,
+   "max_abs_diff": 0.0
+  },
+  {
+   "cell": "rural_highway/d=80/clear/fog_bank",
+   "setting": "weighted_p(max_p=0.15)",
+   "committed_rwcr": 0.9017279266658754,
+   "rerun_rwcr": 0.9017279266658755,
+   "committed_cost": 1.5117679168316374,
+   "rerun_cost": 1.5117679168316374,
+   "max_abs_diff": 1.1102230246251565e-16
+  },
+  {
+   "cell": "rural_highway/d=80/clear/fog_bank",
+   "setting": "dvcast(n_slots=30)",
+   "committed_rwcr": 0.9149720944616728,
+   "rerun_rwcr": 0.9149720944616728,
+   "committed_cost": 1.7033746785407176,
+   "rerun_cost": 1.7033746785407176,
+   "max_abs_diff": 0.0
+  },
+  {
+   "cell": "urban_nlos/d=20/clear/fog_bank",
+   "setting": "counter_based(counter_threshold=1)",
+   "committed_rwcr": 0.9628882278627989,
+   "rerun_rwcr": 0.9628882278627989,
+   "committed_cost": 0.5328827299751755,
+   "rerun_cost": 0.5328827299751755,
+   "max_abs_diff": 0.0
+  },
+  {
+   "cell": "urban_nlos/d=20/clear/fog_bank",
+   "setting": "dvcast(n_slots=30)",
+   "committed_rwcr": 0.9615305722023422,
+   "rerun_rwcr": 0.9615305722023422,
+   "committed_cost": 0.5666367693638255,
+   "rerun_cost": 0.5666367693638255,
+   "max_abs_diff": 0.0
+  },
+  {
+   "cell": "rural_highway/d=20 agent",
+   "setting": "ai_harp(suppression_bias=-2.0)",
+   "committed_rwcr": 0.9048508845298644,
+   "rerun_rwcr": 0.9048508845298644,
+   "committed_cost": 0.7361815331061858,
+   "rerun_cost": 0.7361815331061858,
+   "max_abs_diff": 0.0
+  },
+  {
+   "cell": "rural_highway/d=20 agent",
+   "setting": "ai_harp(suppression_bias=1.0)",
+   "committed_rwcr": 0.8781817727488193,
+   "rerun_rwcr": 0.8781817727488193,
+   "committed_cost": 0.7164040811783989,
+   "rerun_cost": 0.7164040811783989,
+   "max_abs_diff": 0.0
+  }
+ ],
+ "max_abs_diff": 1.1102230246251565e-16,
+ "agent_checked": true,
+ "provenance": {
+  "task": "E1",
+  "git_commit": "5be5fd913b08db0006556f4c59aedf71b7daad8a",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": [
+   "aiharp-gpu",
+   "Scripts",
+   "python.exe"
+  ],
+  "command": "python -m experiments.revision1.e1_headline --jobs 2",
+  "config_hash": "07c379991628",
+  "config": {
+   "what": "headline reference settings + agent anchors"
+  },
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "generated": "2026-10-16 21:31:46"
+ }
+}
