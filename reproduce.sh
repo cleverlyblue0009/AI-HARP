@@ -4,6 +4,7 @@
 #   ./reproduce.sh            full run (hours)
 #   ./reproduce.sh --smoke    end-to-end on tiny settings (minutes)
 #   ./reproduce.sh --no-train reuse the committed checkpoint instead of training
+#   ./reproduce.sh --revision1 also regenerate results/revision1/ (reviewer tasks)
 #
 # Nothing here takes a number on faith: every stage writes into results/ with a
 # config hash and a metrics_version, and the figures read only those files.
@@ -21,10 +22,12 @@ fi
 
 SMOKE=0
 TRAIN=1
+REV1=0
 for arg in "$@"; do
   case "$arg" in
     --smoke)    SMOKE=1 ;;
     --no-train) TRAIN=0 ;;
+    --revision1) REV1=1 ;;
     *) echo "unknown flag: $arg" >&2; exit 2 ;;
   esac
 done
@@ -166,6 +169,12 @@ fi
 
 step "6. Figures and tables -> results/figures, results/tables"
 "$PY" -m analysis.report
+
+if [[ $REV1 -eq 1 ]]; then
+  step "7. Revision-1 reviewer tasks -> results/revision1/"
+  REV_FLAGS=(); [[ $TRAIN -eq 0 ]] && REV_FLAGS=(--no-train)
+  AIHARP_PYTHON="$PY" AIHARP_TRAIN_PYTHON="$TRAIN_PY" bash experiments/revision1/reproduce_revision1.sh "${REV_FLAGS[@]}"
+fi
 
 step "Done"
 echo "results/  figures/ tables/ runs.csv risk_estimation.csv slot_granularity.csv"

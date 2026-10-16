@@ -49,10 +49,16 @@ def stamp(task: str, config: dict[str, Any], seeds: Any = None, **extra: Any) ->
 
     return {"task": task, "git_commit": git_commit(),
             "python": platform.python_version(), "numpy": numpy.__version__,
-            "interpreter": Path(sys.executable).as_posix().split("/")[-3:],
+            "interpreter": _env_name(),
             "command": " ".join(["python", "-m", _module()] + sys.argv[1:]),
             "config_hash": config_hash(config), "config": config, "seeds": seeds,
             "generated": time.strftime("%Y-%m-%d %H:%M:%S"), **extra}
+
+
+def _env_name() -> str:
+    """The environment's folder name (e.g. aiharp-gpu, miniconda3) -- never a full path."""
+    p = Path(sys.executable).parent
+    return (p.parent if p.name.lower() in ("scripts", "bin") else p).name
 
 
 def _module() -> str:

@@ -226,11 +226,7 @@
   "git_commit": "5be5fd913b08db0006556f4c59aedf71b7daad8a",
   "python": "3.12.9",
   "numpy": "1.26.4",
-  "interpreter": [
-   "aiharp-gpu",
-   "Scripts",
-   "python.exe"
-  ],
+  "interpreter": "aiharp-gpu",
   "command": "python -m experiments.revision1.c3_fallback",
   "config_hash": "0f71723b0050",
   "config": {

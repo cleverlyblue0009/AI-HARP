@@ -1084,11 +1084,7 @@
   "git_commit": "ead29992a079b962869a8d621757db03d78c9b75-dirty",
   "python": "3.12.9",
   "numpy": "2.0.1",
-  "interpreter": [
-   "UPASANA",
-   "miniconda3",
-   "python.exe"
-  ],
+  "interpreter": "miniconda3",
   "command": "python -m experiments.revision1.b4_stats bootstrap",
   "config_hash": "e576e4df7dc5",
   "config": {

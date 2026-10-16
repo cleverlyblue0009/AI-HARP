@@ -3,11 +3,7 @@
  "git_commit": "8d8ac7fe87c711924ba72d52017b8329b1044377",
  "python": "3.12.9",
  "numpy": "2.0.1",
- "interpreter": [
-  "UPASANA",
-  "miniconda3",
-  "python.exe"
- ],
+ "interpreter": "miniconda3",
  "command": "python -m experiments.revision1.sweeps slots --jobs 8",
  "config_hash": "ef1001f6993b",
  "config": {

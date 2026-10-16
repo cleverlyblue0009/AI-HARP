@@ -112,10 +112,12 @@ def load_rows(path: Path | str) -> list[dict[str, Any]]:
 
 
 def run_tasks(tasks: Sequence[dict[str, Any]], path: Path, jobs: int = 4,
-              log_every: int = 200) -> list[dict[str, Any]]:
-    """Run every task not already in ``path``; return all rows for ``tasks``."""
+              log_every: int = 200, also: Sequence[Path] = ()) -> list[dict[str, Any]]:
+    """Run every task not already in ``path`` (or in any ``also`` file, whose rows
+    are reused rather than re-run); return all rows for ``tasks``."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    done = {r["task_hash"] for r in load_rows(path)}
+    other = [r for p in also for r in load_rows(p)]
+    done = {r["task_hash"] for r in load_rows(path)} | {r["task_hash"] for r in other}
     todo = [t for t in tasks if t["task_hash"] not in done]
     seen: set[str] = set()
     todo = [t for t in todo if not (t["task_hash"] in seen or seen.add(t["task_hash"]))]
@@ -140,7 +142,7 @@ def run_tasks(tasks: Sequence[dict[str, Any]], path: Path, jobs: int = 4,
                     if i % log_every == 0:
                         print(f"[runner] {i}/{len(todo)}", flush=True)
     want = {t["task_hash"] for t in tasks}
-    return [r for r in load_rows(path) if r["task_hash"] in want]
+    return [r for r in load_rows(path) + other if r["task_hash"] in want]
 
 
 def _num(x: Any) -> float:

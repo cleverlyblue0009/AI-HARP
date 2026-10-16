@@ -236,11 +236,7 @@
   "git_commit": "8d8ac7fe87c711924ba72d52017b8329b1044377-dirty",
   "python": "3.12.9",
   "numpy": "1.26.4",
-  "interpreter": [
-   "aiharp-gpu",
-   "Scripts",
-   "python.exe"
-  ],
+  "interpreter": "aiharp-gpu",
   "command": "python -m experiments.revision1.b2_slots",
   "config_hash": "ffaf697bf89c",
   "config": {

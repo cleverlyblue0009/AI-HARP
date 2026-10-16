@@ -61,11 +61,11 @@ def build(name: str):
         # C4 baseline curves for the generalization cells not already in grid24.
         from experiments.revision1.agent_eval import GENERALIZATION
 
-        gen = [c for c in GENERALIZATION if c[0] != "urban_grid"]
+        gen = list(GENERALIZATION)
         tasks = [task(sc, d, p, s, weather=w, hazard_type=h, param=a, value=v)
                  for sc, d, w, h in gen for p, a, v in knob_settings() for s in EVAL_SEEDS]
         meta = {"sweep": name, "cells": gen, "n_settings": len(knob_settings()),
-                "note": "urban_grid generalization cells come from grid24"}
+                "note": "the urban_grid cells here are also grid24 cells; grid24 reuses these rows"}
         return tasks, meta, EVAL_SEEDS
     elif name == "slots":
         cells, seeds, causal = HEADLINE, EVAL_SEEDS, False
@@ -90,7 +90,8 @@ def main(argv: list[str] | None = None) -> int:
     d = out_dir("B_sweeps")
     write_json(d / f"{args.sweep}_meta.json", stamp(f"B_sweeps/{args.sweep}", meta, seeds=seeds,
                                                     n_runs=len(tasks)))
-    rows = run_tasks(tasks, d / f"{args.sweep}_runs.csv", jobs=args.jobs)
+    also = [d / "gen_runs.csv"] if args.sweep == "grid24" else []
+    rows = run_tasks(tasks, d / f"{args.sweep}_runs.csv", jobs=args.jobs, also=also)
     print(f"[sweeps] {args.sweep}: {len(rows)} / {len(tasks)} rows")
     return 0
 

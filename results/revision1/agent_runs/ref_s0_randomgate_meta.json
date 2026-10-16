@@ -4,11 +4,7 @@
   "git_commit": "8d8ac7fe87c711924ba72d52017b8329b1044377-dirty",
   "python": "3.12.9",
   "numpy": "1.26.4",
-  "interpreter": [
-   "aiharp-gpu",
-   "Scripts",
-   "python.exe"
-  ],
+  "interpreter": "aiharp-gpu",
   "command": "python -m experiments.revision1.agent_eval --checkpoint checkpoints/campaign/ref/ckpt_final.pt --name ref_s0_randomgate --random-gate-from results/revision1/agent_runs/ref_s0.csv --modes sampled --jobs 3",
   "config_hash": "3c6dfc2a0bda",
   "config": {
