@@ -1,0 +1,1070 @@
+{
+ "A1": {
+  "evaluation_target": {
+   "definition": "q* = 0.95 x max over every baseline knob setting in the cell of mean ORACLE RWCR on eval seeds 0-9 (agent excluded); a setting also needs actionable-miss <= cell best + 0.05",
+   "code": "analysis/comparator.py Cell.resolve_target / resolve_miss_bound",
+   "source_file": "results/pareto_cells.json",
+   "per_cell": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "ceiling_oracle_rwcr": 0.6746886783351622,
+     "ceiling_setting": "dvcast(n_slots=50)",
+     "target_0.95x": 0.6409542444184041,
+     "miss_bound": 0.579183200857114,
+     "best_miss_rate": 0.5291832008571139,
+     "n_settings_in_ceiling": 55
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "ceiling_oracle_rwcr": 0.9249848742325941,
+     "ceiling_setting": "p_persistence_03(p=0.9)",
+     "target_0.95x": 0.8787356305209644,
+     "miss_bound": 0.363525089661525,
+     "best_miss_rate": 0.31352508966152504,
+     "n_settings_in_ceiling": 55
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "ceiling_oracle_rwcr": 0.9152865533069207,
+     "ceiling_setting": "slotted_1p(n_slots=3)",
+     "target_0.95x": 0.8695222256415746,
+     "miss_bound": 0.36801029392538454,
+     "best_miss_rate": 0.31801029392538455,
+     "n_settings_in_ceiling": 55
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "ceiling_oracle_rwcr": 0.974892597720039,
+     "ceiling_setting": "counter_based(counter_threshold=4)",
+     "target_0.95x": 0.926147967834037,
+     "miss_bound": 0.11653093019665003,
+     "best_miss_rate": 0.06653093019665003,
+     "n_settings_in_ceiling": 55
+    }
+   }
+  },
+  "training_target": {
+   "definition": "q*_g = 0.95 x max(flooding default, dvcast default) mean CAUSAL coverage per (scenario, density, weather, hazard) cell on training seeds 100-131; the multiplier for group (scenario, density) is stepped on pooled shortfall (sum target - sum coverage)/sum target",
+   "code": "agents/constrained_reward.py CoverageTargets; experiments/coverage_targets.py",
+   "source_file": "results/coverage_targets.json",
+   "provenance": {
+    "reference_policies": [
+     "flooding",
+     "dvcast"
+    ],
+    "coverage": "causal",
+    "n_seeds": 32,
+    "n_cells": 96,
+    "quick": false
+   },
+   "target_fraction": 0.95,
+   "per_group": {
+    "rural_highway|1": {
+     "mean_ceiling_causal": 0.2527209258782909,
+     "mean_target": 0.24008487958437635,
+     "min_target": 0.21267869878464032,
+     "max_target": 0.27285246323757434,
+     "n_cells": 6
+    },
+    "rural_highway|2": {
+     "mean_ceiling_causal": 0.7874685017081738,
+     "mean_target": 0.7480950766227651,
+     "min_target": 0.7100362989441584,
+     "max_target": 0.7773250741345983,
+     "n_cells": 6,
+     "headline_cell_clear_fog_bank_target": 0.7201381510719709
+    },
+    "rural_highway|3": {
+     "mean_ceiling_causal": 0.8758484125815484,
+     "mean_target": 0.8320559919524709,
+     "min_target": 0.7890888434753824,
+     "max_target": 0.8693919751586477,
+     "n_cells": 6
+    },
+    "rural_highway|5": {
+     "mean_ceiling_causal": 0.9651271297079883,
+     "mean_target": 0.9168707732225888,
+     "min_target": 0.8926282170608796,
+     "max_target": 0.9436103620587664,
+     "n_cells": 6
+    },
+    "rural_highway|10": {
+     "mean_ceiling_causal": 0.9789779613527171,
+     "mean_target": 0.9300290632850812,
+     "min_target": 0.9127306045628635,
+     "max_target": 0.948934156909013,
+     "n_cells": 6
+    },
+    "rural_highway|20": {
+     "mean_ceiling_causal": 0.9867543076114762,
+     "mean_target": 0.9374165922309023,
+     "min_target": 0.9234395004624038,
+     "max_target": 0.9495615804266143,
+     "n_cells": 6,
+     "headline_cell_clear_fog_bank_target": 0.9255570444633671
+    },
+    "rural_highway|40": {
+     "mean_ceiling_causal": 0.9938218660343182,
+     "mean_target": 0.9441307727326023,
+     "min_target": 0.9394871678258963,
+     "max_target": 0.947365925560088,
+     "n_cells": 6
+    },
+    "rural_highway|80": {
+     "mean_ceiling_causal": 0.9988973425409018,
+     "mean_target": 0.9489524754138566,
+     "min_target": 0.9484427700859098,
+     "max_target": 0.95,
+     "n_cells": 6,
+     "headline_cell_clear_fog_bank_target": 0.9484427700859098
+    },
+    "urban_nlos|1": {
+     "mean_ceiling_causal": 0.21194798693235484,
+     "mean_target": 0.2013505875857371,
+     "min_target": 0.19632903888662825,
+     "max_target": 0.20549782623307963,
+     "n_cells": 6
+    },
+    "urban_nlos|2": {
+     "mean_ceiling_causal": 0.3078974550310929,
+     "mean_target": 0.29250258227953824,
+     "min_target": 0.27516805745434125,
+     "max_target": 0.30943648240887206,
+     "n_cells": 6
+    },
+    "urban_nlos|3": {
+     "mean_ceiling_causal": 0.31313615339092055,
+     "mean_target": 0.2974793457213745,
+     "min_target": 0.27352009886968115,
+     "max_target": 0.3223540253768881,
+     "n_cells": 6
+    },
+    "urban_nlos|5": {
+     "mean_ceiling_causal": 0.3087324117625498,
+     "mean_target": 0.2932957911744223,
+     "min_target": 0.2681292258498495,
+     "max_target": 0.3223594970391073,
+     "n_cells": 6
+    },
+    "urban_nlos|10": {
+     "mean_ceiling_causal": 0.297881354980157,
+     "mean_target": 0.28298728723114913,
+     "min_target": 0.26132408544578795,
+     "max_target": 0.3075868871073041,
+     "n_cells": 6
+    },
+    "urban_nlos|20": {
+     "mean_ceiling_causal": 0.2981339915370899,
+     "mean_target": 0.2832272919602354,
+     "min_target": 0.2553647790581758,
+     "max_target": 0.31336955356117374,
+     "n_cells": 6,
+     "headline_cell_clear_fog_bank_target": 0.2655741557291016
+    },
+    "urban_nlos|40": {
+     "mean_ceiling_causal": 0.3131220048590147,
+     "mean_target": 0.2974659046160639,
+     "min_target": 0.26355742820549277,
+     "max_target": 0.3349640228516803,
+     "n_cells": 6
+    },
+    "urban_nlos|80": {
+     "mean_ceiling_causal": 0.35686083026351173,
+     "mean_target": 0.3390177887503361,
+     "min_target": 0.294057162498483,
+     "max_target": 0.38325953275764857,
+     "n_cells": 6
+    }
+   }
+  },
+  "feasibility_target": {
+   "definition_training": "same as training target, but computed from the ceiling file AS IT STOOD when the sweep was summarised",
+   "definition_evaluation": "0.95 x best mean oracle RWCR over 63 settings (eval seeds 0-9)",
+   "source_file": "results/feasibility/sparse_feasibility.json",
+   "provenance": {
+    "n_runs": 31752,
+    "settings": 63,
+    "train_seeds": [
+     100,
+     101,
+     102,
+     103,
+     104,
+     105,
+     106,
+     107,
+     108,
+     109,
+     110,
+     111,
+     112,
+     113,
+     114,
+     115,
+     116,
+     117,
+     118,
+     119,
+     120,
+     121,
+     122,
+     123,
+     124,
+     125,
+     126,
+     127,
+     128,
+     129,
+     130,
+     131
+    ],
+    "eval_seeds": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9
+    ],
+    "targets_path": "results/coverage_targets.json",
+    "target_seeds_used_for_ceiling": 2
+   },
+   "training_mean_target": {
+    "rural_highway|2": 0.8910717044163855,
+    "urban_nlos|2": 0.328625164650262
+   },
+   "training_settings_meeting": {
+    "rural_highway|2": 0,
+    "urban_nlos|2": 7
+   },
+   "evaluation": {
+    "rural_highway|2|clear|crash": {
+     "ceiling": 0.6279981554439988,
+     "target": 0.5965982476717989,
+     "n_meeting": 10,
+     "n_settings": 63
+    },
+    "rural_highway|2|clear|fog_bank": {
+     "ceiling": 0.6746886783351622,
+     "target": 0.6409542444184041,
+     "n_meeting": 14,
+     "n_settings": 63
+    },
+    "rural_highway|2|clear|landslide": {
+     "ceiling": 0.6605169690593358,
+     "target": 0.6274911206063689,
+     "n_meeting": 14,
+     "n_settings": 63
+    },
+    "rural_highway|2|heavy_rain|crash": {
+     "ceiling": 0.6891081992869362,
+     "target": 0.6546527893225894,
+     "n_meeting": 5,
+     "n_settings": 63
+    },
+    "rural_highway|2|heavy_rain|fog_bank": {
+     "ceiling": 0.7386910306842219,
+     "target": 0.7017564791500108,
+     "n_meeting": 4,
+     "n_settings": 63
+    },
+    "rural_highway|2|heavy_rain|landslide": {
+     "ceiling": 0.7255999484603259,
+     "target": 0.6893199510373096,
+     "n_meeting": 4,
+     "n_settings": 63
+    },
+    "urban_nlos|2|clear|crash": {
+     "ceiling": 0.9658426459425662,
+     "target": 0.9175505136454378,
+     "n_meeting": 19,
+     "n_settings": 63
+    },
+    "urban_nlos|2|clear|fog_bank": {
+     "ceiling": 0.9447128800894873,
+     "target": 0.8974772360850128,
+     "n_meeting": 27,
+     "n_settings": 63
+    },
+    "urban_nlos|2|clear|landslide": {
+     "ceiling": 0.9434201028003288,
+     "target": 0.8962490976603124,
+     "n_meeting": 27,
+     "n_settings": 63
+    },
+    "urban_nlos|2|heavy_rain|crash": {
+     "ceiling": 0.9550858153497976,
+     "target": 0.9073315245823077,
+     "n_meeting": 6,
+     "n_settings": 63
+    },
+    "urban_nlos|2|heavy_rain|fog_bank": {
+     "ceiling": 0.9571931833325102,
+     "target": 0.9093335241658846,
+     "n_meeting": 6,
+     "n_settings": 63
+    },
+    "urban_nlos|2|heavy_rain|landslide": {
+     "ceiling": 0.9556942667136481,
+     "target": 0.9079095533779656,
+     "n_meeting": 6,
+     "n_settings": 63
+    }
+   },
+   "current_32seed_mean_target": {
+    "rural_highway|2": 0.7480950766227651,
+    "urban_nlos|2": 0.29250258227953824
+   }
+  }
+ },
+ "A2": {
+  "matched_cost": 0.7168148145973955,
+  "agent_evaluation_json_value": 0.7168148145973955,
+  "target_rwcr": 0.8787356305209644,
+  "miss_bound": 0.363525089661525,
+  "swept_knob": "suppression_bias in {-2,-1,0,1,2,3} (experiments/evaluate_agent.py DEFAULT_BIASES), gate tau=0.5, sampled policy, eval seeds 0-9",
+  "curve": [
+   {
+    "bias": -2.0,
+    "rwcr": 0.9048508845298644,
+    "cost": 0.7361815331061858,
+    "miss": 0.3318350361461053,
+    "tir_median_s": 0.3200000000000006,
+    "fallback_rate": 0.19769730874889557
+   },
+   {
+    "bias": -1.0,
+    "rwcr": 0.8938848134169538,
+    "cost": 0.7674498668585743,
+    "miss": 0.3425355965453959,
+    "tir_median_s": 0.3300000000000006,
+    "fallback_rate": 0.21466384025332474
+   },
+   {
+    "bias": 0.0,
+    "rwcr": 0.8909480515358672,
+    "cost": 0.7690385018367606,
+    "miss": 0.34668843964987406,
+    "tir_median_s": 0.3200000000000006,
+    "fallback_rate": 0.18081383017037359
+   },
+   {
+    "bias": 1.0,
+    "rwcr": 0.8781817727488193,
+    "cost": 0.7164040811783989,
+    "miss": 0.36266172713564115,
+    "tir_median_s": 0.31000000000000066,
+    "fallback_rate": 0.12292686935858106
+   },
+   {
+    "bias": 2.0,
+    "rwcr": 0.8751037543501103,
+    "cost": 0.655648328197947,
+    "miss": 0.36295005119915225,
+    "tir_median_s": 0.31000000000000066,
+    "fallback_rate": 0.05469563415472871
+   },
+   {
+    "bias": 3.0,
+    "rwcr": 0.8589163453604807,
+    "cost": 0.581399459415333,
+    "miss": 0.3809882415012731,
+    "tir_median_s": 0.31000000000000066,
+    "fallback_rate": 0.04153771130334568
+   }
+  ],
+  "upper_anchor": {
+   "bias": -2.0,
+   "rwcr": 0.9048508845298644,
+   "cost": 0.7361815331061858
+  },
+  "lower_anchor": {
+   "bias": 1.0,
+   "rwcr": 0.8781817727488193,
+   "cost": 0.7164040811783989
+  },
+  "interp_fraction": 0.02076776222216619,
+  "computation": "PolicyCurve.overhead_at: cheapest setting meeting target and miss bound (upper anchor), linearly interpolated toward the most expensive setting that falls short and is cheaper (lower anchor). Anchors are chosen by COST, not by adjacency in the bias knob.",
+  "table2_rows_runs_csv": {
+   "tau=0": {
+    "cost_mean": 0.8300700149221418,
+    "rwcr_mean": 0.886923474278916,
+    "n": 10,
+    "checkpoint_sha": "b589be512827fcbb"
+   },
+   "tau=0.5": {
+    "cost_mean": 0.7690385018367606,
+    "rwcr_mean": 0.8909480515358672,
+    "n": 10,
+    "checkpoint_sha": "b589be512827fcbb"
+   }
+  },
+  "table2_source": "results/runs.csv rows policy=ai_harp at suppression_bias 0 (single setting, not matched); results/tables/table_main.tex"
+ },
+ "A3": {
+  "table2_pooled_view": {
+   "rows_per_scheme": 200,
+   "rwcr_mean_by_policy": {
+    "p_persistence_03": 0.8722569335796745,
+    "dvcast": 0.9150506877593504,
+    "slotted_1p": 0.9152828417963806,
+    "greedy_farthest": 0.9154599400000761,
+    "weighted_p": 0.9156410651974002,
+    "p_persistence_05": 0.9156832215747422,
+    "p_persistence_07": 0.9161869158353041,
+    "flooding": 0.9161924113295578,
+    "counter_based": 0.916803809384746
+   },
+   "spread_all_nine": [
+    0.8722569335796745,
+    0.916803809384746,
+    0.04454687580507155
+   ],
+   "spread_without_p_persistence_03": [
+    0.9150506877593504,
+    0.916803809384746,
+    0.0017531216253956483
+   ],
+   "miss_actionable_by_policy": {
+    "counter_based": 0.3146480100632569,
+    "dvcast": 0.3160071202339165,
+    "flooding": 0.31542183649873584,
+    "greedy_farthest": 0.31416335952885854,
+    "p_persistence_03": 0.35045944670835,
+    "p_persistence_05": 0.3158842107606322,
+    "p_persistence_07": 0.3152929477036231,
+    "slotted_1p": 0.31585592913992067,
+    "weighted_p": 0.3159247125369221
+   },
+   "agent_by_tau": {
+    "0.0": {
+     "rwcr": 0.878809884544502,
+     "tx_per_at_risk_informed": 0.8518157493572376,
+     "actionable_deadline_miss_rate": 0.35171118253890055,
+     "tir_median_s": 0.31550000000000067
+    },
+    "0.5": {
+     "rwcr": 0.8899402342590023,
+     "tx_per_at_risk_informed": 0.7865984956640988,
+     "actionable_deadline_miss_rate": 0.3403756772748608,
+     "tir_median_s": 0.3232500000000006
+    }
+   }
+  },
+  "nine_baselines_in_code": [
+   "flooding",
+   "p_persistence_03",
+   "p_persistence_05",
+   "p_persistence_07",
+   "slotted_1p",
+   "weighted_p",
+   "counter_based",
+   "greedy_farthest",
+   "dvcast"
+  ],
+  "code": "configs/experiment.yaml sweep.policies",
+  "rwcr_mean_by_policy": {
+   "p_persistence_03": 0.8892819650345029,
+   "dvcast": 0.92138727221881,
+   "slotted_1p": 0.9222612354470396,
+   "flooding": 0.9224646777738819,
+   "counter_based": 0.9234649335925367,
+   "greedy_farthest": 0.9235382660762754,
+   "p_persistence_07": 0.9240748555020202,
+   "p_persistence_05": 0.9241199957282028,
+   "weighted_p": 0.9249848742325939
+  },
+  "spread_all_nine": [
+   0.8892819650345029,
+   0.9249848742325939,
+   0.03570290919809105
+  ],
+  "spread_without_p_persistence_03": [
+   0.92138727221881,
+   0.9249848742325939,
+   0.003597602013783896
+  ],
+  "default_p_persistence_is": "p_persistence_03 (p = 0.3)",
+  "source_file": "results/runs.csv (rural_highway d=20 clear fog_bank, seeds 0-9)"
+ },
+ "A4": {
+  "exact_matches_0.240_and_0.102": [],
+  "matches_0.240_unrestricted_only": [],
+  "pooled": {
+   "rural_all_rows": {
+    "deadline_miss_rate": 0.503514423581812,
+    "actionable_deadline_miss_rate": 0.49610443495837164
+   },
+   "rural_baselines": {
+    "deadline_miss_rate": 0.5028795242698191,
+    "actionable_deadline_miss_rate": 0.49538791419421147
+   },
+   "rural_d20_clear_fog_bank_baselines": {
+    "deadline_miss_rate": 0.328102201770417,
+    "actionable_deadline_miss_rate": 0.3194170312429383
+   }
+  },
+  "rural_baselines_by_density": {
+   "1.0": {
+    "deadline_miss_rate": 0.9581329565496233,
+    "actionable_deadline_miss_rate": 0.9579989239155906
+   },
+   "2.0": {
+    "deadline_miss_rate": 0.6730528041702908,
+    "actionable_deadline_miss_rate": 0.6722835456214606
+   },
+   "3.0": {
+    "deadline_miss_rate": 0.5495483470326947,
+    "actionable_deadline_miss_rate": 0.5454753870635174
+   },
+   "5.0": {
+    "deadline_miss_rate": 0.4415367175588393,
+    "actionable_deadline_miss_rate": 0.4382997090973566
+   },
+   "10.0": {
+    "deadline_miss_rate": 0.3576701741285154,
+    "actionable_deadline_miss_rate": 0.35234689130733865
+   },
+   "20.0": {
+    "deadline_miss_rate": 0.326990902218206,
+    "actionable_deadline_miss_rate": 0.3192952859082462
+   },
+   "40.0": {
+    "deadline_miss_rate": 0.3526300207006947,
+    "actionable_deadline_miss_rate": 0.34798817712295255
+   },
+   "80.0": {
+    "deadline_miss_rate": 0.36347427179968855,
+    "actionable_deadline_miss_rate": 0.3294153935172295
+   }
+  },
+  "table2_miss_column": "actionable_deadline_miss_rate, rural d=20 clear fog_bank (results/tables/table_main.tex)",
+  "definitions": "analysis/metrics.py deadline_miss_rate (all at-risk) vs actionable_deadline_miss_rate (at-risk with time to act)"
+ },
+ "A5": {
+  "run8_cap50": {
+   "history": "checkpoints/run8/history.jsonl",
+   "updates": 1000,
+   "finetune_updates": 800,
+   "updates_with_any_lambda_saturated": 357,
+   "lambda_max_cfg": null,
+   "per_group": {
+    "rural_highway|1": {
+     "peak": 7.5411127978101495,
+     "peak_update": 342,
+     "final": 0.8332448080583046,
+     "plateau_mean_last100": 2.307965529100934,
+     "plateau_mean_last200": 1.5139734513487912,
+     "n_updates_seen": 441
+    },
+    "rural_highway|10": {
+     "peak": 3.4807184082293148,
+     "peak_update": 385,
+     "final": 2.593948314929706,
+     "plateau_mean_last100": 2.461192210060403,
+     "plateau_mean_last200": 2.3132398093724884,
+     "n_updates_seen": 192
+    },
+    "rural_highway|2": {
+     "peak": 50.0,
+     "peak_update": 597,
+     "final": 50.0,
+     "plateau_mean_last100": 49.98643599288529,
+     "plateau_mean_last200": 49.98382084816819,
+     "n_updates_seen": 407
+    },
+    "rural_highway|20": {
+     "peak": 2.952775833593122,
+     "peak_update": 72,
+     "final": 0.12228384017451471,
+     "plateau_mean_last100": 0.3171040229156376,
+     "plateau_mean_last200": 0.46348792280242124,
+     "n_updates_seen": 313
+    },
+    "rural_highway|3": {
+     "peak": 49.68588478343268,
+     "peak_update": 994,
+     "final": 49.564302801739835,
+     "plateau_mean_last100": 48.337302949431404,
+     "plateau_mean_last200": 45.91366647584591,
+     "n_updates_seen": 441
+    },
+    "rural_highway|40": {
+     "peak": 8.076541642983168,
+     "peak_update": 790,
+     "final": 7.985408969092389,
+     "plateau_mean_last100": 8.006236456749324,
+     "plateau_mean_last200": 7.939212435376291,
+     "n_updates_seen": 316
+    },
+    "rural_highway|5": {
+     "peak": 9.828959022143586,
+     "peak_update": 489,
+     "final": 5.3721085093059235,
+     "plateau_mean_last100": 5.498190587364699,
+     "plateau_mean_last200": 5.750709016769292,
+     "n_updates_seen": 455
+    },
+    "rural_highway|80": {
+     "peak": 1.9453678686848659,
+     "peak_update": 1,
+     "final": 0.5621062212899736,
+     "plateau_mean_last100": 0.7037046775818862,
+     "plateau_mean_last200": 0.41167051742590144,
+     "n_updates_seen": 344
+    },
+    "urban_nlos|1": {
+     "peak": 2.5882313276925326,
+     "peak_update": 208,
+     "final": 0.7711568665875437,
+     "plateau_mean_last100": 0.4210658043976087,
+     "plateau_mean_last200": 0.3871872541555761,
+     "n_updates_seen": 419
+    },
+    "urban_nlos|10": {
+     "peak": 13.605288671020192,
+     "peak_update": 695,
+     "final": 12.969932047551168,
+     "plateau_mean_last100": 13.29025774365335,
+     "plateau_mean_last200": 13.20904781385342,
+     "n_updates_seen": 200
+    },
+    "urban_nlos|2": {
+     "peak": 50.0,
+     "peak_update": 694,
+     "final": 50.0,
+     "plateau_mean_last100": 49.97298083486423,
+     "plateau_mean_last200": 49.96306009810442,
+     "n_updates_seen": 420
+    },
+    "urban_nlos|20": {
+     "peak": 28.18861075871684,
+     "peak_update": 1000,
+     "final": 28.18861075871684,
+     "plateau_mean_last100": 27.55674645816392,
+     "plateau_mean_last200": 27.251780617044307,
+     "n_updates_seen": 352
+    },
+    "urban_nlos|3": {
+     "peak": 4.219422019040935,
+     "peak_update": 231,
+     "final": 0.0,
+     "plateau_mean_last100": 0.09143243167198595,
+     "plateau_mean_last200": 0.08874538452385507,
+     "n_updates_seen": 437
+    },
+    "urban_nlos|40": {
+     "peak": 21.848726755828757,
+     "peak_update": 996,
+     "final": 21.83196661748117,
+     "plateau_mean_last100": 21.582711748911166,
+     "plateau_mean_last200": 21.239146912497112,
+     "n_updates_seen": 324
+    },
+    "urban_nlos|5": {
+     "peak": 4.011928276948146,
+     "peak_update": 244,
+     "final": 0.31749753991762814,
+     "plateau_mean_last100": 0.05423042952799561,
+     "plateau_mean_last200": 0.08534615967790317,
+     "n_updates_seen": 450
+    },
+    "urban_nlos|80": {
+     "peak": 3.25414553853703,
+     "peak_update": 136,
+     "final": 1.1169316904398503,
+     "plateau_mean_last100": 1.414908197653923,
+     "plateau_mean_last200": 1.511287626707308,
+     "n_updates_seen": 318
+    }
+   },
+   "global_peak": 50.0
+  },
+  "armA_cap500": {
+   "history": "checkpoints/feas_A_cap500/history.jsonl",
+   "updates": 500,
+   "finetune_updates": 300,
+   "updates_with_any_lambda_saturated": 0,
+   "lambda_max_cfg": null,
+   "per_group": {
+    "rural_highway|1": {
+     "peak": 8.758138627445796,
+     "peak_update": 432,
+     "final": 1.1288095760584202,
+     "plateau_mean_last100": 5.5635930594096115,
+     "plateau_mean_last200": 5.40194802271871,
+     "n_updates_seen": 202
+    },
+    "rural_highway|2": {
+     "peak": 49.70117866494471,
+     "peak_update": 500,
+     "final": 49.70117866494471,
+     "plateau_mean_last100": 45.036364911177,
+     "plateau_mean_last200": 38.976701797419906,
+     "n_updates_seen": 192
+    },
+    "rural_highway|3": {
+     "peak": 33.196017823825265,
+     "peak_update": 498,
+     "final": 33.196017823825265,
+     "plateau_mean_last100": 30.200166328774106,
+     "plateau_mean_last200": 26.244301726454825,
+     "n_updates_seen": 205
+    },
+    "rural_highway|5": {
+     "peak": 7.5934251359501035,
+     "peak_update": 291,
+     "final": 4.944281467738864,
+     "plateau_mean_last100": 5.85430446654311,
+     "plateau_mean_last200": 6.422602735170412,
+     "n_updates_seen": 208
+    },
+    "urban_nlos|1": {
+     "peak": 3.413055850031413,
+     "peak_update": 215,
+     "final": 0.0,
+     "plateau_mean_last100": 0.25228503307949773,
+     "plateau_mean_last200": 0.2807984779666573,
+     "n_updates_seen": 193
+    },
+    "urban_nlos|2": {
+     "peak": 48.66406868394831,
+     "peak_update": 496,
+     "final": 48.61952120801037,
+     "plateau_mean_last100": 41.78855826978062,
+     "plateau_mean_last200": 35.84019239332917,
+     "n_updates_seen": 205
+    },
+    "urban_nlos|3": {
+     "peak": 7.463274760533596,
+     "peak_update": 257,
+     "final": 0.0,
+     "plateau_mean_last100": 0.15674767174568624,
+     "plateau_mean_last200": 1.8346161871017046,
+     "n_updates_seen": 208
+    },
+    "urban_nlos|5": {
+     "peak": 9.908050110369933,
+     "peak_update": 412,
+     "final": 6.707990030555455,
+     "plateau_mean_last100": 8.582486577516038,
+     "plateau_mean_last200": 8.562159327501032,
+     "n_updates_seen": 187
+    }
+   },
+   "global_peak": 49.70117866494471
+  },
+  "armB_init500": {
+   "history": "checkpoints/feas_B_init500/history.jsonl",
+   "updates": 800,
+   "finetune_updates": 600,
+   "updates_with_any_lambda_saturated": 522,
+   "lambda_max_cfg": null,
+   "per_group": {
+    "rural_highway|1": {
+     "peak": 500.0,
+     "peak_update": 203,
+     "final": 480.0819030772438,
+     "plateau_mean_last100": 481.4517928089542,
+     "plateau_mean_last200": 483.8342413446964,
+     "n_updates_seen": 387
+    },
+    "rural_highway|2": {
+     "peak": 500.0,
+     "peak_update": 202,
+     "final": 500.0,
+     "plateau_mean_last100": 499.9539350409098,
+     "plateau_mean_last200": 499.9590645141692,
+     "n_updates_seen": 373
+    },
+    "rural_highway|3": {
+     "peak": 500.0,
+     "peak_update": 201,
+     "final": 499.84307910073574,
+     "plateau_mean_last100": 499.8643108607157,
+     "plateau_mean_last200": 499.8947915271389,
+     "n_updates_seen": 409
+    },
+    "rural_highway|5": {
+     "peak": 500.0,
+     "peak_update": 201,
+     "final": 478.4823323099253,
+     "plateau_mean_last100": 480.38444201493394,
+     "plateau_mean_last200": 482.2098367046568,
+     "n_updates_seen": 405
+    },
+    "urban_nlos|1": {
+     "peak": 499.62104230356607,
+     "peak_update": 208,
+     "final": 313.8379782320789,
+     "plateau_mean_last100": 327.9743837453294,
+     "plateau_mean_last200": 343.3865768832391,
+     "n_updates_seen": 383
+    },
+    "urban_nlos|2": {
+     "peak": 500.0,
+     "peak_update": 201,
+     "final": 499.8858940952997,
+     "plateau_mean_last100": 499.89015395320627,
+     "plateau_mean_last200": 499.7623599858591,
+     "n_updates_seen": 390
+    },
+    "urban_nlos|3": {
+     "peak": 500.0,
+     "peak_update": 202,
+     "final": 440.85432209232874,
+     "plateau_mean_last100": 443.3299359735759,
+     "plateau_mean_last200": 447.8942340755875,
+     "n_updates_seen": 404
+    },
+    "urban_nlos|5": {
+     "peak": 499.33635983628955,
+     "peak_update": 203,
+     "final": 447.3670455563486,
+     "plateau_mean_last100": 452.136046629863,
+     "plateau_mean_last200": 457.35865972256175,
+     "n_updates_seen": 383
+    }
+   },
+   "global_peak": 500.0
+  },
+  "campaign_ref_cap500": {
+   "history": "checkpoints/campaign/ref/history.jsonl",
+   "updates": 1000,
+   "finetune_updates": 800,
+   "updates_with_any_lambda_saturated": 0,
+   "lambda_max_cfg": null,
+   "per_group": {
+    "rural_highway|1": {
+     "peak": 4.221792992084508,
+     "peak_update": 243,
+     "final": 0.8306466853774696,
+     "plateau_mean_last100": 1.0241930735752691,
+     "plateau_mean_last200": 0.8217043697424693,
+     "n_updates_seen": 441
+    },
+    "rural_highway|10": {
+     "peak": 2.6824728906109816,
+     "peak_update": 568,
+     "final": 2.6262962527203317,
+     "plateau_mean_last100": 1.7028469608139551,
+     "plateau_mean_last200": 1.085350066873135,
+     "n_updates_seen": 192
+    },
+    "rural_highway|2": {
+     "peak": 33.18345641241637,
+     "peak_update": 1000,
+     "final": 33.18345641241637,
+     "plateau_mean_last100": 31.83743772135716,
+     "plateau_mean_last200": 30.621281050210328,
+     "n_updates_seen": 407
+    },
+    "rural_highway|20": {
+     "peak": 2.820680383955825,
+     "peak_update": 56,
+     "final": 1.492057156392363,
+     "plateau_mean_last100": 1.170436058849948,
+     "plateau_mean_last200": 0.9404607816243543,
+     "n_updates_seen": 313
+    },
+    "rural_highway|3": {
+     "peak": 22.9301680271451,
+     "peak_update": 994,
+     "final": 22.654546023695442,
+     "plateau_mean_last100": 21.35701608838337,
+     "plateau_mean_last200": 19.081186978790804,
+     "n_updates_seen": 441
+    },
+    "rural_highway|40": {
+     "peak": 11.330039880810066,
+     "peak_update": 990,
+     "final": 11.330039880810066,
+     "plateau_mean_last100": 10.752148573603986,
+     "plateau_mean_last200": 10.271167475378032,
+     "n_updates_seen": 316
+    },
+    "rural_highway|5": {
+     "peak": 12.661637069316296,
+     "peak_update": 1000,
+     "final": 12.661637069316296,
+     "plateau_mean_last100": 10.690710837229163,
+     "plateau_mean_last200": 9.119504266238117,
+     "n_updates_seen": 455
+    },
+    "rural_highway|80": {
+     "peak": 2.3626758853312873,
+     "peak_update": 75,
+     "final": 1.0891917673439797,
+     "plateau_mean_last100": 1.0455150235894426,
+     "plateau_mean_last200": 0.986838660425813,
+     "n_updates_seen": 344
+    },
+    "urban_nlos|1": {
+     "peak": 31.893007642623186,
+     "peak_update": 990,
+     "final": 31.03951392674329,
+     "plateau_mean_last100": 28.21413884212,
+     "plateau_mean_last200": 25.977490974975286,
+     "n_updates_seen": 419
+    },
+    "urban_nlos|10": {
+     "peak": 12.296660177781403,
+     "peak_update": 678,
+     "final": 10.468260977338828,
+     "plateau_mean_last100": 10.492416159041024,
+     "plateau_mean_last200": 10.386970924782302,
+     "n_updates_seen": 200
+    },
+    "urban_nlos|2": {
+     "peak": 29.523092261549415,
+     "peak_update": 999,
+     "final": 29.523092261549415,
+     "plateau_mean_last100": 27.50004749297542,
+     "plateau_mean_last200": 25.880682378425703,
+     "n_updates_seen": 420
+    },
+    "urban_nlos|20": {
+     "peak": 15.487457100679853,
+     "peak_update": 733,
+     "final": 14.767252475805956,
+     "plateau_mean_last100": 14.38368128223877,
+     "plateau_mean_last200": 14.501132223612757,
+     "n_updates_seen": 352
+    },
+    "urban_nlos|3": {
+     "peak": 7.81681344918444,
+     "peak_update": 319,
+     "final": 0.2350851228852921,
+     "plateau_mean_last100": 0.35347017271533887,
+     "plateau_mean_last200": 0.30761444101986857,
+     "n_updates_seen": 437
+    },
+    "urban_nlos|40": {
+     "peak": 9.764019494462167,
+     "peak_update": 650,
+     "final": 7.569343400199191,
+     "plateau_mean_last100": 7.707752728877742,
+     "plateau_mean_last200": 7.920740702920283,
+     "n_updates_seen": 324
+    },
+    "urban_nlos|5": {
+     "peak": 11.606150239536174,
+     "peak_update": 507,
+     "final": 6.303937488622451,
+     "plateau_mean_last100": 6.398348026569462,
+     "plateau_mean_last200": 7.197236431655617,
+     "n_updates_seen": 450
+    },
+    "urban_nlos|80": {
+     "peak": 2.7341876700538266,
+     "peak_update": 130,
+     "final": 0.0,
+     "plateau_mean_last100": 0.04663685162790395,
+     "plateau_mean_last200": 0.27041497354546995,
+     "n_updates_seen": 318
+    }
+   },
+   "global_peak": 33.18345641241637
+  }
+ },
+ "A7": {
+  "validation_json_keys": [
+   "reference",
+   "deviations",
+   "derived",
+   "per_density",
+   "mean_abs_diff"
+  ],
+  "validation": {
+   "reference": "Amador et al., Veh. Commun. 34 (2022) 100454, Table 3 (ETSI CBF); Artery/Veins/OMNeT++; 5 runs x 30 DENMs per density",
+   "deviations": [
+    "Receiver sensitivity/noise not stated: derived so free-space range = 778 m.",
+    "Vehicle speeds not stated (SUMO defaults): cars only, 100-130 km/h assumed.",
+    "CAM rate not stated: modelled as our background beacon load at 10 Hz with DCC.",
+    "One DENM per run from a moving detecting vehicle, not 30 DENMs at 1 Hz from a stationary one; statistics pooled over seeds instead.",
+    "Epoch-based engine at 10 ms: every transmission in an epoch is concurrent; 802.11p backoff is abstracted (sim/mac.py), not simulated per 13 us slot.",
+    "Mobility: our fallback generator (or SUMO if present), not the paper's SUMO network."
+   ],
+   "derived": {
+    "sensitivity_dbm": -92.67411543788022,
+    "noise_figure_db": 3.325884562119782
+   },
+   "per_density": {
+    "10": {
+     "pdr_mean": 0.9976584148855152,
+     "pdr_se": 0.000821840365302944,
+     "pdr_strict_mean": 0.9979659175265907,
+     "paper": 0.9998,
+     "diff": -0.002141585114484812,
+     "n": 30
+    },
+    "20": {
+     "pdr_mean": 0.9980124852495609,
+     "pdr_se": 0.0003449748219395521,
+     "pdr_strict_mean": 0.998724663799051,
+     "paper": 0.9961,
+     "diff": 0.0019124852495608913,
+     "n": 30
+    },
+    "30": {
+     "pdr_mean": 0.998707809146908,
+     "pdr_se": 0.00027262219180433417,
+     "pdr_strict_mean": 0.9986383867733168,
+     "paper": 0.928,
+     "diff": 0.070707809146908,
+     "n": 30
+    },
+    "40": {
+     "pdr_mean": 0.9990492418210829,
+     "pdr_se": 0.00020140442081185254,
+     "pdr_strict_mean": 0.9992031547050304,
+     "paper": 0.9371,
+     "diff": 0.06194924182108286,
+     "n": 30
+    },
+    "50": {
+     "pdr_mean": 0.999279017182262,
+     "pdr_se": 0.00016511233152538738,
+     "pdr_strict_mean": 0.9994236371046786,
+     "paper": 0.9372,
+     "diff": 0.06207901718226194,
+     "n": 30
+    }
+   },
+   "mean_abs_diff": 0.0397580277028597
+  }
+ },
+ "A8": {
+  "agent": 0.7168148145973955,
+  "oracle": 0.7038311764998229,
+  "fixed": 0.7304126873207141,
+  "regret_code_a_over_o_minus_1": 0.01844709147744883,
+  "margin_code_f_over_a_minus_1": 0.018969854481810433,
+  "margin_alt_(f-a)/f": 0.018616698421816905,
+  "regret_alt_(a-o)/a": 0.018112960046542836,
+  "f_minus_a": 0.013597872723318583,
+  "a_minus_o": 0.012983638097572636,
+  "reviewer_0.013/0.730": 0.01780821917808219,
+  "source_file": "results/agent_ref/sampled/agent_evaluation.json",
+  "code": "analysis/comparator.py compare_policy: regret = a/o - 1, margin = f/a - 1"
+ },
+ "provenance": {
+  "task": "A",
+  "git_commit": "461c7549f526537d73d702a91cb659cb83f55df0-dirty",
+  "command": "python -m experiments.revision1.stage_a",
+  "config_hash": "0934a13734ab",
+  "config": {
+   "inputs": [
+    "results/pareto_cells.json",
+    "results/agent_ref",
+    "results/runs.csv",
+    "results/coverage_targets.json",
+    "results/feasibility",
+    "results/validation/amador2022.json",
+    "checkpoints/*/history.jsonl"
+   ]
+  },
+  "seeds": null,
+  "generated": "2026-10-16 19:52:35"
+ }
+}
