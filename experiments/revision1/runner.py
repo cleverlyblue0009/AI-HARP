@@ -103,7 +103,8 @@ def run_task(t: dict[str, Any]) -> dict[str, Any]:
     return row
 
 
-def load_rows(path: Path) -> list[dict[str, Any]]:
+def load_rows(path: Path | str) -> list[dict[str, Any]]:
+    path = Path(path)
     if not path.exists():
         return []
     with path.open(newline="", encoding="utf-8") as fh:

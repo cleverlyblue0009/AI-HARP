@@ -477,8 +477,16 @@ def fig_regret_margin(
     keys = list(per_cell)
     regret = np.array([float(per_cell[k].get("regret", np.nan)) for k in keys])
     margin = np.array([float(per_cell[k].get("margin", np.nan)) for k in keys])
-    labels = [k.replace("_highway", "").replace("/clear", "").replace("_", " ")
-              for k in keys]
+    # Two short horizontal lines per cell ("rural d=20" / "fog bank"). The old
+    # single-line labels were rotated 18 degrees and the outer ones ran off the
+    # axes (paper Fig. 8).
+    def _short(k: str) -> str:
+        parts = k.split("/")
+        sc = parts[0].replace("_highway", "").replace("_", " ")
+        extra = " ".join(p.replace("_", " ") for p in parts[2:] if p != "clear")
+        return f"{sc} {parts[1]}" + (f"\n{extra}" if extra else "")
+
+    labels = [_short(k) for k in keys]
 
     fig, axes = plt.subplots(2, 1, figsize=(width, width * 0.50), sharex=True)
     idx = np.arange(len(keys), dtype=float)
@@ -502,7 +510,8 @@ def fig_regret_margin(
         ax.annotate(note, xy=(0.99, 0.94), xycoords="axes fraction", ha="right",
                     va="top", fontsize=6, color=GREY)
 
-    axes[1].set_xticks(idx, labels, rotation=18, ha="right")
+    axes[1].set_xticks(idx, labels)
+    axes[1].set_xlim(-0.6, len(keys) - 0.4)
     fig.align_ylabels(axes)
     return save(fig, name)
 

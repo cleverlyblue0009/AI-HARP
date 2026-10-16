@@ -1,0 +1,264 @@
+{
+ "summary": {
+  "rural_highway|2|dvcast": {
+   "cheapest_meeting_target": {
+    "slots": 50,
+    "cost": 1.4460725957049487,
+    "tir_median_s": 3.3650000000000007,
+    "miss": 0.6428161259030825
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 30,
+    "cost": 1.5597111711817593,
+    "tir_median_s": 2.3550000000000004,
+    "miss": 0.5652579956275608
+   },
+   "cost_at_50_or_32": [
+    1.4460725957049487
+   ],
+   "cost_at_max": 1.311689144189144,
+   "max_slots": 200,
+   "tir_at_max": 5.960000000000001
+  },
+  "rural_highway|2|greedy_farthest": {
+   "cheapest_meeting_target": null,
+   "cheapest_qualifying_with_guard": null,
+   "cost_at_50_or_32": [
+    1.718980692510104
+   ],
+   "cost_at_max": 1.5747619047619046,
+   "max_slots": 128,
+   "tir_at_max": 3.335000000000001
+  },
+  "rural_highway|2|slotted_1p": {
+   "cheapest_meeting_target": {
+    "slots": 75,
+    "cost": 1.545264939309057,
+    "tir_median_s": 4.255000000000001,
+    "miss": 0.68935494215929
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 8,
+    "cost": 1.6537464985994397,
+    "tir_median_s": 0.7700000000000002,
+    "miss": 0.5335849585197411
+   },
+   "cost_at_50_or_32": [
+    1.5605408072319837
+   ],
+   "cost_at_max": 1.346976046828988,
+   "max_slots": 200,
+   "tir_at_max": 6.0
+  },
+  "rural_highway|20|dvcast": {
+   "cheapest_meeting_target": {
+    "slots": 100,
+    "cost": 0.7048681472369503,
+    "tir_median_s": 0.9900000000000004,
+    "miss": 0.32403641852782716
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 100,
+    "cost": 0.7048681472369503,
+    "tir_median_s": 0.9900000000000004,
+    "miss": 0.32403641852782716
+   },
+   "cost_at_50_or_32": [
+    0.7162266127351959
+   ],
+   "cost_at_max": 0.7216276387453505,
+   "max_slots": 200,
+   "tir_at_max": 1.0200000000000002
+  },
+  "rural_highway|20|greedy_farthest": {
+   "cheapest_meeting_target": {
+    "slots": 128,
+    "cost": 0.7023694615153814,
+    "tir_median_s": 1.0600000000000005,
+    "miss": 0.32890320018341246
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 128,
+    "cost": 0.7023694615153814,
+    "tir_median_s": 1.0600000000000005,
+    "miss": 0.32890320018341246
+   },
+   "cost_at_50_or_32": [
+    0.7038311764998229
+   ],
+   "cost_at_max": 0.7023694615153814,
+   "max_slots": 128,
+   "tir_at_max": 1.0600000000000005
+  },
+  "rural_highway|20|slotted_1p": {
+   "cheapest_meeting_target": {
+    "slots": 75,
+    "cost": 0.7033323775540546,
+    "tir_median_s": 0.6700000000000004,
+    "miss": 0.31843921122075125
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 75,
+    "cost": 0.7033323775540546,
+    "tir_median_s": 0.6700000000000004,
+    "miss": 0.31843921122075125
+   },
+   "cost_at_50_or_32": [
+    0.7264360238292139
+   ],
+   "cost_at_max": 0.7128598800805321,
+   "max_slots": 200,
+   "tir_at_max": 1.0850000000000004
+  },
+  "rural_highway|80|dvcast": {
+   "cheapest_meeting_target": {
+    "slots": 200,
+    "cost": 1.6253278643783016,
+    "tir_median_s": 0.28500000000000064,
+    "miss": 0.32935954550661234
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 200,
+    "cost": 1.6253278643783016,
+    "tir_median_s": 0.28500000000000064,
+    "miss": 0.32935954550661234
+   },
+   "cost_at_50_or_32": [
+    1.6579387515501356
+   ],
+   "cost_at_max": 1.6253278643783016,
+   "max_slots": 200,
+   "tir_at_max": 0.28500000000000064
+  },
+  "rural_highway|80|greedy_farthest": {
+   "cheapest_meeting_target": {
+    "slots": 128,
+    "cost": 1.5757758702510247,
+    "tir_median_s": 0.6200000000000002,
+    "miss": 0.3246866284573874
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 128,
+    "cost": 1.5757758702510247,
+    "tir_median_s": 0.6200000000000002,
+    "miss": 0.3246866284573874
+   },
+   "cost_at_50_or_32": [
+    1.6298191577881773
+   ],
+   "cost_at_max": 1.5757758702510247,
+   "max_slots": 128,
+   "tir_at_max": 0.6200000000000002
+  },
+  "rural_highway|80|slotted_1p": {
+   "cheapest_meeting_target": {
+    "slots": 200,
+    "cost": 1.619453111997045,
+    "tir_median_s": 0.28500000000000064,
+    "miss": 0.32836736830929725
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 200,
+    "cost": 1.619453111997045,
+    "tir_median_s": 0.28500000000000064,
+    "miss": 0.32836736830929725
+   },
+   "cost_at_50_or_32": [
+    1.6457367924593846
+   ],
+   "cost_at_max": 1.619453111997045,
+   "max_slots": 200,
+   "tir_at_max": 0.28500000000000064
+  },
+  "urban_nlos|20|dvcast": {
+   "cheapest_meeting_target": {
+    "slots": 50,
+    "cost": 0.5513804438606206,
+    "tir_median_s": 3.0650000000000004,
+    "miss": 0.13109602709693044
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 30,
+    "cost": 0.5666367693638255,
+    "tir_median_s": 2.06,
+    "miss": 0.08309293443674706
+   },
+   "cost_at_50_or_32": [
+    0.5513804438606206
+   ],
+   "cost_at_max": 0.6169018095457156,
+   "max_slots": 200,
+   "tir_at_max": 12.765000000000002
+  },
+  "urban_nlos|20|greedy_farthest": {
+   "cheapest_meeting_target": {
+    "slots": 16,
+    "cost": 0.5681784621320947,
+    "tir_median_s": 1.7750000000000004,
+    "miss": 0.07409959106714856
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 16,
+    "cost": 0.5681784621320947,
+    "tir_median_s": 1.7750000000000004,
+    "miss": 0.07409959106714856
+   },
+   "cost_at_50_or_32": [
+    0.5700625386469917
+   ],
+   "cost_at_max": 0.6079160476648212,
+   "max_slots": 128,
+   "tir_at_max": 8.2
+  },
+  "urban_nlos|20|slotted_1p": {
+   "cheapest_meeting_target": {
+    "slots": 50,
+    "cost": 0.5398740398065873,
+    "tir_median_s": 3.0300000000000002,
+    "miss": 0.1269991708226547
+   },
+   "cheapest_qualifying_with_guard": {
+    "slots": 30,
+    "cost": 0.5683498854694976,
+    "tir_median_s": 2.0700000000000007,
+    "miss": 0.086878510375855
+   },
+   "cost_at_50_or_32": [
+    0.5398740398065873
+   ],
+   "cost_at_max": 0.6163023278357208,
+   "max_slots": 200,
+   "tir_at_max": 12.98
+  }
+ },
+ "provenance": {
+  "task": "B2",
+  "git_commit": "8d8ac7fe87c711924ba72d52017b8329b1044377-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": [
+   "aiharp-gpu",
+   "Scripts",
+   "python.exe"
+  ],
+  "command": "python -m experiments.revision1.b2_slots",
+  "config_hash": "ffaf697bf89c",
+  "config": {
+   "committed": "results/pareto_cells.json",
+   "extended": "results/revision1/B_sweeps/slots_runs.csv"
+  },
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "generated": "2026-10-16 20:36:11"
+ }
+}

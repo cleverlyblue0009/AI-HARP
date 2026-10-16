@@ -1,0 +1,17 @@
+policy_mode,tau,axis,cell,agent,oracle_policy,oracle,fixed_best,fixed,regret,margin,status
+sampled,0.5,cost,rural_highway/d=2/clear/fog_bank,,dvcast,1.5597111711817593,dvcast(n_slots=30),1.5597111711817593,,,never matched
+sampled,0.5,cost,rural_highway/d=20/clear/fog_bank,0.7168148145973955,greedy_farthest,0.7038311764998229,dvcast(n_slots=30),0.7304126873207141,0.01844709147744883,0.018969854481810433,matched
+sampled,0.5,cost,rural_highway/d=80/clear/fog_bank,,weighted_p,1.5117679168316374,dvcast(n_slots=30),1.7033746785407176,,,never matched
+sampled,0.5,cost,urban_nlos/d=20/clear/fog_bank,,counter_based,0.5328827299751755,dvcast(n_slots=30),0.5666367693638255,,,never matched
+sampled,0.5,tir_median_s,rural_highway/d=2/clear/fog_bank,,slotted_1p,0.7700000000000002,slotted_1p(n_slots=3),0.48500000000000043,,,never matched
+sampled,0.5,tir_median_s,rural_highway/d=20/clear/fog_bank,0.3200000000000006,flooding,0.34500000000000053,slotted_1p(n_slots=3),0.3400000000000006,-0.07246376811594168,0.06249999999999978,matched
+sampled,0.5,tir_median_s,rural_highway/d=80/clear/fog_bank,,p_persistence_03,0.25500000000000045,slotted_1p(n_slots=3),0.22000000000000028,,,never matched
+sampled,0.5,tir_median_s,urban_nlos/d=20/clear/fog_bank,,flooding,0.3000000000000007,slotted_1p(n_slots=3),0.4400000000000002,,,never matched
+argmax,0.5,cost,rural_highway/d=2/clear/fog_bank,,dvcast,1.5597111711817593,dvcast(n_slots=30),1.5597111711817593,,,never matched
+argmax,0.5,cost,rural_highway/d=20/clear/fog_bank,0.6863302364018964,greedy_farthest,0.7038311764998229,dvcast(n_slots=30),0.7304126873207141,-0.024865252751319233,0.06422921296593476,matched
+argmax,0.5,cost,rural_highway/d=80/clear/fog_bank,,weighted_p,1.5117679168316374,dvcast(n_slots=30),1.7033746785407176,,,never matched
+argmax,0.5,cost,urban_nlos/d=20/clear/fog_bank,0.7022483920912913,counter_based,0.5328827299751755,dvcast(n_slots=30),0.5666367693638255,0.31782914436729026,-0.19311062047947924,matched
+argmax,0.5,tir_median_s,rural_highway/d=2/clear/fog_bank,,slotted_1p,0.7700000000000002,slotted_1p(n_slots=3),0.48500000000000043,,,never matched
+argmax,0.5,tir_median_s,rural_highway/d=20/clear/fog_bank,0.31000000000000066,flooding,0.34500000000000053,slotted_1p(n_slots=3),0.3400000000000006,-0.10144927536231829,0.09677419354838657,matched
+argmax,0.5,tir_median_s,rural_highway/d=80/clear/fog_bank,,p_persistence_03,0.25500000000000045,slotted_1p(n_slots=3),0.22000000000000028,,,never matched
+argmax,0.5,tir_median_s,urban_nlos/d=20/clear/fog_bank,0.3000000000000007,flooding,0.3000000000000007,slotted_1p(n_slots=3),0.4400000000000002,0.0,0.4666666666666639,matched

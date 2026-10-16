@@ -1,0 +1,64 @@
+{
+ "task": "B_sweeps/slots",
+ "git_commit": "8d8ac7fe87c711924ba72d52017b8329b1044377",
+ "python": "3.12.9",
+ "numpy": "2.0.1",
+ "interpreter": [
+  "UPASANA",
+  "miniconda3",
+  "python.exe"
+ ],
+ "command": "python -m experiments.revision1.sweeps slots --jobs 8",
+ "config_hash": "ef1001f6993b",
+ "config": {
+  "sweep": "slots",
+  "cells": [
+   [
+    "rural_highway",
+    2.0
+   ],
+   [
+    "rural_highway",
+    20.0
+   ],
+   [
+    "rural_highway",
+    80.0
+   ],
+   [
+    "urban_nlos",
+    20.0
+   ]
+  ],
+  "settings": [
+   "slotted_1p(n_slots=75)",
+   "slotted_1p(n_slots=100)",
+   "slotted_1p(n_slots=150)",
+   "slotted_1p(n_slots=200)",
+   "dvcast(n_slots=75)",
+   "dvcast(n_slots=100)",
+   "dvcast(n_slots=150)",
+   "dvcast(n_slots=200)",
+   "greedy_farthest(fallback_n_slots=64)",
+   "greedy_farthest(fallback_n_slots=128)"
+  ],
+  "n_settings": 10,
+  "weather": "clear",
+  "hazard_type": "fog_bank",
+  "causal_coverage": false
+ },
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
+ ],
+ "generated": "2026-10-16 20:09:36",
+ "n_runs": 400
+}

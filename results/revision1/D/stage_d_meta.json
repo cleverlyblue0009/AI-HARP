@@ -1,0 +1,26 @@
+{
+ "task": "D",
+ "git_commit": "8d8ac7fe87c711924ba72d52017b8329b1044377-dirty",
+ "python": "3.12.9",
+ "numpy": "1.26.4",
+ "interpreter": [
+  "aiharp-gpu",
+  "Scripts",
+  "python.exe"
+ ],
+ "command": "python -m experiments.revision1.stage_d",
+ "config_hash": "292901171067",
+ "config": {
+  "figures": [
+   "fig08_paper_regret_margin_fixed",
+   "fig14_paper_latency_cost_fixed",
+   "fig12_paper_training_fixed",
+   "fig_d4_latency_bounded_headline"
+  ],
+  "tables": [
+   "table_fig8_regret_margin"
+  ]
+ },
+ "seeds": null,
+ "generated": "2026-10-16 20:28:51"
+}

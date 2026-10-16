@@ -34,18 +34,29 @@ from experiments.revision1.provenance import git_commit, out_dir, rel, write_jso
 ROOT = PROJECT_ROOT / "checkpoints" / "revision1"
 VARIANTS = {"ref": [], "gcn": ["--encoder", "gcn"], "mlp": ["--encoder", "mlp"],
             "star": ["--star-graph"]}
-SEEDS = (1, 2, 3, 4)
+SEEDS = (1, 2)
+
+
+#: Revised plan (user, 2026-10-16): C1 = 2 extra full-model seeds (3 in total
+#: with the committed seed 0); then C2 = 1 extra seed per ablation (2 in total);
+#: C5 (the 2,000-update run) skipped. Lane order: lane 0 ref_s1, gcn_s1, star_s1;
+#: lane 1 ref_s2, mlp_s1.
+PLAN: tuple[tuple[str, int], ...] = (("ref", 1), ("ref", 2), ("gcn", 1), ("mlp", 1),
+                                     ("star", 1))
 
 
 def queue() -> list[tuple[str, list[str], dict]]:
     """(name, train flags, info); the full model's seeds first, then ablations."""
-    q = []
-    for v in VARIANTS:
-        for s in SEEDS:
-            q.append((f"{v}_s{s}", ["--seed", str(s)] + VARIANTS[v], {"variant": v, "seed": s}))
-    q.append(("ref_s0_u2000", ["--finetune-max-updates", "1800"],
-              {"variant": "ref", "seed": 0, "extends": "checkpoints/campaign/ref"}))
-    return q
+    return [(f"{v}_s{s}", ["--seed", str(s)] + VARIANTS[v], {"variant": v, "seed": s})
+            for v, s in PLAN]
+
+
+def live(name: str, stale_s: float = 900.0) -> bool:
+    """A run another process is still training: no summary, checkpoint fresh."""
+    d = ROOT / name
+    ck = d / "ckpt_latest.pt"
+    return (not (d / "run_summary.json").exists() and ck.exists()
+            and time.time() - ck.stat().st_mtime < stale_s)
 
 
 def status(name: str) -> str:
@@ -111,7 +122,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--workers", default="5")
     ap.add_argument("--only", nargs="*", default=None)
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--wait-for", nargs="*", default=[],
+                    help="start only once these runs are done (a lane for later runs)")
+    ap.add_argument("--eval-jobs", type=int, default=2,
+                    help="parallel jobs for the final-checkpoint evaluation launched "
+                         "(in the background) after each run; 0 disables it")
     args = ap.parse_args(argv)
+    while any(status(n) != "done" for n in args.wait_for):
+        time.sleep(120)
     q = [e for e in queue() if args.only is None or e[0] in args.only]
     if args.list:
         for i, (n, f, _) in enumerate(q):
@@ -121,14 +139,37 @@ def main(argv: list[str] | None = None) -> int:
     for i, (name, flags, info) in enumerate(q):
         if i % args.lanes != args.lane or status(name) == "done":
             continue
-        cmd = command(name, flags, args.workers)
-        log = ROOT / f"{name}.log"
-        print(f"[queue] {name}: {' '.join(cmd)}", flush=True)
         t0 = time.time()
-        with log.open("a", encoding="utf-8") as fh:
-            rc = subprocess.run(cmd, cwd=PROJECT_ROOT, stdout=fh, stderr=subprocess.STDOUT).returncode
+        if live(name):
+            # Adopt a run started by an earlier queue process instead of
+            # launching a second copy on the same directory.
+            print(f"[queue] {name}: already training elsewhere; waiting for it", flush=True)
+            while live(name):
+                time.sleep(60)
+            cmd = ["(adopted)", "-m", "agents.train", "--out", str(ROOT / name)] + flags
+            rc = 0 if (ROOT / name / "run_summary.json").exists() else 1
+            if rc:
+                print(f"[queue] {name}: adopted run went stale without a summary; resuming",
+                      flush=True)
+        if not live(name) and status(name) != "done":
+            cmd = command(name, flags, args.workers)
+            log = ROOT / f"{name}.log"
+            print(f"[queue] {name}: {' '.join(cmd)}", flush=True)
+            with log.open("a", encoding="utf-8") as fh:
+                rc = subprocess.run(cmd, cwd=PROJECT_ROOT, stdout=fh,
+                                    stderr=subprocess.STDOUT).returncode
         record(name, info, cmd, (time.time() - t0) / 3600, rc)
         print(f"[queue] {name}: exit {rc}, {(time.time() - t0) / 3600:.2f} h", flush=True)
+        ck = ROOT / name / "ckpt_final.pt"
+        if args.eval_jobs and status(name) == "done" and ck.exists():
+            # Final checkpoint only (user decision), headline cells, both gate
+            # arms, sampled; in the background so the lane's next run starts now.
+            ev = [sys.executable, "-u", "-m", "experiments.revision1.agent_eval",
+                  "--checkpoint", str(ck), "--name", name, "--taus", "0.5", "0",
+                  "--modes", "sampled", "--jobs", str(args.eval_jobs)]
+            elog = (PROJECT_ROOT / "logs" / "revision1" / f"eval_{name}.log").open("a", encoding="utf-8")
+            subprocess.Popen(ev, cwd=PROJECT_ROOT, stdout=elog, stderr=subprocess.STDOUT)
+            print(f"[queue] {name}: evaluation launched -> logs/revision1/eval_{name}.log", flush=True)
     return 0
 
 

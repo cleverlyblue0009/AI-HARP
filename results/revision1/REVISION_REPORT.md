@@ -215,3 +215,206 @@ per-cell oracle o = 0.7038312 (greedy_farthest), best fixed f = 0.7304127
 The paper's 1.8% / 1.9% match the code's definitions (a/o − 1, f/a − 1).
 The reviewer's 1.78% divides a − o = 0.01298 by the *fixed* cost 0.730, which
 mixes the two references. The paper should state the formulas.
+
+
+---
+
+## Plan change (user, 2026-10-16 evening)
+
+C1 = **2 extra full-model seeds** (3 in total with committed seed 0); C2 = **1 extra seed
+per ablation** (GCN, MLP, star; 2 in total each); **C5 skipped**; agent evaluations of
+the **final checkpoint only**; Stage B headline cells first, 24-cell versions after;
+E1 = headline-number smoke test only; deterministic kernels kept.
+
+---
+
+## Stage B — headline cells (rural d=2/20/80, urban_nlos d=20; clear, fog_bank)
+
+All new per-seed data comes from `experiments/revision1/runner.py` (one `run_single`
+call per row — the committed paired path; every row carries config hash,
+metrics_version, git commit and seed). **Reproduction checks:** the per-seed re-run of
+the reference agent matches every committed agent point
+(`results/agent_ref/{sampled,argmax}/pareto_cells_agent.json`) to ≤ 4.4e-16 (48 points,
+B5); B1 recomputed from per-seed rows gives the committed 0.7168 / +1.84% / +1.90% exactly.
+
+### B1. Latency-bounded matched coverage (headline cells)
+
+Regenerate: `python -m experiments.revision1.b1_latency` (committed curves) →
+`results/revision1/B1/b1_headline.{json,md}`; both gate arms from per-seed rows →
+`results/revision1/B1/b1_headline_perseed_tau0_tau05.json`. Figure (D4):
+`results/revision1/D/fig_d4_latency_bounded_headline.{pdf,png}`.
+
+Rule: Algorithm 1 plus "seed-mean of per-run median TIR ≤ D"; the bound also applies
+to the interpolation's lower anchor. The primary variant holds q* and the miss bound at
+their unbounded values ("fixed"); "rebased" (q* recomputed among latency-feasible
+settings) is in the JSON and changes nothing below except the best fixed setting at
+D = 1.5 s (`slotted_1p(n_slots=12)`).
+
+**Derived deadline** D_r = (R − v·t_r − v²/2a)/v: a vehicle one radio hop from a
+holder, approaching at the scenario's maximum car speed v, can still react and stop if
+the next hop arrives within D_r. t_r = 2.5 s (configs/hazard.yaml), a = 3.4 m/s² (AASHTO
+comfortable deceleration; **assumed**), R = nominal range, or for urban_nlos the
+blocked-corner range:
+
+| scenario | v (m/s) | R (m) | stopping distance (m) | D_r |
+|---|---|---|---|---|
+| rural_highway | 27.78 | 610.4 (LOS) | 182.9 | **15.39 s** |
+| urban_grid | 15.28 | 479.6 (LOS) | 72.5 | 26.65 s |
+| urban_nlos | 15.28 | 101.4 (NLOS corner) | 72.5 | **1.89 s** |
+
+Reference points per bound (q* fixed; cost = transmissions per at-risk vehicle informed):
+
+| D | best single fixed | rural d=2 oracle / fixed | rural d=20 oracle / fixed | rural d=80 oracle / fixed | urban d=20 oracle / fixed |
+|---|---|---|---|---|---|
+| none | dvcast(n_slots=30) | dvcast 1.560 / 1.560 | greedy 0.704 / 0.730 | weighted_p 1.512 / 1.703 | counter 0.533 / 0.567 |
+| 2.0 s | slotted_1p(n_slots=20) | slotted 1.654 / 1.688 | greedy 0.704 / 0.768 | weighted_p 1.512 / 1.837 | counter 0.533 / 0.578 |
+| 1.5 s | slotted_1p(n_slots=8) | slotted 1.654 / 1.654 | greedy 0.704 / 0.898 | weighted_p 1.512 / 2.282 | counter 0.533 / 0.640 |
+| 1.0 s | slotted_1p(n_slots=8) | slotted 1.654 / 1.654 | greedy 0.704 / 0.898 | weighted_p 1.512 / 2.282 | counter 0.533 / 0.640 |
+| 0.5 s | slotted_1p(n_slots=3) | slotted 1.755 / 1.755 | **dvcast 0.730** / 1.341 | weighted_p 1.512 / 3.979 | p_persist 0.550 / 0.832 |
+| derived | slotted_1p(n_slots=20) | dvcast 1.560 / 1.688 | greedy 0.704 / 0.768 | weighted_p 1.512 / 1.837 | counter 0.533 / 0.578 |
+
+Agent (reference checkpoint, sampled, eval seeds 0–9). Rural d=2 and d=80 are never
+reached by either arm under any bound:
+
+| D | τ=0.5 rural d=20: cost / regret / margin | τ=0 rural d=20 | τ=0 urban d=20 | cells matched τ=0.5 / τ=0 |
+|---|---|---|---|---|
+| none | 0.717 / +1.8% / +1.9% | 0.706 / +0.3% / +3.5% | 0.864 / +62.1% / −34.4% | 1 / 2 |
+| 2.0 s | 0.717 / +1.8% / +7.1% | 0.706 / +0.3% / +8.8% | 0.864 / +62.1% / −33.1% | 1 / 2 |
+| 1.5 s, 1.0 s | 0.717 / +1.8% / +25.3% | 0.706 / +0.3% / +27.3% | 0.864 / +62.1% / −26.0% | 1 / 2 |
+| 0.5 s | 0.717 / **−1.9%** / **+87.1%** | 0.706 / −3.4% / +90.1% | 0.864 / +57.1% / −3.7% | 1 / 2 |
+| derived | 0.717 / +1.8% / +7.1% | 0.706 / +0.3% / +8.8% | 0.864 / +62.1% / −33.1% | 1 / 2 |
+
+**Do the slot-scheme reference points survive?** DV-CAST's 0.730 (the best fixed
+setting `dvcast(n_slots=30)` at rural d=20, median TIR 0.46 s) survives every bound and
+becomes the per-cell oracle at D = 0.5 s. Greedy-farthest's 0.704 (`fallback_n_slots=32`,
+median TIR 0.915 s) survives D ≥ 1 s and is **eliminated at D = 0.5 s** (no greedy setting
+reaches q* with TIR ≤ 0.5 s). The bound mainly changes the **best single fixed** scheme:
+DV-CAST(30) waits 2–3 s at rural d=2 and urban d=20, so for D ≤ 2 s it stops being
+deployable everywhere and the fixed reference moves to ever-shorter `slotted_1p`,
+which costs much more elsewhere. The agent's median TIR (0.31–0.32 s at rural d=20)
+meets every bound, so its cost never changes and its margin grows from +1.9% (none) to
++87% (D = 0.5 s); regret against per-cell tuning stays ≤ +1.8%. It still reaches the
+target in only 1 (τ=0.5) or 2 (τ=0) of 4 cells under every bound. **New:** the
+network-only arm (τ=0), never scored with Algorithm 1 before, matches 2 cells, and at
+rural d=20 is cheaper than τ=0.5 (0.706 vs 0.717). The gate's fallback is what loses
+urban d=20 at τ=0.5. The 24-cell version is running.
+
+### B2. Slot grid beyond 50
+
+Regenerate: `python -m experiments.revision1.b2_slots` → `results/revision1/B2/b2_slots.{csv,json}`,
+`fig_b2_slots.{pdf,png}`. Extended runs: `results/revision1/B_sweeps/slots_runs.csv`
+(n_slots 75/100/150/200 for slotted_1p and DV-CAST; fallback_n_slots 64/128 for greedy;
+10 seeds). Cost / median TIR:
+
+| cell | scheme | 50 (greedy 32) | 75 (64) | 100 (128) | 150 | 200 |
+|---|---|---|---|---|---|---|
+| rural d=20 | dvcast | 0.716 / 0.56 s | 0.712 / 0.67 s | **0.705** / 0.99 s | 0.710 / 0.85 s | 0.722 / 1.02 s |
+| rural d=20 | slotted_1p | 0.726 / 0.51 s | **0.703** / 0.67 s | 0.730 / 0.77 s | 0.713 / 0.92 s | 0.713 / 1.09 s |
+| rural d=20 | greedy | 0.704 / 0.92 s | 0.712 / 1.03 s | **0.702** / 1.06 s | – | – |
+| rural d=80 | dvcast | 1.658 / 0.28 s | 1.677 | 1.634 | 1.663 | 1.625 / 0.29 s |
+| urban d=20 | dvcast | 0.551 / 3.07 s | 0.568 / 4.17 s | 0.571 / 5.75 s | 0.603 / 9.58 s | 0.617 / 12.8 s |
+| rural d=2 | dvcast | 1.446 / 3.37 s | 1.481 / 3.86 s | 1.697 / 5.19 s | 1.391 / 9.33 s (RWCR 0.575) | 1.312 / 5.96 s (RWCR 0.514) |
+
+**Cost stops falling at about 50–100 slots while latency keeps rising.** At rural d=20 the
+best extended point (0.702–0.705) is 0.3% below the committed oracle 0.704 at roughly
+twice the median TIR. At rural d=80 cost drifts by < 2%. At urban d=20 cost **rises** past
+50 slots (0.551 → 0.617) while RWCR and the miss rate degrade. At rural d=2 RWCR
+collapses past 100 slots (0.68 → 0.51). Every extended urban and rural-d=2 point fails the
+deadline guard, so **Algorithm 1's guarded oracle is unchanged in 3 of 4 cells**. At rural
+d=20 (loose guard) the extension would lower the oracle from 0.704 to 0.702 (greedy, 128
+slots, TIR 1.06 s), raising the agent's regret from +1.8% to +2.1%.
+
+### B3. Feasibility under every target definition
+
+Pending the training-seed sweep (`results/revision1/B_sweeps/train_runs.csv`, 63
+settings × 32 seeds × 3 cells, causal coverage). Script:
+`python -m experiments.revision1.b3_feasibility`.
+
+### B4. Statistics Section VI promises (headline cells)
+
+Regenerate: `python -m experiments.revision1.b4_stats wilcoxon` →
+`results/revision1/B4/b4_wilcoxon_sampled.{json,csv}`; `... b4_stats bootstrap` →
+`results/revision1/B4/b4_bootstrap.{json,csv}`.
+
+Method: Wilcoxon signed-rank (`analysis.stats.paired_test`, as in `analysis/grid_stats.py`),
+10 paired eval seeds, Holm across the 4 metrics within each (cell, comparison),
+matched-pairs rank-biserial r. The agent is taken at its cheapest qualifying bias
+(Algorithm 1's upper anchor) or, where it never qualifies, its max-RWCR bias.
+References are at their qualifying knob values. Each cell shows median paired
+difference (agent − reference), r, Holm p; * = p_Holm < 0.05.
+
+τ = 0.5:
+
+| cell (agent bias) | vs | RWCR | cost | median TIR | miss |
+|---|---|---|---|---|---|
+| rural d=2 (+1, misses) | dvcast(30) (= fixed = oracle) | −0.146, −0.60, 0.32 | +0.286, +0.31, 0.46 | −2.15 s, −1.00, 0.031* | +0.043, +0.45, 0.46 |
+| rural d=20 (−2, reaches) | fixed dvcast(30) | −0.017, −0.96, 0.039* | +0.004, +0.09, 0.85 | −0.10 s, −1.00, 0.039* | +0.014, +0.93, 0.039* |
+| rural d=20 | oracle greedy(32) | −0.014, −0.75, 0.074 | +0.016, +0.45, 0.23 | −0.60 s, −1.00, 0.0078* | +0.015, +0.87, 0.063 |
+| rural d=80 (−1, misses) | fixed dvcast(30) | −0.063, −1.00, 0.0078* | −0.978, −1.00, 0.0078* | −0.075 s, −1.00, 0.020* | +0.048, +1.00, 0.0078* |
+| rural d=80 | oracle weighted_p(0.15) | −0.048, −1.00, 0.0078* | −0.741, −1.00, 0.0078* | −0.10 s, −1.00, 0.014* | +0.041, +1.00, 0.0078* |
+| urban d=20 (−1, misses) | fixed dvcast(30) | −0.042, −0.96, 0.0078* | +0.101, +1.00, 0.0078* | −1.75 s, −1.00, 0.0078* | +0.040, +1.00, 0.0078* |
+| urban d=20 | oracle counter(1) | −0.044, −1.00, 0.0078* | +0.143, +1.00, 0.0078* | −0.30 s, −1.00, 0.0078* | +0.041, +1.00, 0.0078* |
+
+τ = 0 is in the CSV with the same pattern: the agent is significantly faster in every
+cell except rural d=80 (TIR tie), has significantly lower RWCR and a higher miss rate in
+every cell, and is cheaper only at rural d=80, where it misses the target. **In the one
+cell it qualifies at τ=0.5 (rural d=20), its cost does not differ significantly from
+either reference (p_Holm 0.85 / 0.23): the 1.8% / 1.9% are not statistically resolved at
+10 seeds.**
+
+**Bootstrap between baselines at rural d=20** (replaces the "0.002 vs per-seed SD 0.030"
+argument; 10,000 resamples, percentile 95% CIs). Per-scheme SD across seeds is 0.022–0.026
+(clear/fog_bank) and 0.029–0.030 (pooled), but **the SD of paired differences is only
+0.003–0.007** (0.10–0.11 for pairs with p_persistence_03), because seeds are paired.
+
+| view | pairs whose CI excludes 0 |
+|---|---|
+| clear/fog_bank, n = 10 seeds | 1 / 36 (dvcast − weighted_p = −0.0036, CI [−0.0064, −0.0009]) |
+| Table 2 pooled, n = 200 (weather × hazard × seed), i.i.d. bootstrap | 19 / 36 |
+| Table 2 pooled, **seed-cluster** bootstrap (the 200 runs share 10 mobility seeds) | **12 / 36**: all 8 vs p_persistence_03 (+0.043 … +0.045), and counter_based over dvcast (+0.0018, CI [0.0003, 0.0034]), slotted_1p (+0.0015), greedy (+0.0013), weighted_p (+0.0012) |
+
+So at the headline cell the eight non-default baselines are statistically
+indistinguishable, but in Table 2's pooled view counter_based is resolvably, if
+negligibly, ahead of four others. "Differences are below seed noise" is the wrong
+argument; the right one is that the paired differences are ≤ 0.002 in absolute size.
+
+### B5. Sampled vs argmax, all 4 headline cells (reference agent, τ = 0.5)
+
+Regenerate: `python -m experiments.revision1.b5_modes` → `results/revision1/B5/b5_modes.json`.
+
+| cell | q* | best RWCR sampled (bias) | best RWCR argmax (bias) | gap | sampled: matched cost / regret / margin | argmax |
+|---|---|---|---|---|---|---|
+| rural d=2 | 0.641 | 0.507 (+1) | 0.477 (+3) | **+0.030** | never | never |
+| rural d=20 | 0.879 | 0.905 (−2) | 0.904 (−1) | **+0.001** | 0.717 / +1.8% / +1.9% | 0.686 / −2.5% / +6.4% |
+| rural d=80 | 0.870 | 0.846 (−1) | 0.825 (−2) | **+0.021** | never | never |
+| urban d=20 | 0.926 | 0.921 (−1) | 0.927 (−2) | **−0.006** | never | 0.702 / +31.8% / −19.3% |
+
+Per-bias paired RWCR differences with Wilcoxon p are in the JSON. **The paper's "0.172
+RWCR gap in the dense rural cell" is run8's number** (README: run8 argmax 0.642 vs
+sampled 0.814 at rural d=80). For the reference agent the paper otherwise reports, the
+rural d=80 gap is 0.021. Mode decides whether urban d=20 qualifies (argmax yes, sampled no).
+
+---
+
+## Stage D (partial)
+
+Regenerate: `python -m experiments.revision1.stage_d` → `results/revision1/D/`. Paper
+figures are mapped to repo figures by content, since the numbering differs: **Fig. 8 =
+`fig03_regret_margin`** (the only bar chart with 3 of 4 cells empty and slanted x
+labels), Fig. 12 = `fig06_training`, Fig. 13 = `fig10_validation`, Fig. 14 =
+`fig09_latency_cost_inversion`, Fig. 15 = `figS3_weather_*`. If Fig. 8 is the ablation
+chart instead, its table is `results/tables/table_ablation.tex` (regenerated with C2).
+
+* **D1** `table_fig8_regret_margin.{csv,tex}`: Fig. 8's content as a table (cost and TIR
+  axes; sampled and argmax in the CSV).
+* **D2** `fig08_paper_regret_margin_fixed`: horizontal two-line x labels, nothing
+  clipped. `fig14_paper_latency_cost_fixed`: labels placed by a collision check, so 4 and
+  5 no longer overlap. A bug found while fixing it: **the old Fig. 14 averaged the τ=0
+  and τ=0.5 agent rows into a single "AI-HARP" point** (cost 0.82). The two arms are now
+  separate points (0.79 and 0.85, matching Table 2). The fixes are in `analysis/figures.py`,
+  so `reproduce.sh` regenerates the corrected figures.
+* **D3** `fig12_paper_training_fixed`: the annotation now reads "cap 500 never reached:
+  peak λ = 33.1 (6.6% of cap; rural highway d=2, update 994)". The figure plots the λ used
+  at each update; A5's 33.18 at update 1000 is the post-update value. Neither run came near
+  the cap. "Plateaus near 50" belongs to run8 / arm A and must not be attached to this figure.
+* **D4** `fig_d4_latency_bounded_headline`: oracle, best fixed and agent cost against D.
