@@ -1,0 +1,258 @@
+{
+ "variants": {
+  "learned gate (tau=0.5)": {
+   "cells": {
+    "rural_highway|2": {
+     "matched_cost": null,
+     "regret": null,
+     "margin": null,
+     "best_rwcr": 0.5069524707352737,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.5173831660905964,
+      "-1.0": 0.55890608875129,
+      "0.0": 0.5115792098477108,
+      "1.0": 0.23926499519572278,
+      "2.0": 0.12224768938155668,
+      "3.0": 0.09367573345127525
+     }
+    },
+    "rural_highway|20": {
+     "matched_cost": 0.7168148145973955,
+     "regret": 0.01844709147744905,
+     "margin": 0.018969854481810433,
+     "best_rwcr": 0.9048508845298644,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.19769730874889557,
+      "-1.0": 0.21466384025332474,
+      "0.0": 0.18081383017037359,
+      "1.0": 0.12292686935858106,
+      "2.0": 0.05469563415472871,
+      "3.0": 0.04153771130334568
+     }
+    },
+    "rural_highway|80": {
+     "matched_cost": null,
+     "regret": null,
+     "margin": null,
+     "best_rwcr": 0.8462776902282897,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.09546195563015705,
+      "-1.0": 0.14261417448307215,
+      "0.0": 0.15585030613865516,
+      "1.0": 0.14388859126743356,
+      "2.0": 0.09258508475698488,
+      "3.0": 0.062487575922829476
+     }
+    },
+    "urban_nlos|20": {
+     "matched_cost": null,
+     "regret": null,
+     "margin": null,
+     "best_rwcr": 0.9210761180012279,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.30026461879480826,
+      "-1.0": 0.3446109812212296,
+      "0.0": 0.28325236784221863,
+      "1.0": 0.12806145396563068,
+      "2.0": 0.03917437745593124,
+      "3.0": 0.008631774084793233
+     }
+    }
+   },
+   "cells_matched": 1,
+   "fixed_best": "dvcast(n_slots=30)"
+  },
+  "network only (tau=0)": {
+   "cells": {
+    "rural_highway|2": {
+     "matched_cost": null,
+     "regret": null,
+     "margin": null,
+     "best_rwcr": 0.5511758922862,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.0,
+      "-1.0": 0.0,
+      "0.0": 0.0,
+      "1.0": 0.0,
+      "2.0": 0.0,
+      "3.0": 0.0
+     }
+    },
+    "rural_highway|20": {
+     "matched_cost": 0.7056299371058532,
+     "regret": 0.002555670544427624,
+     "margin": 0.035121455187272055,
+     "best_rwcr": 0.9088926099096334,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.0,
+      "-1.0": 0.0,
+      "0.0": 0.0,
+      "1.0": 0.0,
+      "2.0": 0.0,
+      "3.0": 0.0
+     }
+    },
+    "rural_highway|80": {
+     "matched_cost": null,
+     "regret": null,
+     "margin": null,
+     "best_rwcr": 0.8508659051821784,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.0,
+      "-1.0": 0.0,
+      "0.0": 0.0,
+      "1.0": 0.0,
+      "2.0": 0.0,
+      "3.0": 0.0
+     }
+    },
+    "urban_nlos|20": {
+     "matched_cost": 0.8639262979632653,
+     "regret": 0.6212315569009179,
+     "margin": -0.3441144566386156,
+     "best_rwcr": 0.9395677940000601,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.0,
+      "-1.0": 0.0,
+      "0.0": 0.0,
+      "1.0": 0.0,
+      "2.0": 0.0,
+      "3.0": 0.0
+     }
+    }
+   },
+   "cells_matched": 2,
+   "fixed_best": "dvcast(n_slots=30)"
+  },
+  "random gate (matched rate)": {
+   "cells": {
+    "rural_highway|2": {
+     "matched_cost": null,
+     "regret": null,
+     "margin": null,
+     "best_rwcr": 0.4803810009935079,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.5695891558408658,
+      "-1.0": 0.6080929116351111,
+      "0.0": 0.5685748792270532,
+      "1.0": 0.2734760337701514,
+      "2.0": 0.15792727235821863,
+      "3.0": 0.11488292536347458
+     }
+    },
+    "rural_highway|20": {
+     "matched_cost": 0.7823015884874861,
+     "regret": 0.11149038946796797,
+     "margin": -0.06632851310847387,
+     "best_rwcr": 0.9230494949263808,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.19807389209503173,
+      "-1.0": 0.21424216580043837,
+      "0.0": 0.18171537911540855,
+      "1.0": 0.12546215739631636,
+      "2.0": 0.05746961646517158,
+      "3.0": 0.040343672759818934
+     }
+    },
+    "rural_highway|80": {
+     "matched_cost": 1.20008038568276,
+     "regret": -0.2061741935905823,
+     "margin": 0.41938381700290783,
+     "best_rwcr": 0.9115076718808606,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.09571766103568664,
+      "-1.0": 0.14082892462122298,
+      "0.0": 0.1531276173362661,
+      "1.0": 0.14173259319581014,
+      "2.0": 0.09166542868047584,
+      "3.0": 0.06148745857245532
+     }
+    },
+    "urban_nlos|20": {
+     "matched_cost": 0.8069334243808749,
+     "regret": 0.5142795571897518,
+     "margin": -0.2977899387442262,
+     "best_rwcr": 0.9571703857989766,
+     "fallback_rate_by_bias": {
+      "-2.0": 0.3040272380317581,
+      "-1.0": 0.34740267417295106,
+      "0.0": 0.28542650863098973,
+      "1.0": 0.13090131995526239,
+      "2.0": 0.036576528261340745,
+      "3.0": 0.006391236334057226
+     }
+    }
+   },
+   "cells_matched": 3,
+   "fixed_best": "dvcast(n_slots=30)"
+  }
+ },
+ "pure_weighted_p": {
+  "rural_highway|2": {
+   "curve_matched_cost": null,
+   "curve_regret": null,
+   "default_rwcr": 0.41951455670655546,
+   "default_cost": 1.527777777777778,
+   "default_meets_target": false,
+   "target_without_weighted_p": 0.6409542444184041
+  },
+  "rural_highway|20": {
+   "curve_matched_cost": 0.9256642037565749,
+   "curve_regret": 0.3151793138234309,
+   "default_rwcr": 0.9249848742325941,
+   "default_cost": 1.4355392697539837,
+   "default_meets_target": true,
+   "target_without_weighted_p": 0.8787356305209644
+  },
+  "rural_highway|80": {
+   "curve_matched_cost": 1.5117679168316374,
+   "curve_regret": -0.07243211026967367,
+   "default_rwcr": 0.9072439311268076,
+   "default_cost": 3.577985971471194,
+   "default_meets_target": true,
+   "target_without_weighted_p": 0.8695222256415746
+  },
+  "urban_nlos|20": {
+   "curve_matched_cost": 0.6278762774716987,
+   "curve_regret": 0.17826351306402533,
+   "default_rwcr": 0.9504783697401106,
+   "default_cost": 0.6533861628613131,
+   "default_meets_target": true,
+   "target_without_weighted_p": 0.926147967834037
+  }
+ },
+ "provenance": {
+  "task": "C3",
+  "git_commit": "5be5fd913b08db0006556f4c59aedf71b7daad8a",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": [
+   "aiharp-gpu",
+   "Scripts",
+   "python.exe"
+  ],
+  "command": "python -m experiments.revision1.c3_fallback",
+  "config_hash": "0f71723b0050",
+  "config": {
+   "agent_rows": [
+    "results/revision1/agent_runs/ref_s0.csv",
+    "results/revision1/agent_runs/ref_s0_randomgate.csv"
+   ],
+   "baseline_rows": "results/revision1/B_sweeps/headline_runs.csv",
+   "checkpoint": "checkpoints/campaign/ref/ckpt_final.pt"
+  },
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "generated": "2026-10-16 21:32:16"
+ }
+}

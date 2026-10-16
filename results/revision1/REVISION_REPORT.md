@@ -418,3 +418,44 @@ chart instead, its table is `results/tables/table_ablation.tex` (regenerated wit
   at each update; A5's 33.18 at update 1000 is the post-update value. Neither run came near
   the cap. "Plateaus near 50" belongs to run8 / arm A and must not be attached to this figure.
 * **D4** `fig_d4_latency_bounded_headline`: oracle, best fixed and agent cost against D.
+
+
+---
+
+## C3. Learning vs fallback (reference checkpoint, headline cells)
+
+Regenerate: `python -m experiments.revision1.agent_eval --checkpoint checkpoints/campaign/ref/ckpt_final.pt --name ref_s0_randomgate --random-gate-from results/revision1/agent_runs/ref_s0.csv`
+then `python -m experiments.revision1.c3_fallback` → `results/revision1/C3/c3_fallback.json`.
+Rows: `results/revision1/agent_runs/ref_s0{,_randomgate}.csv`. Each variant is scored
+alone against the 55 baseline settings (Algorithm 1, deadline guard, eval seeds 0–9).
+Code: `agents/ai_harp.py` `random_gate_rate` replaces the confidence test with a
+coin (private RNG) whose fallback probability is the learned gate's measured rate in
+that (cell, bias). Measured rates are reproduced to ±0.04: rural d=2 9–56%, rural d=20
+4–22%, rural d=80 6–16%, urban d=20 1–35% (by bias).
+
+Matched cost / regret vs per-cell oracle / margin vs best fixed (`dvcast(n_slots=30)`):
+
+| variant | rural d=2 | rural d=20 | rural d=80 | urban d=20 | cells matched |
+|---|---|---|---|---|---|
+| learned gate (τ=0.5) | never (best RWCR 0.507) | **0.717 / +1.8% / +1.9%** | never (0.846) | never (0.921) | **1** |
+| network only (τ=0) | never (0.551) | 0.706 / +0.3% / +3.5% | never (0.851) | 0.864 / +62.1% / −34.4% | **2** |
+| random gate, same rate | never (0.480) | 0.782 / +11.1% / −6.6% | **1.200 / −20.6% / +41.9%** | 0.807 / +51.4% / −29.8% | **3** |
+| pure weighted_p, tuned curve | never | 0.926 / +31.5% | 1.512 (it *is* the oracle) | 0.628 / +17.8% | 2 of 3 non-trivial |
+| pure weighted_p, default | RWCR 0.420 (misses) | 1.436 (meets) | 3.578 (meets) | 0.653 (meets) | 3 |
+
+What this says:
+
+1. **The learned confidence gate is not what earns the result.** A coin that defers
+   the same *fraction* of decisions matches more cells (3 vs 1) and is cheaper than
+   every baseline at rural d=80, where the learned gate never reaches the target.
+   The entropy gate defers the decisions the network is unsure about, and those are
+   evidently not the ones whose deferral helps coverage. Only at rural d=20 does the
+   learned gate choose better than chance (0.717 vs 0.782).
+2. **The network alone (τ=0) beats the gated agent** in the paper's qualifying cell
+   (0.706 vs 0.717) and qualifies in one more cell (urban d=20, though at +62% regret).
+   At τ=0.5 the fallback to weighted_p is what loses urban d=20 (README's weighted_p
+   die-out mechanism).
+3. **The fallback alone is far worse than the agent at rural d=20** (tuned weighted_p
+   0.926, +31.5% regret), so the 0.717 there is learned behaviour, not fallback.
+4. Caveat: one training seed, 10 eval seeds; C1 adds seeds 1–2 for the learned-gate
+   and network-only arms (random gate is not repeated per seed).

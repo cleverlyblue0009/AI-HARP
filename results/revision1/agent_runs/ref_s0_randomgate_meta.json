@@ -1,0 +1,75 @@
+[
+ {
+  "task": "agent_runs/ref_s0_randomgate",
+  "git_commit": "8d8ac7fe87c711924ba72d52017b8329b1044377-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": [
+   "aiharp-gpu",
+   "Scripts",
+   "python.exe"
+  ],
+  "command": "python -m experiments.revision1.agent_eval --checkpoint checkpoints/campaign/ref/ckpt_final.pt --name ref_s0_randomgate --random-gate-from results/revision1/agent_runs/ref_s0.csv --modes sampled --jobs 3",
+  "config_hash": "3c6dfc2a0bda",
+  "config": {
+   "checkpoint": "checkpoints/campaign/ref/ckpt_final.pt",
+   "taus": [
+    0.0,
+    0.5
+   ],
+   "modes": [
+    "sampled"
+   ],
+   "biases": [
+    -2.0,
+    -1.0,
+    0.0,
+    1.0,
+    2.0,
+    3.0
+   ],
+   "cells": [
+    [
+     "rural_highway",
+     2.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     20.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     80.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     20.0,
+     "clear",
+     "fog_bank"
+    ]
+   ],
+   "random_gate_from": "results/revision1/agent_runs/ref_s0.csv"
+  },
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "generated": "2026-10-16 21:19:20",
+  "checkpoint_sha": "b589be512827fcbb",
+  "n_runs": 240
+ }
+]
