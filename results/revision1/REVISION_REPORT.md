@@ -555,3 +555,48 @@ the Amador validation.
   checkpoint" was wrong (fixed in README and `reproduce.sh`).
 * **Large files:** largest revision-1 file is `results/revision1/B_sweeps/grid24_runs.csv`
   (~5 MB when complete); nothing over 50 MB is committed.
+
+
+---
+
+## C1/C2. Training seeds — INTERIM (training seed 0 only; seeds 1–2 training)
+
+Regenerate: per-seed evals `python -m experiments.revision1.agent_eval --checkpoint <ckpt_final.pt> --name <variant>_s<seed> --taus 0.5 0`, then
+`python -m experiments.revision1.c_seeds` → `results/revision1/C1C2/c_seeds.json`. Rows:
+`results/revision1/agent_runs/{ref,gcn,mlp,star}_s0.csv`; the τ=0.5 curves reproduce the committed
+`results/agent_<variant>/sampled/pareto_cells_agent.json` to ≤ 4.4e-16 for all four variants.
+τ=0 had never been evaluated for the ablations before.
+
+Matched cost per cell (Algorithm 1, unbounded; "–" = never reaches q*), seed 0:
+
+| variant | τ | rural d=2 | rural d=20 | rural d=80 | urban d=20 | cells matched |
+|---|---|---|---|---|---|---|
+| ref (GATv2) | 0.5 | – | 0.717 | – | – | 1 |
+| GCN | 0.5 | – | 0.681 | 0.991 | 0.782 | 3 |
+| MLP | 0.5 | – | 1.149 | 0.708 | 0.902 | 3 |
+| star | 0.5 | – | 0.699 | – | 0.722 | 2 |
+| ref (GATv2) | 0 | – | 0.706 | – | 0.864 | 2 |
+| GCN | 0 | – | 0.759 | 0.833 | 0.731 | 3 |
+| MLP | 0 | – | 1.283 | 0.832 | 1.000 | 3 |
+| star | 0 | – | 0.991 | – | 0.869 | 2 |
+
+**Same cells for every variant** (the reviewer's request). At τ=0.5 the only cell every
+variant matches is rural d=20; at τ=0 it is rural d=20 and urban d=20. Mean regret / margin
+over those common cells:
+
+| variant | τ=0.5, common = {rural d=20} | τ=0, common = {rural d=20, urban d=20} | committed table (each variant's own matched cells, τ=0.5): regret / margin |
+|---|---|---|---|
+| ref | +1.8% / +1.9% | +31.2% / −15.4% | +1.8% / +1.9% (1 cell) |
+| GCN | **−3.2% / +7.2%** | +22.5% / −13.1% | +3.1% / +17.2% (3 cells) |
+| MLP | **+63.3% / −36.4%** | +85.0% / −43.2% | +26.5% / **+22.3%** (3 cells) |
+| star | −0.7% / +4.5% | +51.9% / −30.5% | +17.4% / −8.5% (2 cells) |
+
+**The committed ablation table's ranking is an artefact of averaging over different
+cells.** MLP has "the best margin" (+22.3%) only because its average includes rural d=80,
+where it is cheap. On the one cell every variant reaches, MLP is the most expensive by
+far (1.149, 63% above per-cell tuning, 36% dearer than the best fixed baseline). On that
+common cell GCN is the cheapest and the only variant below per-cell tuning. With default
+settings (bias 0) averaged over all 4 cells (defined for every variant): RWCR / cost / TIR
+at τ=0.5 are ref 0.752 / 0.976 / 0.274 s, GCN 0.804 / 1.018 / 0.300 s, MLP 0.817 / 1.274 / 0.309 s,
+star 0.764 / 1.071 / 0.281 s. One training seed per variant: this table will be replaced by
+mean ± SD over 3 seeds (ref) and 2 seeds (ablations) when training finishes.
