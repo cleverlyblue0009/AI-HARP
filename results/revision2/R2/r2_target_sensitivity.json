@@ -1,0 +1,2909 @@
+{
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "configs": {
+  "q=0.90|miss=0.02|interp": {
+   "target": 0.9,
+   "miss_margin": 0.02,
+   "interp": true,
+   "fixed_best": "slotted_1p(n_slots=20)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.607219810501646,
+     "oracle_policy": "dvcast",
+     "oracle_cost": 1.6396807440925087,
+     "fixed_cost": 1.6883076563958916,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8324863868093347,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.7679163435354277,
+     "agent": {
+      "0": {
+       "cost": 0.7361815331061858,
+       "regret": 0.04596323335269492,
+       "margin": 0.043107316608911095
+      },
+      "1": {
+       "cost": 0.9825088135931983,
+       "regret": 0.39594386608341114,
+       "margin": -0.21841276850532287
+      },
+      "2": {
+       "cost": 0.8069410275516775,
+       "regret": 0.1464979877200434,
+       "margin": -0.04836125898153154
+      },
+      "3": {
+       "cost": 0.9859443072163188,
+       "regret": 0.40082499914177516,
+       "margin": -0.22113618597430085
+      },
+      "4": {
+       "cost": 1.1233349807032686,
+       "regret": 0.596029016915183,
+       "margin": -0.31639594891394696
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8237578979762286,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.8368761890294625,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 1.7549830556546824,
+       "regret": 0.16088126763053356,
+       "margin": 0.04666320458816653
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8774033379480352,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5783010661022745,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 1,
+    "1": 1,
+    "2": 2,
+    "3": 1,
+    "4": 1
+   }
+  },
+  "q=0.90|miss=0.02|nointerp": {
+   "target": 0.9,
+   "miss_margin": 0.02,
+   "interp": false,
+   "fixed_best": "slotted_1p(n_slots=20)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.607219810501646,
+     "oracle_policy": "dvcast",
+     "oracle_cost": 1.6396807440925087,
+     "fixed_cost": 1.6883076563958916,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8324863868093347,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.7679163435354277,
+     "agent": {
+      "0": {
+       "cost": 0.7361815331061858,
+       "regret": 0.04596323335269492,
+       "margin": 0.043107316608911095
+      },
+      "1": {
+       "cost": 0.9825088135931983,
+       "regret": 0.39594386608341114,
+       "margin": -0.21841276850532287
+      },
+      "2": {
+       "cost": 0.8069410275516775,
+       "regret": 0.1464979877200434,
+       "margin": -0.04836125898153154
+      },
+      "3": {
+       "cost": 0.9859443072163188,
+       "regret": 0.40082499914177516,
+       "margin": -0.22113618597430085
+      },
+      "4": {
+       "cost": 1.1233349807032686,
+       "regret": 0.596029016915183,
+       "margin": -0.31639594891394696
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8237578979762286,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.8368761890294625,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 1.7549830556546824,
+       "regret": 0.16088126763053356,
+       "margin": 0.04666320458816653
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8774033379480352,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5783010661022745,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 1,
+    "1": 1,
+    "2": 2,
+    "3": 1,
+    "4": 1
+   }
+  },
+  "q=0.90|miss=0.05|interp": {
+   "target": 0.9,
+   "miss_margin": 0.05,
+   "interp": true,
+   "fixed_best": "dvcast(n_slots=30)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.607219810501646,
+     "oracle_policy": "dvcast",
+     "oracle_cost": 1.5597111711817593,
+     "fixed_cost": 1.5597111711817593,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8324863868093347,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.730412687320714,
+     "agent": {
+      "0": {
+       "cost": 0.655648328197947,
+       "regret": -0.06845796252091407,
+       "margin": 0.11403119005619544
+      },
+      "1": {
+       "cost": 0.7253441572095104,
+       "regret": 0.030565541038793498,
+       "margin": 0.006987758929089427
+      },
+      "2": {
+       "cost": 0.5537572094733865,
+       "regret": -0.21322438112610953,
+       "margin": 0.31901251094378313
+      },
+      "3": {
+       "cost": 0.6675193366251472,
+       "regret": -0.05159169000619668,
+       "margin": 0.09421951881355795
+      },
+      "4": {
+       "cost": 0.5339040031318907,
+       "regret": -0.24143172260851797,
+       "margin": 0.36805995653919
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8237578979762286,
+     "oracle_policy": "p_persistence_03",
+     "oracle_cost": 0.6465827462346361,
+     "fixed_cost": 1.7033746785407176,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 1.0645031994909135,
+       "regret": 0.6463526218261009,
+       "margin": 0.6001592849653594
+      },
+      "3": {
+       "cost": 0.8178437667578955,
+       "regret": 0.26487100300865607,
+       "margin": 1.0827629282952813
+      },
+      "4": {
+       "cost": 0.9685127707843776,
+       "regret": 0.49789454857014936,
+       "margin": 0.7587529353497231
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8774033379480352,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5666367693638255,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 0.6389965405542684,
+       "regret": 0.19913163743181572,
+       "margin": -0.11323969160721548
+      },
+      "3": {
+       "cost": 0.6858092797684952,
+       "regret": 0.286979744681243,
+       "margin": -0.17376917157624072
+      },
+      "4": {
+       "cost": 0.7307474241280916,
+       "regret": 0.37131001442312384,
+       "margin": -0.22457917653295678
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 1,
+    "1": 1,
+    "2": 3,
+    "3": 3,
+    "4": 3
+   }
+  },
+  "q=0.90|miss=0.05|nointerp": {
+   "target": 0.9,
+   "miss_margin": 0.05,
+   "interp": false,
+   "fixed_best": "dvcast(n_slots=30)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.607219810501646,
+     "oracle_policy": "dvcast",
+     "oracle_cost": 1.5597111711817593,
+     "fixed_cost": 1.5597111711817593,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8324863868093347,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.730412687320714,
+     "agent": {
+      "0": {
+       "cost": 0.655648328197947,
+       "regret": -0.06845796252091407,
+       "margin": 0.11403119005619544
+      },
+      "1": {
+       "cost": 0.7253441572095104,
+       "regret": 0.030565541038793498,
+       "margin": 0.006987758929089427
+      },
+      "2": {
+       "cost": 0.5537572094733865,
+       "regret": -0.21322438112610953,
+       "margin": 0.31901251094378313
+      },
+      "3": {
+       "cost": 0.6675193366251472,
+       "regret": -0.05159169000619668,
+       "margin": 0.09421951881355795
+      },
+      "4": {
+       "cost": 0.5339040031318907,
+       "regret": -0.24143172260851797,
+       "margin": 0.36805995653919
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8237578979762286,
+     "oracle_policy": "p_persistence_03",
+     "oracle_cost": 0.6465827462346361,
+     "fixed_cost": 1.7033746785407176,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 1.0645031994909135,
+       "regret": 0.6463526218261009,
+       "margin": 0.6001592849653594
+      },
+      "3": {
+       "cost": 0.8178437667578955,
+       "regret": 0.26487100300865607,
+       "margin": 1.0827629282952813
+      },
+      "4": {
+       "cost": 0.9685127707843776,
+       "regret": 0.49789454857014936,
+       "margin": 0.7587529353497231
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8774033379480352,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5666367693638255,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 0.6389965405542684,
+       "regret": 0.19913163743181572,
+       "margin": -0.11323969160721548
+      },
+      "3": {
+       "cost": 0.6858092797684952,
+       "regret": 0.286979744681243,
+       "margin": -0.17376917157624072
+      },
+      "4": {
+       "cost": 0.7307474241280916,
+       "regret": 0.37131001442312384,
+       "margin": -0.22457917653295678
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 1,
+    "1": 1,
+    "2": 3,
+    "3": 3,
+    "4": 3
+   }
+  },
+  "q=0.90|miss=0.10|interp": {
+   "target": 0.9,
+   "miss_margin": 0.1,
+   "interp": true,
+   "fixed_best": "dvcast(n_slots=30)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.607219810501646,
+     "oracle_policy": "dvcast",
+     "oracle_cost": 1.5597111711817593,
+     "fixed_cost": 1.5597111711817593,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8324863868093347,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.730412687320714,
+     "agent": {
+      "0": {
+       "cost": 0.581399459415333,
+       "regret": -0.173950403409731,
+       "margin": 0.2563009398997922
+      },
+      "1": {
+       "cost": 0.6587052725460087,
+       "regret": -0.06411467047854669,
+       "margin": 0.10886115196488988
+      },
+      "2": {
+       "cost": 0.4113530972204472,
+       "regret": -0.4155514689387295,
+       "margin": 0.775634344936706
+      },
+      "3": {
+       "cost": 0.551870342676228,
+       "regret": -0.21590523252934224,
+       "margin": 0.3235222675287579
+      },
+      "4": {
+       "cost": 0.5339040031318907,
+       "regret": -0.24143172260851797,
+       "margin": 0.36805995653919
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8237578979762286,
+     "oracle_policy": "p_persistence_03",
+     "oracle_cost": 0.6465827462346361,
+     "fixed_cost": 1.7033746785407176,
+     "agent": {
+      "0": {
+       "cost": 0.6625745434708058,
+       "regret": 0.024732793025019184,
+       "margin": 1.5708423230657536
+      },
+      "1": {
+       "cost": 0.6873656556806456,
+       "regret": 0.06307454024022152,
+       "margin": 1.4781201453162454
+      },
+      "2": {
+       "cost": 0.5926421776859823,
+       "regret": -0.08342407659773765,
+       "margin": 1.8742042714402767
+      },
+      "3": {
+       "cost": 0.7849987418781452,
+       "regret": 0.21407313518582494,
+       "margin": 1.1699075268137578
+      },
+      "4": {
+       "cost": 0.786006238021387,
+       "regret": 0.2156313211242975,
+       "margin": 1.1671261577117016
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8774033379480352,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5666367693638255,
+     "agent": {
+      "0": {
+       "cost": 0.6021977681952372,
+       "regret": 0.13007559510005273,
+       "margin": -0.05905202694122669
+      },
+      "1": {
+       "cost": 0.6088058301305701,
+       "regret": 0.14247618825802721,
+       "margin": -0.06926520522594315
+      },
+      "2": {
+       "cost": 0.5151221073250734,
+       "regret": -0.03332932679377609,
+       "margin": 0.10000475868965797
+      },
+      "3": {
+       "cost": 0.48503916411651327,
+       "regret": -0.08978254157512489,
+       "margin": 0.16822890043516425
+      },
+      "4": {
+       "cost": 0.535957206753756,
+       "regret": 0.005769518518124572,
+       "margin": 0.057242560084027616
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 3,
+    "1": 3,
+    "2": 3,
+    "3": 3,
+    "4": 3
+   }
+  },
+  "q=0.90|miss=0.10|nointerp": {
+   "target": 0.9,
+   "miss_margin": 0.1,
+   "interp": false,
+   "fixed_best": "dvcast(n_slots=30)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.607219810501646,
+     "oracle_policy": "dvcast",
+     "oracle_cost": 1.5597111711817593,
+     "fixed_cost": 1.5597111711817593,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8324863868093347,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.730412687320714,
+     "agent": {
+      "0": {
+       "cost": 0.581399459415333,
+       "regret": -0.173950403409731,
+       "margin": 0.2563009398997922
+      },
+      "1": {
+       "cost": 0.6587052725460087,
+       "regret": -0.06411467047854669,
+       "margin": 0.10886115196488988
+      },
+      "2": {
+       "cost": 0.5537572094733865,
+       "regret": -0.21322438112610953,
+       "margin": 0.31901251094378313
+      },
+      "3": {
+       "cost": 0.551870342676228,
+       "regret": -0.21590523252934224,
+       "margin": 0.3235222675287579
+      },
+      "4": {
+       "cost": 0.5339040031318907,
+       "regret": -0.24143172260851797,
+       "margin": 0.36805995653919
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8237578979762286,
+     "oracle_policy": "p_persistence_03",
+     "oracle_cost": 0.6465827462346361,
+     "fixed_cost": 1.7033746785407176,
+     "agent": {
+      "0": {
+       "cost": 0.7057014737612624,
+       "regret": 0.09143257822900974,
+       "margin": 1.4137326360706544
+      },
+      "1": {
+       "cost": 0.6873656556806456,
+       "regret": 0.06307454024022152,
+       "margin": 1.4781201453162454
+      },
+      "2": {
+       "cost": 0.6598440985806733,
+       "regret": 0.020509907545885664,
+       "margin": 1.5814805075997223
+      },
+      "3": {
+       "cost": 0.8178437667578955,
+       "regret": 0.26487100300865607,
+       "margin": 1.0827629282952813
+      },
+      "4": {
+       "cost": 0.8675328325468445,
+       "regret": 0.3417197374951739,
+       "margin": 0.9634699859601448
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8774033379480352,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5666367693638255,
+     "agent": {
+      "0": {
+       "cost": 0.6021977681952372,
+       "regret": 0.13007559510005273,
+       "margin": -0.05905202694122669
+      },
+      "1": {
+       "cost": 0.6088058301305701,
+       "regret": 0.14247618825802721,
+       "margin": -0.06926520522594315
+      },
+      "2": {
+       "cost": 0.5151221073250734,
+       "regret": -0.03332932679377609,
+       "margin": 0.10000475868965797
+      },
+      "3": {
+       "cost": 0.48503916411651327,
+       "regret": -0.08978254157512489,
+       "margin": 0.16822890043516425
+      },
+      "4": {
+       "cost": 0.535957206753756,
+       "regret": 0.005769518518124572,
+       "margin": 0.057242560084027616
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 3,
+    "1": 3,
+    "2": 3,
+    "3": 3,
+    "4": 3
+   }
+  },
+  "q=0.95|miss=0.02|interp": {
+   "target": 0.95,
+   "miss_margin": 0.02,
+   "interp": true,
+   "fixed_best": "slotted_1p(n_slots=20)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.6409542444184041,
+     "oracle_policy": "slotted_1p",
+     "oracle_cost": 1.6537464985994397,
+     "fixed_cost": 1.6883076563958916,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8787356305209644,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.7679163435354277,
+     "agent": {
+      "0": {
+       "cost": 0.7361815331061858,
+       "regret": 0.04596323335269492,
+       "margin": 0.043107316608911095
+      },
+      "1": {
+       "cost": 0.9825088135931983,
+       "regret": 0.39594386608341114,
+       "margin": -0.21841276850532287
+      },
+      "2": {
+       "cost": 0.8069410275516775,
+       "regret": 0.1464979877200434,
+       "margin": -0.04836125898153154
+      },
+      "3": {
+       "cost": 0.9859443072163188,
+       "regret": 0.40082499914177516,
+       "margin": -0.22113618597430085
+      },
+      "4": {
+       "cost": 1.1233349807032686,
+       "regret": 0.596029016915183,
+       "margin": -0.31639594891394696
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8695222256415746,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.8368761890294625,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 1.7549830556546824,
+       "regret": 0.16088126763053356,
+       "margin": 0.04666320458816653
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.926147967834037,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5783010661022745,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 1,
+    "1": 1,
+    "2": 2,
+    "3": 1,
+    "4": 1
+   }
+  },
+  "q=0.95|miss=0.02|nointerp": {
+   "target": 0.95,
+   "miss_margin": 0.02,
+   "interp": false,
+   "fixed_best": "slotted_1p(n_slots=20)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.6409542444184041,
+     "oracle_policy": "slotted_1p",
+     "oracle_cost": 1.6537464985994397,
+     "fixed_cost": 1.6883076563958916,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8787356305209644,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.7679163435354277,
+     "agent": {
+      "0": {
+       "cost": 0.7361815331061858,
+       "regret": 0.04596323335269492,
+       "margin": 0.043107316608911095
+      },
+      "1": {
+       "cost": 0.9825088135931983,
+       "regret": 0.39594386608341114,
+       "margin": -0.21841276850532287
+      },
+      "2": {
+       "cost": 0.8069410275516775,
+       "regret": 0.1464979877200434,
+       "margin": -0.04836125898153154
+      },
+      "3": {
+       "cost": 0.9859443072163188,
+       "regret": 0.40082499914177516,
+       "margin": -0.22113618597430085
+      },
+      "4": {
+       "cost": 1.1233349807032686,
+       "regret": 0.596029016915183,
+       "margin": -0.31639594891394696
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8695222256415746,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.8368761890294625,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 1.7549830556546824,
+       "regret": 0.16088126763053356,
+       "margin": 0.04666320458816653
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.926147967834037,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5783010661022745,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 1,
+    "1": 1,
+    "2": 2,
+    "3": 1,
+    "4": 1
+   }
+  },
+  "q=0.95|miss=0.05|interp": {
+   "target": 0.95,
+   "miss_margin": 0.05,
+   "interp": true,
+   "fixed_best": "dvcast(n_slots=30)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.6409542444184041,
+     "oracle_policy": "dvcast",
+     "oracle_cost": 1.5597111711817593,
+     "fixed_cost": 1.5597111711817593,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8787356305209644,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.730412687320714,
+     "agent": {
+      "0": {
+       "cost": 0.7168148145973955,
+       "regret": 0.01844709147744905,
+       "margin": 0.018969854481810433
+      },
+      "1": {
+       "cost": 0.7253441572095104,
+       "regret": 0.030565541038793498,
+       "margin": 0.006987758929089427
+      },
+      "2": {
+       "cost": 0.5537572094733865,
+       "regret": -0.21322438112610953,
+       "margin": 0.31901251094378313
+      },
+      "3": {
+       "cost": 0.6675193366251472,
+       "regret": -0.05159169000619668,
+       "margin": 0.09421951881355795
+      },
+      "4": {
+       "cost": 0.5339040031318907,
+       "regret": -0.24143172260851797,
+       "margin": 0.36805995653919
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8695222256415746,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.7033746785407176,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 1.0645031994909135,
+       "regret": -0.2958554103186031,
+       "margin": 0.6001592849653594
+      },
+      "3": {
+       "cost": 0.9343053655086531,
+       "regret": -0.3819783082400836,
+       "margin": 0.8231455597104154
+      },
+      "4": {
+       "cost": 0.9799489757203612,
+       "regret": -0.3517861010212878,
+       "margin": 0.7382279289475919
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.926147967834037,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5666367693638255,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 0.6486725276790878,
+       "regret": 0.21728945449087145,
+       "margin": -0.12646713837069912
+      },
+      "3": {
+       "cost": 0.6858092797684952,
+       "regret": 0.286979744681243,
+       "margin": -0.17376917157624072
+      },
+      "4": {
+       "cost": 0.7307474241280916,
+       "regret": 0.37131001442312384,
+       "margin": -0.22457917653295678
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 1,
+    "1": 1,
+    "2": 3,
+    "3": 3,
+    "4": 3
+   }
+  },
+  "q=0.95|miss=0.05|nointerp": {
+   "target": 0.95,
+   "miss_margin": 0.05,
+   "interp": false,
+   "fixed_best": "dvcast(n_slots=30)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.6409542444184041,
+     "oracle_policy": "dvcast",
+     "oracle_cost": 1.5597111711817593,
+     "fixed_cost": 1.5597111711817593,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8787356305209644,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.730412687320714,
+     "agent": {
+      "0": {
+       "cost": 0.7361815331061858,
+       "regret": 0.04596323335269492,
+       "margin": -0.007836172908509798
+      },
+      "1": {
+       "cost": 0.7253441572095104,
+       "regret": 0.030565541038793498,
+       "margin": 0.006987758929089427
+      },
+      "2": {
+       "cost": 0.5537572094733865,
+       "regret": -0.21322438112610953,
+       "margin": 0.31901251094378313
+      },
+      "3": {
+       "cost": 0.6675193366251472,
+       "regret": -0.05159169000619668,
+       "margin": 0.09421951881355795
+      },
+      "4": {
+       "cost": 0.5339040031318907,
+       "regret": -0.24143172260851797,
+       "margin": 0.36805995653919
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8695222256415746,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.7033746785407176,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 1.0645031994909135,
+       "regret": -0.2958554103186031,
+       "margin": 0.6001592849653594
+      },
+      "3": {
+       "cost": 0.9628556249556401,
+       "regret": -0.3630929627256593,
+       "margin": 0.7690862829193048
+      },
+      "4": {
+       "cost": 1.0158615947710563,
+       "regret": -0.3280307225330601,
+       "margin": 0.6767783006154549
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.926147967834037,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5666367693638255,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 0.7160649712131302,
+       "regret": 0.34375713629617577,
+       "margin": -0.20867966994133103
+      },
+      "3": {
+       "cost": 0.6858092797684952,
+       "regret": 0.286979744681243,
+       "margin": -0.17376917157624072
+      },
+      "4": {
+       "cost": 0.7307474241280916,
+       "regret": 0.37131001442312384,
+       "margin": -0.22457917653295678
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 1,
+    "1": 1,
+    "2": 3,
+    "3": 3,
+    "4": 3
+   }
+  },
+  "q=0.95|miss=0.10|interp": {
+   "target": 0.95,
+   "miss_margin": 0.1,
+   "interp": true,
+   "fixed_best": "dvcast(n_slots=30)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.6409542444184041,
+     "oracle_policy": "dvcast",
+     "oracle_cost": 1.5597111711817593,
+     "fixed_cost": 1.5597111711817593,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8787356305209644,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.730412687320714,
+     "agent": {
+      "0": {
+       "cost": 0.7168148145973955,
+       "regret": 0.01844709147744905,
+       "margin": 0.018969854481810433
+      },
+      "1": {
+       "cost": 0.7123482566393504,
+       "regret": 0.012101027098406547,
+       "margin": 0.0253589877043936
+      },
+      "2": {
+       "cost": 0.5109394415173447,
+       "regret": -0.27405966291765504,
+       "margin": 0.4295484512833774
+      },
+      "3": {
+       "cost": 0.5915819462445293,
+       "regret": -0.15948317437927773,
+       "margin": 0.23467710932949815
+      },
+      "4": {
+       "cost": 0.5339040031318907,
+       "regret": -0.24143172260851797,
+       "margin": 0.36805995653919
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8695222256415746,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.2726906038662735,
+     "fixed_cost": 1.7033746785407176,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 1.01574828408134,
+       "regret": -0.2018890679355808,
+       "margin": 0.6769653517862237
+      },
+      "3": {
+       "cost": 0.9343053655086531,
+       "regret": -0.26588177623819076,
+       "margin": 0.8231455597104154
+      },
+      "4": {
+       "cost": 0.9799489757203612,
+       "regret": -0.2300179063604305,
+       "margin": 0.7382279289475919
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.926147967834037,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5666367693638255,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 0.6486725276790878,
+       "regret": 0.21728945449087145,
+       "margin": -0.12646713837069912
+      },
+      "3": {
+       "cost": 0.6658973926929459,
+       "regret": 0.2496133862772527,
+       "margin": -0.14906294035437206
+      },
+      "4": {
+       "cost": 0.7181459700938972,
+       "regret": 0.3476623086046573,
+       "margin": -0.2109727089469875
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 1,
+    "1": 1,
+    "2": 3,
+    "3": 3,
+    "4": 3
+   }
+  },
+  "q=0.95|miss=0.10|nointerp": {
+   "target": 0.95,
+   "miss_margin": 0.1,
+   "interp": false,
+   "fixed_best": "dvcast(n_slots=30)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.6409542444184041,
+     "oracle_policy": "dvcast",
+     "oracle_cost": 1.5597111711817593,
+     "fixed_cost": 1.5597111711817593,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.8787356305209644,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.730412687320714,
+     "agent": {
+      "0": {
+       "cost": 0.7361815331061858,
+       "regret": 0.04596323335269492,
+       "margin": -0.007836172908509798
+      },
+      "1": {
+       "cost": 0.7253441572095104,
+       "regret": 0.030565541038793498,
+       "margin": 0.006987758929089427
+      },
+      "2": {
+       "cost": 0.5537572094733865,
+       "regret": -0.21322438112610953,
+       "margin": 0.31901251094378313
+      },
+      "3": {
+       "cost": 0.6675193366251472,
+       "regret": -0.05159169000619668,
+       "margin": 0.09421951881355795
+      },
+      "4": {
+       "cost": 0.5339040031318907,
+       "regret": -0.24143172260851797,
+       "margin": 0.36805995653919
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8695222256415746,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.7033746785407176,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 1.0645031994909135,
+       "regret": -0.2958554103186031,
+       "margin": 0.6001592849653594
+      },
+      "3": {
+       "cost": 0.9628556249556401,
+       "regret": -0.3630929627256593,
+       "margin": 0.7690862829193048
+      },
+      "4": {
+       "cost": 1.0158615947710563,
+       "regret": -0.3280307225330601,
+       "margin": 0.6767783006154549
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.926147967834037,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5666367693638255,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": 0.7160649712131302,
+       "regret": 0.34375713629617577,
+       "margin": -0.20867966994133103
+      },
+      "3": {
+       "cost": 0.6858092797684952,
+       "regret": 0.286979744681243,
+       "margin": -0.17376917157624072
+      },
+      "4": {
+       "cost": 0.7307474241280916,
+       "regret": 0.37131001442312384,
+       "margin": -0.22457917653295678
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 1,
+    "1": 1,
+    "2": 3,
+    "3": 3,
+    "4": 3
+   }
+  },
+  "q=0.98|miss=0.02|interp": {
+   "target": 0.98,
+   "miss_margin": 0.02,
+   "interp": true,
+   "fixed_best": "dvcast(n_slots=30)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.661194904768459,
+     "oracle_policy": "none",
+     "oracle_cost": null,
+     "fixed_cost": null,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9064851767479423,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.730412687320714,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": 0.9825088135931983,
+       "regret": 0.39594386608341114,
+       "margin": -0.2565840863559553
+      },
+      "2": {
+       "cost": 0.8069410275516775,
+       "regret": 0.1464979877200434,
+       "margin": -0.09483758740481518
+      },
+      "3": {
+       "cost": 0.9859443072163188,
+       "regret": 0.40082499914177516,
+       "margin": -0.2591744970028419
+      },
+      "4": {
+       "cost": 1.1233349807032686,
+       "regret": 0.596029016915183,
+       "margin": -0.3497819440613912
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8969808222407822,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.7033746785407176,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9553947457656382,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5666367693638255,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 0,
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+   }
+  },
+  "q=0.98|miss=0.02|nointerp": {
+   "target": 0.98,
+   "miss_margin": 0.02,
+   "interp": false,
+   "fixed_best": "dvcast(n_slots=30)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.661194904768459,
+     "oracle_policy": "none",
+     "oracle_cost": null,
+     "fixed_cost": null,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9064851767479423,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.730412687320714,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": 0.9825088135931983,
+       "regret": 0.39594386608341114,
+       "margin": -0.2565840863559553
+      },
+      "2": {
+       "cost": 0.8069410275516775,
+       "regret": 0.1464979877200434,
+       "margin": -0.09483758740481518
+      },
+      "3": {
+       "cost": 0.9859443072163188,
+       "regret": 0.40082499914177516,
+       "margin": -0.2591744970028419
+      },
+      "4": {
+       "cost": 1.1233349807032686,
+       "regret": 0.596029016915183,
+       "margin": -0.3497819440613912
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8969808222407822,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.7033746785407176,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9553947457656382,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5666367693638255,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 0,
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+   }
+  },
+  "q=0.98|miss=0.05|interp": {
+   "target": 0.98,
+   "miss_margin": 0.05,
+   "interp": true,
+   "fixed_best": "greedy_farthest(fallback_n_slots=32)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.661194904768459,
+     "oracle_policy": "none",
+     "oracle_cost": null,
+     "fixed_cost": null,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9064851767479423,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.7038311764998227,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": 0.9633780948878029,
+       "regret": 0.36876303161038715,
+       "margin": -0.26941334847166887
+      },
+      "2": {
+       "cost": 0.6826499083829312,
+       "regret": -0.03009424535898908,
+       "margin": 0.031028009901980402
+      },
+      "3": {
+       "cost": 0.8271883167231607,
+       "regret": 0.17526524021967504,
+       "margin": -0.14912824290363202
+      },
+      "4": {
+       "cost": 1.0623005885571375,
+       "regret": 0.5093116418059169,
+       "margin": -0.3374463084353586
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8969808222407822,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.6298191577881773,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9553947457656382,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5700625386469917,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 0,
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+   }
+  },
+  "q=0.98|miss=0.05|nointerp": {
+   "target": 0.98,
+   "miss_margin": 0.05,
+   "interp": false,
+   "fixed_best": "greedy_farthest(fallback_n_slots=32)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.661194904768459,
+     "oracle_policy": "none",
+     "oracle_cost": null,
+     "fixed_cost": null,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9064851767479423,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.7038311764998227,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": 0.9825088135931983,
+       "regret": 0.39594386608341114,
+       "margin": -0.2836388165050704
+      },
+      "2": {
+       "cost": 0.8069410275516775,
+       "regret": 0.1464979877200434,
+       "margin": -0.12777866973091967
+      },
+      "3": {
+       "cost": 0.9859443072163188,
+       "regret": 0.40082499914177516,
+       "margin": -0.2861349557491787
+      },
+      "4": {
+       "cost": 1.1233349807032686,
+       "regret": 0.596029016915183,
+       "margin": -0.3734449753721849
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8969808222407822,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.6298191577881773,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9553947457656382,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5700625386469917,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 0,
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+   }
+  },
+  "q=0.98|miss=0.10|interp": {
+   "target": 0.98,
+   "miss_margin": 0.1,
+   "interp": true,
+   "fixed_best": "slotted_1p(n_slots=50)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.661194904768459,
+     "oracle_policy": "none",
+     "oracle_cost": null,
+     "fixed_cost": null,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9064851767479423,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.7264360238292139,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": 0.9633780948878029,
+       "regret": 0.36876303161038715,
+       "margin": -0.24594919929768988
+      },
+      "2": {
+       "cost": 0.6826499083829312,
+       "regret": -0.03009424535898908,
+       "margin": 0.06414139210829717
+      },
+      "3": {
+       "cost": 0.8271883167231607,
+       "regret": 0.17526524021967504,
+       "margin": -0.12180091383914715
+      },
+      "4": {
+       "cost": 1.0623005885571375,
+       "regret": 0.5093116418059169,
+       "margin": -0.3161671643090298
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8969808222407822,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.4765280389770643,
+     "fixed_cost": 1.6457367924593846,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9553947457656382,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5398740398065873,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 0,
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+   }
+  },
+  "q=0.98|miss=0.10|nointerp": {
+   "target": 0.98,
+   "miss_margin": 0.1,
+   "interp": false,
+   "fixed_best": "slotted_1p(n_slots=50)",
+   "cells": {
+    "rural_highway/d=2/clear/fog_bank": {
+     "target_rwcr": 0.661194904768459,
+     "oracle_policy": "none",
+     "oracle_cost": null,
+     "fixed_cost": null,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "rural_highway/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9064851767479423,
+     "oracle_policy": "greedy_farthest",
+     "oracle_cost": 0.7038311764998227,
+     "fixed_cost": 0.7264360238292139,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": 0.9825088135931983,
+       "regret": 0.39594386608341114,
+       "margin": -0.26063154469575045
+      },
+      "2": {
+       "cost": 0.8069410275516775,
+       "regret": 0.1464979877200434,
+       "margin": -0.09976565941469373
+      },
+      "3": {
+       "cost": 0.9859443072163188,
+       "regret": 0.40082499914177516,
+       "margin": -0.26320785209439634
+      },
+      "4": {
+       "cost": 1.1233349807032686,
+       "regret": 0.596029016915183,
+       "margin": -0.3533219953905241
+      }
+     }
+    },
+    "rural_highway/d=80/clear/fog_bank": {
+     "target_rwcr": 0.8969808222407822,
+     "oracle_policy": "weighted_p",
+     "oracle_cost": 1.5117679168316374,
+     "fixed_cost": 1.6457367924593846,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    },
+    "urban_nlos/d=20/clear/fog_bank": {
+     "target_rwcr": 0.9553947457656382,
+     "oracle_policy": "counter_based",
+     "oracle_cost": 0.5328827299751755,
+     "fixed_cost": 0.5398740398065873,
+     "agent": {
+      "0": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "1": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "2": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "3": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      },
+      "4": {
+       "cost": null,
+       "regret": null,
+       "margin": null
+      }
+     }
+    }
+   },
+   "agent_cells_matched": {
+    "0": 0,
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+   }
+  }
+ },
+ "flips_vs_paper_config": {
+  "q=0.90|miss=0.02|interp": [
+   "best fixed dvcast(n_slots=30) -> slotted_1p(n_slots=20)",
+   "rural d=20: seed 1 margin sign +0.007 -> -0.218",
+   "rural d=20: seed 2 regret sign -0.213 -> +0.146",
+   "rural d=20: seed 2 margin sign +0.319 -> -0.048",
+   "rural d=20: seed 3 regret sign -0.052 -> +0.401",
+   "rural d=20: seed 3 margin sign +0.094 -> -0.221",
+   "rural d=20: seed 4 regret sign -0.241 -> +0.596",
+   "rural d=20: seed 4 margin sign +0.368 -> -0.316",
+   "rural_highway/d=80: seed 3 no longer matches",
+   "rural_highway/d=80: seed 4 no longer matches",
+   "urban_nlos/d=20: seed 2 no longer matches",
+   "urban_nlos/d=20: seed 3 no longer matches",
+   "urban_nlos/d=20: seed 4 no longer matches"
+  ],
+  "q=0.90|miss=0.02|nointerp": [
+   "best fixed dvcast(n_slots=30) -> slotted_1p(n_slots=20)",
+   "rural d=20: seed 1 margin sign +0.007 -> -0.218",
+   "rural d=20: seed 2 regret sign -0.213 -> +0.146",
+   "rural d=20: seed 2 margin sign +0.319 -> -0.048",
+   "rural d=20: seed 3 regret sign -0.052 -> +0.401",
+   "rural d=20: seed 3 margin sign +0.094 -> -0.221",
+   "rural d=20: seed 4 regret sign -0.241 -> +0.596",
+   "rural d=20: seed 4 margin sign +0.368 -> -0.316",
+   "rural_highway/d=80: seed 3 no longer matches",
+   "rural_highway/d=80: seed 4 no longer matches",
+   "urban_nlos/d=20: seed 2 no longer matches",
+   "urban_nlos/d=20: seed 3 no longer matches",
+   "urban_nlos/d=20: seed 4 no longer matches"
+  ],
+  "q=0.90|miss=0.05|interp": [
+   "rural d=20: seed 0 regret sign +0.018 -> -0.068",
+   "rural_highway/d=80: oracle weighted_p -> p_persistence_03"
+  ],
+  "q=0.90|miss=0.05|nointerp": [
+   "rural d=20: seed 0 regret sign +0.018 -> -0.068",
+   "rural_highway/d=80: oracle weighted_p -> p_persistence_03"
+  ],
+  "q=0.90|miss=0.10|interp": [
+   "rural d=20: seed 0 regret sign +0.018 -> -0.174",
+   "rural d=20: seed 1 regret sign +0.031 -> -0.064",
+   "rural_highway/d=80: oracle weighted_p -> p_persistence_03",
+   "rural_highway/d=80: seed 0 now matches",
+   "rural_highway/d=80: seed 1 now matches",
+   "urban_nlos/d=20: seed 0 now matches",
+   "urban_nlos/d=20: seed 1 now matches"
+  ],
+  "q=0.90|miss=0.10|nointerp": [
+   "rural d=20: seed 0 regret sign +0.018 -> -0.174",
+   "rural d=20: seed 1 regret sign +0.031 -> -0.064",
+   "rural_highway/d=80: oracle weighted_p -> p_persistence_03",
+   "rural_highway/d=80: seed 0 now matches",
+   "rural_highway/d=80: seed 1 now matches",
+   "urban_nlos/d=20: seed 0 now matches",
+   "urban_nlos/d=20: seed 1 now matches"
+  ],
+  "q=0.95|miss=0.02|interp": [
+   "best fixed dvcast(n_slots=30) -> slotted_1p(n_slots=20)",
+   "rural_highway/d=2: oracle dvcast -> slotted_1p",
+   "rural d=20: seed 1 margin sign +0.007 -> -0.218",
+   "rural d=20: seed 2 regret sign -0.213 -> +0.146",
+   "rural d=20: seed 2 margin sign +0.319 -> -0.048",
+   "rural d=20: seed 3 regret sign -0.052 -> +0.401",
+   "rural d=20: seed 3 margin sign +0.094 -> -0.221",
+   "rural d=20: seed 4 regret sign -0.241 -> +0.596",
+   "rural d=20: seed 4 margin sign +0.368 -> -0.316",
+   "rural_highway/d=80: seed 3 no longer matches",
+   "rural_highway/d=80: seed 4 no longer matches",
+   "urban_nlos/d=20: seed 2 no longer matches",
+   "urban_nlos/d=20: seed 3 no longer matches",
+   "urban_nlos/d=20: seed 4 no longer matches"
+  ],
+  "q=0.95|miss=0.02|nointerp": [
+   "best fixed dvcast(n_slots=30) -> slotted_1p(n_slots=20)",
+   "rural_highway/d=2: oracle dvcast -> slotted_1p",
+   "rural d=20: seed 1 margin sign +0.007 -> -0.218",
+   "rural d=20: seed 2 regret sign -0.213 -> +0.146",
+   "rural d=20: seed 2 margin sign +0.319 -> -0.048",
+   "rural d=20: seed 3 regret sign -0.052 -> +0.401",
+   "rural d=20: seed 3 margin sign +0.094 -> -0.221",
+   "rural d=20: seed 4 regret sign -0.241 -> +0.596",
+   "rural d=20: seed 4 margin sign +0.368 -> -0.316",
+   "rural_highway/d=80: seed 3 no longer matches",
+   "rural_highway/d=80: seed 4 no longer matches",
+   "urban_nlos/d=20: seed 2 no longer matches",
+   "urban_nlos/d=20: seed 3 no longer matches",
+   "urban_nlos/d=20: seed 4 no longer matches"
+  ],
+  "q=0.95|miss=0.05|interp": [],
+  "q=0.95|miss=0.05|nointerp": [
+   "rural d=20: seed 0 margin sign +0.019 -> -0.008"
+  ],
+  "q=0.95|miss=0.10|interp": [],
+  "q=0.95|miss=0.10|nointerp": [
+   "rural d=20: seed 0 margin sign +0.019 -> -0.008"
+  ],
+  "q=0.98|miss=0.02|interp": [
+   "rural_highway/d=2: oracle dvcast -> none",
+   "rural_highway/d=20: seed 0 no longer matches",
+   "rural d=20: seed 1 margin sign +0.007 -> -0.257",
+   "rural d=20: seed 2 regret sign -0.213 -> +0.146",
+   "rural d=20: seed 2 margin sign +0.319 -> -0.095",
+   "rural d=20: seed 3 regret sign -0.052 -> +0.401",
+   "rural d=20: seed 3 margin sign +0.094 -> -0.259",
+   "rural d=20: seed 4 regret sign -0.241 -> +0.596",
+   "rural d=20: seed 4 margin sign +0.368 -> -0.350",
+   "rural_highway/d=80: seed 2 no longer matches",
+   "rural_highway/d=80: seed 3 no longer matches",
+   "rural_highway/d=80: seed 4 no longer matches",
+   "urban_nlos/d=20: seed 2 no longer matches",
+   "urban_nlos/d=20: seed 3 no longer matches",
+   "urban_nlos/d=20: seed 4 no longer matches"
+  ],
+  "q=0.98|miss=0.02|nointerp": [
+   "rural_highway/d=2: oracle dvcast -> none",
+   "rural_highway/d=20: seed 0 no longer matches",
+   "rural d=20: seed 1 margin sign +0.007 -> -0.257",
+   "rural d=20: seed 2 regret sign -0.213 -> +0.146",
+   "rural d=20: seed 2 margin sign +0.319 -> -0.095",
+   "rural d=20: seed 3 regret sign -0.052 -> +0.401",
+   "rural d=20: seed 3 margin sign +0.094 -> -0.259",
+   "rural d=20: seed 4 regret sign -0.241 -> +0.596",
+   "rural d=20: seed 4 margin sign +0.368 -> -0.350",
+   "rural_highway/d=80: seed 2 no longer matches",
+   "rural_highway/d=80: seed 3 no longer matches",
+   "rural_highway/d=80: seed 4 no longer matches",
+   "urban_nlos/d=20: seed 2 no longer matches",
+   "urban_nlos/d=20: seed 3 no longer matches",
+   "urban_nlos/d=20: seed 4 no longer matches"
+  ],
+  "q=0.98|miss=0.05|interp": [
+   "best fixed dvcast(n_slots=30) -> greedy_farthest(fallback_n_slots=32)",
+   "rural_highway/d=2: oracle dvcast -> none",
+   "rural_highway/d=20: seed 0 no longer matches",
+   "rural d=20: seed 1 margin sign +0.007 -> -0.269",
+   "rural d=20: seed 3 regret sign -0.052 -> +0.175",
+   "rural d=20: seed 3 margin sign +0.094 -> -0.149",
+   "rural d=20: seed 4 regret sign -0.241 -> +0.509",
+   "rural d=20: seed 4 margin sign +0.368 -> -0.337",
+   "rural_highway/d=80: seed 2 no longer matches",
+   "rural_highway/d=80: seed 3 no longer matches",
+   "rural_highway/d=80: seed 4 no longer matches",
+   "urban_nlos/d=20: seed 2 no longer matches",
+   "urban_nlos/d=20: seed 3 no longer matches",
+   "urban_nlos/d=20: seed 4 no longer matches"
+  ],
+  "q=0.98|miss=0.05|nointerp": [
+   "best fixed dvcast(n_slots=30) -> greedy_farthest(fallback_n_slots=32)",
+   "rural_highway/d=2: oracle dvcast -> none",
+   "rural_highway/d=20: seed 0 no longer matches",
+   "rural d=20: seed 1 margin sign +0.007 -> -0.284",
+   "rural d=20: seed 2 regret sign -0.213 -> +0.146",
+   "rural d=20: seed 2 margin sign +0.319 -> -0.128",
+   "rural d=20: seed 3 regret sign -0.052 -> +0.401",
+   "rural d=20: seed 3 margin sign +0.094 -> -0.286",
+   "rural d=20: seed 4 regret sign -0.241 -> +0.596",
+   "rural d=20: seed 4 margin sign +0.368 -> -0.373",
+   "rural_highway/d=80: seed 2 no longer matches",
+   "rural_highway/d=80: seed 3 no longer matches",
+   "rural_highway/d=80: seed 4 no longer matches",
+   "urban_nlos/d=20: seed 2 no longer matches",
+   "urban_nlos/d=20: seed 3 no longer matches",
+   "urban_nlos/d=20: seed 4 no longer matches"
+  ],
+  "q=0.98|miss=0.10|interp": [
+   "best fixed dvcast(n_slots=30) -> slotted_1p(n_slots=50)",
+   "rural_highway/d=2: oracle dvcast -> none",
+   "rural_highway/d=20: seed 0 no longer matches",
+   "rural d=20: seed 1 margin sign +0.007 -> -0.246",
+   "rural d=20: seed 3 regret sign -0.052 -> +0.175",
+   "rural d=20: seed 3 margin sign +0.094 -> -0.122",
+   "rural d=20: seed 4 regret sign -0.241 -> +0.509",
+   "rural d=20: seed 4 margin sign +0.368 -> -0.316",
+   "rural_highway/d=80: seed 2 no longer matches",
+   "rural_highway/d=80: seed 3 no longer matches",
+   "rural_highway/d=80: seed 4 no longer matches",
+   "urban_nlos/d=20: seed 2 no longer matches",
+   "urban_nlos/d=20: seed 3 no longer matches",
+   "urban_nlos/d=20: seed 4 no longer matches"
+  ],
+  "q=0.98|miss=0.10|nointerp": [
+   "best fixed dvcast(n_slots=30) -> slotted_1p(n_slots=50)",
+   "rural_highway/d=2: oracle dvcast -> none",
+   "rural_highway/d=20: seed 0 no longer matches",
+   "rural d=20: seed 1 margin sign +0.007 -> -0.261",
+   "rural d=20: seed 2 regret sign -0.213 -> +0.146",
+   "rural d=20: seed 2 margin sign +0.319 -> -0.100",
+   "rural d=20: seed 3 regret sign -0.052 -> +0.401",
+   "rural d=20: seed 3 margin sign +0.094 -> -0.263",
+   "rural d=20: seed 4 regret sign -0.241 -> +0.596",
+   "rural d=20: seed 4 margin sign +0.368 -> -0.353",
+   "rural_highway/d=80: seed 2 no longer matches",
+   "rural_highway/d=80: seed 3 no longer matches",
+   "rural_highway/d=80: seed 4 no longer matches",
+   "urban_nlos/d=20: seed 2 no longer matches",
+   "urban_nlos/d=20: seed 3 no longer matches",
+   "urban_nlos/d=20: seed 4 no longer matches"
+  ]
+ },
+ "provenance": {
+  "task": "R2",
+  "git_commit": "bc55994c348f1c0a3a861e3a66675ce0483fe8b9",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision2.r2_target_sensitivity",
+  "config_hash": "8adb51d9351d",
+  "config": {
+   "targets": [
+    0.9,
+    0.95,
+    0.98
+   ],
+   "miss_margins": [
+    0.02,
+    0.05,
+    0.1
+   ],
+   "interp": [
+    true,
+    false
+   ],
+   "paper_config": [
+    0.95,
+    0.05,
+    true
+   ]
+  },
+  "seeds": {
+   "eval": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "train": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  "generated": "2026-10-18 04:57:27"
+ }
+}
