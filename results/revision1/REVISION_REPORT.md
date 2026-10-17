@@ -1109,8 +1109,8 @@ Final-checkpoint evaluation (4 headline cells × 10 eval seeds, τ 0 and 0.5, sa
 | quantity | τ = 0.5 | τ = 0 |
 |---|---|---|
 | cells matched (of 4) | **2.20 ± 1.10** | 2.40 ± 0.55 |
-| rural d=20 regret (matched by all seeds) | **−9.1% ± 12.8** | +9.3% ± 14.8 (0.3 / 21.7 / −13.9 / 18.4 / 20.0) |
-| rural d=20 margin | **+16.1% ± 17.0** | (in JSON) |
+| rural d=20 regret (matched by all seeds) | **−9.1% ± 12.8** | +9.3% ± 15.6 (0.3 / 21.7 / −13.9 / 18.4 / 20.0) |
+| rural d=20 margin | **+16.1% ± 17.0** | −3.3% ± 15.2 |
 | RWCR at bias 0, mean of 4 cells | 0.789 ± 0.025 | 0.813 ± 0.024 |
 | cost at bias 0, mean of 4 cells | 1.087 ± 0.097 | 1.178 ± 0.093 |
 | median TIR at bias 0, mean of 4 cells | 0.299 ± 0.015 s | 0.307 ± 0.011 s |
