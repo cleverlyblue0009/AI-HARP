@@ -1142,3 +1142,43 @@ qualifies in (2 and 3, within the full model's 1–3 range), and its rural d=20 
 the full model's seed spread. Its seed 1 has the lowest cost of any agent at rural d=80 (0.656).
 At 2 seeds this ablation cannot show that the causal-relevance feature contributes; the
 premise that the policy depends on it is not supported by this evidence.
+
+
+## R5. Reproducibility table
+
+Regenerate: `python -m experiments.revision2.r5_repro_table` → `results/revision2/R5/r5_repro_table.{csv,tex}`
+(288 rows). One row per row of every table drawn from `results/`: Table 2 and the 23 other per-cell
+main tables (`results/tables/table_main*.tex`, 11 rows each), the reference table, the ablation table,
+Table 3 (risk estimation), Table 5 (λ arms), Table 6 (validation), and the revision ablation-over-seeds
+table. Columns: source file, the last commit that changed it, config hash, content hash, checkpoint SHA,
+metrics_version.
+
+* **Config hash.** `results/runs.csv` records one config hash per run, so a Table 2 row gets
+  `set:<hash of its 200 sorted per-run config hashes> (200 runs)`. Training-derived rows (ablation,
+  Table 5, seeds table) get the hash of the training configuration stored in the checkpoint.
+  `pareto_cells.json`, `risk_estimation.csv` and `amador2022.json` record **no** config hash; those rows
+  say "not recorded" and give `content_sha256` of the exact source rows instead. This is a gap in the
+  committed evidence, reported rather than filled.
+* **Checkpoint SHAs.** Agent rows of Table 2: `b589be512827fcbb` (campaign/ref = the `ref_s0` of
+  this revision). Ablation table: ref `b589be512827fcbb`, GCN `4090fd9374db4d4c`, MLP `20b6c8942ebfab28`,
+  star `b3536e1a471535a4`. Each matches the SHA its evaluation recorded. Table 5: run8 `ab0e1e94f9d4c4b9`,
+  arm A `f74dc381d6697208`, arm B `727352ad75621d8d`. Seeds table: all 13 checkpoints (also in
+  `results/revision1/checkpoints/SHA.json`, where copies of the final checkpoints are committed).
+* **Commits.** runs.csv / Table 2: `754f34e`; reference table: last change to `pareto_cells.json`;
+  ablation table: `c18bb90` (ref) and `6eb790e` (GCN/MLP/star); Table 5: `a378bcf`.
+
+## REVISION 2 summary
+
+| task | status | key numbers | files |
+|---|---|---|---|
+| R1 tail-latency bound | done | p95 bound: greedy's 0.704 survives D ≥ 2 s, eliminated at 1 s (DV-CAST 0.730 survives); agent cells matched unchanged by the bound (1/1/3/3/3 over seeds 0–4); 24 cells 10–12 matched; per-vehicle actionable miss at every reference point ~0.32 (corridor), agent points 0.33–0.36 against a 0.364 guard | `revision2/R1/` |
+| R2 target sensitivity | done | **miss tolerance decides the verdict** (0.02: every seed's rural d=20 regret > 0; 0.10 with q* 0.90: every seed matches 3 cells); **seed 0's +1.9% margin is an interpolation artefact** (−0.8% on realised points); q*=0.98: nothing qualifies at rural d=2 | `revision2/R2/` |
+| R3 hierarchical bootstrap | done | 5 seeds: rural d=20 regret −9.1%, **95% CI [−19.2%, +10.5%]**; margin +16.1% [−1.1%, +129.9%]; cells matched 2.2 [1.4, 3.0]; best-fixed identity unstable (dvcast(30) only 30% of resamples, 17 settings win) | `revision2/R3/` |
+| R4 adaptive classical baseline | done | tuned on training seeds: meets eval target in **13/24 cells, median regret +6.5%** (agent seed 0: 12/24, +84%); where both qualify it is cheaper in 7/8; agent cheaper at rural d=20 on all 5 seeds and qualifies at rural d=80 where the adaptive pick fails | `revision2/R4/` |
+| R5 reproducibility table | done | 288 rows; config hash missing in 3 committed sources (content hashes given) | `revision2/R5/` |
+| R6 full model ×5 seeds | done | cells matched **2.20 ± 1.10** (1/1/3/3/3); rural d=20 regret −9.1% ± 12.8, margin +16.1% ± 17.0; no seed reaches rural d=2 | `revision1/C1C2/`, `C_train/ref_s{3,4}.json` |
+| R7 relevance removal | done | 2 seeds: 2.50 ± 0.71 cells matched, rural d=20 regret −0.9% ± 14.1; within the full model's spread, so no evidence the feature helps | `revision1/C1C2/`, `C_train/norel_s1.json` |
+
+Overnight: R6/R7 (3 runs) trained in parallel 23:03 → ~03:25 with no interruption (no resume),
+evaluations finished 03:48, the R4 sweep (13,200 runs) finished overnight; the watchdog logged no
+failure.
