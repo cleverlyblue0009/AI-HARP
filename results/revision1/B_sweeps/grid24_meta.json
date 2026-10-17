@@ -1,10 +1,10 @@
 {
  "task": "B_sweeps/grid24",
- "git_commit": "ead29992a079b962869a8d621757db03d78c9b75-dirty",
+ "git_commit": "dcd5af609a906db3062a5bb61357112d2cfe8b9a",
  "python": "3.12.9",
  "numpy": "2.0.1",
  "interpreter": "miniconda3",
- "command": "python -m experiments.revision1.sweeps grid24 --jobs 9",
+ "command": "python -m experiments.revision1.sweeps grid24 --jobs 3",
  "config_hash": "1aaa8b979511",
  "config": {
   "sweep": "grid24",
@@ -180,6 +180,6 @@
   8,
   9
  ],
- "generated": "2026-10-16 19:58:35",
+ "generated": "2026-10-17 16:02:04",
  "n_runs": 13200
 }

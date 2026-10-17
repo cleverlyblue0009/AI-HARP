@@ -40,7 +40,10 @@ GENERALIZATION = (
     + [(sc, 20.0, w, "fog_bank") for sc in ("rural_highway", "urban_nlos")
        for w in ("moderate_rain", "dense_fog")]
 )
-CELLSETS = {"headline": HEADLINE, "generalization": GENERALIZATION}
+#: B1 over every scenario x density (clear, fog_bank).
+GRID24 = [(sc, d, "clear", "fog_bank") for sc in ("rural_highway", "urban_nlos", "urban_grid")
+          for d in (1.0, 2.0, 3.0, 5.0, 10.0, 20.0, 40.0, 80.0)]
+CELLSETS = {"headline": HEADLINE, "generalization": GENERALIZATION, "grid24": GRID24}
 
 
 def gate_rates(rows_path: Path) -> dict[tuple, float]:
@@ -70,6 +73,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--seeds", type=int, default=10)
     ap.add_argument("--random-gate-from", default=None)
     ap.add_argument("--jobs", type=int, default=default_jobs())
+    ap.add_argument("--also", nargs="*", default=[],
+                    help="other agent_runs CSVs whose matching rows are reused, not re-run")
     args = ap.parse_args(argv)
 
     ck = Path(args.checkpoint)
@@ -101,7 +106,8 @@ def main(argv: list[str] | None = None) -> int:
     stamps.append(stamp(f"agent_runs/{args.name}", meta, seeds=list(range(args.seeds)),
                         checkpoint_sha=agent_params(ck)["checkpoint_sha"], n_runs=len(tasks)))
     write_json(prev, stamps)
-    rows = run_tasks(tasks, path, jobs=args.jobs, log_every=100)
+    rows = run_tasks(tasks, path, jobs=args.jobs, log_every=100,
+                     also=[Path(p) for p in args.also])
     print(f"[agent_eval] {args.name}: {len(rows)} / {len(tasks)} rows -> {rel(path)}")
     return 0
 

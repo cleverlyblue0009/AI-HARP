@@ -17,7 +17,8 @@ if ($pending -and -not $queueAlive -and -not $trainAlive) {
     "$(Get-Date -Format s) training not running, pending: $($pending -join ','); relaunching" | Add-Content $log
     & $launcher -NoSweeps
 }
-if ($gridRows -lt 13200 -and -not $gridAlive) {
+# 13,200 grid24 tasks, of which 1,650 (urban_grid d=2/20/80) are reused from gen_runs.csv.
+if ($gridRows -lt 11550 -and -not $gridAlive) {
     "$(Get-Date -Format s) grid24 not running ($gridRows rows); relaunching" | Add-Content $log
     & $launcher -NoTrain
 }
