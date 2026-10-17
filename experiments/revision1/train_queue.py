@@ -33,7 +33,11 @@ from experiments.revision1.provenance import git_commit, out_dir, rel, write_jso
 
 ROOT = PROJECT_ROOT / "checkpoints" / "revision1"
 VARIANTS = {"ref": [], "gcn": ["--encoder", "gcn"], "mlp": ["--encoder", "mlp"],
-            "star": ["--star-graph"]}
+            "star": ["--star-graph"],
+            # revision-2 R7: causal-relevance node feature zeroed (train and eval:
+            # graph switches travel in the checkpoint config). Seed 0 is the
+            # committed checkpoints/campaign/no_relevance.
+            "norel": ["--drop-node-feature", "relevance_causal"]}
 SEEDS = (1, 2)
 
 
@@ -41,8 +45,9 @@ SEEDS = (1, 2)
 #: with the committed seed 0); then C2 = 1 extra seed per ablation (2 in total);
 #: C5 (the 2,000-update run) skipped. Lane order: lane 0 ref_s1, gcn_s1, star_s1;
 #: lane 1 ref_s2, mlp_s1.
+#: Revision-2 (user, 2026-10-17): R6 = full-model seeds 3 and 4; R7 = no-relevance seed 1.
 PLAN: tuple[tuple[str, int], ...] = (("ref", 1), ("ref", 2), ("gcn", 1), ("mlp", 1),
-                                     ("star", 1))
+                                     ("star", 1), ("ref", 3), ("ref", 4), ("norel", 1))
 
 
 def queue() -> list[tuple[str, list[str], dict]]:

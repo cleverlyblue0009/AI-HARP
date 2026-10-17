@@ -6,7 +6,7 @@
 # control-C aborts). Here each job gets its OWN hidden console via
 # Start-Process, so no console event can reach more than one job.
 # Run via Task Scheduler (task AIHARP_revision1). Every job is resumable.
-param([switch]$NoTrain, [switch]$NoSweeps)
+param([switch]$NoTrain, [switch]$NoSweeps, [switch]$Revision2)
 $root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Set-Location $root
 $gpu = "D:\aiharp-gpu\Scripts\python.exe"
@@ -19,6 +19,15 @@ function Launch($name, $cmdline) {
     "$(Get-Date -Format s) launched $name" | Add-Content logs\revision1\launcher.log
 }
 
+if ($Revision2) {
+    # Revision-2 overnight: R6 (ref seeds 3, 4) and R7 (no-relevance seed 1) in parallel,
+    # one lane each; R7 seed 0 (committed campaign/no_relevance) is only evaluated; the
+    # R4 training-seed sweep runs beside them. Each job: own hidden console, resumable.
+    # The job list (and each job's done/alive test) lives in watchdog_revision2.ps1,
+    # so the first launch and every later relaunch use exactly the same commands.
+    & (Join-Path $PSScriptRoot "watchdog_revision2.ps1")
+    return
+}
 if (-not $NoTrain) {
     Launch "laneA" "$gpu -u -m experiments.revision1.train_queue --only ref_s1 gcn_s1 --workers 5 >> logs\revision1\train_laneA.log 2>&1"
     Launch "laneB" "$gpu -u -m experiments.revision1.train_queue --only ref_s2 mlp_s1 --workers 5 >> logs\revision1\train_laneB.log 2>&1"

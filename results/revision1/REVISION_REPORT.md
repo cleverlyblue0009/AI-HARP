@@ -893,3 +893,22 @@ variant and seed at τ=0, so no common-cell mean is defined there.
    (GCN) or neighbour edges (star) does not make the policy worse; removing the graph (MLP)
    makes it markedly more expensive where all variants qualify."
 4. Training-seed variance should be reported for every agent number in the paper.
+
+---
+
+# REVISION 2
+
+Same rules as revision 1; outputs under `results/revision2/<id>/` (per-run CSVs shared
+with revision 1 stay in `results/revision1/B_sweeps/` and `results/revision1/agent_runs/`).
+
+## Run log (revision 2)
+
+* 2026-10-17 23:03: overnight jobs launched via Task Scheduler (`AIHARP_revision2` →
+  `launch_revision1.ps1 -Revision2`, which runs `watchdog_revision2.ps1`; the same script runs
+  every 20 min as `AIHARP_revision2_watchdog` and relaunches any unfinished job with no live
+  process, each in its own hidden console). Jobs: R6 `ref_s3`, `ref_s4` and R7 `norel_s1`
+  (`--drop-node-feature relevance_causal`) training in parallel, 4 rollout workers each; R7
+  seed 0 = committed `checkpoints/campaign/no_relevance` (1,000 updates, seed 0, feature zeroed),
+  evaluated only; R4 training-seed sweep (`sweeps trainsel`, 13,200 runs). Laptop: sleep,
+  screen-off and hibernate on AC set to never for the night (screen-off is what triggers
+  Modern Standby on this machine).

@@ -67,6 +67,11 @@ def build(name: str):
         meta = {"sweep": name, "cells": gen, "n_settings": len(knob_settings()),
                 "note": "the urban_grid cells here are also grid24 cells; grid24 reuses these rows"}
         return tasks, meta, EVAL_SEEDS
+    elif name == "trainsel":
+        # revision-2 R4: the adaptive classical baseline picks its setting per
+        # cell on TRAINING seeds 100-109 (no hindsight on eval seeds).
+        cells = HEADLINE + [c for c in GRID24 if c not in HEADLINE]
+        settings, seeds, causal = knob_settings(), TRAIN_SEEDS[:10], False
     elif name == "slots":
         cells, seeds, causal = HEADLINE, EVAL_SEEDS, False
         settings = [(p, a, v) for p, (a, vs) in EXTRA_SLOTS.items() for v in vs]
@@ -83,7 +88,7 @@ def build(name: str):
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("sweep", choices=["grid24", "headline", "train", "slots", "gen"])
+    ap.add_argument("sweep", choices=["grid24", "headline", "train", "slots", "gen", "trainsel"])
     ap.add_argument("--jobs", type=int, default=default_jobs())
     args = ap.parse_args(argv)
     tasks, meta, seeds = build(args.sweep)
