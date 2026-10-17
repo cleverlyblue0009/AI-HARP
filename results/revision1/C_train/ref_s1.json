@@ -33,7 +33,7 @@
   "elapsed_s_this_session": 4621.5,
   "ppo_device": "cuda",
   "bit_reproducible": true,
-  "resumed_from": "C:\\Users\\UPASANA\\AI-HARP\\checkpoints\\revision1\\ref_s1\\ckpt_latest.pt",
+  "resumed_from": ".\\checkpoints\\revision1\\ref_s1\\ckpt_latest.pt",
   "initialised_from": null,
   "last_shortfall_by_group": {
    "rural_highway|2": 0.8379679242932635,

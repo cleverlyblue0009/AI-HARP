@@ -50,9 +50,16 @@ def stamp(task: str, config: dict[str, Any], seeds: Any = None, **extra: Any) ->
     return {"task": task, "git_commit": git_commit(),
             "python": platform.python_version(), "numpy": numpy.__version__,
             "interpreter": _env_name(),
-            "command": " ".join(["python", "-m", _module()] + sys.argv[1:]),
+            "command": strip_root(" ".join(["python", "-m", _module()] + sys.argv[1:])),
             "config_hash": config_hash(config), "config": config, "seeds": seeds,
             "generated": time.strftime("%Y-%m-%d %H:%M:%S"), **extra}
+
+
+def strip_root(text: str) -> str:
+    """Replace the absolute project root with '.' (no local paths in committed outputs)."""
+    for root in {str(PROJECT_ROOT), str(PROJECT_ROOT.resolve()), PROJECT_ROOT.as_posix()}:
+        text = text.replace(root, ".")
+    return text
 
 
 def _env_name() -> str:
