@@ -198,14 +198,32 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--agent-rows", nargs="*", default=[], help="per-seed agent rows (runner CSV)")
     ap.add_argument("--agent", default="ai_harp")
     ap.add_argument("--tag", default="headline")
+    ap.add_argument("--extra-rows", nargs="*", default=[],
+                    help="more per-seed baseline rows (e.g. gen_runs.csv for urban_grid cells)")
+    ap.add_argument("--weather", default="clear")
+    ap.add_argument("--hazard", default="fog_bank")
+    ap.add_argument("--tau", type=float, default=0.5, help="agent gate arm to keep")
     args = ap.parse_args(argv)
 
     if args.rows:
+        import json as _json
+
         from experiments.revision1.runner import cells_from_rows, load_rows
 
-        rows = load_rows(Path(args.rows))
+        def keep(r):
+            return r["weather"] == args.weather and r["hazard_type"] == args.hazard
+
+        rows = [r for p in [args.rows] + args.extra_rows for r in load_rows(Path(p))
+                if keep(r) and (r["param"] or r["policy"] == "flooding")]
+        seen = set()
         for p in args.agent_rows:
-            rows += load_rows(Path(p))
+            for r in load_rows(Path(p)):
+                q = _json.loads(r["params_json"])
+                if (keep(r) and float(q.get("tau", -1)) == args.tau and not q.get("deterministic")
+                        and "random_gate_rate" not in q and r["task_hash"] not in seen):
+                    seen.add(r["task_hash"])
+                    rows.append(r)
+        args.agent_rows = list(args.agent_rows) + list(args.extra_rows)
         cells = cells_from_rows(rows)
         src = [rel(args.rows)] + [rel(p) for p in args.agent_rows]
     else:

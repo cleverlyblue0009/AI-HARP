@@ -1,0 +1,190 @@
+[
+ {
+  "task": "agent_runs/ref_s0_grid24",
+  "git_commit": "dcd5af609a906db3062a5bb61357112d2cfe8b9a-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision1.agent_eval --checkpoint checkpoints\\campaign\\ref\\ckpt_final.pt --name ref_s0_grid24 --cells grid24 --taus 0.5 --modes sampled --jobs 3 --also results\\revision1\\agent_runs\\ref_s0.csv results\\revision1\\agent_runs\\ref_s0_gen.csv",
+  "config_hash": "22962a0e4006",
+  "config": {
+   "checkpoint": "checkpoints/campaign/ref/ckpt_final.pt",
+   "taus": [
+    0.5
+   ],
+   "modes": [
+    "sampled"
+   ],
+   "biases": [
+    -2.0,
+    -1.0,
+    0.0,
+    1.0,
+    2.0,
+    3.0
+   ],
+   "cells": [
+    [
+     "rural_highway",
+     1.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     2.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     3.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     5.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     10.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     20.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     40.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     80.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     1.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     2.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     3.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     5.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     10.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     20.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     40.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     80.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_grid",
+     1.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_grid",
+     2.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_grid",
+     3.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_grid",
+     5.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_grid",
+     10.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_grid",
+     20.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_grid",
+     40.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_grid",
+     80.0,
+     "clear",
+     "fog_bank"
+    ]
+   ],
+   "random_gate_from": null
+  },
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "generated": "2026-10-17 16:09:08",
+  "checkpoint_sha": "b589be512827fcbb",
+  "n_runs": 1440
+ }
+]

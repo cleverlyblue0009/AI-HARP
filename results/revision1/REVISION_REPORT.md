@@ -730,3 +730,72 @@ is the only seed that reaches rural d=80 and urban d=20 at τ=0.5. No seed reach
 (the sparse cell the paper targets) at either τ. The τ=0 arm's urban d=20 result (+58–65%
 regret) is stable across seeds; its rural d=20 result is not. With 3 seeds, a ± SD is
 descriptive only.
+
+
+---
+
+## B1 (24 cells). Latency-bounded matched coverage over every scenario × density
+
+Regenerate: `python -m experiments.revision1.sweeps grid24` (55 settings × 24 cells × 10 seeds,
+clear/fog_bank; urban_grid d=2/20/80 rows reused from `gen_runs.csv`), `python -m
+experiments.revision1.agent_eval --checkpoint checkpoints/campaign/ref/ckpt_final.pt --name ref_s0_grid24
+--cells grid24 --taus 0.5 --also results/revision1/agent_runs/ref_s0.csv results/revision1/agent_runs/ref_s0_gen.csv`,
+then `python -m experiments.revision1.b1_latency --rows results/revision1/B_sweeps/grid24_runs.csv
+--extra-rows results/revision1/B_sweeps/gen_runs.csv --agent-rows results/revision1/agent_runs/ref_s0.csv
+results/revision1/agent_runs/ref_s0_gen.csv results/revision1/agent_runs/ref_s0_grid24.csv --tag grid24`
+→ `results/revision1/B1/b1_grid24.{json,md}` (every per-scheme k*, oracle, fixed and agent
+value per cell and per bound; both target variants). Agent = reference checkpoint (seed 0),
+τ=0.5, sampled. The best single fixed setting is re-chosen over the 24 cells: it is
+**`slotted_1p(n_slots=20)`**, not the 4-cell `dvcast(n_slots=30)`.
+
+| bound D | best single fixed | cells where fixed misses q* | cells with no qualifying scheme | agent matched | agent median regret | agent beats fixed |
+|---|---|---|---|---|---|---|
+| none | slotted_1p(20) | 2 | 0 | **12 / 24** | +84% | 4 of 12 |
+| 2.0 s | slotted_1p(20) | 3 | 2 | 11 / 24 | +84% | 4 of 11 |
+| 1.0 s | slotted_1p(8) | 4 | 3 | 10 / 24 | +84% | 5 of 10 |
+| 0.5 s | slotted_1p(3) | 4 | 3 | 10 / 24 | +84% | **7 of 10** |
+| derived (rural 15.4 s, grid 26.7 s, NLOS 1.9 s) | slotted_1p(8) | 2 | 1 | 12 / 24 | +84% | 5 of 12 |
+
+Per cell, unbounded (cost; regret / margin for the agent where it qualifies):
+
+| cell | q* | per-cell oracle | fixed slotted_1p(20) | agent | regret / margin |
+|---|---|---|---|---|---|
+| rural d=1 | 0.085 | dvcast 2.867 | 2.933 | – | |
+| rural d=2 | 0.641 | dvcast 1.560 | 1.688 | – | |
+| rural d=3 | 0.774 | dvcast 1.711 | – | – | |
+| rural d=5 | 0.858 | greedy 0.902 | 0.966 | – | |
+| rural d=10 | 0.859 | greedy 0.704 | 0.803 | 0.832 | +18% / −3% |
+| rural d=20 | 0.879 | greedy 0.704 | 0.768 | 0.717 | +2% / +7% |
+| rural d=40 | 0.860 | weighted_p 0.701 | 0.826 | – | |
+| rural d=80 | 0.870 | weighted_p 1.512 | 1.837 | – | |
+| urban_nlos d=1 | 0.672 | greedy 2.020 | – | – | |
+| urban_nlos d=2 | 0.897 | dvcast 1.266 | 1.300 | – | |
+| urban_nlos d=3 | 0.933 | counter 0.923 | 1.001 | 1.134 | +23% / −12% |
+| urban_nlos d=5 | 0.929 | dvcast 0.905 | 0.940 | 0.917 | +1% / +2% |
+| urban_nlos d=10 | 0.919 | slotted 0.826 | 0.826 | – | |
+| urban_nlos d=20 | 0.926 | counter 0.533 | 0.578 | – | |
+| urban_nlos d=40 | 0.922 | p_persist 0.322 | 0.427 | 0.592 | +84% / −28% |
+| urban_nlos d=80 | 0.876 | weighted_p 0.463 | 0.544 | – | |
+| urban_grid d=1 | 0.941 | slotted 0.822 | 0.933 | 1.285 | +56% / −27% |
+| urban_grid d=2 | 0.940 | p_persist 0.544 | 0.647 | 1.266 | +133% / −49% |
+| urban_grid d=3 | 0.937 | weighted_p 0.364 | 0.503 | 1.212 | +233% / −58% |
+| urban_grid d=5 | 0.941 | weighted_p 0.326 | 0.430 | 1.074 | +229% / −60% |
+| urban_grid d=10 | 0.942 | p_persist 0.271 | 0.459 | 0.968 | +258% / −53% |
+| urban_grid d=20 | 0.942 | weighted_p 0.234 | 0.359 | – | |
+| urban_grid d=40 | 0.935 | p_persist 0.095 | 0.303 | 0.270 | +184% / +12% |
+| urban_grid d=80 | 0.900 | p_persist 0.086 | 0.403 | 0.130 | +50% / +210% |
+
+**What changes with the bound.** As in the headline cells, the per-cell oracle is mostly
+stable down to D = 1 s, and the bound mainly pushes the best fixed scheme to ever-shorter
+slotted settings, which are expensive elsewhere (at D = 0.5 s `slotted_1p(3)` costs 3.98 at
+rural d=80 against the oracle's 1.51). The agent's margin therefore improves with the bound
+(beats the fixed scheme in 4 → 7 cells). But it also loses cells: at D ≤ 1 s it no longer
+qualifies at urban_grid d=1 and d=2, where its median TIR exceeds the bound and no scheme
+reaches q* within it. Greedy-farthest's 0.704 at rural d=20 is eliminated at D = 0.5 s;
+DV-CAST's 0.730 survives (it is the oracle there), as in the 4-cell analysis.
+
+**Overall.** Over all 24 cells, the reference agent reaches matched coverage in half
+of them. It is near per-cell tuning in two (rural d=20 +2%, urban_nlos d=5 +1%), and on the
+held-out urban_grid topology it is 50–258% dearer than tuning in every cell, though cheaper
+than the shipped fixed scheme at d=40 and d=80. It never reaches the target in any rural
+cell below d=10, i.e. the sparse regime the paper targets.
