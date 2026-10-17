@@ -4,6 +4,8 @@
   "gcn_s0_ckpt_final.pt": "4090fd9374db4d4c",
   "mlp_s0_ckpt_final.pt": "20b6c8942ebfab28",
   "ref_s0_ckpt_final.pt": "b589be512827fcbb",
-  "star_s0_ckpt_final.pt": "b3536e1a471535a4"
+  "star_s0_ckpt_final.pt": "b3536e1a471535a4",
+  "ref_s1_ckpt_final.pt": "4867ffabbdf23aac",
+  "ref_s2_ckpt_final.pt": "0b5fa61c06396e28"
  }
 }

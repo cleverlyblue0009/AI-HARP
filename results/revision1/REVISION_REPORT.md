@@ -674,3 +674,59 @@ each job its own hidden console (`Start-Process`). A watchdog task
 (`watchdog_revision1.ps1`, every 20 min) relaunches only what is missing; train_queue
 adopts live runs, so a relaunch cannot duplicate one. ref_s1 / ref_s2 therefore each have
 two resume points (250 and 494 / 277 and 517).
+
+
+---
+
+## C1. Full model, 3 training seeds (0 = committed campaign/ref; 1, 2 new)
+
+Regenerate: training `python -m experiments.revision1.train_queue --only ref_s1` / `ref_s2`
+(= `agents.train --seed 1|2`, staged curriculum, 1,000 updates, deterministic GPU PPO); per-seed
+evaluation of each FINAL checkpoint `python -m experiments.revision1.agent_eval --checkpoint
+checkpoints/revision1/ref_s<k>/ckpt_final.pt --name ref_s<k> --taus 0.5 0`; aggregation
+`python -m experiments.revision1.c_seeds` → `results/revision1/C1C2/c_seeds.json`.
+Run records (seed, command, commit, config hash, checkpoint SHA, run summary):
+`results/revision1/C_train/ref_s{1,2}.json`. Both runs: 1,000 updates, stopped at
+`max_updates` (constraints never held for 30 consecutive updates; same as seed 0),
+`bit_reproducible: true`, checkpoint SHAs 4867ffabbdf23aac (s1) / 0b5fa61c06396e28 (s2).
+Each new run was resumed twice after the interruptions logged above.
+Evaluation: 4 headline cells × 10 paired eval seeds × biases −2…+3, sampled.
+
+**Per seed, matched cost / regret / margin (Algorithm 1, unbounded; "–" = never reaches q*)**
+
+| τ | seed | rural d=2 | rural d=20 | rural d=80 | urban d=20 | cells matched |
+|---|---|---|---|---|---|---|
+| 0.5 | 0 | – | 0.717 / +1.8% / +1.9% | – | – | 1 |
+| 0.5 | 1 | – | 0.725 / +3.1% / +0.7% | – | – | 1 |
+| 0.5 | 2 | – | **0.554 / −21.3% / +31.9%** | 1.065 / −29.6% / +60.0% | 0.649 / +21.7% / −12.6% | 3 |
+| 0 | 0 | – | 0.706 / +0.3% / +3.5% | – | 0.864 / +62.1% / −34.4% | 2 |
+| 0 | 1 | – | 0.856 / +21.7% / −14.7% | – | 0.842 / +58.1% / −32.7% | 2 |
+| 0 | 2 | – | 0.606 / −13.9% / +20.5% | 1.108 / −26.7% / +53.7% | 0.878 / +64.8% / −35.5% | 3 |
+
+**Mean ± SD across the 3 training seeds**
+
+| quantity | τ = 0.5 | τ = 0 |
+|---|---|---|
+| cells matched (of 4) | 1.67 ± 1.15 | 2.33 ± 0.58 |
+| regret, common cells* | −5.5% ± 13.7 | +32.2% ± 7.2 |
+| margin, common cells* | +11.5% ± 17.7 | −15.6% ± 8.1 |
+| rural d=20 matched cost | 0.665 ± 0.097 | 0.723 ± 0.126 |
+| RWCR at default bias, mean of 4 cells | 0.784 ± 0.034 | 0.805 ± 0.029 |
+| cost at default bias, mean of 4 cells | 1.036 ± 0.074 | 1.127 ± 0.054 |
+| median TIR at default bias, mean of 4 cells | 0.293 ± 0.017 s | 0.304 ± 0.015 s |
+| actionable miss at default bias, mean of 4 cells | 0.377 ± 0.025 | — (in JSON) |
+
+\* Common cells = matched by every seed: τ=0.5 {rural d=20}; τ=0 {rural d=20, urban d=20}.
+
+**Latency-bounded (B1 bounds), τ = 0.5, rural d=20 margin per seed:** none +1.9 / +0.7 / +31.9%;
+D=2 s +7.1 / +5.9 / +38.7%; D=1 s +25.3 / +23.9 / +62.2%; D=0.5 s +87.1 / +84.9 / +142.2%
+(regret at D=0.5 s −1.9 / −0.7 / −24.2%). Cells matched do not change with the bound
+(the agent's median TIR, 0.27–0.31 s, meets every bound). Full per-bound tables in the JSON.
+
+**What this says.** Training-seed variance is large and dominates the effects the paper
+reports. The paper's 1.8% / 1.9% at rural d=20 come from seed 0; across seeds the same
+cell ranges from +3.1% to −21.3% regret, and the number of cells matched from 1 to 3. Seed 2
+is the only seed that reaches rural d=80 and urban d=20 at τ=0.5. No seed reaches rural d=2
+(the sparse cell the paper targets) at either τ. The τ=0 arm's urban d=20 result (+58–65%
+regret) is stable across seeds; its rural d=20 result is not. With 3 seeds, a ± SD is
+descriptive only.
