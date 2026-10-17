@@ -912,3 +912,57 @@ with revision 1 stay in `results/revision1/B_sweeps/` and `results/revision1/age
   evaluated only; R4 training-seed sweep (`sweeps trainsel`, 13,200 runs). Laptop: sleep,
   screen-off and hibernate on AC set to never for the night (screen-off is what triggers
   Modern Standby on this machine).
+
+
+## R1. Tail-latency bound (seed-mean p95 TIR ≤ D)
+
+Regenerate: `python -m experiments.revision2.r1_tail_latency` → `results/revision2/R1/r1_tail_latency.json`
+(inputs: `results/revision1/B_sweeps/{headline,grid24,gen}_runs.csv`, `results/revision1/agent_runs/ref_s{0,1,2}.csv`,
+`ref_s0_gen.csv`, `ref_s0_grid24.csv`; no new runs). Rule as B1 (bound in the eligibility
+test, incl. the interpolation anchor; q* and miss bound held at unbounded values) on `tir_p95_s`.
+D ∈ {1, 2, 5 s, derived: rural 15.39 s, urban_grid 26.65 s, urban_nlos 1.89 s}. Agent: full
+model, τ=0.5, sampled; training seeds 0–2 in the headline cells (3–4 will be added after R6),
+seed 0 on the 24-cell grid. Cost = transmissions per at-risk vehicle informed.
+
+**Headline cells** (oracle scheme and cost; best fixed cost; agent cost with regret / margin per seed):
+
+| D | best fixed | rural d=2 oracle / fixed | rural d=20 oracle / fixed | agent rural d=20 s0 / s1 / s2 | rural d=80 oracle / fixed | urban d=20 oracle / fixed | agent cells matched s0/s1/s2 |
+|---|---|---|---|---|---|---|---|
+| none | dvcast(30) | dvcast 1.560 / 1.560 | greedy 0.704 / 0.730 | 0.717 (+1.8/+1.9) / 0.725 (+3.1/+0.7) / 0.554 (−21.3/+31.9) | weighted_p 1.512 / 1.703 | counter 0.533 / 0.567 | 1 / 1 / 3 |
+| 5 s | dvcast(30) | as none | as none | as none | as none | as none | 1 / 1 / 3 |
+| 2 s | slotted_1p(8) | slotted 1.654 / 1.654 | greedy 0.704 / 0.898 | margins +25.3 / +23.9 / +62.2 | weighted_p 1.512 / 2.282 | counter 0.533 / 0.640 | 1 / 1 / 3 |
+| 1 s | slotted_1p(3) | slotted 1.755 / 1.755 | **dvcast 0.730** / 1.341 | regret −1.9 / −0.7 / −24.2; margin +87 / +85 / +142 | weighted_p 1.512 / 3.979 | counter 0.533 / 0.832 | 1 / 1 / 3 |
+| derived | slotted_1p(8) | dvcast 1.560 / 1.654 | greedy 0.704 / 0.898 | margins +25.3 / +23.9 / +62.2 | weighted_p 1.512 / 2.282 | counter 0.533 / 0.640 | 1 / 1 / 3 |
+
+Seed 2's other cells: rural d=80 1.065 (regret −29.6%, margin +60% → +274% at D = 1 s) and urban d=20 0.649
+(+21.7%; margin −12.6% none, +28.2% at D = 1 s). Greedy-farthest's 0.704 (p95 1.905 s) survives D ≥ 2 s and
+is eliminated at D = 1 s, where DV-CAST's 0.730 (p95 0.959 s) becomes the oracle. Under the p95 bound, as under
+the median bound, the agent's matched cells never change: its p95 TIR at its qualifying setting is 0.42–0.54 s.
+
+**24 cells, agent seed 0:**
+
+| D | best fixed | cells where fixed misses | cells with no qualifying scheme | agent matched | median regret | agent beats fixed |
+|---|---|---|---|---|---|---|
+| none | slotted_1p(20) | 2 | 0 | 12 | +84% | 4 |
+| 5 s | slotted_1p(20) | 3 | 2 | 11 | +84% | 4 |
+| 2 s | slotted_1p(8) | 4 | 2 | 11 | +51% | 5 |
+| 1 s | slotted_1p(3) | 4 | 3 | 10 | +84% | 7 |
+| derived | slotted_1p(8) | 2 | 1 | 12 | +84% | 5 |
+
+**Per-vehicle deadline (actionable miss rate) at each reference point**, unbounded, headline
+cells (fraction of at-risk vehicles that still had time to react at origination but were not
+warned before their own reaction deadline; Algorithm 1 admits a point only if this is ≤ the
+cell's best + 0.05):
+
+| cell | best any setting | admitted up to | per-cell oracle point | best fixed point | agent point s0 / s1 / s2 |
+|---|---|---|---|---|---|
+| rural d=2 | 0.529 | 0.579 | 0.565 | 0.565 | never qualifies |
+| rural d=20 | 0.314 | 0.364 | 0.317 | 0.317 | 0.332 / 0.351 / 0.344 |
+| rural d=80 | 0.318 | 0.368 | 0.327 | 0.319 | – / – / 0.353 |
+| urban d=20 | 0.067 | 0.117 | 0.078 | 0.083 | – / – / 0.099 |
+
+So the miss guard is the per-vehicle constraint. At every reference point in the corridor
+cells, about a third of the vehicles that could have been saved are not warned in time
+(over half at rural d=2), and the agent's qualifying points miss 1–4 points more than the
+references. Over the 24 cells the oracle points' actionable miss ranges from 0.057 to 0.926
+(the 0.926 is rural d=1, where the target is 0.085).

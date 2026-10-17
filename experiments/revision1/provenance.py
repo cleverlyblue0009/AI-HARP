@@ -26,8 +26,8 @@ def git_commit() -> str:
         return "unknown"
 
 
-def out_dir(task: str) -> Path:
-    d = OUT_ROOT / task
+def out_dir(task: str, revision: int = 1) -> Path:
+    d = (OUT_ROOT if revision == 1 else OUT_ROOT.parent / f"revision{revision}") / task
     d.mkdir(parents=True, exist_ok=True)
     return d
 

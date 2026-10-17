@@ -60,11 +60,12 @@ DECEL = 3.4
 class LatencyCell(Cell):
     D: float = float("inf")
     rebased: bool = False
+    metric: str = TIR                 # revision-2 R1 bounds tir_p95_s instead
 
     def _fast(self, p) -> bool:
         if not np.isfinite(self.D):
             return True
-        t = float(p.extras.get(TIR, np.nan))
+        t = float(p.extras.get(self.metric, np.nan))
         return bool(np.isfinite(t) and t <= self.D + 1e-9)
 
     def within_miss_bound(self, point, bound) -> bool:  # type: ignore[override]
@@ -112,10 +113,11 @@ def derived_deadlines() -> dict[str, dict[str, float]]:
     return out
 
 
-def bounded(cells: Sequence[Cell], D: dict[str, float] | float, rebased: bool) -> list[LatencyCell]:
+def bounded(cells: Sequence[Cell], D: dict[str, float] | float, rebased: bool,
+            metric: str = TIR) -> list[LatencyCell]:
     get = (lambda sc: D[sc]) if isinstance(D, dict) else (lambda sc: D)
-    return [LatencyCell(key=c.key, curves=c.curves, D=float(get(c.key.scenario)), rebased=rebased)
-            for c in cells]
+    return [LatencyCell(key=c.key, curves=c.curves, D=float(get(c.key.scenario)), rebased=rebased,
+                        metric=metric) for c in cells]
 
 
 def best_setting(cell: Cell, policy: str, tq: float, mb: float):
