@@ -1,0 +1,96 @@
+{
+ "task": "B_sweeps/gen",
+ "git_commit": "08f86f6eb897f157f8ec7fdbbbbfd98c1a960522",
+ "python": "3.12.9",
+ "numpy": "2.0.1",
+ "interpreter": "miniconda3",
+ "command": "python -m experiments.revision1.sweeps gen --jobs 3",
+ "config_hash": "3dfcd2bf40b3",
+ "config": {
+  "sweep": "gen",
+  "cells": [
+   [
+    "urban_grid",
+    2.0,
+    "clear",
+    "fog_bank"
+   ],
+   [
+    "urban_grid",
+    20.0,
+    "clear",
+    "fog_bank"
+   ],
+   [
+    "urban_grid",
+    80.0,
+    "clear",
+    "fog_bank"
+   ],
+   [
+    "rural_highway",
+    20.0,
+    "clear",
+    "waterlogging"
+   ],
+   [
+    "rural_highway",
+    20.0,
+    "clear",
+    "black_ice"
+   ],
+   [
+    "urban_nlos",
+    20.0,
+    "clear",
+    "waterlogging"
+   ],
+   [
+    "urban_nlos",
+    20.0,
+    "clear",
+    "black_ice"
+   ],
+   [
+    "rural_highway",
+    20.0,
+    "moderate_rain",
+    "fog_bank"
+   ],
+   [
+    "rural_highway",
+    20.0,
+    "dense_fog",
+    "fog_bank"
+   ],
+   [
+    "urban_nlos",
+    20.0,
+    "moderate_rain",
+    "fog_bank"
+   ],
+   [
+    "urban_nlos",
+    20.0,
+    "dense_fog",
+    "fog_bank"
+   ]
+  ],
+  "n_settings": 55,
+  "note": "the urban_grid cells here are also grid24 cells; grid24 reuses these rows"
+ },
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
+ ],
+ "generated": "2026-10-17 09:34:49",
+ "n_runs": 6050
+}

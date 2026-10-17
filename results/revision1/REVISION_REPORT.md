@@ -619,3 +619,47 @@ About 10.5 h were lost. Recovery:
   row counts as committed). The seventh, `agent_runs/ref_s0_gen.csv` (C4 agent runs, not
   yet committed), was lost and is being re-run from scratch. No reported number was
   affected: nothing had been computed from that file yet.
+
+
+---
+
+## C4. Generalization: held-out topology, hazards, weathers (reference agent, τ=0.5)
+
+Regenerate: `python -m experiments.revision1.sweeps gen` (55 settings × 11 cells × 10 seeds),
+`python -m experiments.revision1.agent_eval --checkpoint checkpoints/campaign/ref/ckpt_final.pt --name ref_s0_gen --cells generalization --taus 0.5`,
+then `python -m experiments.revision1.c4_generalization` → `results/revision1/C4/c4_generalization.json`.
+Algorithm 1 per cell (q* = 0.95 × ceiling, deadline guard), eval seeds 0–9, sampled policy.
+"Shipped" = `dvcast(n_slots=30)`, the best fixed setting chosen on the headline cells,
+applied unchanged. "Refit" = best fixed re-chosen over these 11 cells
+(`greedy_farthest(fallback_n_slots=16)`, hindsight on held-out data).
+
+| held out | cell | q* | per-cell oracle | shipped | agent cost (best RWCR) | regret | margin vs shipped |
+|---|---|---|---|---|---|---|---|
+| topology | urban_grid d=2 | 0.940 | p_persist 0.544 | 0.667 | 1.266 (0.989) | +132.6% | −47.3% |
+| topology | urban_grid d=20 | 0.942 | weighted_p 0.234 | 0.323 | never (0.938) | – | – |
+| topology | urban_grid d=80 | 0.900 | p_persist 0.086 | 0.377 | 0.130 (0.918) | +50.5% | **+189.8%** |
+| hazard | rural d=20 waterlogging | 0.873 | greedy 0.704 | 0.730 | 0.718 (0.899) | +2.1% | +1.7% |
+| hazard | rural d=20 black_ice | 0.872 | greedy 0.704 | 0.730 | 0.719 (0.898) | +2.1% | +1.7% |
+| hazard | urban_nlos d=20 waterlogging | 0.925 | counter 0.533 | 0.567 | never (0.920) | – | – |
+| hazard | urban_nlos d=20 black_ice | 0.925 | counter 0.533 | 0.567 | never (0.920) | – | – |
+| weather | rural d=20 moderate_rain | 0.877 | greedy 0.744 | 0.766 | 0.725 (0.905) | **−2.5%** | +5.6% |
+| weather | rural d=20 dense_fog | 0.881 | greedy 0.795 | 0.850 | 0.746 (0.919) | **−6.1%** | **+13.9%** |
+| weather | urban_nlos d=20 moderate_rain | 0.920 | counter 0.552 | 0.597 | never (0.913) | – | – |
+| weather | urban_nlos d=20 dense_fog | 0.897 | dvcast 0.684 | 0.684 | never (0.869) | – | – |
+
+**Agent matches 6 of 11 cells; the shipped fixed baseline matches 11 of 11.** The pattern
+repeats the headline cells: the agent qualifies on the rural corridor at d=20 under every
+held-out hazard and weather, and beats per-cell tuning in both held-out weathers
+(−2.5%, −6.1%). It fails every held-out urban_nlos condition (best RWCR 0.869–0.920 vs
+q* 0.897–0.925, the same near-miss as the headline urban cell) and urban_grid d=20. On
+the held-out topology it is far dearer than tuning at d=2 (+133%) and at d=80 it beats the
+shipped scheme 2.9× but not per-cell tuning (+50%).
+
+**Caveat: the held-out hazards are a weak test.** For every baseline, waterlogging and
+black ice produce the same transmissions and cost as fog_bank in all 550 paired
+(setting, seed) runs per cell; only the oracle at-risk set, hence RWCR, shifts (by
+≤ 0.018). Baselines never read the hazard type, and the hazard is placed at the same
+location, so these cells differ from the training cells only through the agent's own
+hazard-dependent inputs (relevance features). The held-out weathers do change the
+network (traffic-mediated: speeds and headways), and the per-cell oracle cost moves
+(0.704 → 0.744 → 0.795 on the corridor).
