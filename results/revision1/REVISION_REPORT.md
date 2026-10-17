@@ -663,3 +663,14 @@ location, so these cells differ from the training cells only through the agent's
 hazard-dependent inputs (relevance features). The held-out weathers do change the
 network (traffic-mediated: speeds and headways), and the per-cell oracle cost moves
 (0.704 → 0.744 → 0.795 on the corridor).
+
+**Second interruption (2026-10-17 10:27 → 15:20).** All jobs died together again:
+`BrokenProcessPool` in both training runs (crash at updates 495 / 518), with Intel
+runtime "control-C event" aborts in the logs. Cause: the v1 launcher started every job
+with `start /b`, so they shared one console, and one console control event killed all of
+them. About 5 h lost; nothing completed was lost. Both runs resumed exactly (histories
+contiguous, verified), and every CSV parsed cleanly. Fix: `launch_revision1.ps1` gives
+each job its own hidden console (`Start-Process`). A watchdog task
+(`watchdog_revision1.ps1`, every 20 min) relaunches only what is missing; train_queue
+adopts live runs, so a relaunch cannot duplicate one. ref_s1 / ref_s2 therefore each have
+two resume points (250 and 494 / 277 and 517).
