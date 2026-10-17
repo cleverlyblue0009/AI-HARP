@@ -600,3 +600,22 @@ settings (bias 0) averaged over all 4 cells (defined for every variant): RWCR / 
 at τ=0.5 are ref 0.752 / 0.976 / 0.274 s, GCN 0.804 / 1.018 / 0.300 s, MLP 0.817 / 1.274 / 0.309 s,
 star 0.764 / 1.071 / 0.281 s. One training seed per variant: this table will be replaced by
 mean ± SD over 3 seeds (ref) and 2 seeds (ablations) when training finishes.
+
+---
+
+## Run log: overnight interruption (2026-10-16 22:59 → 2026-10-17 09:35)
+
+Every job was killed at 22:59 when the interactive session that had launched them
+ended (both training runs logged `BrokenProcessPool`, `crash.json` at updates 251 / 278).
+About 10.5 h were lost. Recovery:
+* ref_s1 / ref_s2 resumed exactly from `ckpt_latest.pt` (updates 250 / 277; the repo's
+  resume restores model, optimiser, multipliers, both RNG streams and stage position).
+  Histories are contiguous. Each of these two runs therefore has one resume point, recorded here.
+* Long jobs now run under Windows Task Scheduler (`experiments/revision1/launch_revision1.cmd`,
+  task `AIHARP_revision1`), outside any interactive session.
+* **An error of mine during recovery:** a truncation check that counted commas
+  misread the quoted-JSON column and rewrote seven per-seed CSVs with headers only. Six
+  were committed and were restored byte-for-byte from git (re-verified: every row parses,
+  row counts as committed). The seventh, `agent_runs/ref_s0_gen.csv` (C4 agent runs, not
+  yet committed), was lost and is being re-run from scratch. No reported number was
+  affected: nothing had been computed from that file yet.
