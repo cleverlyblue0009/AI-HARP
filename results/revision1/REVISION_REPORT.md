@@ -5,7 +5,45 @@ Branch `revision-1`, forked from `main` at `461c754`. Everything new lives under
 numbers, the file each number came from, and the command that regenerates it.
 Where a number in the paper could not be reproduced, that is stated.
 
-<!-- SUMMARY-TABLE -->
+## Summary
+
+Status after the revised plan (C1 = 3 full-model training seeds, C2 = 2 per ablation,
+C5 skipped). Every number below is detailed, with its source file and regeneration
+command, in the section of the same id. Agent = reference checkpoint unless stated;
+q* = 0.95 × cell ceiling; "matched" = reaches q* under Algorithm 1's deadline guard.
+
+| task | status | key numbers | files |
+|---|---|---|---|
+| A1 targets | done | three definitions (eval: oracle RWCR, 55 settings; training: causal, 32 seeds; §VII-F used **stale 2-seed** targets: rural d=2 0.891 vs 0.748 in force) | `A/stage_a_facts.json` |
+| A2 0.717 | done | interpolation between bias +1 (0.716) and −2 (0.736), clear/fog_bank only; Table 2's 0.85/0.79 = bias 0 pooled over 200 runs (20 conditions) | `A/stage_a_facts.json` |
+| A3 spread | done | 9 baselines 0.872–0.917 (Table 2 view); "0.915–0.917" holds for 8, i.e. without default p-persistence | `A/stage_a_facts.json` |
+| A4 miss rates | done, **not reproducible** | §IV-A's 0.240/0.102 matches no committed artefact; under metrics v3 the two rates differ by ~0.007 on average | `A/stage_a_facts.json` |
+| A5 λ | done | "≈50" = run8 (cap 50, pinned) / arm A; "peak 33.1" = campaign ref (cap 500), peak at the last updates (still rising) | `A/stage_a_facts.json` |
+| A6 code facts | done | ensemble gate never used (entropy gate); heads averaged; 610 m vs 480 m from path-loss exponents ("562 m" stale); Table 3 = mean over 8 densities; 4 weathers (2 train); "26" = Holm threshold | `A6_facts.md` |
+| A7 validation | done | Amador et al. 2022, DOI 10.1016/j.vehcom.2022.100454; Fig. 13 axis should read veh/km/lane; qualifying cell (40 veh/km) is below the validated range on physical bases | `REVISION_REPORT.md §A7` |
+| A8 regret/margin | done | 1.8447% / 1.8970% (a/o−1, f/a−1) | `A/stage_a_facts.json` |
+| B1 latency bound (4 cells) | done | greedy's 0.704 eliminated at D=0.5 s, DV-CAST 0.730 survives; agent margin +1.9% → +87% at 0.5 s; derived D: rural 15.4 s, NLOS 1.9 s | `B1/b1_headline*.json`, `D/fig_d4_*` |
+| B1 latency bound (24 cells) | done | agent matched 12/24 (unbounded), median regret +84%; beats best fixed (slotted_1p(20)) in 4/12, 7/10 at D=0.5 s | `B1/b1_grid24.json` |
+| B2 slots > 50 | done | cost flat beyond 50–100 slots, TIR keeps rising; guarded oracle unchanged in 3/4 cells | `B2/` |
+| B3 feasibility | done | **no agent miss is "target unreachable"** under any target in force; the "0/63" holds only for the stale 2-seed target (12/63 under the current one) | `B3/b3_feasibility.json` |
+| B4 statistics | done | rural d=20 cost difference not significant vs fixed/oracle (p_Holm 0.85/0.23); agent faster, lower RWCR, higher miss nearly everywhere; paired-difference SD 0.003–0.007, 12/36 baseline pairs differ (seed-cluster CI) | `B4/` |
+| B5 sampled vs argmax | done | gaps +0.030/+0.001/+0.021/−0.006; the paper's 0.172 is run8's | `B5/b5_modes.json` |
+| C1 3 seeds | done | cells matched 1.67 ± 1.15 (τ=0.5); rural d=20 regret +1.8/+3.1/**−21.3%**, margin +1.9/+0.7/+31.9%; no seed reaches rural d=2 | `C1C2/c_seeds.json`, `C_train/` |
+| C2 ablations ×2 seeds | done | same cell (rural d=20): GCN −3.2% ± 0.1, star −0.5% ± 0.2, **MLP +55.9% ± 10.4** (was "best margin" in the committed table) | `C1C2/table_ablation_seeds.tex` |
+| C3 fallback | done | **random gate at the learned rate matches 3/4 cells vs 1/4**; network-only (τ=0) 2/4, cheaper at rural d=20 (0.706 vs 0.717) | `C3/c3_fallback.json` |
+| C4 generalization | done | agent 6/11 cells, shipped fixed 11/11; beats tuning in held-out weathers on the corridor (−2.5%, −6.1%); held-out hazards leave every baseline run unchanged | `C4/c4_generalization.json` |
+| C5 2,000 updates | **skipped** (user) | – | – |
+| D1 Fig. 8 as table | done | | `D/table_fig8_regret_margin.{csv,tex}` |
+| D2 label fixes | done | Fig. 14 also averaged both τ arms into one point (fixed) | `D/fig08_*`, `D/fig14_*`, `analysis/figures.py` |
+| D3 Fig. 12 annotation | done | "peak λ = 33.1, 6.6% of cap, rural d=2, update 994" | `D/fig12_*` |
+| D4 latency figure | done | | `D/fig_d4_latency_bounded_headline.*` |
+| D5 reproduction | done | `./reproduce.sh --revision1` | `experiments/revision1/reproduce_revision1.sh` |
+| E1 fresh clone | done | headline numbers bit-exact (≤ 3.6e-15); `--smoke --no-train` failed and overwrote `pareto_cells.json` → fixed | `E1/` |
+| E2 public-ready | done | no secrets; Windows user name in some committed results (left untouched); README updated; checkpoints committed under `results/revision1/checkpoints/` | §E2 |
+
+Caveats that apply throughout: fallback mobility backend only (SUMO not installed on this
+machine any more); 10 paired eval seeds; 2–3 training seeds; ref_s1/ref_s2 each resumed
+twice after interruptions (exact resume; see run log).
 
 ## Environment note (affects every new run)
 
@@ -559,7 +597,7 @@ the Amador validation.
 
 ---
 
-## C1/C2. Training seeds — INTERIM (training seed 0 only; seeds 1–2 training)
+## C1/C2. Training seeds — INTERIM, SUPERSEDED by the final C1 and C2 sections below (kept as a record)
 
 Regenerate: per-seed evals `python -m experiments.revision1.agent_eval --checkpoint <ckpt_final.pt> --name <variant>_s<seed> --taus 0.5 0`, then
 `python -m experiments.revision1.c_seeds` → `results/revision1/C1C2/c_seeds.json`. Rows:
@@ -799,3 +837,59 @@ of them. It is near per-cell tuning in two (rural d=20 +2%, urban_nlos d=5 +1%),
 held-out urban_grid topology it is 50–258% dearer than tuning in every cell, though cheaper
 than the shipped fixed scheme at d=40 and d=80. It never reaches the target in any rural
 cell below d=10, i.e. the sparse regime the paper targets.
+
+
+---
+
+## C2. Ablations over training seeds (FINAL; supersedes the interim seed-0 section)
+
+Regenerate as C1 (runs `gcn_s1`, `mlp_s1`, `star_s1`; seed 0 = committed `checkpoints/campaign/<v>`),
+then `python -m experiments.revision1.c_seeds` → `results/revision1/C1C2/c_seeds.json` and
+`table_ablation_seeds.tex`. Run records: `results/revision1/C_train/{gcn,mlp,star}_s1.json`. All three:
+1,000 updates, `max_updates`, `bit_reproducible: true`; SHAs cb855009fb1ddc3a (GCN), 39b35e7d49c2c4b2 (MLP),
+a9e4d85b834ff15c (star). Per the revised plan: 3 training seeds for the full model, 2 per ablation.
+
+**Same cells for every variant (τ = 0.5).** Rural d=20 is the only cell every variant and
+every seed matches, so regret and margin are compared there. Mean ± SD across training seeds:
+
+| variant | training seeds | cells matched (of 4) | regret, rural d=20 | margin, rural d=20 | cost at bias 0, mean of 4 cells | RWCR at bias 0 | median TIR at bias 0 |
+|---|---|---|---|---|---|---|---|
+| full (GATv2) | 3 | 1.67 ± 1.15 | −5.5% ± 13.7 | +11.5% ± 17.7 | 1.04 ± 0.07 | 0.784 ± 0.034 | 0.293 ± 0.017 s |
+| GCN encoder | 2 | **3.00 ± 0.00** | **−3.2% ± 0.1** | +7.2% ± 0.1 | 1.16 ± 0.20 | 0.806 ± 0.003 | 0.298 ± 0.003 s |
+| MLP encoder | 2 | 3.00 ± 0.00 | **+55.9% ± 10.4** | **−33.3% ± 4.5** | 1.23 ± 0.06 | 0.813 ± 0.006 | 0.305 ± 0.005 s |
+| star graph | 2 | 1.50 ± 0.71 | −0.5% ± 0.2 | +4.3% ± 0.2 | 1.07 ± 0.01 | 0.765 ± 0.002 | 0.292 ± 0.015 s |
+
+**Every matched cell, per training seed, τ = 0.5** (cost; regret / margin):
+
+| variant | rural d=20 | rural d=80 | urban d=20 |
+|---|---|---|---|
+| full | s0 0.717 (+1.8/+1.9), s1 0.725 (+3.1/+0.7), s2 0.554 (−21.3/+31.9) | s2 1.065 (−29.6/+60.0) | s2 0.649 (+21.7/−12.6) |
+| GCN | s0 0.681 (−3.2/+7.2), s1 0.682 (−3.1/+7.1) | s0 0.991 (−34.5/+71.9), s1 0.955 (−36.8/+78.4) | s0 0.782 (+46.8/−27.6), s1 0.859 (+61.2/−34.0) |
+| MLP | s0 1.149 (+63.3/−36.4), s1 1.045 (+48.5/−30.1) | s0 0.708 (−53.2/+140.6), s1 0.833 (−44.9/+104.5) | s0 0.902 (+69.3/−37.2), s1 0.626 (+17.4/−9.4) |
+| star | s0 0.699 (−0.7/+4.5), s1 0.701 (−0.3/+4.1) | – | s0 0.722 (+35.5/−21.6) |
+
+No variant or seed reaches rural d=2 at τ=0.5.
+
+**Network-only arm (τ = 0), every matched cell:** full: rural d=20 s0/s1/s2 0.706/0.856/0.606,
+rural d=80 s2 1.108, urban d=20 s0/s1/s2 0.864/0.842/0.878 (+58–65% regret); GCN: rural d=20
+0.759/0.941, rural d=80 0.833/0.807, urban d=20 0.731/0.887; MLP: rural d=20 1.283/1.694, rural d=80
+0.832/0.873, urban d=20 1.000/1.054; star: rural d=20 s0 0.991, rural d=80 s1 0.764, urban d=20 s0 0.869,
+and **rural d=2 s1 1.937 (+24.2% regret, −19.5% margin) — the only agent of any variant, seed
+or gate arm to reach the sparse cell the paper targets.** No cell is matched by every
+variant and seed at τ=0, so no common-cell mean is defined there.
+
+**What this says.**
+1. **The committed ablation table's ranking does not survive the same-cells comparison.**
+   It averaged each variant over its own matched cells: MLP had the best margin (+22.3%).
+   On the common cell MLP is the worst variant on both seeds (+48.5% / +63.3% regret).
+   Its averages were carried by rural d=80, where every ablation is cheap.
+2. **GCN is the most consistent variant:** 3 of 4 cells on both seeds, with near-identical
+   costs (0.681 / 0.682 at rural d=20, −3% vs per-cell tuning). The full GATv2 model matches
+   1, 1 and 3 cells across its three seeds; its best seed (s2) beats GCN at rural d=20 and
+   matches its cell count, and its other two do not.
+3. **The architecture claim cannot be resolved at this seed count.** The full model's seed
+   spread (−21% to +3% regret, 1–3 cells) is wider than every between-variant difference
+   except MLP's. With 2–3 training seeds, the defensible statement is "removing attention
+   (GCN) or neighbour edges (star) does not make the policy worse; removing the graph (MLP)
+   makes it markedly more expensive where all variants qualify."
+4. Training-seed variance should be reported for every agent number in the paper.

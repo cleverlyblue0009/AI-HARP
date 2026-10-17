@@ -6,6 +6,9 @@
   "ref_s0_ckpt_final.pt": "b589be512827fcbb",
   "star_s0_ckpt_final.pt": "b3536e1a471535a4",
   "ref_s1_ckpt_final.pt": "4867ffabbdf23aac",
-  "ref_s2_ckpt_final.pt": "0b5fa61c06396e28"
+  "ref_s2_ckpt_final.pt": "0b5fa61c06396e28",
+  "gcn_s1_ckpt_final.pt": "cb855009fb1ddc3a",
+  "mlp_s1_ckpt_final.pt": "39b35e7d49c2c4b2",
+  "star_s1_ckpt_final.pt": "a9e4d85b834ff15c"
  }
 }
