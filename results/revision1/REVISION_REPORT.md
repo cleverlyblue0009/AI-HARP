@@ -1041,3 +1041,44 @@ fixed setting is unstable at 10 eval seeds.** Over 400 resamples `dvcast(n_slots
 30%, and 17 different settings win at least once (greedy_farthest(16) 14%, slotted_1p(12) 11%,
 slotted_1p(20) 9%, …), some of which cost 1.2–1.8 at rural d=20 (e.g. counter_based(3), dvcast(3)).
 The fixed reference is itself a noisy estimate, and that noise belongs in any margin claim.
+
+
+## R4. Adaptive classical baseline (per-cell tuning on training seeds, no hindsight)
+
+Regenerate: `python -m experiments.revision1.sweeps trainsel` (55 settings × training seeds 100–109 ×
+24 cells = 13,200 runs → `results/revision1/B_sweeps/trainsel_runs.csv`), then
+`python -m experiments.revision2.r4_adaptive_baseline` → `results/revision2/R4/r4_adaptive_baseline.json`.
+Rule: per cell, on training seeds only, q*_train = 0.95 × best training-seed mean RWCR, miss bound =
+best training-seed miss + 0.05; pick the cheapest **realised** setting meeting both. Deploy that setting
+on eval seeds 0–9 and score it with Algorithm 1's eval-side target and guard. Derived-deadline version:
+median TIR ≤ D_r applied in selection and evaluation. Agent: full model, τ=0.5, seeds 0–4 (headline),
+seed 0 (24 cells).
+
+**Headline cells** (unbounded; the derived deadline changes nothing here):
+
+| cell | adaptive pick (training seeds) | eval cost | meets eval q* + guard | regret vs eval oracle | eval oracle | agent cost s0 / s1 / s2 / s3 / s4 |
+|---|---|---|---|---|---|---|
+| rural d=2 | dvcast(n_slots=8) | 1.640 | no | – | 1.560 | never (all seeds) |
+| rural d=20 | slotted_1p(n_slots=30) | 0.749 | yes | +6.5% | 0.704 | **0.717 / 0.725 / 0.554 / 0.668 / 0.534** |
+| rural d=80 | p_persistence(p=0.08) | 0.769 | **no** (RWCR short on eval seeds) | – | 1.512 | – / – / 1.065 / 0.934 / 0.980 |
+| urban d=20 | counter_based(1) | **0.533** | yes | **0.0%** | 0.533 | – / – / 0.649 / 0.686 / 0.731 |
+
+**24 cells:**
+
+| | unbounded | derived deadline |
+|---|---|---|
+| adaptive meets the eval target | **13 / 24** (median regret **+6.5%**) | 14 / 24 (+6.0%); 1 cell has no qualifying training-seed setting |
+| agent (seed 0) meets the eval target | 12 / 24 (median regret +84%, B1) | 12 / 24 |
+| both qualify / agent cheaper there | 8 / **1** (rural d=20) | 8 / 1 |
+| agent only / adaptive only / neither | 4 / 5 / 7 | 4 / 6 / 6 |
+
+Per-cell picks, costs and regrets are in the JSON (examples: urban_grid d=20 weighted_p(0.15) =
+oracle 0.234 where the agent never qualifies; urban_grid d=5 weighted_p(0.2) 0.326 vs agent 1.074).
+
+**Reading.** A classical scheme retuned per cell on training traffic (no access to evaluation
+seeds) is close to hindsight tuning (median +6.5%) and qualifies about as often as the agent
+(13 vs 12 of 24). Where both qualify it is cheaper in 7 of 8 cells. **The agent's advantage is
+confined to the rural corridor at d=20–80:** it is cheaper at rural d=20 on all five training
+seeds, and at rural d=80 three of five seeds qualify where the adaptive pick does not
+generalise from training to eval seeds. This is the strongest available comparison for the
+"learned vs retuned" question: the per-cell oracle is not deployable, but this baseline is.

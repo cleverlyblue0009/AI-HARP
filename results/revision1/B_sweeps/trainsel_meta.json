@@ -1,0 +1,185 @@
+{
+ "task": "B_sweeps/trainsel",
+ "git_commit": "58b72eaa708b5916f2ef80c05ae8303a1f1f4c60-dirty",
+ "python": "3.12.9",
+ "numpy": "2.0.1",
+ "interpreter": "miniconda3",
+ "command": "python -m experiments.revision1.sweeps trainsel --jobs 3",
+ "config_hash": "0373818b8b08",
+ "config": {
+  "sweep": "trainsel",
+  "cells": [
+   [
+    "rural_highway",
+    2.0
+   ],
+   [
+    "rural_highway",
+    20.0
+   ],
+   [
+    "rural_highway",
+    80.0
+   ],
+   [
+    "urban_nlos",
+    20.0
+   ],
+   [
+    "rural_highway",
+    1.0
+   ],
+   [
+    "rural_highway",
+    3.0
+   ],
+   [
+    "rural_highway",
+    5.0
+   ],
+   [
+    "rural_highway",
+    10.0
+   ],
+   [
+    "rural_highway",
+    40.0
+   ],
+   [
+    "urban_nlos",
+    1.0
+   ],
+   [
+    "urban_nlos",
+    2.0
+   ],
+   [
+    "urban_nlos",
+    3.0
+   ],
+   [
+    "urban_nlos",
+    5.0
+   ],
+   [
+    "urban_nlos",
+    10.0
+   ],
+   [
+    "urban_nlos",
+    40.0
+   ],
+   [
+    "urban_nlos",
+    80.0
+   ],
+   [
+    "urban_grid",
+    1.0
+   ],
+   [
+    "urban_grid",
+    2.0
+   ],
+   [
+    "urban_grid",
+    3.0
+   ],
+   [
+    "urban_grid",
+    5.0
+   ],
+   [
+    "urban_grid",
+    10.0
+   ],
+   [
+    "urban_grid",
+    20.0
+   ],
+   [
+    "urban_grid",
+    40.0
+   ],
+   [
+    "urban_grid",
+    80.0
+   ]
+  ],
+  "settings": [
+   "flooding(default)",
+   "p_persistence_03(p=0.03)",
+   "p_persistence_03(p=0.05)",
+   "p_persistence_03(p=0.06)",
+   "p_persistence_03(p=0.07)",
+   "p_persistence_03(p=0.08)",
+   "p_persistence_03(p=0.1)",
+   "p_persistence_03(p=0.15)",
+   "p_persistence_03(p=0.2)",
+   "p_persistence_03(p=0.3)",
+   "p_persistence_03(p=0.5)",
+   "p_persistence_03(p=0.7)",
+   "p_persistence_03(p=0.9)",
+   "p_persistence_03(p=1.0)",
+   "slotted_1p(n_slots=1)",
+   "slotted_1p(n_slots=2)",
+   "slotted_1p(n_slots=3)",
+   "slotted_1p(n_slots=5)",
+   "slotted_1p(n_slots=8)",
+   "slotted_1p(n_slots=12)",
+   "slotted_1p(n_slots=20)",
+   "slotted_1p(n_slots=30)",
+   "slotted_1p(n_slots=50)",
+   "weighted_p(max_p=0.03)",
+   "weighted_p(max_p=0.05)",
+   "weighted_p(max_p=0.07)",
+   "weighted_p(max_p=0.1)",
+   "weighted_p(max_p=0.15)",
+   "weighted_p(max_p=0.2)",
+   "weighted_p(max_p=0.35)",
+   "weighted_p(max_p=0.5)",
+   "weighted_p(max_p=0.7)",
+   "weighted_p(max_p=0.85)",
+   "weighted_p(max_p=1.0)",
+   "counter_based(counter_threshold=1)",
+   "counter_based(counter_threshold=2)",
+   "counter_based(counter_threshold=3)",
+   "counter_based(counter_threshold=4)",
+   "counter_based(counter_threshold=6)",
+   "counter_based(counter_threshold=10)",
+   "greedy_farthest(fallback_n_slots=1)",
+   "greedy_farthest(fallback_n_slots=2)",
+   "greedy_farthest(fallback_n_slots=4)",
+   "greedy_farthest(fallback_n_slots=8)",
+   "greedy_farthest(fallback_n_slots=16)",
+   "greedy_farthest(fallback_n_slots=32)",
+   "dvcast(n_slots=1)",
+   "dvcast(n_slots=2)",
+   "dvcast(n_slots=3)",
+   "dvcast(n_slots=5)",
+   "dvcast(n_slots=8)",
+   "dvcast(n_slots=12)",
+   "dvcast(n_slots=20)",
+   "dvcast(n_slots=30)",
+   "dvcast(n_slots=50)"
+  ],
+  "n_settings": 55,
+  "weather": "clear",
+  "hazard_type": "fog_bank",
+  "causal_coverage": false
+ },
+ "seeds": [
+  100,
+  101,
+  102,
+  103,
+  104,
+  105,
+  106,
+  107,
+  108,
+  109
+ ],
+ "generated": "2026-10-17 23:03:21",
+ "n_runs": 13200
+}
