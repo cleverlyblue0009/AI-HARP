@@ -1,0 +1,102 @@
+{
+ "training_seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "n_boot": 10000,
+ "rng_seed": 20261018,
+ "point_per_seed": {
+  "0": {
+   "regret": 0.01844709147744905,
+   "margin": 0.01896985448181021,
+   "cells_matched": 1
+  },
+  "1": {
+   "regret": 0.030565541038793276,
+   "margin": 0.006987758929089427,
+   "cells_matched": 1
+  },
+  "2": {
+   "regret": -0.21322438112610986,
+   "margin": 0.31901251094378336,
+   "cells_matched": 3
+  },
+  "3": {
+   "regret": -0.05159169000619679,
+   "margin": 0.09421951881355795,
+   "cells_matched": 3
+  },
+  "4": {
+   "regret": -0.24143172260851808,
+   "margin": 0.36805995653919,
+   "cells_matched": 3
+  }
+ },
+ "point_mean": {
+  "regret": -0.09144703224491649,
+  "margin": 0.1614499199414862,
+  "cells_matched": 2.2
+ },
+ "rural_d20_regret_ci95": [
+  -0.1922567552987437,
+  0.10476593648204167
+ ],
+ "rural_d20_margin_ci95": [
+  -0.01098511875774524,
+  1.2987580492876436
+ ],
+ "cells_matched_ci95": [
+  1.4,
+  3.0
+ ],
+ "cells_matched_boot_mean": 2.2038599999999997,
+ "share_draws_agent_fails_rural_d20": 0.0,
+ "share_resamples_regret_negative": 0.7977,
+ "share_resamples_margin_positive": 0.9673,
+ "provenance": {
+  "task": "R3",
+  "git_commit": "761c6ddd5dca4417763a4a21a14958d610b8c08e",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision2.r3_hier_bootstrap --seeds 0 1 2 3 4 --n 10000",
+  "config_hash": "6a81f60aae97",
+  "config": {
+   "training_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "n_boot": 10000,
+   "rng_seed": 20261018,
+   "resampling": "training seeds and eval seeds jointly, with replacement; Algorithm 1 re-run per resample"
+  },
+  "seeds": {
+   "eval": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "train": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  "generated": "2026-10-18 05:03:17"
+ }
+}

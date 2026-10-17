@@ -1011,3 +1011,33 @@ configuration.
 4. **Robust:** the per-cell oracle at rural d=20 and urban d=20, the agent never reaching rural d=2,
    and the 0.95 → 0.90 target change at tolerance 0.05 (only rural d=80's oracle and the sign of seed
    0's regret move).
+
+
+## R3. Hierarchical bootstrap (training seeds × eval seeds)
+
+Regenerate: `python -m experiments.revision2.r3_hier_bootstrap --seeds 0 1 2 3 4` (and `--seeds 0 1 2`)
+→ `results/revision2/R3/r3_hier_bootstrap_seeds01234.json`, `..._seeds012.json`. 10,000 resamples, RNG seed
+20261018. Each resample draws training seeds and the 10 eval seeds jointly with replacement (one eval
+draw for baselines and agent, so pairing is kept) and re-runs Algorithm 1 in full, so the per-cell
+oracle and the best fixed setting are re-selected per resample. Point estimates reproduce the
+comparator exactly (seed 0: 0.018447 / 0.018970). Agent: full model, τ=0.5, sampled.
+
+| | 5 training seeds (0–4) | 3 training seeds (0–2) |
+|---|---|---|
+| rural d=20 regret: point (mean over seeds) | −9.1% | −5.5% |
+| rural d=20 regret: 95% CI | **[−19.2%, +10.5%]** | [−20.7%, +7.3%] |
+| share of resamples with regret < 0 | 0.80 | 0.78 |
+| rural d=20 margin: point | +16.1% | +11.5% |
+| rural d=20 margin: 95% CI | [−1.1%, +129.9%] | [−0.7%, +141.7%] |
+| share of resamples with margin > 0 | 0.97 | 0.97 |
+| cells matched (of 4): point | 2.20 | 1.67 |
+| cells matched: 95% CI | [1.4, 3.0] | [1.0, 3.0] |
+| agent fails rural d=20 (share of draws) | 0 | 0 |
+
+**Reading.** Regret against per-cell tuning is not distinguishable from zero (the CI spans
+−19% to +10%). The margin over the best fixed scheme is positive in 97% of resamples but its
+upper tail is very long. The cause is checked, not assumed: **the identity of the best single
+fixed setting is unstable at 10 eval seeds.** Over 400 resamples `dvcast(n_slots=30)` wins only
+30%, and 17 different settings win at least once (greedy_farthest(16) 14%, slotted_1p(12) 11%,
+slotted_1p(20) 9%, …), some of which cost 1.2–1.8 at rural d=20 (e.g. counter_based(3), dvcast(3)).
+The fixed reference is itself a noisy estimate, and that noise belongs in any margin claim.

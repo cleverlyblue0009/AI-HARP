@@ -1,0 +1,86 @@
+{
+ "training_seeds": [
+  0,
+  1,
+  2
+ ],
+ "n_boot": 10000,
+ "rng_seed": 20261018,
+ "point_per_seed": {
+  "0": {
+   "regret": 0.01844709147744905,
+   "margin": 0.01896985448181021,
+   "cells_matched": 1
+  },
+  "1": {
+   "regret": 0.030565541038793276,
+   "margin": 0.006987758929089427,
+   "cells_matched": 1
+  },
+  "2": {
+   "regret": -0.21322438112610986,
+   "margin": 0.31901251094378336,
+   "cells_matched": 3
+  }
+ },
+ "point_mean": {
+  "regret": -0.05473724953662251,
+  "margin": 0.114990041451561,
+  "cells_matched": 1.6666666666666667
+ },
+ "rural_d20_regret_ci95": [
+  -0.20718164565769476,
+  0.0730822811743945
+ ],
+ "rural_d20_margin_ci95": [
+  -0.0066401111770666155,
+  1.4171067941870612
+ ],
+ "cells_matched_ci95": [
+  1.0,
+  3.0
+ ],
+ "cells_matched_boot_mean": 1.8614666666666668,
+ "share_draws_agent_fails_rural_d20": 0.0,
+ "share_resamples_regret_negative": 0.7846,
+ "share_resamples_margin_positive": 0.9662,
+ "provenance": {
+  "task": "R3",
+  "git_commit": "761c6ddd5dca4417763a4a21a14958d610b8c08e",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision2.r3_hier_bootstrap --seeds 0 1 2 --n 10000",
+  "config_hash": "d1644c32c30a",
+  "config": {
+   "training_seeds": [
+    0,
+    1,
+    2
+   ],
+   "n_boot": 10000,
+   "rng_seed": 20261018,
+   "resampling": "training seeds and eval seeds jointly, with replacement; Algorithm 1 re-run per resample"
+  },
+  "seeds": {
+   "eval": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "train": [
+    0,
+    1,
+    2
+   ]
+  },
+  "generated": "2026-10-18 05:05:40"
+ }
+}
