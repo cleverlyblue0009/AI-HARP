@@ -1082,3 +1082,63 @@ confined to the rural corridor at d=20–80:** it is cheaper at rural d=20 on al
 seeds, and at rural d=80 three of five seeds qualify where the adaptive pick does not
 generalise from training to eval seeds. This is the strongest available comparison for the
 "learned vs retuned" question: the per-cell oracle is not deployable, but this baseline is.
+
+
+## R6. Full model, 5 training seeds (C1 updated)
+
+Training: `python -m experiments.revision1.train_queue --only ref_s3` / `ref_s4` (= `agents.train --seed 3|4`,
+same config, 1,000 updates, deterministic GPU PPO), run overnight; both ran uninterrupted (no resume;
+histories contiguous; 4.23 h / 4.20 h), stopped at `max_updates`, `bit_reproducible: true`. Records:
+`results/revision1/C_train/ref_s{3,4}.json` (seed, command, commit, config hash, checkpoint SHA).
+Final-checkpoint evaluation (4 headline cells × 10 eval seeds, τ 0 and 0.5, sampled):
+`results/revision1/agent_runs/ref_s{3,4}.csv`. Aggregation: `python -m experiments.revision1.c_seeds` →
+`results/revision1/C1C2/c_seeds.json`, `table_ablation_seeds.tex`.
+
+**Per seed, τ = 0.5** (matched cost; regret):
+
+| seed | rural d=2 | rural d=20 | rural d=80 | urban d=20 | cells matched |
+|---|---|---|---|---|---|
+| 0 | – | 0.717 (+1.8%) | – | – | 1 |
+| 1 | – | 0.725 (+3.1%) | – | – | 1 |
+| 2 | – | 0.554 (−21.3%) | 1.065 (−29.6%) | 0.649 (+21.7%) | 3 |
+| 3 | – | 0.668 (−5.2%) | 0.934 (−38.2%) | 0.686 (+28.7%) | 3 |
+| 4 | – | 0.534 (−24.1%) | 0.980 (−35.2%) | 0.731 (+37.1%) | 3 |
+
+**Mean ± SD across 5 seeds:**
+
+| quantity | τ = 0.5 | τ = 0 |
+|---|---|---|
+| cells matched (of 4) | **2.20 ± 1.10** | 2.40 ± 0.55 |
+| rural d=20 regret (matched by all seeds) | **−9.1% ± 12.8** | +9.3% ± 14.8 (0.3 / 21.7 / −13.9 / 18.4 / 20.0) |
+| rural d=20 margin | **+16.1% ± 17.0** | (in JSON) |
+| RWCR at bias 0, mean of 4 cells | 0.789 ± 0.025 | 0.813 ± 0.024 |
+| cost at bias 0, mean of 4 cells | 1.087 ± 0.097 | 1.178 ± 0.093 |
+| median TIR at bias 0, mean of 4 cells | 0.299 ± 0.015 s | 0.307 ± 0.011 s |
+
+Hierarchical-bootstrap CIs for these 5 seeds are in R3 (regret [−19.2%, +10.5%], cells matched [1.4, 3.0]).
+Latency-bounded versions are in R1. With 5 seeds the picture is: **3 of 5 seeds reach 3 of 4 cells**,
+the paper's seed 0 is one of the two weakest, and no seed reaches rural d=2 at either τ. At τ=0 the
+network-only arm qualifies at urban d=20 on all 5 seeds but at +38–65% regret.
+
+## R7. Relevance-removal ablation (causal relevance zeroed at train and eval)
+
+Seed 0 = committed `checkpoints/campaign/no_relevance` (1,000 updates, `drop_node_features:
+[relevance_causal]`; never evaluated before this revision). Seed 1 trained overnight
+(`train_queue --only norel_s1` = `agents.train --seed 1 --drop-node-feature relevance_causal`; uninterrupted;
+4.17 h; `max_updates`; bit-reproducible; `results/revision1/C_train/norel_s1.json`). The switch travels in the
+checkpoint config, so evaluation zeroes the feature too (verified on norel_s1's checkpoint). Evaluation
+rows: `results/revision1/agent_runs/norel_s{0,1}.csv`; aggregation as R6.
+
+| variant | seeds | cells matched (τ=0.5) | rural d=20 regret (τ=0.5) | other cells (τ=0.5) | cells matched (τ=0) |
+|---|---|---|---|---|---|
+| full model | 5 | 2.20 ± 1.10 (1/1/3/3/3) | −9.1% ± 12.8 | see R6 | 2.40 ± 0.55 |
+| **no causal relevance** | 2 | **2.50 ± 0.71** (2 / 3) | **−0.9% ± 14.1** (s0 0.767 = +9.0%, s1 0.627 = −10.9%) | rural d=80 s1 0.656 (−56.6%); urban d=20 s0 0.740 (+38.9%), s1 0.794 (+49.0%) | 2.50 ± 0.71 |
+
+Margin at rural d=20: +5.8% ± 15.1 (no relevance) vs +16.1% ± 17.0 (full). Default-bias means over 4 cells
+(τ=0.5): RWCR 0.777 ± 0.007, cost 1.023 ± 0.075, TIR 0.287 ± 0.001 s.
+
+**Reading.** Removing the causal-relevance input does not reduce the number of cells the policy
+qualifies in (2 and 3, within the full model's 1–3 range), and its rural d=20 regret lies inside
+the full model's seed spread. Its seed 1 has the lowest cost of any agent at rural d=80 (0.656).
+At 2 seeds this ablation cannot show that the causal-relevance feature contributes; the
+premise that the policy depends on it is not supported by this evidence.

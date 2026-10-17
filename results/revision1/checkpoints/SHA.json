@@ -9,6 +9,10 @@
   "ref_s2_ckpt_final.pt": "0b5fa61c06396e28",
   "gcn_s1_ckpt_final.pt": "cb855009fb1ddc3a",
   "mlp_s1_ckpt_final.pt": "39b35e7d49c2c4b2",
-  "star_s1_ckpt_final.pt": "a9e4d85b834ff15c"
+  "star_s1_ckpt_final.pt": "a9e4d85b834ff15c",
+  "norel_s0_ckpt_final.pt": "2efb9151402fd9cf",
+  "norel_s1_ckpt_final.pt": "38bd30d081f2edc4",
+  "ref_s3_ckpt_final.pt": "2c2434ab9ed05da2",
+  "ref_s4_ckpt_final.pt": "3cb2a44fef5bde6b"
  }
 }

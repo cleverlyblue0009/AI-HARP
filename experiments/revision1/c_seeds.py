@@ -34,7 +34,7 @@ from experiments.revision1.runner import cells_from_rows, load_rows
 
 R = PROJECT_ROOT / "results"
 AR = R / "revision1" / "agent_runs"
-VARIANTS = ("ref", "gcn", "mlp", "star")
+VARIANTS = ("ref", "gcn", "mlp", "star", "norel")
 
 
 def rows_for(variant: str, seed: int) -> Path | None:
@@ -58,7 +58,7 @@ def main() -> int:
     per: dict = defaultdict(dict)        # (variant, tau, bound) -> seed -> evaluate()
     default_pt: dict = defaultdict(dict)  # (variant, tau) -> seed -> {rwcr,cost,tir}
     for v in VARIANTS:
-        for s in (0, 1, 2):
+        for s in range(5):
             p = rows_for(v, s)
             if p is None:
                 continue
@@ -110,7 +110,7 @@ def main() -> int:
     out["provenance"] = stamp("C1C2", {"rows": "results/revision1/agent_runs/<variant>_s<seed>.csv",
                                        "baseline_rows": "results/revision1/B_sweeps/headline_runs.csv",
                                        "bounds": list(bounds)}, seeds={"eval": list(range(10)),
-                                                                       "train": [0, 1, 2]})
+                                                                       "train": list(range(5))})
     write_json(out_dir("C1C2") / "c_seeds.json", out)
     _tex(out, out_dir("C1C2") / "table_ablation_seeds.tex")
     _print(out)
@@ -119,7 +119,8 @@ def main() -> int:
 
 def _tex(out, path) -> None:
     """Ablations over training seeds, same cells for every variant (tau = 0.5)."""
-    names = {"ref": "full (GATv2)", "gcn": "GCN encoder", "mlp": "MLP encoder", "star": "star graph"}
+    names = {"ref": "full (GATv2)", "gcn": "GCN encoder", "mlp": "MLP encoder", "star": "star graph",
+             "norel": "no causal relevance"}
     pm = lambda d, p=True: "--" if d["mean"] is None else (  # noqa: E731
         f"${100 * d['mean']:+.1f}" + (f" \\pm {100 * d['sd']:.1f}" if d["sd"] is not None else "") + r"\%$"
         if p else f"${d['mean']:.2f}" + (f" \\pm {d['sd']:.2f}" if d["sd"] is not None else "") + "$")

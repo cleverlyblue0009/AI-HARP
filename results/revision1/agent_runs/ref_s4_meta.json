@@ -1,0 +1,71 @@
+[
+ {
+  "task": "agent_runs/ref_s4",
+  "git_commit": "bc55994c348f1c0a3a861e3a66675ce0483fe8b9",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision1.agent_eval --checkpoint checkpoints\\revision1\\ref_s4\\ckpt_final.pt --name ref_s4 --taus 0.5 0 --modes sampled --jobs 2",
+  "config_hash": "7bc3c80a00fd",
+  "config": {
+   "checkpoint": "checkpoints/revision1/ref_s4/ckpt_final.pt",
+   "taus": [
+    0.5,
+    0.0
+   ],
+   "modes": [
+    "sampled"
+   ],
+   "biases": [
+    -2.0,
+    -1.0,
+    0.0,
+    1.0,
+    2.0,
+    3.0
+   ],
+   "cells": [
+    [
+     "rural_highway",
+     2.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     20.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     80.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     20.0,
+     "clear",
+     "fog_bank"
+    ]
+   ],
+   "random_gate_from": null
+  },
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "generated": "2026-10-18 03:28:04",
+  "checkpoint_sha": "3cb2a44fef5bde6b",
+  "n_runs": 480
+ }
+]

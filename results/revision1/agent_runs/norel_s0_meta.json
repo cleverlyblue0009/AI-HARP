@@ -1,0 +1,71 @@
+[
+ {
+  "task": "agent_runs/norel_s0",
+  "git_commit": "58b72eaa708b5916f2ef80c05ae8303a1f1f4c60-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision1.agent_eval --checkpoint checkpoints\\campaign\\no_relevance\\ckpt_final.pt --name norel_s0 --taus 0.5 0 --modes sampled --jobs 2",
+  "config_hash": "78be6b4358fb",
+  "config": {
+   "checkpoint": "checkpoints/campaign/no_relevance/ckpt_final.pt",
+   "taus": [
+    0.5,
+    0.0
+   ],
+   "modes": [
+    "sampled"
+   ],
+   "biases": [
+    -2.0,
+    -1.0,
+    0.0,
+    1.0,
+    2.0,
+    3.0
+   ],
+   "cells": [
+    [
+     "rural_highway",
+     2.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     20.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "rural_highway",
+     80.0,
+     "clear",
+     "fog_bank"
+    ],
+    [
+     "urban_nlos",
+     20.0,
+     "clear",
+     "fog_bank"
+    ]
+   ],
+   "random_gate_from": null
+  },
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "generated": "2026-10-17 23:03:21",
+  "checkpoint_sha": "2efb9151402fd9cf",
+  "n_runs": 480
+ }
+]
