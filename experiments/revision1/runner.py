@@ -41,13 +41,16 @@ _CFGS: dict[str, Any] = {}
 
 def task(scenario: str, density: float, policy: str, seed: int, *, weather: str = "clear",
          hazard_type: str = "fog_bank", param: str = "", value: Any = None,
-         fixed: dict[str, Any] | None = None, causal: bool = False) -> dict[str, Any]:
+         fixed: dict[str, Any] | None = None, causal: bool = False,
+         phy_patch: dict[str, Any] | None = None) -> dict[str, Any]:
     params = dict(fixed or {})
     if param:
         params[param] = value
     t = {"scenario": scenario, "density": float(density), "weather": weather,
          "hazard_type": hazard_type, "policy": policy, "param": param,
          "value": value, "params": params, "seed": int(seed), "causal": bool(causal)}
+    if phy_patch:   # revision-3 R9: e.g. {"mac": {"extra_loss": {...}}}; part of the identity
+        t["phy_patch"] = phy_patch
     # checkpoint path is not identity; its sha is (agent_params carries both).
     ident = {k: v for k, v in t.items() if k != "params"}
     ident["params"] = {k: v for k, v in params.items() if k != "checkpoint"}
@@ -75,7 +78,14 @@ def run_task(t: dict[str, Any]) -> dict[str, Any]:
     spec = RunSpec(scenario=t["scenario"], density_veh_km_lane=t["density"],
                    weather=t["weather"], policy=t["policy"], policy_params=t["params"],
                    seed=t["seed"], hazard_type=t["hazard_type"])
-    m, res = run_single(spec, phy_cfg=_CFGS["phy"], hz_cfg=_CFGS["hazard"],
+    phy = _CFGS["phy"]
+    if t.get("phy_patch"):
+        import copy
+
+        phy = copy.deepcopy(phy)
+        for sect, vals in t["phy_patch"].items():
+            phy.setdefault(sect, {}).update(vals)
+    m, res = run_single(spec, phy_cfg=phy, hz_cfg=_CFGS["hazard"],
                         exp_cfg=_CFGS["experiment"], return_result=t["causal"])
     cov = float("nan")
     if t["causal"]:
