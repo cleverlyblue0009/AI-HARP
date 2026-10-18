@@ -6,7 +6,13 @@
 # control-C aborts). Here each job gets its OWN hidden console via
 # Start-Process, so no console event can reach more than one job.
 # Run via Task Scheduler (task AIHARP_revision1). Every job is resumable.
-param([switch]$NoTrain, [switch]$NoSweeps, [switch]$Revision2)
+param([switch]$NoTrain, [switch]$NoSweeps, [switch]$Revision2, [switch]$Revision3)
+if ($Revision3) {
+    # Revision-3: R8 diagnostic ladder (rungs B, C x seeds 0, 1) + R12 random-gate evals.
+    # The job list and each job's done/alive test live in watchdog_revision3.ps1.
+    & (Join-Path $PSScriptRoot "watchdog_revision3.ps1")
+    return
+}
 $root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Set-Location $root
 $gpu = "D:\aiharp-gpu\Scripts\python.exe"
