@@ -1358,3 +1358,86 @@ training seeds.
 training seed (for q* ≤ 0.95) and never in the sparse rural d=2 cell; the simulator is optimistic in dense
 traffic. Everything else depends on the seed, the tolerance, the channel calibration or the backend, and should be
 written as exploratory.
+
+
+## R8. Diagnostic ladder: what does the policy gain from a privileged reward or input?
+
+**Rungs** (same config, curriculum, 1,000-update budget, deterministic GPU PPO; training seeds 0 and 1):
+* **A**: the reference agent (causal reward, causal inputs): `checkpoints/campaign/ref` (s0), `revision1/ref_s1` (s1).
+* **B, privileged reward**: the constrained objective's coverage term and tree credit use **oracle** relevance
+  (`privileged/oracle_reward.py`); per-cell training targets = 0.95 × best of flooding / DV-CAST in **oracle RWCR** on
+  the 32 training seeds (`experiments/revision3/oracle_targets.py` → `results/revision3/R8/oracle_coverage_targets.json`,
+  6,144 runs). Inputs unchanged (causal).
+* **C, privileged inputs (NON-DEPLOYABLE upper bound)**: rung B plus oracle relevance as an extra node feature
+  (`graph.extra_node_features = [extra_relevance_oracle]`; checkpoint config `privileged.ORACLE_INPUT: true`).
+
+**Isolation.** The oracle code lives only in `privileged/` (documented exemption, `privileged/__init__.py`), installed
+only by its own entry points (`privileged.train_privileged`, `privileged.eval_privileged`) at import time, so spawned
+rollout workers are patched identically. `tests/test_oracle_isolation.py` now also enforces: agents/, sim/, mobility/
+cannot import `privileged` or name its feature; only `privileged/` may import it. Core changes are generic and inert
+unless configured (engine passes through `extra_*` features; graph appends configured extra columns and **raises if
+one is missing**, so a rung-C checkpoint cannot be evaluated without its oracle input; verified). After these changes
+the committed reference point still reproduces bit-exactly (RWCR 0.9048508845298644, cost 0.7361815331061858).
+
+Regenerate: training `python -m experiments.revision1.train_queue --only rungB_s0` (… `rungB_s1`, `rungC_s0`, `rungC_s1`;
+= `python -m privileged.train_privileged --rung B|C --seed 0|1`); evaluation (4 headline cells × 10 eval seeds, sampled,
+τ 0.5 and 0) `python -m experiments.revision1.agent_eval` for B and `python -m privileged.eval_privileged` for C;
+analysis `python -m experiments.revision3.r8_ladder` → `results/revision3/R8/r8_ladder.json`. All four runs:
+uninterrupted (no resume), `max_updates`, `bit_reproducible: true`.
+
+**Evaluation, τ = 0.5** (matched cost and regret; "–" = never reaches q*; best RWCR in brackets where it does not):
+
+| run | rural d=2 | rural d=20 | rural d=80 | urban d=20 | cells matched |
+|---|---|---|---|---|---|
+| A s0 | – (0.507) | 0.717 (+1.8%) | – (0.846) | – (0.921) | 1 |
+| A s1 | – (0.561) | 0.725 (+3.1%) | – (0.844) | – (0.924) | 1 |
+| B s0 | – (0.573) | **0.596 (−15.3%)** | – (0.839) | 0.835 (+56.6%) | 2 |
+| B s1 | – (0.466) | **0.643 (−8.7%)** | – (0.857) | 0.787 (+47.6%) | 2 |
+| C s0 | – (0.575) | 0.785 (+11.5%) | 0.778 (−48.5%) | 0.791 (+48.5%) | **3** |
+| C s1 | – (0.579) | 0.717 (+1.8%) | 0.737 (−51.2%) | 0.766 (+43.7%) | **3** |
+
+**τ = 0 (network only):** A 2 / 2 cells; B 2 / 3 (s1 adds rural d=80, 0.739 = −51.1%); C 3 / 3. Full per-cell table in the JSON.
+
+**Training side** (pooled shortfall over the last 200 finetune updates against each rung's **own** targets: causal
+for A, oracle for B and C, so the scales differ): A +0.022 / +0.016; B +0.005 / +0.022; C −0.006 / +0.014. Per group in
+the JSON (e.g. urban d=2: A +0.069 / +0.056, B +0.025 / +0.049, C +0.002 / +0.040).
+
+**Rung A surrogate check** (training seeds; `python -m experiments.revision3.r8_rung_a_surrogate` →
+`r8_rung_a_surrogate.json`; 35,424 runs with both measures). Causal coverage vs oracle RWCR:
+
+| scenario | Pearson, all runs | Spearman across cell means | Spearman within cells (median / min over cells) | mean causal / oracle |
+|---|---|---|---|---|
+| rural_highway | 0.971 | 0.850 | **0.992 / 0.944** | 0.666 / 0.564 |
+| urban_nlos | 0.828 | 0.301 | **0.819 / 0.750** | 0.245 / 0.712 |
+
+On the corridor causal coverage ranks behaviours almost exactly as the oracle does; in the urban grid it is a weaker
+surrogate on a scale three times smaller, and across runs at d = 40–80 the correlation is negative (−0.78 / −0.79).
+
+**Reading.**
+1. **A privileged reward (B) helps where the surrogate is weak.** Both B seeds qualify at urban d=20, which the
+   same-seed A runs never do, and both are cheaper at rural d=20 (−15.3% / −8.7% vs +1.8% / +3.1%). This is consistent with
+   rung A: the causal reward misleads training in the urban grid.
+2. **Privileged inputs (C) add rural d=80** on both seeds, at about half the per-cell oracle's cost (−48.5% / −51.2%), but
+   are not cheaper at rural d=20.
+3. **No rung reaches rural d=2,** not even with an oracle reward and oracle input (best RWCR 0.47–0.58 vs q* 0.641),
+   although 14 of 63 fixed baseline settings do (B3). The sparse-cell failure is therefore **not** explained by the
+   causal estimate or the reward; it lies in the policy class, the action space or the training budget.
+4. **Caution: 2 seeds.** Full-model seeds 2–4 also reach 3 of 4 cells (R6), so B and C's cell counts are within the
+   reference's 5-seed range (1–3). The like-for-like (same-seed) comparison favours the privileged rungs, but this
+   ladder cannot claim a significant gain.
+
+---
+
+## REVISION 3 summary
+
+| task | status | key numbers | files |
+|---|---|---|---|
+| R8 diagnostic ladder | done | cells matched (τ=0.5) A 1/1, B 2/2, C 3/3; B cheaper at rural d=20 (−15.3/−8.7%); **no rung reaches rural d=2** even with oracle input; rung A: causal coverage a good surrogate on the corridor (within-cell ρ 0.99), weak in urban (0.82); 2 seeds, within the full model's 5-seed range | `revision3/R8/`, `privileged/` |
+| R9 calibrated channel | done | p(n) = 0.900·clip((n−250)/50, 0, 1); Amador within 0.01 at 4/5 densities (d=30 off by 0.0008); rural d=2/d=20 unchanged; dense cells change (urban d=20 ceiling 0.975 → 0.484; agent 1/1/3/3/3 → 1/1/1/1/1) | `revision3/R9/` (+ `invalid_rng_drift/`, `superseded_1param_fit/`) |
+| R10 deadline assumptions | done | rural deadline never binds; best fixed changes in 6/8 alternatives; agent verdicts change only at t_r 3.5 s, a 2.5 m/s² (urban D = 0.08 s) | `revision3/R10/` |
+| R11 absolute guard | done | admitted miss rural d=20 0.364, urban 0.117 (tol 0.05); references within 0.003–0.036 of best, agent points use 0.015–0.046 of the tolerance | `revision3/R11/` |
+| R12 random gate, seeds 0–4 | done | random gate 3.0 ± 0 cells vs learned 2.2 ± 1.1; learned cheaper at rural d=20 on all 5 seeds | `revision3/R12/` |
+| R13 claims ledger | done | robust: best baseline differs per cell; agent qualifies at rural d=20 on all seeds; agent never reaches rural d=2; simulator optimistic in dense traffic. Refuted: learned gate adds value. Rest exploratory | `revision3/R13/` |
+
+Run log: two R9 corrections, both caught before any number was reported (an RNG-stream bug, and a one-parameter fit that
+missed the criterion); no training interruption in revision 3.

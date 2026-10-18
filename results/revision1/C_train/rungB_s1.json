@@ -1,0 +1,53 @@
+{
+ "run": "rungB_s1",
+ "variant": "rungB",
+ "seed": 1,
+ "rc": 0,
+ "hours_this_session": 5.011,
+ "git_commit": "424d00d23dd1a5a2c5a979fba2077e6722e2ef6a-dirty",
+ "command": "python -u -m privileged.train_privileged --keep-awake --quiet --rung B --out .\\checkpoints\\revision1\\rungB_s1 --workers 3 --seed 1",
+ "checkpoint_dir": "checkpoints/revision1/rungB_s1",
+ "config_hash": "449164c76f63",
+ "training_seed": 1,
+ "encoder": "gatv2",
+ "include_neighbour_edges": true,
+ "final_update": 1000,
+ "checkpoint_sha": "7edbede43fa4a5b0",
+ "run_summary": {
+  "stopped": "max_updates",
+  "total_updates": 1000,
+  "plan": [
+   [
+    "pretrain",
+    200
+   ],
+   [
+    "finetune",
+    800
+   ]
+  ],
+  "final_stage": "finetune",
+  "final_stage_update": 800,
+  "early_stop_window": 30,
+  "early_stop_run": 0,
+  "elapsed_s_this_session": 18028.7,
+  "ppo_device": "cuda",
+  "bit_reproducible": true,
+  "resumed_from": null,
+  "initialised_from": null,
+  "last_shortfall_by_group": {
+   "rural_highway|2": 0.36742850005105215,
+   "rural_highway|20": 0.09556837213913016,
+   "rural_highway|3": -0.19224816756383886,
+   "rural_highway|5": -0.008759461736029924,
+   "urban_nlos|2": 0.09646894538349954
+  },
+  "last_lambda_by_group": {
+   "rural_highway|2": 37.983200765913296,
+   "rural_highway|20": 1.7334920678337409,
+   "rural_highway|3": 15.720213513146573,
+   "rural_highway|5": 9.401495268214566,
+   "urban_nlos|2": 17.83487754185663
+  }
+ }
+}
