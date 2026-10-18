@@ -627,7 +627,13 @@ class DisseminationEngine:
             neighbour_informed=(informed_step[nb] >= 0) & (informed_step[nb] <= step),
             comm_range_m=self.comm_range_m, rng=rng_pol,
             sender_dx=sender_dx, sender_dy=sender_dy, was_designated=designated,
-            extras={"eta_all": feats["eta_s"], "relevance_all": feats["relevance"]},
+            # Any ``extra_*`` per-vehicle arrays a risk-field object adds to its
+            # features pass through untouched (graph.extra_node_features reads
+            # them). The engine neither knows nor checks where they come from;
+            # the import-barrier tests enforce that decision-time code
+            # cannot import the module that supplies privileged ones.
+            extras={"eta_all": feats["eta_s"], "relevance_all": feats["relevance"],
+                    **{k: v for k, v in feats.items() if k.startswith("extra_")}},
         )
 
     def _apply(

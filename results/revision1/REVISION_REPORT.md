@@ -1182,3 +1182,54 @@ metrics_version.
 Overnight: R6/R7 (3 runs) trained in parallel 23:03 → ~03:25 with no interruption (no resume),
 evaluations finished 03:48, the R4 sweep (13,200 runs) finished overnight; the watchdog logged no
 failure.
+
+
+---
+
+# REVISION 3
+
+Outputs under `results/revision3/<id>/`. Per-run CSVs shared with earlier revisions stay in
+`results/revision1/B_sweeps/` and `results/revision1/agent_runs/`.
+
+## R10. Deadline assumptions (derived deadline, p95-TIR bound)
+
+Regenerate: `python -m experiments.revision3.r10_deadline_assumptions` → `results/revision3/R10/r10_deadline_assumptions.json`.
+D_r = (R − v·t_r − v²/2a)/v (as B1) for t_r ∈ {1.5, 2.5, 3.5} s × a ∈ {2.5, 3.4, 6.0} m/s², applied to seed-mean
+p95 TIR in the 4 headline cells (q* and guard fixed); agent seeds 0–4, τ=0.5. D_r < 0 is treated as 0.
+
+| t_r (s) | a (m/s²) | D rural / urban_nlos (s) | best fixed | agent cells matched s0–s4 | changes vs paper (2.5 s, 3.4 m/s²) |
+|---|---|---|---|---|---|
+| 1.5 | 2.5 | 14.92 / 2.08 | slotted_1p(8) | 1/1/3/3/3 | none |
+| 1.5 | 3.4 | 16.39 / 2.89 | slotted_1p(20) | 1/1/3/3/3 | best fixed |
+| 1.5 | 6.0 | 18.16 / 3.86 | slotted_1p(20) | 1/1/3/3/3 | best fixed |
+| 2.5 | 2.5 | 13.92 / 1.08 | counter_based(3) | 1/1/3/3/3 | best fixed |
+| **2.5** | **3.4** | **15.39 / 1.89** | **slotted_1p(8)** | **1/1/3/3/3** | (paper) |
+| 2.5 | 6.0 | 17.16 / 2.86 | slotted_1p(20) | 1/1/3/3/3 | best fixed |
+| 3.5 | 2.5 | 12.92 / **0.08** | dvcast(30) | 1/1/**2/2/2** | best fixed; urban d=20: **no scheme qualifies**, seeds 2–4 lose the cell |
+| 3.5 | 3.4 | 14.39 / 0.89 | counter_based(3) | 1/1/3/3/3 | best fixed; urban d=20 oracle counter 0.533 → p_persist 0.550 |
+| 3.5 | 6.0 | 16.16 / 1.86 | slotted_1p(8) | 1/1/3/3/3 | none |
+
+**What changes.** The rural deadline (12.9–18.2 s) never binds: no corridor oracle, fixed cost or agent
+verdict moves, and rural d=20 regret is unchanged in all nine configurations. Everything that moves comes from
+urban_nlos, whose one-NLOS-hop deadline is 0.08–3.86 s. The best single fixed setting changes in 6 of the 8
+alternatives (it is chosen across cells and sensitive to the urban bound). Agent verdicts change only at the
+most pessimistic corner (t_r = 3.5 s, a = 2.5 m/s²), where no scheme can meet q* within 0.08 s in urban d=20.
+
+## R11. Absolute miss level the guard admits
+
+Regenerate: `python -m experiments.revision3.r11_absolute_guard` → `results/revision3/R11/r11_absolute_guard.{csv,json}`.
+Admitted level = best actionable miss of any baseline setting in the cell + tolerance. Points are those
+Algorithm 1 selects at q* = 0.95 × ceiling (agent: its qualifying point, seeds 0–4, τ=0.5; "–" = no qualifying point).
+
+| cell | best any setting | admitted (tol 0.02 / **0.05** / 0.10) | per-cell oracle point | best fixed point | agent points s0–s4 (tol 0.05) |
+|---|---|---|---|---|---|
+| rural d=2 | 0.529 | 0.549 / **0.579** / 0.629 | 0.565 (0.534 at tol 0.02) | 0.565 | – (no seed qualifies) |
+| rural d=20 | 0.314 | 0.334 / **0.364** / 0.414 | 0.317 | 0.317 | 0.332 / 0.351 / 0.344 / 0.340 / 0.358 |
+| rural d=80 | 0.318 | 0.338 / **0.368** / 0.418 | 0.327 | 0.319 | – / – / 0.353 / 0.355 / 0.350 |
+| urban d=20 | 0.067 | 0.087 / **0.117** / 0.167 | 0.078 | 0.083 | – / – / 0.099 / 0.110 / 0.113 |
+
+At tolerance 0.02 the agent points that still qualify at rural d=20 are 0.319–0.332, and seed 2's rural d=80 point is 0.333.
+The reference points sit within 0.003–0.036 of the best achievable miss rate; the agent's
+qualifying points use 0.015–0.046 of the 0.05 tolerance. That is why R2 found the tolerance decisive.
+The guard is a per-vehicle constraint stated in absolute terms: e.g. at rural d=20 up to 36.4% of vehicles that
+could have been saved may miss their reaction deadline at the paper's tolerance.

@@ -38,9 +38,10 @@ def _setting(cell, policy, tq, mb):
     return min(pts, key=lambda p: p.cost) if pts else None
 
 
-def analyse(cellset: str) -> dict:
-    der = {sc: v["D_s"] for sc, v in derived_deadlines().items()}
-    bounds = {"unbounded": float("inf"), "D=1s": 1.0, "D=2s": 2.0, "D=5s": 5.0, "D=derived": der}
+def analyse(cellset: str, bounds: dict | None = None) -> dict:
+    if bounds is None:
+        der = {sc: v["D_s"] for sc, v in derived_deadlines().items()}
+        bounds = {"unbounded": float("inf"), "D=1s": 1.0, "D=2s": 2.0, "D=5s": 5.0, "D=derived": der}
     base = baseline_rows(cellset)
     seeds = available_seeds(cellset)
     out = {"seeds": seeds, "bounds": {}}

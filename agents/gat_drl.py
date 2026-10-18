@@ -78,6 +78,8 @@ class EncoderConfig:
             dropout=float(e.get("dropout", 0.1)),
             residual=bool(e.get("residual", True)),
             layer_norm=bool(e.get("layer_norm", True)),
+            # graph.extra_node_features (empty for every deployable config) widen the input.
+            node_dim=N_NODE_FEATURES + len(cfg.get("graph", {}).get("extra_node_features", ()) or ()),
         )
 
 

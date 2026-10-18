@@ -79,9 +79,19 @@ class GraphConfig:
     #: them?). Zeroed rather than removed, so feature count, normaliser and
     #: network shape are unchanged and the column simply carries no information.
     drop_node_features: tuple[str, ...] = ()
+    #: Extra per-vehicle node columns appended after NODE_FEATURES, read from
+    #: ``ctx.extras[name]`` (each name must start with ``extra_``). Empty for every
+    #: deployable configuration. Used only by the revision-3 R8 rung-C upper bound,
+    #: whose ``privileged/`` entry points supply the arrays; a configured column that
+    #: is missing at decision time is an error, never a silent zero. Not normalised.
+    extra_node_features: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         self.drop_node_features = tuple(self.drop_node_features)
+        self.extra_node_features = tuple(self.extra_node_features)
+        bad = [f for f in self.extra_node_features if not f.startswith("extra_")]
+        if bad:
+            raise ValueError(f"extra_node_features must start with 'extra_': {bad}")
         unknown = [f for f in self.drop_node_features if f not in NODE_FEATURES]
         if unknown:
             raise ValueError(f"drop_node_features has unknown features {unknown}; "
@@ -96,6 +106,7 @@ class GraphConfig:
             include_neighbour_edges=bool(g.get("include_neighbour_edges", True)),
             ttl_s=float(cfg.get("simulation", {}).get("message_ttl_s", 60.0)),
             drop_node_features=tuple(g.get("drop_node_features", ()) or ()),
+            extra_node_features=tuple(g.get("extra_node_features", ()) or ()),
         )
 
 
@@ -221,6 +232,16 @@ def build_decision_graph(
         x[1:, 13] = 0.0  # RSUs are flagged here once the engine models them
     for name in cfg.drop_node_features:
         x[:, NODE_FEATURES.index(name)] = 0.0
+    if cfg.extra_node_features:
+        cols = []
+        for name in cfg.extra_node_features:
+            if name not in ctx.extras:
+                raise KeyError(f"graph.extra_node_features needs ctx.extras[{name!r}], which this "
+                               "run does not supply; a privileged checkpoint must be run through "
+                               "its privileged/ entry point")
+            arr = np.asarray(ctx.extras[name], dtype=np.float64)
+            cols.append(np.concatenate([[arr[ctx.index]], arr[nb_ids]]) if k else arr[[ctx.index]])
+        x = np.concatenate([x, np.stack(cols, axis=1)], axis=1)
 
     # --- edges ---------------------------------------------------------------
     src: list[int] = []
@@ -360,8 +381,12 @@ class FeatureNormaliser:
         )
 
     def apply(self, graph: DecisionGraph) -> DecisionGraph:
+        n = self.node_mean.size
+        x = graph.x.copy()
+        # Columns beyond NODE_FEATURES (graph.extra_node_features) pass through.
+        x[:, :n] = (graph.x[:, :n] - self.node_mean) / self.node_std
         return DecisionGraph(
-            x=(graph.x - self.node_mean) / self.node_std,
+            x=x,
             edge_index=graph.edge_index,
             edge_attr=((graph.edge_attr - self.edge_mean) / self.edge_std
                        if graph.n_edges else graph.edge_attr),

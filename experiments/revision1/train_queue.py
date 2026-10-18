@@ -37,7 +37,11 @@ VARIANTS = {"ref": [], "gcn": ["--encoder", "gcn"], "mlp": ["--encoder", "mlp"],
             # revision-2 R7: causal-relevance node feature zeroed (train and eval:
             # graph switches travel in the checkpoint config). Seed 0 is the
             # committed checkpoints/campaign/no_relevance.
-            "norel": ["--drop-node-feature", "relevance_causal"]}
+            "norel": ["--drop-node-feature", "relevance_causal"],
+            # revision-3 R8 diagnostic ladder: "@module" names the entry point; the
+            # rung flag is kept on resume. Rung C is a NON-DEPLOYABLE upper bound.
+            "rungB": ["@privileged.train_privileged", "--rung", "B"],
+            "rungC": ["@privileged.train_privileged", "--rung", "C"]}
 SEEDS = (1, 2)
 
 
@@ -47,7 +51,8 @@ SEEDS = (1, 2)
 #: lane 1 ref_s2, mlp_s1.
 #: Revision-2 (user, 2026-10-17): R6 = full-model seeds 3 and 4; R7 = no-relevance seed 1.
 PLAN: tuple[tuple[str, int], ...] = (("ref", 1), ("ref", 2), ("gcn", 1), ("mlp", 1),
-                                     ("star", 1), ("ref", 3), ("ref", 4), ("norel", 1))
+                                     ("star", 1), ("ref", 3), ("ref", 4), ("norel", 1),
+                                     ("rungB", 0), ("rungB", 1), ("rungC", 0), ("rungC", 1))
 
 
 def queue() -> list[tuple[str, list[str], dict]]:
@@ -82,7 +87,11 @@ def _extended(d: Path) -> bool:
 
 def command(name: str, flags: list[str], workers: str) -> list[str]:
     d = ROOT / name
-    base = [sys.executable, "-u", "-m", "agents.train", "--keep-awake", "--quiet"]
+    module, keep = "agents.train", []
+    if flags and flags[-3].startswith("@") if len(flags) >= 3 else False:
+        module, keep = flags[-3][1:], flags[-2:]          # e.g. privileged.train_privileged --rung B
+        flags = flags[:-3]
+    base = [sys.executable, "-u", "-m", module, "--keep-awake", "--quiet"] + keep
     if name == "ref_s0_u2000":
         if not (d / "ckpt_latest.pt").exists():
             d.mkdir(parents=True, exist_ok=True)

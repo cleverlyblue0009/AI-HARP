@@ -108,3 +108,56 @@ def test_engine_result_carries_no_oracle_state():
     src = Path(engine.__file__).read_text(encoding="utf-8")
     for token in ("oracle", "encounter_time", "realised", "ground_truth"):
         assert token not in src.lower(), f"sim/engine.py references {token!r}"
+
+
+# ---------------------------------------------------------------------------
+# Revision-3 R8: the privileged/ package is the ONE sanctioned oracle user on the
+# training side (oracle-relevance reward, and the non-deployable rung-C oracle input).
+# The exemption is one-way: decision-time code may not import it, and nothing outside
+# privileged/ (and these tests) may import it either.
+# ---------------------------------------------------------------------------
+PRIVILEGED = "privileged"
+
+
+@pytest.mark.parametrize("package", DECISION_TIME_PACKAGES)
+def test_decision_time_code_never_imports_privileged(package):
+    offenders = [str(p.relative_to(ROOT)) for p in _python_files(package)
+                 if any(m == PRIVILEGED or m.startswith(PRIVILEGED + ".") for m in _imported_modules(p))]
+    assert not offenders, (f"{package}/ imports {PRIVILEGED}: {offenders}. The privileged "
+                           "package exists only for the R8 diagnostic ladder's own entry points.")
+
+
+@pytest.mark.parametrize("package", DECISION_TIME_PACKAGES)
+def test_decision_time_code_never_names_the_privileged_feature(package):
+    offenders = [str(p.relative_to(ROOT)) for p in _python_files(package)
+                 if "extra_relevance_oracle" in p.read_text(encoding="utf-8")]
+    assert not offenders, f"privileged feature named in {package}/: {offenders}"
+
+
+def test_only_privileged_entry_points_import_privileged():
+    import subprocess
+
+    allowed = {PRIVILEGED, "tests"}
+    offenders = []
+    try:  # the repository's own Python files (tracked or new), not caches or build dirs
+        listed = subprocess.check_output(["git", "ls-files", "--cached", "--others", "--exclude-standard",
+                                          "*.py"], cwd=ROOT, text=True).split()
+        files = [ROOT / f for f in listed]
+    except Exception:  # pragma: no cover
+        files = [p for p in ROOT.rglob("*.py") if "cache" not in p.parts]
+    for path in files:
+        rel = path.relative_to(ROOT)
+        if rel.parts[0] in allowed or not path.exists():
+            continue
+        if any(m == PRIVILEGED or m.startswith(PRIVILEGED + ".") for m in _imported_modules(path)):
+            offenders.append(str(rel))
+    assert not offenders, f"only privileged/ may import privileged; found: {offenders}"
+
+
+def test_privileged_package_is_where_the_training_side_oracle_lives():
+    """Positive check: the exemption is used, and documented in the package."""
+    users = [p for p in _python_files(PRIVILEGED)
+             if any(m.startswith(ORACLE_MODULE) for m in _imported_modules(p))]
+    assert users, "privileged/ no longer imports the oracle; drop the exemption"
+    doc = (ROOT / PRIVILEGED / "__init__.py").read_text(encoding="utf-8")
+    assert "exemption" in doc.lower() and "NON-DEPLOYABLE" in doc
