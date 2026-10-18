@@ -31,10 +31,14 @@ METRICS = ("rwcr", "tx_per_at_risk_informed", "tir_median_s", "tir_p95_s",
            "actionable_deadline_miss_rate", "deadline_miss_rate", "pdr", "transmissions",
            "collisions_per_delivered", "airtime_ms", "dissemination_cbr",
            "tir_uninformed_frac", "risk_est_precision", "risk_peak_corr",
-           "gate_fallback_rate", "gate_confidence_mean")
+           "gate_fallback_rate", "gate_confidence_mean",
+           # revision-5 C6 (additive; empty in rows written before it existed)
+           "stop_deadline_warned_share", "stop_deadline_warned_share_actionable")
 FIELDS = ("task_hash", "scenario", "density", "weather", "hazard_type", "policy", "param",
           "value", "params_json", "seed", "causal_coverage") + METRICS + (
-          "config_hash", "metrics_version", "git_commit", "backend")
+          "config_hash", "metrics_version", "git_commit", "backend",
+          # revision-5 provenance: per-run wall-clock and process CPU seconds
+          "wall_s", "cpu_s")
 
 _CFGS: dict[str, Any] = {}
 
@@ -42,7 +46,7 @@ _CFGS: dict[str, Any] = {}
 def task(scenario: str, density: float, policy: str, seed: int, *, weather: str = "clear",
          hazard_type: str = "fog_bank", param: str = "", value: Any = None,
          fixed: dict[str, Any] | None = None, causal: bool = False,
-         phy_patch: dict[str, Any] | None = None) -> dict[str, Any]:
+         phy_patch: dict[str, Any] | None = None, backend: str = "auto") -> dict[str, Any]:
     params = dict(fixed or {})
     if param:
         params[param] = value
@@ -51,6 +55,8 @@ def task(scenario: str, density: float, policy: str, seed: int, *, weather: str 
          "value": value, "params": params, "seed": int(seed), "causal": bool(causal)}
     if phy_patch:   # revision-3 R9: e.g. {"mac": {"extra_loss": {...}}}; part of the identity
         t["phy_patch"] = phy_patch
+    if backend != "auto":   # revision-5 C7: SUMO mobility; part of the identity
+        t["backend"] = backend
     # checkpoint path is not identity; its sha is (agent_params carries both).
     ident = {k: v for k, v in t.items() if k != "params"}
     ident["params"] = {k: v for k, v in params.items() if k != "checkpoint"}
@@ -75,9 +81,12 @@ def run_task(t: dict[str, Any]) -> dict[str, Any]:
         _init()
     from experiments.run_sim import RunSpec, run_single
 
+    import time as _time
+
+    w0, c0 = _time.time(), _time.process_time()
     spec = RunSpec(scenario=t["scenario"], density_veh_km_lane=t["density"],
                    weather=t["weather"], policy=t["policy"], policy_params=t["params"],
-                   seed=t["seed"], hazard_type=t["hazard_type"])
+                   seed=t["seed"], hazard_type=t["hazard_type"], backend=t.get("backend", "auto"))
     phy = _CFGS["phy"]
     if t.get("phy_patch"):
         import copy
@@ -109,7 +118,8 @@ def run_task(t: dict[str, Any]) -> dict[str, Any]:
     for k in METRICS:
         row[k] = m.get(k, float("nan"))
     row.update(config_hash=m.get("config_hash"), metrics_version=METRICS_VERSION,
-               git_commit=_CFGS.setdefault("commit", git_commit()), backend=m.get("backend"))
+               git_commit=_CFGS.setdefault("commit", git_commit()), backend=m.get("backend"),
+               wall_s=round(_time.time() - w0, 3), cpu_s=round(_time.process_time() - c0, 3))
     return row
 
 
@@ -132,8 +142,14 @@ def run_tasks(tasks: Sequence[dict[str, Any]], path: Path, jobs: int = 4,
     seen: set[str] = set()
     todo = [t for t in todo if not (t["task_hash"] in seen or seen.add(t["task_hash"]))]
     new_file = not path.exists()
+    # Append under the file's OWN header: older files predate later columns, and writing
+    # FIELDS into them would misalign every appended row.
+    header = FIELDS
+    if not new_file:
+        with path.open(newline="", encoding="utf-8") as fh:
+            header = next(csv.reader(fh), list(FIELDS))
     with path.open("a", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=FIELDS)
+        w = csv.DictWriter(fh, fieldnames=header, extrasaction="ignore")
         if new_file:
             w.writeheader()
         if todo:

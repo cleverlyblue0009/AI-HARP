@@ -289,6 +289,51 @@ def actionable_deadline_miss_rate(
     }
 
 
+def stopping_deadline_warned(
+    ctx: MetricContext, res: RunResult, hazard: Hazard, hz_cfg: dict[str, Any]
+) -> dict[str, Any]:
+    """Share of at-risk vehicles warned before their OWN stopping deadline (revision-5 C6).
+
+    A vehicle's deadline is the moment its remaining time to the hazard falls below the
+    time it needs to react and brake to a stop: ETA < t_r + v / (2 a), v its speed then,
+    t_r = ``deadlines.reaction_time_s`` and a = ``deadlines.braking_decel_mps2`` (3.4 m/s^2,
+    the AASHTO value used for the derived deadline D_r). It is warned in time if it is first
+    informed (while at risk) with ETA >= t_r + v / (2 a).
+
+    ``stop_deadline_warned_share``: over every oracle at-risk vehicle (end to end, including
+    those that could no longer stop when the hazard was detected).
+    ``stop_deadline_warned_share_actionable``: over those that could still stop at origination
+    (absent at origination counts as could-stop, as for the actionable miss rate).
+    """
+    tr = res.trace
+    dl = hz_cfg.get("deadlines", {})
+    t_r = float(dl.get("reaction_time_s", 2.5))
+    a = float(dl.get("braking_decel_mps2", 3.4))
+    nan = {"stop_deadline_warned_share": float("nan"), "stop_deadline_warned_share_actionable": float("nan")}
+    if res.origin_step < 0 or not ctx.at_risk.any():
+        return nan
+
+    def need(step: int, v: np.ndarray) -> np.ndarray:
+        speed = np.hypot(tr.vx[step, v], tr.vy[step, v])
+        return t_r + speed / (2.0 * a)
+
+    s = res.origin_step
+    feats = res.risk.evaluate(np.nan_to_num(tr.x[s]), np.nan_to_num(tr.y[s]), tr.vx[s], tr.vy[s],
+                              tr.direction, hazard, s * tr.dt, active=tr.active[s])
+    allv = np.arange(tr.n_vehicles)
+    could_stop = (~tr.active[s]) | (feats["eta_s"] >= need(s, allv))
+
+    ok = ctx.informed_in_time & ctx.at_risk
+    idx = np.flatnonzero(ok)
+    for v in idx:
+        st = int(res.informed_step[v])
+        ok[v] = _eta_at(res, st, int(v)) >= float(need(st, np.array([v]))[0])
+    n_ar = int(ctx.at_risk.sum())
+    base = ctx.at_risk & could_stop
+    return {"stop_deadline_warned_share": float(ok.sum() / n_ar),
+            "stop_deadline_warned_share_actionable": float((ok & base).sum() / base.sum()) if base.any() else float("nan")}
+
+
 def traffic_regime(res: RunResult) -> dict[str, Any]:
     """Label the traffic state from measured speed against free-flow speed.
 
@@ -434,6 +479,7 @@ def compute_metrics(res: RunResult, hz_cfg: dict[str, Any]) -> dict[str, Any]:
     }
     out.update(estimation_agreement(tr, hazard, risk, ctx.oracle))
     out.update(actionable_deadline_miss_rate(ctx, res, hazard, hz_cfg))
+    out.update(stopping_deadline_warned(ctx, res, hazard, hz_cfg))
     out.update(traffic_regime(res))
     out.update(time_to_informed_at_risk(ctx, risk))
     out.update(overhead_metrics(res, ctx))
