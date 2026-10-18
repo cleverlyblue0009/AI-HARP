@@ -1,0 +1,92 @@
+{
+ "version": 1,
+ "status": "PRE-REGISTERED before any revision-5 evaluation run; thresholds q*, m* are frozen later in thresholds.json from CAL runs only, before any SEL or EVAL run exists",
+ "branch": "revision-5",
+ "seed_sets": {
+  "CAL": {"seeds": [300, 301, 302, 303, 304, 305, 306, 307, 308, 309], "use": "target and guard calibration only"},
+  "SEL": {"seeds": [400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419],
+          "use": "operating-point selection for every method",
+          "note": "User decision 2026-10-18: the prompt's SEL 100-119 overlaps the policy training seed pool 100-131 and was replaced by fresh seeds 400-419 before any run."},
+  "EVAL": {"seeds": [200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219,
+                     220, 221, 222, 223, 224, 225, 226, 227, 228, 229], "use": "final scoring only; never used for any choice"},
+  "LEGACY": {"seeds": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "use": "comparison with the paper only"},
+  "disjointness": "verified: CAL, SEL, EVAL, LEGACY pairwise disjoint and disjoint from the training seed pool 100-131 and the normalisation seeds 900-904"
+ },
+ "cells": {
+  "headline": [["rural_highway", 2], ["rural_highway", 20], ["rural_highway", 80], ["urban_nlos", 20]],
+  "grid24": "rural_highway, urban_nlos, urban_grid x densities 1, 2, 3, 5, 10, 20, 40, 80 veh/km/lane",
+  "weather": "clear", "hazard": "fog_bank"
+ },
+ "target_and_guard": {
+  "q_star": "0.95 x max over the 55 swept baseline settings (analysis/pareto.py POLICY_SWEEPS) of mean ORACLE RWCR on CAL",
+  "m_star": "min over the same 55 settings of mean actionable deadline miss rate on CAL, + 0.05",
+  "absolute_variant": "same q*, actionable miss <= 0.40 absolute",
+  "frozen_in": "results/revision5/thresholds.json (committed before any SEL/EVAL run)"
+ },
+ "selection_rule": {
+  "statement": "On SEL: the cheapest REALISED setting (no interpolation) with mean RWCR >= q*, mean actionable miss <= m*, and seed-mean p95 TIR <= D. Nothing qualifies -> 'no pick' in that cell.",
+  "D_variants": ["infinity", "derived D_r (revision-1 B1: rural 15.39 s, urban_grid 26.65 s, urban_nlos 1.89 s)"],
+  "settings": {
+   "classical": "(scheme, parameter) over the 55 POLICY_SWEEPS settings",
+   "learned_policy": "suppression bias in {-2,-1,0,1,2,3}, per training seed",
+   "new_rule_based": "their parameter grids below",
+   "adaptive_classical": "per cell, the cheapest qualifying classical (scheme, parameter) on SEL",
+   "contextual_lookup": "per (scenario, density) group the cheapest qualifying scheme+setting on SEL; with one weather and one hazard per cell this coincides with adaptive_classical and is reported as such"
+  },
+  "applied_identically_to_every_method": true
+ },
+ "scoring": {
+  "qualifies": "chosen setting's EVAL mean RWCR >= q* and EVAL mean actionable miss <= m* (frozen CAL thresholds)",
+  "cost": "realised EVAL mean transmissions per at-risk vehicle informed (primary)",
+  "secondary": ["EVAL-hindsight oracle (cheapest qualifying on EVAL itself) -- labelled optimistic benchmark",
+                "interpolated costs -- labelled 'estimate, not an implementable configuration', with a with/without table"],
+  "safety_primary_columns": ["absolute actionable miss rate", "actionable coverage = 1 - miss",
+                             "share of at-risk vehicles warned before their own deadline D_r (per vehicle, end to end)",
+                             "p95 TIR (median TIR reported separately and labelled)"]
+ },
+ "hypotheses": {
+  "multiplicity": "Holm across H1, H2, H3 (family of three), alpha 0.05",
+  "H1": {"claim": "No single classical scheme is the cheapest qualifying scheme in all four headline cells.",
+         "procedure": "Hierarchical bootstrap, 10,000 replicates: resample CAL, SEL and EVAL seeds with replacement; in every replicate recompute q*, m* (CAL), each scheme family's SEL selection, and its EVAL qualification and cost; record whether one family is the cheapest qualifying family in all 4 cells.",
+         "statistic": "share of replicates in which one family wins all four",
+         "decision": "supported if the Clopper-Pearson 95% upper bound of that share is < 0.05",
+         "p_value": "exact one-sided binomial test of the share against 0.05"},
+  "H2": {"claim": "Policy (SEL-selected bias) vs adaptive classical (SEL-selected), both deployable, scored on EVAL.",
+         "primary_statistic": "pooled mean over headline cells where both qualify of (mean policy cost / mean adaptive cost - 1); per-cell values also reported",
+         "uncertainty": "hierarchical bootstrap over training seeds x EVAL seeds (selections recomputed per replicate), 10,000 replicates, percentile 95% CI",
+         "also": ["P(policy cost < adaptive cost) from the bootstrap", "qualification-rate difference with a Newcombe (Wilson) 95% interval"],
+         "decision": "two-sided; superiority claimed only if the 95% CI upper bound < 0; equivalence declared only by TOST with margin +/-5% (both one-sided tests at alpha 0.05); a non-significant result is never called 'no difference'",
+         "p_value": "bootstrap two-sided p = 2 x min(P*(stat <= 0), P*(stat >= 0))",
+         "training_seeds": "full model seeds 0-9"},
+  "H3": {"claim": "The custom simulator agrees with Veins on the pre-specified metrics (SUMO mobility, identical traces and seeds, 4 headline cells, 10 seeds per cell).",
+         "criteria_all_required": ["Spearman rank correlation of classical-scheme matched costs across cells and schemes >= 0.8 with lower 95% bootstrap bound >= 0.6",
+                                   "per-hop PDR-vs-distance within 0.05 absolute in every 50 m bin up to the nominal range",
+                                   "channel busy ratio within 20% relative",
+                                   "median single-hop delivery delay within one decision epoch (100 ms)",
+                                   "H1 verdict identical in both simulators"],
+         "p_value": "bootstrap p for Spearman rho <= 0.6 (the Holm-tested component); the other criteria are pass/fail",
+         "decision_rule": "pass -> validated for these metrics in these cells; fail -> add a sub-epoch timing mode (13 us slots, AIFS/backoff; default unchanged), calibrate only on the validation metrics, freeze, re-run; still failing -> classical audit results computed in Veins become primary and custom-simulator claims are restricted"},
+  "exploratory": "everything else"
+ },
+ "new_baselines": {
+  "RAR": {"rule": "p = clip(a*rho_c + b*(1 - n/n_max) + c, 0, 1), n_max = 30, slotted deferral by distance (5 slots); inputs = causal relevance, neighbour count, distance to sender, message age (age gates rebroadcast after the message TTL as for every policy)",
+          "grid": {"a": [0.5, 1.0, 2.0], "b": [0.0, 0.5, 1.0], "c": [-0.25, 0.0, 0.25]}, "n_settings": 27,
+          "note": "grid cut from ~60 to 27 settings (user decision, pre-registered)"},
+  "SCF_slotted": {"rule": "slotted 1-persistence + carry the message and rebroadcast on a new neighbour until the carry timeout",
+                  "grid": {"n_slots": [3, 8, 20, 50], "carry_timeout_s": [2, 5, 10]}, "n_settings": 12}
+ },
+ "training": {
+  "config": "configs/agent.yaml as used by the existing seeds; only --seed changes; 1,000 updates",
+  "queue_in_priority_order": ["full model seeds 5-9", "rung B seeds 2-4", "rung C seeds 2-4", "GCN, MLP, no-relevance seeds 2-4", "budget extension: full model seeds 0-2 resumed to 2,000 updates (checkpoints at 1,250, 1,500, 1,750, 2,000)"],
+  "dropped": "star variant (unless time remains)",
+  "seed_check": "training seeds are network-init/episode-draw seeds; episodes come from the training pool 100-131, disjoint from CAL/SEL/EVAL"
+ },
+ "pre_specified_cuts": {
+  "decided": "2026-10-18 by the user before any run (projected full protocol 5-6 days)",
+  "cuts": ["24-cell policy evaluation: full-model seeds 0-4 (not 0-9)",
+           "24-cell stress-test (R9 channel) policy evaluation: seeds 0-2",
+           "RAR grid 27 settings, SCF grid 12 settings"],
+  "never_cut": ["H1, H2, H3 runs", "every 4-cell experiment"]
+ },
+ "precision": "results/revision5/precision/precision.json (computed from existing records before any new run)"
+}

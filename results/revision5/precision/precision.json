@@ -1,0 +1,93 @@
+{
+ "per_train_seed_bias": {
+  "0": -2.0,
+  "1": 1.0,
+  "2": 1.0,
+  "3": 2.0,
+  "4": 3.0
+ },
+ "paired_relative_diff_mean": -0.1396200359094285,
+ "per_train_seed_mean": [
+  -0.015706482322020397,
+  -0.029888365254277783,
+  -0.25939002505548814,
+  -0.10766831884676731,
+  -0.28544698806858887
+ ],
+ "sigma_t": 0.12463945856511742,
+ "sigma_e": 0.06868209885292322,
+ "grid": {
+  "n_eval=10|n_train=5": {
+   "se": 0.05658041657974938,
+   "ci95_half_width": 0.11089761649630879,
+   "mde_80pct_power": 0.15851569508982588
+  },
+  "n_eval=10|n_train=10": {
+   "se": 0.04000839624590055,
+   "ci95_half_width": 0.07841645664196507,
+   "mde_80pct_power": 0.11208752292251499
+  },
+  "n_eval=20|n_train=5": {
+   "se": 0.05616200880764106,
+   "ci95_half_width": 0.11007753726297648,
+   "mde_80pct_power": 0.1573434838754872
+  },
+  "n_eval=20|n_train=10": {
+   "se": 0.0397125372729416,
+   "ci95_half_width": 0.07783657305496554,
+   "mde_80pct_power": 0.11125864442387319
+  },
+  "n_eval=30|n_train=5": {
+   "se": 0.056021845122833494,
+   "ci95_half_width": 0.10980281644075364,
+   "mde_80pct_power": 0.15695080129613032
+  },
+  "n_eval=30|n_train=10": {
+   "se": 0.039613426580938076,
+   "ci95_half_width": 0.07764231609863863,
+   "mde_80pct_power": 0.11098097590915612
+  }
+ },
+ "half_width_30x10": 0.07764231609863863,
+ "meets_5pct": false,
+ "caveats": [
+  "policy bias chosen on the same legacy seeds (the new protocol separates selection and scoring)",
+  "sigma_t estimated from only 5 training seeds",
+  "rural d=20 only; other cells differ"
+ ],
+ "provenance": {
+  "task": "revision5/precision",
+  "git_commit": "1f6ebdf976ca89afcade83de0b6a792bc1167268",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.precision",
+  "config_hash": "18f4d8001654",
+  "config": {
+   "cell": "rural_highway d=20",
+   "adaptive": "slotted_1p(n_slots=30)"
+  },
+  "seeds": {
+   "eval_legacy": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "train": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  "generated": "2026-10-18 21:23:29"
+ }
+}
