@@ -1328,3 +1328,33 @@ change; the per-cell oracle cost at rural d=80 more than triples; and the agent'
 (seeds 2–4) does not survive. The sparse and medium corridor (rural d=2, d=20), including every rural d=20 agent
 number, is untouched, because the calibrated loss is zero there. This is the precise sense in which the
 headline corridor result is robust to the validation gap and the dense-cell results are not.
+
+
+## R13. Claims ledger
+
+Regenerate: `python -m experiments.revision3.r13_claims_ledger` → `results/revision3/R13/r13_claims_ledger.{csv,json}`.
+Tolerance = all 18 configurations of R2 (q* ∈ {0.90, 0.95, 0.98} × miss tolerance ∈ {0.02, 0.05, 0.10} × interpolation on/off).
+Calibrated channel = R9. SUMO = the committed headline-cell baselines on SUMO (`results/pareto_cells_sumo.json`) and the
+rural d=20 backend check (`results/backend_validation_rural_d20.txt`). The agent was never run on SUMO, so agent
+claims read "not tested". Verdict "robust" requires surviving every applicable test and, for agent claims, ≥ 3
+training seeds.
+
+| claim | tolerance (R2) | calibrated channel (R9) | SUMO | training seeds | verdict |
+|---|---|---|---|---|---|
+| RWCR saturates at rural d=20 (non-default baselines within 0.01) | n/a | yes (0.0025); breaks in rural d=80 (0.136) and urban d=20 (0.413) | **no** (0.013) | n/a | **exploratory** |
+| Per-cell best baseline differs from cell to cell | 18/18 | yes | yes | n/a | **robust** |
+| One fixed setting within 13% of per-cell tuning everywhere | 9/18 | no (best fixed → slotted_1p(8)) | no (fixed fails q* in urban d=20) | n/a | exploratory (R3: best-fixed identity unstable) |
+| Agent at rural d=20: regret +1.8%, margin +1.9% | regret sign kept 8/18; margin flips without interpolation | yes (cell unaffected) | not tested | 1 (5 seeds: +1.8, +3.1, −21.3, −5.2, −24.1%) | exploratory |
+| Agent qualifies at rural d=20 on every seed | 12/18 (fails for seed 0 at q* 0.98) | yes | not tested | 5 | robust in the fallback simulator for q* ≤ 0.95 |
+| Agent never reaches rural d=2 (the sparse regime) | 18/18 | yes | not tested | 5 | **robust** |
+| Agent reaches 3 of 4 cells (seeds 2–4) | 8/18 | **no** (1/1/1/1/1) | not tested | 5 | exploratory |
+| Agent is faster (lower median TIR) | n/a | not re-tested beyond rural d=20 | not tested | 1 | exploratory |
+| The learned confidence gate adds value | n/a | not tested | not tested | 5 (R12) | **refuted as stated** (rate-matched random gate qualifies 3/4 on all seeds) |
+| GATv2 attention is not what earns the result | not tested | not tested | not tested | 2 per ablation | exploratory |
+| Causal relevance feature is needed | not tested | not tested | not tested | 2 (R7) | not supported |
+| Simulator is optimistic in dense traffic | n/a | this is the calibration | consistent | n/a | **robust** |
+
+**Robust, as the evidence stands:** the best baseline differs per cell; the agent qualifies at rural d=20 on every
+training seed (for q* ≤ 0.95) and never in the sparse rural d=2 cell; the simulator is optimistic in dense
+traffic. Everything else depends on the seed, the tolerance, the channel calibration or the backend, and should be
+written as exploratory.

@@ -1,0 +1,136 @@
+{
+ "rows": [
+  {
+   "claim": "RWCR saturates at rural d=20: the non-default baselines' best RWCR lie within 0.01",
+   "survives_tolerance": "n/a (not a matched-coverage claim)",
+   "survives_calibrated_channel": "yes (spread 0.0025; cell unaffected); but saturation BREAKS in rural d=80 (0.136) and urban d=20 (0.413)",
+   "survives_sumo": "no at rural d=20 (spread 0.0130 vs the 0.01 threshold)",
+   "n_training_seeds": "n/a (baselines)",
+   "verdict": "exploratory: holds at rural d=20 in the fallback simulator (spread 0.0025) and under R9, but not on SUMO (0.013) or in the dense calibrated cells"
+  },
+  {
+   "claim": "The per-cell best baseline differs from cell to cell",
+   "survives_tolerance": "18/18 configs",
+   "survives_calibrated_channel": "yes (dvcast, greedy_farthest, dvcast, slotted_1p)",
+   "survives_sumo": "yes (slotted_1p, dvcast, p_persistence_03, slotted_1p)",
+   "n_training_seeds": "n/a",
+   "verdict": "robust"
+  },
+  {
+   "claim": "One fixed setting (dvcast(n_slots=30)) is within 13% of per-cell tuning in every headline cell",
+   "survives_tolerance": "9/18 configs",
+   "survives_calibrated_channel": "no (best fixed becomes slotted_1p(n_slots=8); rural d=80 fixed 6.46 vs oracle 5.03)",
+   "survives_sumo": "no (best fixed slotted_1p(n_slots=50); fails q* in 1 cell(s))",
+   "n_training_seeds": "n/a",
+   "verdict": "exploratory (backend- and setting-dependent; R3: best-fixed identity unstable)"
+  },
+  {
+   "claim": "Agent matches coverage at rural d=20 with regret +1.8% / margin +1.9% (seed 0)",
+   "survives_tolerance": "regret sign kept in 8/18; margin flips without interpolation (+1.9% -> -0.8%)",
+   "survives_calibrated_channel": "yes (cell unaffected; margin +25.3% vs the new fixed best)",
+   "survives_sumo": "not tested (agent not run on SUMO)",
+   "n_training_seeds": "1 (seeds 0-4 give +1.8%, +3.1%, -21.3%, -5.2%, -24.1%)",
+   "verdict": "exploratory (seed-specific; 5-seed regret CI [-19%, +10%], R3)"
+  },
+  {
+   "claim": "Agent qualifies at rural d=20 on every training seed",
+   "survives_tolerance": "12/18 configs",
+   "survives_calibrated_channel": "yes (all 5 seeds; cell unaffected)",
+   "survives_sumo": "not tested",
+   "n_training_seeds": "5",
+   "verdict": "robust in the fallback simulator at q* <= 0.95 (fails at q* 0.98 for seed 0)"
+  },
+  {
+   "claim": "Agent never reaches the sparse cell (rural d=2)",
+   "survives_tolerance": "18/18 configs",
+   "survives_calibrated_channel": "yes",
+   "survives_sumo": "not tested (SUMO's rural d=2 ceiling is 0.221)",
+   "n_training_seeds": "5",
+   "verdict": "robust"
+  },
+  {
+   "claim": "Agent reaches 3 of 4 cells on most seeds (seeds 2-4)",
+   "survives_tolerance": "8/18 configs",
+   "survives_calibrated_channel": "no (1/1/1/1/1: seeds 2-4 lose rural d=80 and urban d=20)",
+   "survives_sumo": "not tested",
+   "n_training_seeds": "5",
+   "verdict": "exploratory"
+  },
+  {
+   "claim": "Agent is faster (lower median TIR) than the reference baselines",
+   "survives_tolerance": "n/a (latency not part of the target)",
+   "survives_calibrated_channel": "not re-tested beyond rural d=20 (identical there)",
+   "survives_sumo": "not tested",
+   "n_training_seeds": "1 (B4, seed 0; significant in 3 of 4 cells)",
+   "verdict": "exploratory"
+  },
+  {
+   "claim": "The learned confidence gate adds value",
+   "survives_tolerance": "n/a",
+   "survives_calibrated_channel": "not tested",
+   "survives_sumo": "not tested",
+   "n_training_seeds": "5 (R12)",
+   "verdict": "refuted as stated: a rate-matched random gate qualifies 3/4 cells on all seeds vs 2.2 +/- 1.1; the learned gate is cheaper only where all qualify"
+  },
+  {
+   "claim": "GATv2 attention is not what earns the result (GCN / MLP / star ablations)",
+   "survives_tolerance": "not tested",
+   "survives_calibrated_channel": "not tested",
+   "survives_sumo": "not tested",
+   "n_training_seeds": "2 per ablation, 5 for the full model",
+   "verdict": "exploratory (MLP clearly worse on the common cell; GCN/star within seed spread)"
+  },
+  {
+   "claim": "The causal relevance feature is needed (R7 removal ablation)",
+   "survives_tolerance": "not tested",
+   "survives_calibrated_channel": "not tested",
+   "survives_sumo": "not tested",
+   "n_training_seeds": "2",
+   "verdict": "not supported (removal stays within the full model's spread)"
+  },
+  {
+   "claim": "The simulator is optimistic in dense traffic (validation gap)",
+   "survives_tolerance": "n/a",
+   "survives_calibrated_channel": "this IS the calibration (R9)",
+   "survives_sumo": "consistent (SUMO lowers sparse and urban ceilings; README backend comparison)",
+   "n_training_seeds": "n/a",
+   "verdict": "robust"
+  }
+ ],
+ "sumo_facts": {
+  "fixed_best": "slotted_1p(n_slots=50)",
+  "fixed_fails": 1,
+  "oracle": {
+   "rural_highway/d=2": "slotted_1p",
+   "rural_highway/d=20": "dvcast",
+   "rural_highway/d=80": "p_persistence_03",
+   "urban_nlos/d=20": "slotted_1p"
+  },
+  "penalty": {
+   "rural_highway/d=2": 1.0,
+   "rural_highway/d=20": 1.0244596098697607,
+   "rural_highway/d=80": 1.6601578258820642,
+   "urban_nlos/d=20": Infinity
+  },
+  "rural_d20_family_spread_excl_p03": 0.013035751827433328
+ },
+ "provenance": {
+  "task": "R13",
+  "git_commit": "a0f1eb60990930489fec5e0f9a8a228fac5b864e-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision3.r13_claims_ledger",
+  "config_hash": "96a21e20e4f7",
+  "config": {
+   "sources": [
+    "results/revision2/R2/r2_target_sensitivity.json",
+    "results/revision3/R9/r9_analysis.json",
+    "results/pareto_cells_sumo.json",
+    "results/revision1/C1C2/c_seeds.json"
+   ]
+  },
+  "seeds": null,
+  "generated": "2026-10-18 15:56:51"
+ }
+}
