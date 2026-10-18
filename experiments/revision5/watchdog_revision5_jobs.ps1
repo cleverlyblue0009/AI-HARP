@@ -28,3 +28,9 @@ $jobs += @{ n = "sel_rule"; alive = "sweep rule --seedset SEL"; ready = { (Rows 
 $jobs += @{ n = "sel_agent_s0_4"; alive = "sweep agent --seedset SEL --cells grid24 --runs ref_s0"; ready = { Frozen };
             done = { (Rows "$runs\agent__SEL__grid24__default__fallback.csv") -ge 14400 };
             cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset SEL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 2 >> logs\revision5\sel_agent_s0_4.log 2>&1" }
+
+# B5. H3 Veins scenario bundles for the 4 headline cells, EVAL seeds 200-209 (inputs only; no replays
+#     are launched until the H3 seed/H1-split question is settled -- see REVISION5 report).
+$jobs += @{ n = "veins_export"; alive = "veins.queue export"; ready = { $true };
+            done = { @(Get-ChildItem cache\veins\*_s2[0-9][0-9]\bundle.json -ErrorAction SilentlyContinue | Where-Object { $_.Directory.Name -match '_s20[0-9]$' }).Count -ge 40 };
+            cmd = "set SUMO_HOME=D:\sumo\sumo-1.19.0&& $gpu -u -m experiments.revision5.veins.queue export --seeds 200 201 202 203 204 205 206 207 208 209 >> logs\revision5\veins_export.log 2>&1" }
