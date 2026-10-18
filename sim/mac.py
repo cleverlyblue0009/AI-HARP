@@ -65,6 +65,21 @@ class MacModel:
     dcc_enabled: bool = True
     dcc_target_cbr: float = 0.62
     dcc_min_beacon_hz: float = 1.0
+    #: Revision-3 R9 calibrated-channel stress test: an extra, density-dependent
+    #: reception loss, p(n) = p_max * clip((n - n0) / (n1 - n0), 0, 1), where n is the
+    #: receiver's neighbour count within carrier-sense range (the same local-load
+    #: proxy the background-beacon model uses). Fitted so that the Amador et al.
+    #: validation curve is matched; see experiments/revision3/r9_calibrated_channel.py.
+    #: Disabled (p_max = 0) by default, and then no random number is drawn, so every
+    #: uncalibrated run is bit-identical to before the knob existed. [FITTED]
+    extra_loss_p_max: float = 0.0
+    extra_loss_n0: float = 0.0
+    extra_loss_n1: float = 1.0
+
+    def extra_loss_probability(self, n_neighbours: np.ndarray) -> np.ndarray:
+        n = np.asarray(n_neighbours, dtype=float)
+        span = max(self.extra_loss_n1 - self.extra_loss_n0, 1e-9)
+        return self.extra_loss_p_max * np.clip((n - self.extra_loss_n0) / span, 0.0, 1.0)
 
     # ------------------------------------------------------------- properties --
     @property
@@ -193,4 +208,7 @@ def build_mac(phy_cfg: dict[str, Any], phy_model: Any) -> MacModel:
         dcc_enabled=bool(m.get("dcc_enabled", True)),
         dcc_target_cbr=float(m.get("dcc_target_cbr", 0.62)),
         dcc_min_beacon_hz=float(m.get("dcc_min_beacon_hz", 1.0)),
+        extra_loss_p_max=float((m.get("extra_loss") or {}).get("p_max", 0.0)),
+        extra_loss_n0=float((m.get("extra_loss") or {}).get("n0", 0.0)),
+        extra_loss_n1=float((m.get("extra_loss") or {}).get("n1", 1.0)),
     )

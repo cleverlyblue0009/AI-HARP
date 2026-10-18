@@ -60,3 +60,16 @@ logs/
 !results/revision1/**/*.png
 !results/revision1/**/*.pdf
 logs/revision1/
+# --- revision 2/3/5 (reviewer rounds): per-run records, summaries and figures ARE committed.
+!results/revision2/**/
+!results/revision2/**/*.csv
+!results/revision2/**/*.pdf
+!results/revision2/**/*.png
+!results/revision3/**/
+!results/revision3/**/*.csv
+!results/revision3/**/*.pdf
+!results/revision3/**/*.png
+!results/revision5/**/
+!results/revision5/**/*.csv
+!results/revision5/**/*.pdf
+!results/revision5/**/*.png

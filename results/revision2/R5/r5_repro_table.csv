@@ -1,0 +1,289 @@
+table,row,values,source_file,source_commit,config_hash,content_sha256,checkpoint_sha,metrics_version
+table_main_rural_highway_d1.tex,ai_harp (tau=0),RWCR 0.079; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:3646855de9bac1ab (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d1.tex,ai_harp (tau=0.5),RWCR 0.063; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:d07e7e2b4cf27a92 (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d1.tex,counter_based,RWCR 0.075; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:6841206d4503da0f (200 runs),,-,3
+table_main_rural_highway_d1.tex,dvcast,RWCR 0.091; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:d880f90a81d0d049 (200 runs),,-,3
+table_main_rural_highway_d1.tex,flooding,RWCR 0.086; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:34996c1a8e4e8ab5 (200 runs),,-,3
+table_main_rural_highway_d1.tex,greedy_farthest,RWCR 0.083; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:d8a4c34d2831b474 (200 runs),,-,3
+table_main_rural_highway_d1.tex,p_persistence_03,RWCR 0.036; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:bbbe20ef08a06cd3 (200 runs),,-,3
+table_main_rural_highway_d1.tex,p_persistence_05,RWCR 0.042; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:98da294ed96d00e9 (200 runs),,-,3
+table_main_rural_highway_d1.tex,p_persistence_07,RWCR 0.068; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:d0fe0455ba96a704 (200 runs),,-,3
+table_main_rural_highway_d1.tex,slotted_1p,RWCR 0.091; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:93f7bcbc0b510559 (200 runs),,-,3
+table_main_rural_highway_d1.tex,weighted_p,RWCR 0.054; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:6a152fce35dac419 (200 runs),,-,3
+table_main_rural_highway_d2.tex,ai_harp (tau=0),RWCR 0.578; cost 2.07,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:4ae36609c57a3a74 (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d2.tex,ai_harp (tau=0.5),RWCR 0.444; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:7d6e3d496247a161 (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d2.tex,counter_based,RWCR 0.578; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:f42bd2736cf0e198 (200 runs),,-,3
+table_main_rural_highway_d2.tex,dvcast,RWCR 0.634; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:7898b8aecb8eeec6 (200 runs),,-,3
+table_main_rural_highway_d2.tex,flooding,RWCR 0.650; cost 3.00,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:62ea4447929e5403 (200 runs),,-,3
+table_main_rural_highway_d2.tex,greedy_farthest,RWCR 0.585; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0c527b423b5d61be (200 runs),,-,3
+table_main_rural_highway_d2.tex,p_persistence_03,RWCR 0.089; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:284828613003851d (200 runs),,-,3
+table_main_rural_highway_d2.tex,p_persistence_05,RWCR 0.187; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:7f5074f5b70101b9 (200 runs),,-,3
+table_main_rural_highway_d2.tex,p_persistence_07,RWCR 0.341; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e3920888d98c9d2f (200 runs),,-,3
+table_main_rural_highway_d2.tex,slotted_1p,RWCR 0.640; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8814b9c74bbe2848 (200 runs),,-,3
+table_main_rural_highway_d2.tex,weighted_p,RWCR 0.362; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:299261550579bdd0 (200 runs),,-,3
+table_main_rural_highway_d3.tex,ai_harp (tau=0),RWCR 0.732; cost 1.66,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:4f6b7928fc68df0b (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d3.tex,ai_harp (tau=0.5),RWCR 0.648; cost 1.53,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:44f4aee2c3e37549 (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d3.tex,counter_based,RWCR 0.750; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:a024c1f7cabda4b3 (200 runs),,-,3
+table_main_rural_highway_d3.tex,dvcast,RWCR 0.756; cost 1.53,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c50df75ece6fa2a3 (200 runs),,-,3
+table_main_rural_highway_d3.tex,flooding,RWCR 0.848; cost 2.86,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:22deb09630a05fb9 (200 runs),,-,3
+table_main_rural_highway_d3.tex,greedy_farthest,RWCR 0.708; cost 1.46,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:cfec773f64422069 (200 runs),,-,3
+table_main_rural_highway_d3.tex,p_persistence_03,RWCR 0.127; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:579483be7f27c221 (200 runs),,-,3
+table_main_rural_highway_d3.tex,p_persistence_05,RWCR 0.279; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:611fdaf3fd59a744 (200 runs),,-,3
+table_main_rural_highway_d3.tex,p_persistence_07,RWCR 0.641; cost 1.95,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:bbe13c62eef762fd (200 runs),,-,3
+table_main_rural_highway_d3.tex,slotted_1p,RWCR 0.756; cost 1.55,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:564d9bb3891e9cc5 (200 runs),,-,3
+table_main_rural_highway_d3.tex,weighted_p,RWCR 0.553; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0382e4eb8d65b9c0 (200 runs),,-,3
+table_main_rural_highway_d5.tex,ai_harp (tau=0),RWCR 0.846; cost 1.51,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:2b71984919e5a8e2 (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d5.tex,ai_harp (tau=0.5),RWCR 0.825; cost 1.34,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:3adf0b23727073e6 (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d5.tex,counter_based,RWCR 0.880; cost 1.62,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:cecee06fe501e8dc (200 runs),,-,3
+table_main_rural_highway_d5.tex,dvcast,RWCR 0.877; cost 1.33,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:bd56c65b327c1cfb (200 runs),,-,3
+table_main_rural_highway_d5.tex,flooding,RWCR 0.889; cost 3.17,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:a1b0dc495ac78f37 (200 runs),,-,3
+table_main_rural_highway_d5.tex,greedy_farthest,RWCR 0.860; cost 1.26,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8f25659f7ad0cc42 (200 runs),,-,3
+table_main_rural_highway_d5.tex,p_persistence_03,RWCR 0.279; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:db5dc5d0a6d1ff1c (200 runs),,-,3
+table_main_rural_highway_d5.tex,p_persistence_05,RWCR 0.578; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c2618ed195f4f445 (200 runs),,-,3
+table_main_rural_highway_d5.tex,p_persistence_07,RWCR 0.781; cost 2.22,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:899053c03297dcab (200 runs),,-,3
+table_main_rural_highway_d5.tex,slotted_1p,RWCR 0.876; cost 1.36,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:1204124099531325 (200 runs),,-,3
+table_main_rural_highway_d5.tex,weighted_p,RWCR 0.799; cost 1.65,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:11a23c09d897a548 (200 runs),,-,3
+table_main_rural_highway_d10.tex,ai_harp (tau=0),RWCR 0.860; cost 1.10,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:b5e513d8bcfa7558 (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d10.tex,ai_harp (tau=0.5),RWCR 0.870; cost 0.96,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:01bb87c4466c1505 (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d10.tex,counter_based,RWCR 0.901; cost 1.38,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:7bc0d48a6cc77511 (200 runs),,-,3
+table_main_rural_highway_d10.tex,dvcast,RWCR 0.899; cost 1.15,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c2c1128420c3ce59 (200 runs),,-,3
+table_main_rural_highway_d10.tex,flooding,RWCR 0.901; cost 3.45,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:263df94c51f217a1 (200 runs),,-,3
+table_main_rural_highway_d10.tex,greedy_farthest,RWCR 0.900; cost 1.10,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:77c67650ec663944 (200 runs),,-,3
+table_main_rural_highway_d10.tex,p_persistence_03,RWCR 0.676; cost 0.95,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:b9f961dbd139c5db (200 runs),,-,3
+table_main_rural_highway_d10.tex,p_persistence_05,RWCR 0.899; cost 1.66,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8cb814bc30d8e669 (200 runs),,-,3
+table_main_rural_highway_d10.tex,p_persistence_07,RWCR 0.901; cost 2.43,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:b7478f41b283eff0 (200 runs),,-,3
+table_main_rural_highway_d10.tex,slotted_1p,RWCR 0.899; cost 1.16,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:2ba83c51986baf12 (200 runs),,-,3
+table_main_rural_highway_d10.tex,weighted_p,RWCR 0.887; cost 1.60,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:4ee8f032f479b550 (200 runs),,-,3
+table_main.tex (Table 2),ai_harp (tau=0),RWCR 0.879; cost 0.85,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:567f32f4b2232579 (200 runs),,b589be512827fcbb,3
+table_main.tex (Table 2),ai_harp (tau=0.5),RWCR 0.890; cost 0.79,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8fd6e93f39a38a63 (200 runs),,b589be512827fcbb,3
+table_main.tex (Table 2),counter_based,RWCR 0.917; cost 1.39,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:1ad5006625a497fe (200 runs),,-,3
+table_main.tex (Table 2),dvcast,RWCR 0.915; cost 1.16,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8a5105a26db41106 (200 runs),,-,3
+table_main.tex (Table 2),flooding,RWCR 0.916; cost 3.94,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:d66fd30d203648f0 (200 runs),,-,3
+table_main.tex (Table 2),greedy_farthest,RWCR 0.915; cost 1.10,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ff8888f40cea0393 (200 runs),,-,3
+table_main.tex (Table 2),p_persistence_03,RWCR 0.872; cost 1.14,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:6bd4f98a7097e447 (200 runs),,-,3
+table_main.tex (Table 2),p_persistence_05,RWCR 0.916; cost 1.93,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c90d6e199c1ed29b (200 runs),,-,3
+table_main.tex (Table 2),p_persistence_07,RWCR 0.916; cost 2.73,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:1ee899c848bc89c6 (200 runs),,-,3
+table_main.tex (Table 2),slotted_1p,RWCR 0.915; cost 1.18,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8d8603e5452bd053 (200 runs),,-,3
+table_main.tex (Table 2),weighted_p,RWCR 0.916; cost 1.64,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:51b5d43e0484d383 (200 runs),,-,3
+table_main_rural_highway_d40.tex,ai_harp (tau=0),RWCR 0.812; cost 0.70,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:9cb5df51a93224d5 (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d40.tex,ai_harp (tau=0.5),RWCR 0.817; cost 0.61,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ff0bb928d566d512 (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d40.tex,counter_based,RWCR 0.902; cost 1.64,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:9c7d6e215a1d80b1 (200 runs),,-,3
+table_main_rural_highway_d40.tex,dvcast,RWCR 0.901; cost 1.37,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:a267420ac1050c36 (200 runs),,-,3
+table_main_rural_highway_d40.tex,flooding,RWCR 0.897; cost 4.64,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:095acc2eaca67b16 (200 runs),,-,3
+table_main_rural_highway_d40.tex,greedy_farthest,RWCR 0.901; cost 1.25,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0398db2735db5f68 (200 runs),,-,3
+table_main_rural_highway_d40.tex,p_persistence_03,RWCR 0.893; cost 1.37,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:da553845960b6963 (200 runs),,-,3
+table_main_rural_highway_d40.tex,p_persistence_05,RWCR 0.894; cost 2.26,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:50dcb49d59df7415 (200 runs),,-,3
+table_main_rural_highway_d40.tex,p_persistence_07,RWCR 0.898; cost 3.21,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8035db31d4ed464b (200 runs),,-,3
+table_main_rural_highway_d40.tex,slotted_1p,RWCR 0.900; cost 1.37,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c9f77874fbd341b2 (200 runs),,-,3
+table_main_rural_highway_d40.tex,weighted_p,RWCR 0.891; cost 1.72,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:89e41882e97f2c19 (200 runs),,-,3
+table_main_rural_highway_d80.tex,ai_harp (tau=0),RWCR 0.828; cost 0.93,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:97c87e5feab30d7f (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d80.tex,ai_harp (tau=0.5),RWCR 0.832; cost 0.87,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:4531d8546e68757d (200 runs),,b589be512827fcbb,3
+table_main_rural_highway_d80.tex,counter_based,RWCR 0.915; cost 4.62,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e112b60ca2d773e8 (200 runs),,-,3
+table_main_rural_highway_d80.tex,dvcast,RWCR 0.915; cost 3.81,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0aaadf41a0b222cb (200 runs),,-,3
+table_main_rural_highway_d80.tex,flooding,RWCR 0.912; cost 16.11,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:9676e22797ad1ad2 (200 runs),,-,3
+table_main_rural_highway_d80.tex,greedy_farthest,RWCR 0.913; cost 3.34,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ee89dabd44a1ff30 (200 runs),,-,3
+table_main_rural_highway_d80.tex,p_persistence_03,RWCR 0.909; cost 4.81,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:9f6bd1412d87ff34 (200 runs),,-,3
+table_main_rural_highway_d80.tex,p_persistence_05,RWCR 0.911; cost 7.90,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ca37b30ab2eea329 (200 runs),,-,3
+table_main_rural_highway_d80.tex,p_persistence_07,RWCR 0.911; cost 11.26,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:fb3bb56704f2001c (200 runs),,-,3
+table_main_rural_highway_d80.tex,slotted_1p,RWCR 0.915; cost 3.81,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:d21151b6f6ae67d1 (200 runs),,-,3
+table_main_rural_highway_d80.tex,weighted_p,RWCR 0.908; cost 4.94,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:af3f7c4e6c1ebaba (200 runs),,-,3
+table_main_urban_grid_d1.tex,ai_harp (tau=0),RWCR 0.984; cost 1.95,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:99e15a2335e9c52a (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d1.tex,ai_harp (tau=0.5),RWCR 0.979; cost 1.45,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:96d3b0cc45c50ae6 (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d1.tex,counter_based,RWCR 0.980; cost 1.35,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:361ca23f8ea0e185 (200 runs),,-,3
+table_main_urban_grid_d1.tex,dvcast,RWCR 0.969; cost 1.14,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:28a408e0fcf84e55 (200 runs),,-,3
+table_main_urban_grid_d1.tex,flooding,RWCR 0.984; cost 2.01,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:692cb1de628edf71 (200 runs),,-,3
+table_main_urban_grid_d1.tex,greedy_farthest,RWCR 0.983; cost 1.04,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e9a967b800a8f8ba (200 runs),,-,3
+table_main_urban_grid_d1.tex,p_persistence_03,RWCR 0.852; cost 0.65,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:7289a3db04e3da15 (200 runs),,-,3
+table_main_urban_grid_d1.tex,p_persistence_05,RWCR 0.945; cost 1.03,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c3f09e575116153a (200 runs),,-,3
+table_main_urban_grid_d1.tex,p_persistence_07,RWCR 0.977; cost 1.43,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e667ec0c0fd0a654 (200 runs),,-,3
+table_main_urban_grid_d1.tex,slotted_1p,RWCR 0.975; cost 1.17,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:b30ba41f7206d56b (200 runs),,-,3
+table_main_urban_grid_d1.tex,weighted_p,RWCR 0.973; cost 1.23,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:5010d4916549b872 (200 runs),,-,3
+table_main_urban_grid_d2.tex,ai_harp (tau=0),RWCR 0.992; cost 1.83,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8a1f49a7ab0297de (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d2.tex,ai_harp (tau=0.5),RWCR 0.993; cost 1.36,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:de1363d53f6f4688 (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d2.tex,counter_based,RWCR 0.994; cost 0.97,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:6fce2a3481e5e4a4 (200 runs),,-,3
+table_main_urban_grid_d2.tex,dvcast,RWCR 0.990; cost 0.87,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:aa19ed415127081c (200 runs),,-,3
+table_main_urban_grid_d2.tex,flooding,RWCR 0.994; cost 1.87,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c378629e2f9ed462 (200 runs),,-,3
+table_main_urban_grid_d2.tex,greedy_farthest,RWCR 0.990; cost 0.75,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:93be248c4951ad51 (200 runs),,-,3
+table_main_urban_grid_d2.tex,p_persistence_03,RWCR 0.963; cost 0.56,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:9b5474caa7bf8b49 (200 runs),,-,3
+table_main_urban_grid_d2.tex,p_persistence_05,RWCR 0.988; cost 0.96,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:263cebc20853d467 (200 runs),,-,3
+table_main_urban_grid_d2.tex,p_persistence_07,RWCR 0.992; cost 1.34,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:013d9ae60fd50325 (200 runs),,-,3
+table_main_urban_grid_d2.tex,slotted_1p,RWCR 0.993; cost 0.87,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:5c141c4cf122a9a4 (200 runs),,-,3
+table_main_urban_grid_d2.tex,weighted_p,RWCR 0.986; cost 1.00,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:22cca489385af01a (200 runs),,-,3
+table_main_urban_grid_d3.tex,ai_harp (tau=0),RWCR 0.987; cost 1.75,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:d80815355715497d (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d3.tex,ai_harp (tau=0.5),RWCR 0.988; cost 1.26,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:5e88be2c59e3dedc (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d3.tex,counter_based,RWCR 0.989; cost 0.86,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0e76458ea11e2252 (200 runs),,-,3
+table_main_urban_grid_d3.tex,dvcast,RWCR 0.986; cost 0.74,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c29fa9fdf7797f92 (200 runs),,-,3
+table_main_urban_grid_d3.tex,flooding,RWCR 0.989; cost 1.82,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8b1fe7407d08ce9f (200 runs),,-,3
+table_main_urban_grid_d3.tex,greedy_farthest,RWCR 0.986; cost 0.65,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:7c7174631b0abeac (200 runs),,-,3
+table_main_urban_grid_d3.tex,p_persistence_03,RWCR 0.981; cost 0.56,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c99af0d9b92b7fac (200 runs),,-,3
+table_main_urban_grid_d3.tex,p_persistence_05,RWCR 0.986; cost 0.93,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:f0895069a0147eda (200 runs),,-,3
+table_main_urban_grid_d3.tex,p_persistence_07,RWCR 0.989; cost 1.30,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0f0a55c1e241a923 (200 runs),,-,3
+table_main_urban_grid_d3.tex,slotted_1p,RWCR 0.986; cost 0.72,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e5226a230f8fd7e9 (200 runs),,-,3
+table_main_urban_grid_d3.tex,weighted_p,RWCR 0.984; cost 0.90,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:d68934e60afdaa0c (200 runs),,-,3
+table_main_urban_grid_d5.tex,ai_harp (tau=0),RWCR 0.985; cost 1.64,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:00bf44130a1b6c22 (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d5.tex,ai_harp (tau=0.5),RWCR 0.989; cost 1.21,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c40a53671e18d95a (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d5.tex,counter_based,RWCR 0.991; cost 0.81,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:560ab8e4d589a94e (200 runs),,-,3
+table_main_urban_grid_d5.tex,dvcast,RWCR 0.990; cost 0.66,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:25f4247c9a77b069 (200 runs),,-,3
+table_main_urban_grid_d5.tex,flooding,RWCR 0.989; cost 1.81,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c7912ee3d9250124 (200 runs),,-,3
+table_main_urban_grid_d5.tex,greedy_farthest,RWCR 0.989; cost 0.56,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:1b1133bdac339845 (200 runs),,-,3
+table_main_urban_grid_d5.tex,p_persistence_03,RWCR 0.983; cost 0.55,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0a650ce42fe11258 (200 runs),,-,3
+table_main_urban_grid_d5.tex,p_persistence_05,RWCR 0.989; cost 0.89,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:dfc4b0e4e0d26709 (200 runs),,-,3
+table_main_urban_grid_d5.tex,p_persistence_07,RWCR 0.987; cost 1.26,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:fec17c7cccb972c4 (200 runs),,-,3
+table_main_urban_grid_d5.tex,slotted_1p,RWCR 0.989; cost 0.66,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:a13c7cd6443c113a (200 runs),,-,3
+table_main_urban_grid_d5.tex,weighted_p,RWCR 0.986; cost 0.87,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:b75c08e7b0f2304b (200 runs),,-,3
+table_main_urban_grid_d10.tex,ai_harp (tau=0),RWCR 0.944; cost 1.37,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c02fdad705885754 (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d10.tex,ai_harp (tau=0.5),RWCR 0.943; cost 1.01,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:828a618d75d0940d (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d10.tex,counter_based,RWCR 0.989; cost 0.84,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:cca8c3fd5c46c9e3 (200 runs),,-,3
+table_main_urban_grid_d10.tex,dvcast,RWCR 0.986; cost 0.71,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:fdc648a4a8d1af64 (200 runs),,-,3
+table_main_urban_grid_d10.tex,flooding,RWCR 0.985; cost 1.83,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ea4179cab19d24c7 (200 runs),,-,3
+table_main_urban_grid_d10.tex,greedy_farthest,RWCR 0.987; cost 0.52,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:1ffa48527effe4cd (200 runs),,-,3
+table_main_urban_grid_d10.tex,p_persistence_03,RWCR 0.966; cost 0.55,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:38a24aae12961241 (200 runs),,-,3
+table_main_urban_grid_d10.tex,p_persistence_05,RWCR 0.976; cost 0.91,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:536a4e1f0996a947 (200 runs),,-,3
+table_main_urban_grid_d10.tex,p_persistence_07,RWCR 0.981; cost 1.30,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e78e320078f29426 (200 runs),,-,3
+table_main_urban_grid_d10.tex,slotted_1p,RWCR 0.987; cost 0.70,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:4c88f1e0f10f539f (200 runs),,-,3
+table_main_urban_grid_d10.tex,weighted_p,RWCR 0.972; cost 0.82,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ccdfcb2566971ee9 (200 runs),,-,3
+table_main_urban_grid_d20.tex,ai_harp (tau=0),RWCR 0.949; cost 0.79,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8649ef781cf2cd34 (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d20.tex,ai_harp (tau=0.5),RWCR 0.920; cost 0.60,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:068d75e36df40316 (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d20.tex,counter_based,RWCR 0.987; cost 0.77,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:78cb1befab27b835 (200 runs),,-,3
+table_main_urban_grid_d20.tex,dvcast,RWCR 0.985; cost 0.66,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:b4ce5caa38879f39 (200 runs),,-,3
+table_main_urban_grid_d20.tex,flooding,RWCR 0.983; cost 1.84,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ee64f6dd1b351064 (200 runs),,-,3
+table_main_urban_grid_d20.tex,greedy_farthest,RWCR 0.984; cost 0.41,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:1a54f73daf340977 (200 runs),,-,3
+table_main_urban_grid_d20.tex,p_persistence_03,RWCR 0.970; cost 0.54,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:5a52e771b027c08c (200 runs),,-,3
+table_main_urban_grid_d20.tex,p_persistence_05,RWCR 0.979; cost 0.90,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:68cf284f01292feb (200 runs),,-,3
+table_main_urban_grid_d20.tex,p_persistence_07,RWCR 0.981; cost 1.28,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:9d37ee3a634ee2c8 (200 runs),,-,3
+table_main_urban_grid_d20.tex,slotted_1p,RWCR 0.985; cost 0.66,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:f6a4bb557cfb5166 (200 runs),,-,3
+table_main_urban_grid_d20.tex,weighted_p,RWCR 0.979; cost 0.71,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:b9ab478e650db131 (200 runs),,-,3
+table_main_urban_grid_d40.tex,ai_harp (tau=0),RWCR 0.957; cost 0.40,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:b8784b90fa457de9 (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d40.tex,ai_harp (tau=0.5),RWCR 0.926; cost 0.42,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:15f07103acccf658 (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d40.tex,counter_based,RWCR 0.973; cost 0.75,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:2dcdb276e0a88a66 (200 runs),,-,3
+table_main_urban_grid_d40.tex,dvcast,RWCR 0.972; cost 0.62,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c23983f28cdd26f0 (200 runs),,-,3
+table_main_urban_grid_d40.tex,flooding,RWCR 0.972; cost 2.04,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:70b8da868120730c (200 runs),,-,3
+table_main_urban_grid_d40.tex,greedy_farthest,RWCR 0.973; cost 0.35,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8c14c5062569f996 (200 runs),,-,3
+table_main_urban_grid_d40.tex,p_persistence_03,RWCR 0.968; cost 0.60,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:400b6c65da14ec30 (200 runs),,-,3
+table_main_urban_grid_d40.tex,p_persistence_05,RWCR 0.970; cost 0.99,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:400be77c3e36c5f1 (200 runs),,-,3
+table_main_urban_grid_d40.tex,p_persistence_07,RWCR 0.971; cost 1.41,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:815f07284d3b86db (200 runs),,-,3
+table_main_urban_grid_d40.tex,slotted_1p,RWCR 0.972; cost 0.62,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:b2267c711a1e1f62 (200 runs),,-,3
+table_main_urban_grid_d40.tex,weighted_p,RWCR 0.969; cost 0.67,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:2f190c12796b602b (200 runs),,-,3
+table_main_urban_grid_d80.tex,ai_harp (tau=0),RWCR 0.915; cost 0.29,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:d138304cf13344db (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d80.tex,ai_harp (tau=0.5),RWCR 0.890; cost 0.50,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8ebbd518f52afc19 (200 runs),,b589be512827fcbb,3
+table_main_urban_grid_d80.tex,counter_based,RWCR 0.930; cost 1.03,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:cf7aac0685d5f1bd (200 runs),,-,3
+table_main_urban_grid_d80.tex,dvcast,RWCR 0.930; cost 0.88,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:88f1a0dfb1e2cf44 (200 runs),,-,3
+table_main_urban_grid_d80.tex,flooding,RWCR 0.930; cost 3.36,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:3c589537b6c2c626 (200 runs),,-,3
+table_main_urban_grid_d80.tex,greedy_farthest,RWCR 0.930; cost 0.58,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:04c2dc004d96401f (200 runs),,-,3
+table_main_urban_grid_d80.tex,p_persistence_03,RWCR 0.928; cost 1.00,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:32e07670c6d39898 (200 runs),,-,3
+table_main_urban_grid_d80.tex,p_persistence_05,RWCR 0.929; cost 1.65,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e0fb8ad9c472c3d4 (200 runs),,-,3
+table_main_urban_grid_d80.tex,p_persistence_07,RWCR 0.929; cost 2.35,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:4759c33183155bb4 (200 runs),,-,3
+table_main_urban_grid_d80.tex,slotted_1p,RWCR 0.931; cost 0.89,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:63e8fd7988a42a94 (200 runs),,-,3
+table_main_urban_grid_d80.tex,weighted_p,RWCR 0.929; cost 1.02,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:9895cf955d83292f (200 runs),,-,3
+table_main_urban_nlos_d1.tex,ai_harp (tau=0),RWCR 0.546; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:171fea3fa3a16eae (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d1.tex,ai_harp (tau=0.5),RWCR 0.469; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:5cac2c9e41b66942 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d1.tex,counter_based,RWCR 0.421; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:af050ed6e8bc886b (200 runs),,-,3
+table_main_urban_nlos_d1.tex,dvcast,RWCR 0.552; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:7044815db5ac4c8f (200 runs),,-,3
+table_main_urban_nlos_d1.tex,flooding,RWCR 0.605; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ede82ab3fd08b805 (200 runs),,-,3
+table_main_urban_nlos_d1.tex,greedy_farthest,RWCR 0.521; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:bba6c270c3e738fb (200 runs),,-,3
+table_main_urban_nlos_d1.tex,p_persistence_03,RWCR 0.208; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:f00a5136e236ff56 (200 runs),,-,3
+table_main_urban_nlos_d1.tex,p_persistence_05,RWCR 0.283; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:10ab1593f32df836 (200 runs),,-,3
+table_main_urban_nlos_d1.tex,p_persistence_07,RWCR 0.435; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:2bdb2b0b687d1f37 (200 runs),,-,3
+table_main_urban_nlos_d1.tex,slotted_1p,RWCR 0.553; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e22e2cfe802d6315 (200 runs),,-,3
+table_main_urban_nlos_d1.tex,weighted_p,RWCR 0.331; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c5f59f8df423f2c7 (200 runs),,-,3
+table_main_urban_nlos_d2.tex,ai_harp (tau=0),RWCR 0.859; cost 1.47,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:941d1a135053be0e (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d2.tex,ai_harp (tau=0.5),RWCR 0.746; cost 1.09,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:3dcd2e604abf64ad (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d2.tex,counter_based,RWCR 0.825; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:4d0313c6a8aa039a (200 runs),,-,3
+table_main_urban_nlos_d2.tex,dvcast,RWCR 0.903; cost 1.33,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:6c7dd39ca6b28d22 (200 runs),,-,3
+table_main_urban_nlos_d2.tex,flooding,RWCR 0.931; cost 2.06,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:07fb77e9a1ac499a (200 runs),,-,3
+table_main_urban_nlos_d2.tex,greedy_farthest,RWCR 0.867; cost 1.36,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:05fa99ae1c39c686 (200 runs),,-,3
+table_main_urban_nlos_d2.tex,p_persistence_03,RWCR 0.310; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e7ad7cffb26e77b9 (200 runs),,-,3
+table_main_urban_nlos_d2.tex,p_persistence_05,RWCR 0.553; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:218e11697390c02a (200 runs),,-,3
+table_main_urban_nlos_d2.tex,p_persistence_07,RWCR 0.811; cost 1.46,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:574a628ba657d1f7 (200 runs),,-,3
+table_main_urban_nlos_d2.tex,slotted_1p,RWCR 0.901; cost 1.35,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8e270bc974bb6967 (200 runs),,-,3
+table_main_urban_nlos_d2.tex,weighted_p,RWCR 0.586; cost 0.96,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e074cbb8f35850c5 (200 runs),,-,3
+table_main_urban_nlos_d3.tex,ai_harp (tau=0),RWCR 0.913; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:fb0bf831419d1541 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d3.tex,ai_harp (tau=0.5),RWCR 0.797; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:646bb25b5e5a59d1 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d3.tex,counter_based,RWCR 0.923; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:2761ff4697f0845f (200 runs),,-,3
+table_main_urban_nlos_d3.tex,dvcast,RWCR 0.923; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0a4afaf0fdd8f605 (200 runs),,-,3
+table_main_urban_nlos_d3.tex,flooding,RWCR 0.945; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e1733b9ae9dfd8dc (200 runs),,-,3
+table_main_urban_nlos_d3.tex,greedy_farthest,RWCR 0.923; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:fd040b1de0260f50 (200 runs),,-,3
+table_main_urban_nlos_d3.tex,p_persistence_03,RWCR 0.311; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:35162bbd42d01e07 (200 runs),,-,3
+table_main_urban_nlos_d3.tex,p_persistence_05,RWCR 0.688; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:1247793c12ae8004 (200 runs),,-,3
+table_main_urban_nlos_d3.tex,p_persistence_07,RWCR 0.860; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:c6728d80bb4efdbc (200 runs),,-,3
+table_main_urban_nlos_d3.tex,slotted_1p,RWCR 0.921; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:4def73e95efdf600 (200 runs),,-,3
+table_main_urban_nlos_d3.tex,weighted_p,RWCR 0.726; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:33ac94f2ebaa1561 (200 runs),,-,3
+table_main_urban_nlos_d5.tex,ai_harp (tau=0),RWCR 0.907; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:fe99f035b75027a7 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d5.tex,ai_harp (tau=0.5),RWCR 0.847; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8e263d4177297a2f (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d5.tex,counter_based,RWCR 0.859; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:053c0e42b6dd58bb (200 runs),,-,3
+table_main_urban_nlos_d5.tex,dvcast,RWCR 0.923; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:6219eb9caa1a414e (200 runs),,-,3
+table_main_urban_nlos_d5.tex,flooding,RWCR 0.943; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:56284654ff756e99 (200 runs),,-,3
+table_main_urban_nlos_d5.tex,greedy_farthest,RWCR 0.918; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:37db513c34afac86 (200 runs),,-,3
+table_main_urban_nlos_d5.tex,p_persistence_03,RWCR 0.413; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:4d747fbbf2bbd3a0 (200 runs),,-,3
+table_main_urban_nlos_d5.tex,p_persistence_05,RWCR 0.793; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:952bc2b51d581836 (200 runs),,-,3
+table_main_urban_nlos_d5.tex,p_persistence_07,RWCR 0.907; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:5f082a99637e80f1 (200 runs),,-,3
+table_main_urban_nlos_d5.tex,slotted_1p,RWCR 0.922; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:251fe1f3d9921a77 (200 runs),,-,3
+table_main_urban_nlos_d5.tex,weighted_p,RWCR 0.787; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:3cc98501494023be (200 runs),,-,3
+table_main_urban_nlos_d10.tex,ai_harp (tau=0),RWCR 0.868; cost 0.99,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:da2e933d0c02cf06 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d10.tex,ai_harp (tau=0.5),RWCR 0.804; cost 0.71,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:820b1caee5748617 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d10.tex,counter_based,RWCR 0.851; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:67939ad321a9fbd4 (200 runs),,-,3
+table_main_urban_nlos_d10.tex,dvcast,RWCR 0.940; cost 1.02,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:680cc7bcf46a205c (200 runs),,-,3
+table_main_urban_nlos_d10.tex,flooding,RWCR 0.957; cost 2.01,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:543e1e631b38e32b (200 runs),,-,3
+table_main_urban_nlos_d10.tex,greedy_farthest,RWCR 0.937; cost 0.98,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ce3989e4af64803b (200 runs),,-,3
+table_main_urban_nlos_d10.tex,p_persistence_03,RWCR 0.572; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:dc7e983bb416947e (200 runs),,-,3
+table_main_urban_nlos_d10.tex,p_persistence_05,RWCR 0.823; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0d45781993d0b7b3 (200 runs),,-,3
+table_main_urban_nlos_d10.tex,p_persistence_07,RWCR 0.903; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:d0999e554360b501 (200 runs),,-,3
+table_main_urban_nlos_d10.tex,slotted_1p,RWCR 0.943; cost 1.03,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:7b07c6dc1f97116a (200 runs),,-,3
+table_main_urban_nlos_d10.tex,weighted_p,RWCR 0.852; cost inf,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ab70b85af42ae4ba (200 runs),,-,3
+table_main_urban_nlos_d20.tex,ai_harp (tau=0),RWCR 0.908; cost 0.91,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:49cc5011f8a799d1 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d20.tex,ai_harp (tau=0.5),RWCR 0.881; cost 0.71,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:2ec13f4f4a5293b5 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d20.tex,counter_based,RWCR 0.917; cost 0.85,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:55a01ff8b4fc3459 (200 runs),,-,3
+table_main_urban_nlos_d20.tex,dvcast,RWCR 0.953; cost 0.79,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:52d6b733118b510a (200 runs),,-,3
+table_main_urban_nlos_d20.tex,flooding,RWCR 0.959; cost 2.09,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:891cc482d3cdccac (200 runs),,-,3
+table_main_urban_nlos_d20.tex,greedy_farthest,RWCR 0.953; cost 0.75,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:22656d73e8d10b61 (200 runs),,-,3
+table_main_urban_nlos_d20.tex,p_persistence_03,RWCR 0.857; cost 0.62,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:a3de389eedec9c5b (200 runs),,-,3
+table_main_urban_nlos_d20.tex,p_persistence_05,RWCR 0.891; cost 1.00,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:03aa8728ec556c83 (200 runs),,-,3
+table_main_urban_nlos_d20.tex,p_persistence_07,RWCR 0.955; cost 1.44,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:dc4d360e6a5a527d (200 runs),,-,3
+table_main_urban_nlos_d20.tex,slotted_1p,RWCR 0.951; cost 0.78,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ffdc204f315087f8 (200 runs),,-,3
+table_main_urban_nlos_d20.tex,weighted_p,RWCR 0.876; cost 0.72,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0428440e09af6a06 (200 runs),,-,3
+table_main_urban_nlos_d40.tex,ai_harp (tau=0),RWCR 0.907; cost 0.79,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:552e6558639ef7e7 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d40.tex,ai_harp (tau=0.5),RWCR 0.891; cost 0.62,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:42df1a590399d062 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d40.tex,counter_based,RWCR 0.946; cost 0.74,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:28813d49d8d0adfe (200 runs),,-,3
+table_main_urban_nlos_d40.tex,dvcast,RWCR 0.945; cost 0.67,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:f8a3289f87c47554 (200 runs),,-,3
+table_main_urban_nlos_d40.tex,flooding,RWCR 0.946; cost 2.41,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8dce643403ed0af5 (200 runs),,-,3
+table_main_urban_nlos_d40.tex,greedy_farthest,RWCR 0.945; cost 0.59,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e6e8f3b1212f5e62 (200 runs),,-,3
+table_main_urban_nlos_d40.tex,p_persistence_03,RWCR 0.936; cost 0.72,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ae25bd2b3786d985 (200 runs),,-,3
+table_main_urban_nlos_d40.tex,p_persistence_05,RWCR 0.943; cost 1.18,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8b16df3ca0ccda64 (200 runs),,-,3
+table_main_urban_nlos_d40.tex,p_persistence_07,RWCR 0.945; cost 1.68,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:13200f217249335a (200 runs),,-,3
+table_main_urban_nlos_d40.tex,slotted_1p,RWCR 0.945; cost 0.67,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:8923a2c07b8a05c8 (200 runs),,-,3
+table_main_urban_nlos_d40.tex,weighted_p,RWCR 0.935; cost 0.76,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:669cd73d967ae6b4 (200 runs),,-,3
+table_main_urban_nlos_d80.tex,ai_harp (tau=0),RWCR 0.869; cost 0.70,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:95c0c5c2e3ea5177 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d80.tex,ai_harp (tau=0.5),RWCR 0.829; cost 0.71,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0315ed3b7c913059 (200 runs),,b589be512827fcbb,3
+table_main_urban_nlos_d80.tex,counter_based,RWCR 0.898; cost 1.16,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:e2631a0bd82101ef (200 runs),,-,3
+table_main_urban_nlos_d80.tex,dvcast,RWCR 0.898; cost 1.01,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:4bdfae221445d7e1 (200 runs),,-,3
+table_main_urban_nlos_d80.tex,flooding,RWCR 0.897; cost 4.62,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:6db34c0f35c0838b (200 runs),,-,3
+table_main_urban_nlos_d80.tex,greedy_farthest,RWCR 0.898; cost 0.80,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:25fce847ac2b5501 (200 runs),,-,3
+table_main_urban_nlos_d80.tex,p_persistence_03,RWCR 0.891; cost 1.38,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:ab7fc0b719921b9a (200 runs),,-,3
+table_main_urban_nlos_d80.tex,p_persistence_05,RWCR 0.895; cost 2.28,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:861559d8a24dc507 (200 runs),,-,3
+table_main_urban_nlos_d80.tex,p_persistence_07,RWCR 0.896; cost 3.24,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:72f251d06cd345bb (200 runs),,-,3
+table_main_urban_nlos_d80.tex,slotted_1p,RWCR 0.898; cost 1.01,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:6ee9a4ff80049673 (200 runs),,-,3
+table_main_urban_nlos_d80.tex,weighted_p,RWCR 0.889; cost 1.37,results/runs.csv,754f34e5001741f53b6b245a49ded46482df22d5,set:0682cc2748b27f37 (200 runs),,-,3
+table_reference.tex,rural_highway d=2,oracle-best / fixed-best / ceiling,results/pareto_cells.json,e214f5e2db48935aa78356dc294e57bcfa4d6bab,not recorded (seed means only),68732d021387031a,-,3
+table_reference.tex,rural_highway d=20,oracle-best / fixed-best / ceiling,results/pareto_cells.json,e214f5e2db48935aa78356dc294e57bcfa4d6bab,not recorded (seed means only),97a65f64daf505a6,-,3
+table_reference.tex,rural_highway d=80,oracle-best / fixed-best / ceiling,results/pareto_cells.json,e214f5e2db48935aa78356dc294e57bcfa4d6bab,not recorded (seed means only),d448b04454591353,-,3
+table_reference.tex,urban_nlos d=20,oracle-best / fixed-best / ceiling,results/pareto_cells.json,e214f5e2db48935aa78356dc294e57bcfa4d6bab,not recorded (seed means only),1543cfbd4cbb0e2b,-,3
+table_ablation.tex,ref,regret 0.018; margin 0.019,results/agent_ref/sampled/agent_evaluation.json,c18bb9011864cdd50d2d13d188c01886ac979c7d,63ad8cd1c04c,1f672719fcaeffbb,b589be512827fcbb,3
+table_ablation.tex,gcn,regret 0.031; margin 0.172,results/agent_gcn/sampled/agent_evaluation.json,6eb790efe416d7b629d81dbfd47c43562e981538,a921f7edd54c,a61c2a5b5b2c1484,4090fd9374db4d4c,3
+table_ablation.tex,mlp,regret 0.265; margin 0.223,results/agent_mlp/sampled/agent_evaluation.json,6eb790efe416d7b629d81dbfd47c43562e981538,25abb2665222,11d5d212041538b8,20b6c8942ebfab28,3
+table_ablation.tex,star,regret 0.174; margin -0.085,results/agent_star/sampled/agent_evaluation.json,6eb790efe416d7b629d81dbfd47c43562e981538,d5252af5e6bc,5c3b4dfafc3d7ea6,b3536e1a471535a4,3
+Table 3 (risk estimation),rural_highway,peak corr 0.744,results/risk_estimation.csv,472cf7b41822122716b8145fd1ec95d07ad0dfbf,not recorded in the CSV,571cf9fedac2ea19,- (policy-independent),3
+Table 3 (risk estimation),urban_grid,peak corr 0.168,results/risk_estimation.csv,472cf7b41822122716b8145fd1ec95d07ad0dfbf,not recorded in the CSV,a9796aed9401f6f8,- (policy-independent),3
+Table 3 (risk estimation),urban_nlos,peak corr 0.186,results/risk_estimation.csv,472cf7b41822122716b8145fd1ec95d07ad0dfbf,not recorded in the CSV,7d458563a8f9bc0f,- (policy-independent),3
+Table 5 (lambda arms),run8 (cap 50),per-group shortfall / lambda,results/feasibility/lambda_cap_arms.json,a378bcfd3e07fa773aeae15183a75f66098fe669,fb74ec2dcffb,20556ae3d640d2c0,ab0e1e94f9d4c4b9,-
+Table 5 (lambda arms),arm A (cap 500),per-group shortfall / lambda,results/feasibility/lambda_cap_arms.json,a378bcfd3e07fa773aeae15183a75f66098fe669,6ec2e876346e,20556ae3d640d2c0,f74dc381d6697208,-
+Table 5 (lambda arms),arm B (init 500),per-group shortfall / lambda,results/feasibility/lambda_cap_arms.json,a378bcfd3e07fa773aeae15183a75f66098fe669,6fe2e1df0eb2,20556ae3d640d2c0,727352ad75621d8d,-
+Table 6 (validation),10 veh/km/lane,PDR 0.9977 vs paper 0.9998,results/validation/amador2022.json,8e8c4ee331020f5ef57af359c0787f5678b79be3,not recorded,a8294cc95c46a4e6,- (CBF baseline),-
+Table 6 (validation),20 veh/km/lane,PDR 0.9980 vs paper 0.9961,results/validation/amador2022.json,8e8c4ee331020f5ef57af359c0787f5678b79be3,not recorded,b9486fc625a1c1df,- (CBF baseline),-
+Table 6 (validation),30 veh/km/lane,PDR 0.9987 vs paper 0.928,results/validation/amador2022.json,8e8c4ee331020f5ef57af359c0787f5678b79be3,not recorded,115b36f670f8478a,- (CBF baseline),-
+Table 6 (validation),40 veh/km/lane,PDR 0.9990 vs paper 0.9371,results/validation/amador2022.json,8e8c4ee331020f5ef57af359c0787f5678b79be3,not recorded,ffde556bed451389,- (CBF baseline),-
+Table 6 (validation),50 veh/km/lane,PDR 0.9993 vs paper 0.9372,results/validation/amador2022.json,8e8c4ee331020f5ef57af359c0787f5678b79be3,not recorded,e3eed1358cda7091,- (CBF baseline),-
+C1C2/table_ablation_seeds.tex,ref,see table,results/revision1/C1C2/c_seeds.json,c116cc13d3db9fb8c317a59417e22a6fe034a651,ref_s1=af3dc66eeaf5;ref_s2=6fea3f4bff8e;ref_s3=9f702f9e5809;ref_s4=5a87d921fd2c,,ref_s0=b589be512827fcbb;ref_s1=4867ffabbdf23aac;ref_s2=0b5fa61c06396e28;ref_s3=2c2434ab9ed05da2;ref_s4=3cb2a44fef5bde6b,3
+C1C2/table_ablation_seeds.tex,gcn,see table,results/revision1/C1C2/c_seeds.json,c116cc13d3db9fb8c317a59417e22a6fe034a651,gcn_s1=cfc81ca596ff,,gcn_s0=4090fd9374db4d4c;gcn_s1=cb855009fb1ddc3a,3
+C1C2/table_ablation_seeds.tex,mlp,see table,results/revision1/C1C2/c_seeds.json,c116cc13d3db9fb8c317a59417e22a6fe034a651,mlp_s1=fe749f832509,,mlp_s0=20b6c8942ebfab28;mlp_s1=39b35e7d49c2c4b2,3
+C1C2/table_ablation_seeds.tex,star,see table,results/revision1/C1C2/c_seeds.json,c116cc13d3db9fb8c317a59417e22a6fe034a651,star_s1=8c51e4462e37,,star_s0=b3536e1a471535a4;star_s1=a9e4d85b834ff15c,3
+C1C2/table_ablation_seeds.tex,norel,see table,results/revision1/C1C2/c_seeds.json,c116cc13d3db9fb8c317a59417e22a6fe034a651,norel_s1=921d63a96290,,norel_s0=2efb9151402fd9cf;norel_s1=38bd30d081f2edc4,3
