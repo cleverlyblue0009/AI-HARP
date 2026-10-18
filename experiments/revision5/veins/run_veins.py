@@ -48,6 +48,10 @@ def nodes_txt(b: dict) -> str:
     out = [f"t0 {b['t0_sumo_s']!r}", f"dt {b['dt']!r}", f"n_steps {b['n_steps']}",
            f"comm_range_m {b['comm_range_m']!r}", f"max_hops {b['settings']['max_hops']}",
            f"ttl_s {b['settings']['message_ttl_s']!r}", f"origin {b['origin']['index']} {b['origin']['step']}"]
+    v = b["veins"]
+    out.append(f"beacon {v['beacon_hz']!r} {v['beacon_duration_s']!r} {v['cs_range_m']!r} "
+               f"{int(v['dcc_enabled'])} {v['dcc_target_cbr']!r} {v['dcc_min_beacon_hz']!r}")
+    out.append(f"access {v['cw_slots']} {v['slot_time_s']!r}")
     for v in b["vehicles"]:
         out.append(f"v {v['index']} {v['sumo_id']} " + " ".join(f"{a} {z}" for a, z in v["active"]))
     return "\n".join(out) + "\n"
@@ -123,7 +127,12 @@ def run(bundle: Path, policy: str, knob: float, seed: int, out: Path) -> dict:
     fcd = work / "fcd_veins.xml"
     if fcd.exists():
         ref = dict(np.load(bundle / "fcd_ref.npz"))
-        rec["fcd_check"] = fcd_compare(ref, fcd_table(fcd, b["t0_sumo_s"], t_end))
+        got = fcd_table(fcd, b["t0_sumo_s"], t_end)
+        # an early-stopped run covers a prefix of the window: compare exactly the steps it simulated
+        t_last = float(got["t"].max()) if len(got["t"]) else b["t0_sumo_s"] - 1
+        keep = ref["t"] <= t_last + 1e-6
+        rec["fcd_check"] = fcd_compare({k: a[keep] for k, a in ref.items()}, got)
+        rec["fcd_check"]["covered_until_s"] = t_last
     else:
         rec["fcd_check"] = {"identical": False, "error": "no fcd_veins.xml"}
     out.mkdir(parents=True, exist_ok=True)

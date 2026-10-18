@@ -169,6 +169,19 @@ def export(scenario: str, density: float, seed: int, out: Path = OUT) -> Path:
                                 "frame_duration_s": res.mac.frame_duration_s}
     net_xml = next(d.glob("*.net.xml"))
     bundle_veins = veins_params(scenario, res.phy, net_xml)
+    # Beacon generation is application traffic, specified like the dissemination policy: the custom
+    # MAC's DCC rule, rate = clip(target / (n * T_b), min_hz, max_hz) with n = active vehicles within
+    # the carrier-sense range (sim/mac.py effective_beacon_hz), reproduced per beacon in Veins.
+    m = res.mac
+    bundle_veins.update({"cs_range_m": float(res.meta["cs_range_m"]), "beacon_duration_s": m.beacon_duration_s,
+                         "beacon_hz": m.background_beacon_hz if m.background_beacon_enabled else 0.0,
+                         "dcc_enabled": bool(m.dcc_enabled), "dcc_target_cbr": m.dcc_target_cbr,
+                         "dcc_min_beacon_hz": m.dcc_min_beacon_hz, "beacon_bytes": m.background_beacon_bytes,
+                         # channel access: the custom MAC gives every hazard transmitter of an epoch a
+                         # uniform backoff slot in [0, CWmin] (sim/mac.py draw_backoff_slots). 802.11 sends
+                         # a frame that finds the medium idle after AIFS WITHOUT backoff, so epoch-aligned
+                         # relays would all start together in Veins; the app applies the same draw.
+                         "cw_slots": int(m.cw_slots), "slot_time_s": float(m.slot_time_s)})
     bundle = {
         "veins": bundle_veins,
         "scenario": scenario, "density": density, "seed": seed, "dt": dt, "t0_sumo_s": t0, "warmup_s": warmup, "fcd_check_windows": chk,

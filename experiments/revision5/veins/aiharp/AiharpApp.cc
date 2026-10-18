@@ -7,7 +7,7 @@
 // neither transmits, beacons nor processes receptions. Policy decisions (agents/*.py) are reproduced
 // rule for rule; the policy random draws come from OMNeT++'s RNG (seed-set = run seed).
 //
-// Log lines (CSV): O,t,step,idx | T,t,step,idx,hops,sched_t | R,t,step,idx,sender,dist,new,hops
+// Log lines (CSV): Q,t,originDone,pending,lastTx,minEnd (manager, every 10 s) | O,t,step,idx | T,t,step,idx,hops,sched_t | R,t,step,idx,sender,dist,new,hops
 //                  D,t,step,idx,trigger,action,delay | X,t,step,idx,reason
 
 #include "AiharpApp.h"
@@ -39,6 +39,12 @@ void AiharpApp::loadShared(const std::string& nodesFile, const std::string& logF
         else if (key == "max_hops") ss >> S.maxHops;
         else if (key == "ttl_s") ss >> S.ttl;
         else if (key == "origin") ss >> S.originIdx >> S.originStep;
+        else if (key == "access") ss >> S.cwSlots >> S.slotTime;   // access <cw_slots> <slot_s>
+        else if (key == "beacon") {     // beacon <hz> <duration_s> <cs_range_m> <dcc 0|1> <target_cbr> <min_hz>
+            int on;
+            ss >> S.beaconHz >> S.beaconDur >> S.csRange >> on >> S.dccTarget >> S.dccMin;
+            S.dcc = on != 0;
+        }
         else if (key == "v") {          // v <index> <sumo_id> <first> <last> [<first> <last> ...]
             int i, a, b;
             std::string id;
@@ -76,7 +82,7 @@ void AiharpApp::initialize(int stage)
             m->subscribe(Mac1609_4::sigChannelBusy, this);
     }
     else if (stage == 1 && idx >= 0) {
-        if (par("beacons").boolValue())
+        if (par("beacons").boolValue() && S.beaconHz > 0)
             scheduleAt(simTime() + dblrand() * beaconInterval, beaconEvt);   // random phase, as Veins does
         if (idx == S.originIdx && timeOf(S.originStep) >= simTime())
             scheduleAt(timeOf(S.originStep), originEvt);
@@ -88,18 +94,44 @@ bool AiharpApp::quiescent(simtime_t now, double minEnd)
     return S.loaded && S.originDone && S.pending == 0 && now.dbl() >= minEnd && now.dbl() - S.lastTx >= 1.0;
 }
 
+void AiharpApp::logState(simtime_t now, double minEnd)
+{
+    if (!S.loaded) return;
+    S.log << "Q," << now << "," << S.originDone << "," << S.pending << "," << S.lastTx << "," << minEnd << "\n";
+}
+
 simtime_t AiharpApp::timeOf(int step) const { return S.t0 + step * S.dt; }
 
 int AiharpApp::stepAt(simtime_t t) const { return (int) std::floor((t.dbl() - S.t0) / S.dt + 1e-6); }
 
-bool AiharpApp::isActive(int step) const
+bool AiharpApp::isActive(int step) const { return activeAt(idx, step); }
+
+bool AiharpApp::activeAt(int i, int step)
 {
-    if (idx < 0 || step < 0 || step >= S.nSteps) return false;
-    auto it = S.active.find(idx);
+    if (i < 0 || step < 0 || step >= S.nSteps) return false;
+    auto it = S.active.find(i);
     if (it == S.active.end()) return false;
     for (auto& r : it->second)
         if (step >= r.first && step <= r.second) return true;
     return false;
+}
+
+void AiharpApp::handlePositionUpdate(cObject* obj)
+{
+    DemoBaseApplLayer::handlePositionUpdate(obj);
+    if (idx >= 0) S.pos[idx] = curPosition;
+}
+
+double AiharpApp::beaconRate(int step) const
+{
+    // sim/mac.py effective_beacon_hz: clip(target / (n * T_b), min_hz, beacon_hz), n = active vehicles
+    // within the carrier-sense range
+    if (!S.dcc) return S.beaconHz;
+    int n = 0;
+    for (auto& kv : S.pos)
+        if (kv.first != idx && curPosition.distance(kv.second) <= S.csRange && activeAt(kv.first, step)) n++;
+    double allowed = S.dccTarget / std::max(n * S.beaconDur, 1e-12);
+    return std::min(std::max(allowed, S.dccMin), S.beaconHz);
 }
 
 void AiharpApp::receiveSignal(cComponent* source, simsignal_t signalID, bool b, cObject* details)
@@ -129,7 +161,8 @@ void AiharpApp::handleSelfMsg(cMessage* msg)
             activeTime += simTime().dbl() - activeSince;
             activeSince = -1;
         }
-        scheduleAt(simTime() + beaconInterval, beaconEvt);
+        double rate = isActive(step) ? beaconRate(step) : 0.0;
+        scheduleAt(simTime() + (rate > 0 ? 1.0 / rate : beaconInterval.dbl()), beaconEvt);
         break;
     }
     case EV_ORIGIN: {
@@ -138,6 +171,7 @@ void AiharpApp::handleSelfMsg(cMessage* msg)
         hops = 0;
         S.log << "O," << simTime() << "," << step << "," << idx << "\n";
         decide(step, "originate", 0.0);
+        S.originDone = true;
         break;
     }
     case EV_TX:
@@ -223,7 +257,7 @@ void AiharpApp::transmit(int step)
     m->setSenderIdx(idx);
     m->setSenderPos(curPosition);
     m->setSchedTime(timeOf(step).dbl());
-    sendDown(m);
+    sendDelayedDown(m, intuniform(0, S.cwSlots - 1) * S.slotTime);   // custom MAC's per-epoch backoff draw
     txCount++;
     S.lastTx = simTime().dbl();
     S.log << "T," << simTime() << "," << step << "," << idx << "," << hops << "," << timeOf(step) << "\n";
@@ -259,6 +293,7 @@ void AiharpApp::onWSM(BaseFrame1609_4* wsm)
 void AiharpApp::finish()
 {
     if (activeSince >= 0) activeTime += simTime().dbl() - activeSince;
+    S.pos.erase(idx);
     if (idx >= 0) {
         recordScalar("traceIndex", idx);
         recordScalar("activeTime", activeTime);

@@ -19,6 +19,8 @@ public:
     using DemoBaseApplLayer::receiveSignal;
     /** No hazard transmission pending or recent, origin done, window long enough (AiharpManager). */
     static bool quiescent(simtime_t now, double minEnd);
+    /** One "Q" log line with the early-stop state (diagnostics). */
+    static void logState(simtime_t now, double minEnd);
 
 protected:
     enum Kind { FLOODING, P_PERSISTENCE, SLOTTED_1P, WEIGHTED_P, COUNTER_BASED };
@@ -32,6 +34,11 @@ protected:
         std::map<std::string, int> indexOf;                          // SUMO id -> trace index
         std::map<int, std::vector<std::pair<int, int>>> active;      // trace index -> [first, last] steps
         std::ofstream log;
+        double beaconHz = 10, beaconDur = 0, csRange = 0, dccTarget = 0.62, dccMin = 1;
+        bool dcc = true;
+        int cwSlots = 1;
+        double slotTime = 13e-6;
+        std::map<int, Coord> pos;         // current position of every vehicle with a node (DCC neighbour count)
         int pending = 0;                  // armed transmission events, all vehicles
         bool originDone = false;
         double lastTx = -1;
@@ -57,8 +64,11 @@ protected:
     void onBSM(DemoSafetyMessage* bsm) override {}
     void handleSelfMsg(cMessage* msg) override;
 
+    void handlePositionUpdate(cObject* obj) override;
     int stepAt(simtime_t t) const;
     bool isActive(int step) const;
+    static bool activeAt(int i, int step);
+    double beaconRate(int step) const;
     simtime_t timeOf(int step) const;
     void decide(int step, const char* trigger, double senderDist);
     void schedule(int step);

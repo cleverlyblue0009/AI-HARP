@@ -9,6 +9,7 @@ class AiharpManager : public TraCIScenarioManagerForker {
 protected:
     bool caughtUp = false;
     double t0 = 0, minEnd = 0;
+    simtime_t lastStateLog = 0;
     void initialize(int stage) override;
     void handleSelfMsg(cMessage* msg) override;
 };

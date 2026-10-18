@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build the H3 Veins application (experiments/revision5/veins/aiharp) into ~/veins-r5/aiharp/aiharp.
 set -euo pipefail
-source /tmp/env.sh
+source "$HOME/veins-r5/env.sh"
 SRC=/mnt/c/Users/UPASANA/AI-HARP/experiments/revision5/veins/aiharp
 DST=$VR5/aiharp
 mkdir -p "$DST"

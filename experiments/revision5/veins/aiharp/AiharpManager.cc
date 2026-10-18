@@ -35,6 +35,10 @@ void AiharpManager::handleSelfMsg(cMessage* msg)
         for (auto& id : getCommandInterface()->getVehicleIds())
             if (subscribedVehicles.find(id) == subscribedVehicles.end()) subscribeToVehicleVariables(id);
     }
+    if (simTime() - lastStateLog >= 10) {
+        AiharpApp::logState(simTime(), minEnd);
+        lastStateLog = simTime();
+    }
     if (AiharpApp::quiescent(simTime(), minEnd)) {
         recordScalar("earlyStopAt", simTime().dbl());
         endSimulation();
