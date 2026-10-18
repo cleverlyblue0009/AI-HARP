@@ -1233,3 +1233,31 @@ The reference points sit within 0.003–0.036 of the best achievable miss rate; 
 qualifying points use 0.015–0.046 of the 0.05 tolerance. That is why R2 found the tolerance decisive.
 The guard is a per-vehicle constraint stated in absolute terms: e.g. at rural d=20 up to 36.4% of vehicles that
 could have been saved may miss their reaction deadline at the paper's tolerance.
+
+
+## R12. Random-gate control, full-model seeds 0–4
+
+Regenerate: per seed, `python -m experiments.revision1.agent_eval --checkpoint <ref_s{k} ckpt_final.pt> --name ref_s{k}_randomgate
+--random-gate-from results/revision1/agent_runs/ref_s{k}.csv` (rate-matched to that seed's own learned-gate fallback
+rate per (cell, bias), exactly as C3), then `python -m experiments.revision3.r12_random_gate` →
+`results/revision3/R12/r12_random_gate.json`. Each arm is scored alone against the 55 baseline settings (Algorithm 1).
+
+| seed | learned gate (τ=0.5): cells / rural d=20 cost (regret) | network only (τ=0) | random gate, same rate |
+|---|---|---|---|
+| 0 | 1 / 0.717 (+1.8%) | 2 / 0.706 (+0.3%) | **3** / 0.782 (+11.1%) |
+| 1 | 1 / 0.725 (+3.1%) | 2 / 0.856 (+21.7%) | **3** / 0.748 (+6.3%) |
+| 2 | 3 / **0.554 (−21.3%)** | 3 / 0.606 (−13.9%) | 3 / 0.713 (+1.3%) |
+| 3 | 3 / **0.668 (−5.2%)** | 2 / 0.834 (+18.4%) | 3 / 0.953 (+35.4%) |
+| 4 | 3 / **0.534 (−24.1%)** | 3 / 0.845 (+20.0%) | 3 / 0.762 (+8.3%) |
+| mean ± SD | 2.20 ± 1.10 cells; −9.1% ± 12.8 | 2.40 ± 0.55; +9.3% ± 15.6 | **3.00 ± 0.00**; +12.5% ± 13.3 |
+
+Cells matched by the random gate on every seed: rural d=20, rural d=80, urban d=20 (never rural d=2).
+
+**Reading (refines C3).** The learned confidence gate is not useless, but it is not what makes
+the policy qualify. A coin that defers the same fraction of decisions qualifies in 3 of 4 cells on
+all five seeds, more reliably than the learned gate (1–3 cells). Where every arm qualifies (rural
+d=20), the learned gate is cheaper than the random gate on all five seeds (by 4.2–29.8 points of
+regret) and cheaper than the network alone on four of five. So the entropy gate picks *cheaper*
+decisions to defer, and the random gate picks *safer* ones. On 5 seeds this is a trade-off
+between cost and robust qualification, not an across-the-board gain from learning which decisions
+to hand to the fallback.

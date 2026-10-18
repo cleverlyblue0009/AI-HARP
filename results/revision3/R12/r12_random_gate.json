@@ -1,0 +1,227 @@
+{
+ "seeds": {
+  "0": {
+   "learned_gate": {
+    "cells_matched": 1,
+    "matched": [
+     "rural_highway/d=20"
+    ],
+    "rural_d20_cost": 0.7168148145973955,
+    "rural_d20_regret": 0.01844709147744905,
+    "rural_d20_margin": 0.018969854481810433
+   },
+   "network_only": {
+    "cells_matched": 2,
+    "matched": [
+     "rural_highway/d=20",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.7056299371058532,
+    "rural_d20_regret": 0.002555670544427624,
+    "rural_d20_margin": 0.035121455187272055
+   },
+   "random_gate": {
+    "cells_matched": 3,
+    "matched": [
+     "rural_highway/d=20",
+     "rural_highway/d=80",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.7823015884874861,
+    "rural_d20_regret": 0.11149038946796797,
+    "rural_d20_margin": -0.06632851310847387
+   }
+  },
+  "1": {
+   "learned_gate": {
+    "cells_matched": 1,
+    "matched": [
+     "rural_highway/d=20"
+    ],
+    "rural_d20_cost": 0.7253441572095104,
+    "rural_d20_regret": 0.030565541038793498,
+    "rural_d20_margin": 0.006987758929089427
+   },
+   "network_only": {
+    "cells_matched": 2,
+    "matched": [
+     "rural_highway/d=20",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.8562202844013662,
+    "rural_d20_regret": 0.21651372230963095,
+    "rural_d20_margin": -0.1469336797698173
+   },
+   "random_gate": {
+    "cells_matched": 3,
+    "matched": [
+     "rural_highway/d=20",
+     "rural_highway/d=80",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.7484115401431193,
+    "rural_d20_regret": 0.06333956939076812,
+    "rural_d20_margin": -0.02404940578410031
+   }
+  },
+  "2": {
+   "learned_gate": {
+    "cells_matched": 3,
+    "matched": [
+     "rural_highway/d=20",
+     "rural_highway/d=80",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.5537572094733865,
+    "rural_d20_regret": -0.21322438112610953,
+    "rural_d20_margin": 0.31901251094378313
+   },
+   "network_only": {
+    "cells_matched": 3,
+    "matched": [
+     "rural_highway/d=20",
+     "rural_highway/d=80",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.6062730817510986,
+    "rural_d20_regret": -0.13861007867523567,
+    "rural_d20_margin": 0.20475856393139358
+   },
+   "random_gate": {
+    "cells_matched": 3,
+    "matched": [
+     "rural_highway/d=20",
+     "rural_highway/d=80",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.7129542762044394,
+    "rural_d20_regret": 0.012962056824459278,
+    "rural_d20_margin": 0.02448742044050567
+   }
+  },
+  "3": {
+   "learned_gate": {
+    "cells_matched": 3,
+    "matched": [
+     "rural_highway/d=20",
+     "rural_highway/d=80",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.6675193366251472,
+    "rural_d20_regret": -0.05159169000619668,
+    "rural_d20_margin": 0.09421951881355795
+   },
+   "network_only": {
+    "cells_matched": 2,
+    "matched": [
+     "rural_highway/d=20",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.8336547919544216,
+    "rural_d20_regret": 0.18445277758256795,
+    "rural_d20_margin": -0.12384275317564808
+   },
+   "random_gate": {
+    "cells_matched": 3,
+    "matched": [
+     "rural_highway/d=20",
+     "rural_highway/d=80",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.9528822346564697,
+    "rural_d20_regret": 0.3538505631353057,
+    "rural_d20_margin": -0.23347013853811627
+   }
+  },
+  "4": {
+   "learned_gate": {
+    "cells_matched": 3,
+    "matched": [
+     "rural_highway/d=20",
+     "rural_highway/d=80",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.5339040031318907,
+    "rural_d20_regret": -0.24143172260851797,
+    "rural_d20_margin": 0.36805995653919
+   },
+   "network_only": {
+    "cells_matched": 3,
+    "matched": [
+     "rural_highway/d=20",
+     "rural_highway/d=80",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.8447390523084501,
+    "rural_d20_regret": 0.2002012421634507,
+    "rural_d20_margin": -0.13533926799679996
+   },
+   "random_gate": {
+    "cells_matched": 3,
+    "matched": [
+     "rural_highway/d=20",
+     "rural_highway/d=80",
+     "urban_nlos/d=20"
+    ],
+    "rural_d20_cost": 0.7624925510296092,
+    "rural_d20_regret": 0.08334580292608185,
+    "rural_d20_margin": -0.04207236341597986
+   }
+  }
+ },
+ "learned_gate_summary": {
+  "cells_matched_mean": 2.2,
+  "cells_matched_sd": 1.0954451150103321,
+  "rural_d20_regret_mean": -0.09144703224491632,
+  "rural_d20_regret_sd": 0.12833293109816163,
+  "n_seeds": 5
+ },
+ "network_only_summary": {
+  "cells_matched_mean": 2.4,
+  "cells_matched_sd": 0.5477225575051661,
+  "rural_d20_regret_mean": 0.09302266678496832,
+  "rural_d20_regret_sd": 0.15567173728188055,
+  "n_seeds": 5
+ },
+ "random_gate_summary": {
+  "cells_matched_mean": 3.0,
+  "cells_matched_sd": 0.0,
+  "rural_d20_regret_mean": 0.12499767634891659,
+  "rural_d20_regret_sd": 0.13289532661541506,
+  "n_seeds": 5
+ },
+ "provenance": {
+  "task": "R12",
+  "git_commit": "5870b3d73960a5599925b6c9dabec296678a5e40-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision3.r12_random_gate",
+  "config_hash": "69f56c1724dc",
+  "config": {
+   "rows": "results/revision1/agent_runs/ref_s{0..4}{,_randomgate}.csv"
+  },
+  "seeds": {
+   "eval": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "train": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  "generated": "2026-10-18 12:06:47"
+ }
+}
