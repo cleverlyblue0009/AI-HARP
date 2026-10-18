@@ -380,6 +380,13 @@ class DisseminationEngine:
         beacon_ok = rng_mac.random(d.shape) < survive_p[None, :]
 
         decoded = above_sens & above_sinr & beacon_ok & ~is_tx[None, :]
+        # R9 calibrated-channel knob (off by default; draws nothing when off).
+        if mac.extra_loss_p_max > 0.0:
+            # Own named stream: enabling the knob must not shift the mac stream, or
+            # cells where the loss is exactly zero would change through RNG drift alone.
+            extra_ok = (self.seeds.rng("extra_loss").random(d.shape)
+                        >= mac.extra_loss_probability(nb_rx)[None, :])
+            decoded &= extra_ok
 
         # --- accounting, restricted to the nominal-range denominator --------
         in_nominal = (d <= self.comm_range_m) & ~is_tx[None, :]

@@ -1261,3 +1261,16 @@ regret) and cheaper than the network alone on four of five. So the entropy gate 
 decisions to defer, and the random gate picks *safer* ones. On 5 seeds this is a trade-off
 between cost and robust qualification, not an across-the-board gain from learning which decisions
 to hand to the fallback.
+
+## Run log (revision 3)
+
+* 2026-10-18 11:13: R8 (rungs B, C × seeds 0, 1) and R12 launched via Task Scheduler
+  (`launch_revision1.ps1 -Revision3` → `watchdog_revision3.ps1`, every 20 min), one hidden console per job.
+* 2026-10-18 12:38: **R9 first pass invalidated by my own bug, caught before reporting.** The calibrated-loss
+  knob drew its random numbers from the engine's `mac` stream. Enabling it therefore shifted every later MAC
+  draw, so the rural d=2 and d=20 cells changed although their extra-loss probability is exactly zero (receivers
+  there have < 250 neighbours in carrier-sense range); the agent's cells matched read 1/1/3/3/3 → 1/1/1/1/1.
+  Fix: the knob draws from its own named stream (`common/seeding.py` "extra_loss"; stream keys are name hashes,
+  so no other stream moves). Verified: with the knob on, rural d=2 and d=20 runs are now bit-identical to default,
+  while urban d=20 and rural d=80 change. The fit and the rerun were redone; the invalid outputs are kept,
+  labelled, in `results/revision3/R9/invalid_rng_drift/` (README there). R8 training is unaffected (knob off).

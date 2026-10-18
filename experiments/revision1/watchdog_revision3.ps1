@@ -33,6 +33,10 @@ foreach ($s in 1, 2, 3, 4) {
                 done = [scriptblock]::Create("(Lines 'results\revision1\agent_runs\ref_s${s}_randomgate.csv') -ge 241");
                 cmd = "$gpu -u -m experiments.revision1.agent_eval --checkpoint $ck --name ref_s${s}_randomgate --random-gate-from results\revision1\agent_runs\ref_s$s.csv --modes sampled --jobs 1 >> logs\revision1\eval_r12_s$s.log 2>&1" }
 }
+# R9: fit (own RNG stream; the first fit drew from the mac stream and was quarantined).
+$jobs += @{ n = "r9_fit"; alive = "r9_calibrated_channel fit"; ready = { $true };
+            done = { Test-Path "results\revision3\R9\r9_fit.json" };
+            cmd = "$gpu -u -m experiments.revision3.r9_calibrated_channel fit --jobs 3 >> logs\revision1\r9_fit2.log 2>&1" }
 # R9: rerun under the calibrated channel (after the fit has written r9_fit.json).
 $jobs += @{ n = "r9_rerun"; alive = "r9_calibrated_channel rerun";
             ready = { Test-Path "results\revision3\R9\r9_fit.json" };

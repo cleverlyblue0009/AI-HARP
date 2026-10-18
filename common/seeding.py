@@ -24,6 +24,9 @@ STREAMS = (
     "mac",           # backoff slot selection / collision draws
     "policy",        # policy-internal randomness (p-persistence, etc.)
     "torch",         # Phase 5 agent init / action sampling
+    "extra_loss",    # revision-3 R9 calibrated-channel knob: its OWN stream, so enabling
+                     # it never shifts the mac stream (keys are name hashes, so adding a
+                     # stream leaves every other stream unchanged)
 )
 
 

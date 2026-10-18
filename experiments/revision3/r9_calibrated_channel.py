@@ -78,6 +78,7 @@ def fit(jobs):
     full, rows = curve(p_best, sorted(PAPER), 30, jobs)
     dev = {d: full[d] - PAPER[d] for d in PAPER}
     out = {"function": "p(n) = p_max * clip((n - n0)/(n1 - n0), 0, 1); n = neighbours within carrier-sense range",
+           "rng_stream": "extra_loss (own named stream)",
            "n0": N0, "n1": N1, "p_max": p_best, "bisection": hist, "verification_30_seeds": full,
            "deviation": dev, "max_abs_deviation": max(abs(v) for v in dev.values()),
            "within_0.01_everywhere": all(abs(v) <= 0.01 for v in dev.values()), "rows": rows,
