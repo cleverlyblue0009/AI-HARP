@@ -42,49 +42,63 @@ N0, N1 = 250.0, 373.0
 PAPER = {10.0: 0.9998, 20.0: 0.9961, 30.0: 0.9280, 40.0: 0.9371, 50.0: 0.9372}
 
 
+N1_GRID = (300.0, 330.0, 373.0)
+
+
 def _val_run(args):
-    density, seed, p_max = args
+    density, seed, p_max, n1 = args
     import experiments.validate_amador as V
 
     orig = V.configs
 
     def patched(*a, **k):
         c = orig(*a, **k)
-        c["phy"]["mac"]["extra_loss"] = {"p_max": p_max, "n0": N0, "n1": N1}
+        c["phy"]["mac"]["extra_loss"] = {"p_max": p_max, "n0": N0, "n1": n1}
         return c
 
     V.configs = patched
     r = V.run_one((density, seed))
-    return {"density": density, "seed": seed, "p_max": p_max, "pdr": r["paper"], "n_area": r["n_area"]}
+    return {"density": density, "seed": seed, "p_max": p_max, "n1": n1, "pdr": r["paper"], "n_area": r["n_area"]}
 
 
-def curve(p_max, densities, seeds, jobs):
+def curve(p_max, densities, seeds, jobs, n1=N1):
     with ProcessPoolExecutor(jobs) as ex:
-        rows = list(ex.map(_val_run, [(d, s, p_max) for d in densities for s in range(seeds)]))
+        rows = list(ex.map(_val_run, [(d, s, p_max, n1) for d in densities for s in range(seeds)]))
     return {d: float(np.nanmean([r["pdr"] for r in rows if r["density"] == d])) for d in densities}, rows
 
 
 def fit(jobs):
+    """Two-parameter fit: for each ramp end n1, bisect p_max on the mean gap over 30-50
+    (10 seeds); keep the (n1, p_max) whose curve has the smallest MAXIMUM |deviation| over
+    30-50; verify it with 30 seeds at every density. A one-parameter first attempt
+    (n1 = 373) missed by 0.011 at 30 and 40: the published curve dips at 30 and recovers
+    at 40-50, which a ramp ending at d ~ 30 under-penalises."""
     hi_d = (30.0, 40.0, 50.0)
-    lo, hi, hist = 0.0, 1.0, []
-    for _ in range(9):
-        mid = 0.5 * (lo + hi)
-        c, _ = curve(mid, hi_d, 10, jobs)
-        gap = float(np.mean([c[d] - PAPER[d] for d in hi_d]))     # >0: still too optimistic
-        hist.append({"p_max": mid, "curve": c, "mean_gap": gap})
-        print(f"p_max {mid:.4f} -> {c} gap {gap:+.4f}", flush=True)
-        lo, hi = (mid, hi) if gap > 0 else (lo, mid)
-    p_best = min(hist, key=lambda h: abs(h["mean_gap"]))["p_max"]
-    full, rows = curve(p_best, sorted(PAPER), 30, jobs)
+    cands = []
+    for n1 in N1_GRID:
+        lo, hi, hist = 0.0, 1.0, []
+        for _ in range(9):
+            mid = 0.5 * (lo + hi)
+            c, _ = curve(mid, hi_d, 10, jobs, n1)
+            gap = float(np.mean([c[d] - PAPER[d] for d in hi_d]))
+            hist.append({"p_max": mid, "curve": c, "mean_gap": gap,
+                         "max_abs_dev": max(abs(c[d] - PAPER[d]) for d in hi_d)})
+            print(f"n1 {n1:.0f} p_max {mid:.4f} -> {c} gap {gap:+.4f}", flush=True)
+            lo, hi = (mid, hi) if gap > 0 else (lo, mid)
+        best = min(hist, key=lambda h: h["max_abs_dev"])
+        cands.append({"n1": n1, **best, "bisection": hist})
+    choice = min(cands, key=lambda c: c["max_abs_dev"])
+    full, rows = curve(choice["p_max"], sorted(PAPER), 30, jobs, choice["n1"])
     dev = {d: full[d] - PAPER[d] for d in PAPER}
     out = {"function": "p(n) = p_max * clip((n - n0)/(n1 - n0), 0, 1); n = neighbours within carrier-sense range",
            "rng_stream": "extra_loss (own named stream)",
-           "n0": N0, "n1": N1, "p_max": p_best, "bisection": hist, "verification_30_seeds": full,
-           "deviation": dev, "max_abs_deviation": max(abs(v) for v in dev.values()),
+           "n0": N0, "n1": choice["n1"], "p_max": choice["p_max"], "candidates": cands,
+           "verification_30_seeds": full, "deviation": dev,
+           "max_abs_deviation": max(abs(v) for v in dev.values()),
            "within_0.01_everywhere": all(abs(v) <= 0.01 for v in dev.values()), "rows": rows,
-           "provenance": stamp("R9/fit", {"n0": N0, "n1": N1, "paper": PAPER}, seeds=list(range(30)))}
+           "provenance": stamp("R9/fit", {"n0": N0, "n1_grid": N1_GRID, "paper": PAPER}, seeds=list(range(30)))}
     write_json(D / "r9_fit.json", out)
-    print("fitted p_max", p_best, "verification", full, "max |dev|", out["max_abs_deviation"])
+    print("fitted n1", choice["n1"], "p_max", choice["p_max"], "verification", full, "max |dev|", out["max_abs_deviation"])
     return out
 
 
