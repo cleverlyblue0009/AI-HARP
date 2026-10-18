@@ -110,8 +110,7 @@ def run(bundle: Path, policy: str, knob: float, seed: int, out: Path) -> dict:
            f'--*.node[*].appl.policy="{policy}"', f"--*.node[*].appl.knob={knob}",
            '--*.node[*].appl.nodesFile="nodes.txt"', '--*.node[*].appl.logFile="events.csv"']
     if obstacles:
-        poly = next(work.glob("*.poly.xml"), None)
-        if poly is None:
+        if not b.get("buildings") or not (work / b["buildings"]).exists():
             raise SystemExit("urban_nlos bundle has no buildings (*.poly.xml)")
         cmd.append(f'--*.obstacles.obstacles=xmldoc("config.xml", '
                    '"//AnalogueModel[@type=\'SimpleObstacleShadowing\']/obstacles")')

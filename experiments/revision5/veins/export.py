@@ -76,7 +76,32 @@ def fcd_compare(a: dict, b: dict) -> dict:
             "max_abs_dx_m": dx, "max_abs_dy_m": dy}
 
 
-def write_veins_cfg(sumo: str, d: Path, t0: float, t_end: float) -> None:
+def write_buildings(d: Path, trace_meta: dict, phy_cfg: dict) -> str | None:
+    """The custom simulator's building grid (sim/buildings.py) as SUMO polygons of type "building" for
+    Veins' SimpleObstacleShadowing. Synthetic grids only: trace coordinates are the raw SUMO ones, with
+    streets at multiples of the block length -- asserted against the net's junctions."""
+    from sim.buildings import build_building_grid
+    g = build_building_grid(trace_meta, float(phy_cfg["nlos"]["street_half_width_m"]))
+    if g is None or float(phy_cfg["nlos"]["corner_loss_db"].get(trace_meta.get("scenario", ""), 1.0)) <= 0:
+        return None
+    net = ET.parse(next(d.glob("*.net.xml"))).getroot()
+    xs = sorted({round(float(j.get("x")), 2) for j in net.iter("junction") if j.get("type") != "internal"})
+    ys = sorted({round(float(j.get("y")), 2) for j in net.iter("junction") if j.get("type") != "internal"})
+    B, w = g.block_length_m, g.street_half_width_m
+    for v in xs + ys:
+        if abs(v / B - round(v / B)) * B > 1.0:
+            raise SystemExit(f"junction coordinate {v} is not on the {B:g} m street grid; buildings not exported")
+    polys = []
+    for i in range(int(round(min(xs) / B)), int(round(max(xs) / B))):
+        for j in range(int(round(min(ys) / B)), int(round(max(ys) / B))):
+            x0, x1, y0, y1 = i * B + w, (i + 1) * B - w, j * B + w, (j + 1) * B - w
+            polys.append(f'  <poly id="bldg_{i}_{j}" type="building" color="1,0,0" fill="1" layer="0" '
+                         f'shape="{x0},{y0} {x1},{y0} {x1},{y1} {x0},{y1} {x0},{y0}"/>')
+    (d / "buildings.poly.xml").write_text("<additional>\n" + "\n".join(polys) + "\n</additional>\n")
+    return "buildings.poly.xml"
+
+
+def write_veins_cfg(sumo: str, d: Path, t0: float, t_end: float, extra_files: str | None = None) -> None:
     """veins.sumocfg = run.sumocfg (full warm-up from t = 0) + FCD output from t0; run it once headless
     to produce fcd_veins.xml for the identity check.
 
@@ -85,6 +110,13 @@ def write_veins_cfg(sumo: str, d: Path, t0: float, t_end: float) -> None:
     then one vehicle diverged by 0.22 m (rural d=20 s=200). Veins therefore steps SUMO through the
     warm-up; applications stay silent until their vehicle's first active step."""
     cfg = ET.parse(d / "run.sumocfg").getroot()
+    if extra_files:
+        inp = cfg.find("input")
+        add = inp.find("additional-files")
+        if add is None:
+            ET.SubElement(inp, "additional-files", value=extra_files)
+        else:
+            add.set("value", add.get("value") + "," + extra_files)
     cfg.find("time").find("end").set("value", f"{t_end + 1.0:.1f}")
     out = ET.SubElement(cfg, "output")
     ET.SubElement(out, "fcd-output", value="fcd_veins.xml")
@@ -155,7 +187,8 @@ def export(scenario: str, density: float, seed: int, out: Path = OUT) -> Path:
     if len(np.unique(ref["t"])) != canon.n_steps:
         raise SystemExit(f"reference FCD has {len(np.unique(ref['t']))} steps, trace {canon.n_steps}")
     np.savez_compressed(d / "fcd_ref.npz", **ref)
-    write_veins_cfg(tools.sumo, d, t0, t0 + canon.n_steps * dt)
+    buildings = write_buildings(d, {**canon.meta, "scenario": scenario}, phy_cfg)
+    write_veins_cfg(tools.sumo, d, t0, t0 + canon.n_steps * dt, buildings)
     chk = fcd_compare(ref, fcd_table(d / "fcd_veins.xml", t0, t0 + canon.n_steps * dt))
     if not chk["identical"]:
         raise SystemExit(f"state-resumed SUMO run differs from the reference FCD: {chk}")
@@ -184,7 +217,7 @@ def export(scenario: str, density: float, seed: int, out: Path = OUT) -> Path:
                          "cw_slots": int(m.cw_slots), "slot_time_s": float(m.slot_time_s)})
     bundle = {
         "veins": bundle_veins,
-        "scenario": scenario, "density": density, "seed": seed, "dt": dt, "t0_sumo_s": t0, "warmup_s": warmup, "fcd_check_windows": chk,
+        "scenario": scenario, "density": density, "seed": seed, "dt": dt, "t0_sumo_s": t0, "warmup_s": warmup, "buildings": buildings, "fcd_check_windows": chk,
         "n_steps": int(canon.n_steps), "sumocfg": "veins.sumocfg", "files": files,
         "vehicles": [{"index": i, "sumo_id": str(v), "active": intervals(canon.active[:, i])}
                      for i, v in enumerate(canon.vehicle_ids)],
