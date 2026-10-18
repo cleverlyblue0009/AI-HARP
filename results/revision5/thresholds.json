@@ -1,0 +1,488 @@
+{
+ "provenance": {
+  "task": "revision5/thresholds",
+  "git_commit": "b568740262534cc4f018abdd7b5db21aaff30895",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.thresholds",
+  "config_hash": "0cc2544a8209",
+  "config": {
+   "source": "classical__CAL__grid24__default__fallback.csv",
+   "rows": 13200
+  },
+  "seeds": [
+   300,
+   301,
+   302,
+   303,
+   304,
+   305,
+   306,
+   307,
+   308,
+   309
+  ],
+  "generated": "2026-10-19 00:11:06",
+  "n_runs": 13200
+ },
+ "rule": "q* = 0.95 x max mean oracle RWCR; m* = min mean actionable miss + 0.05 (CAL)",
+ "cells": {
+  "rural_highway|2": {
+   "scenario": "rural_highway",
+   "density": 2.0,
+   "ceiling_rwcr": 0.6244553282013343,
+   "ceiling_setting": [
+    "dvcast",
+    "n_slots",
+    "3"
+   ],
+   "q_star": 0.5932325617912676,
+   "best_miss": 0.5320005574136009,
+   "best_miss_setting": [
+    "dvcast",
+    "n_slots",
+    "3"
+   ],
+   "m_star": 0.5820005574136009,
+   "m_star_absolute": 0.4
+  },
+  "rural_highway|20": {
+   "scenario": "rural_highway",
+   "density": 20.0,
+   "ceiling_rwcr": 0.9168567466201353,
+   "ceiling_setting": [
+    "slotted_1p",
+    "n_slots",
+    "30"
+   ],
+   "q_star": 0.8710139092891285,
+   "best_miss": 0.30749328311976304,
+   "best_miss_setting": [
+    "greedy_farthest",
+    "fallback_n_slots",
+    "32"
+   ],
+   "m_star": 0.35749328311976303,
+   "m_star_absolute": 0.4
+  },
+  "rural_highway|80": {
+   "scenario": "rural_highway",
+   "density": 80.0,
+   "ceiling_rwcr": 0.9166572081345578,
+   "ceiling_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "q_star": 0.8708243477278298,
+   "best_miss": 0.31947638631808256,
+   "best_miss_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "m_star": 0.36947638631808255,
+   "m_star_absolute": 0.4
+  },
+  "urban_nlos|20": {
+   "scenario": "urban_nlos",
+   "density": 20.0,
+   "ceiling_rwcr": 0.9717453670280085,
+   "ceiling_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "q_star": 0.923158098676608,
+   "best_miss": 0.07673339496289047,
+   "best_miss_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "m_star": 0.1267333949628905,
+   "m_star_absolute": 0.4
+  },
+  "rural_highway|1": {
+   "scenario": "rural_highway",
+   "density": 1.0,
+   "ceiling_rwcr": 0.2343434125211817,
+   "ceiling_setting": [
+    "slotted_1p",
+    "n_slots",
+    "50"
+   ],
+   "q_star": 0.22262624189512262,
+   "best_miss": 0.8702480852480852,
+   "best_miss_setting": [
+    "slotted_1p",
+    "n_slots",
+    "50"
+   ],
+   "m_star": 0.9202480852480852,
+   "m_star_absolute": 0.4
+  },
+  "rural_highway|3": {
+   "scenario": "rural_highway",
+   "density": 3.0,
+   "ceiling_rwcr": 0.859884165477635,
+   "ceiling_setting": [
+    "counter_based",
+    "counter_threshold",
+    "6"
+   ],
+   "q_star": 0.8168899572037532,
+   "best_miss": 0.40148361267556315,
+   "best_miss_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "m_star": 0.45148361267556314,
+   "m_star_absolute": 0.4
+  },
+  "rural_highway|5": {
+   "scenario": "rural_highway",
+   "density": 5.0,
+   "ceiling_rwcr": 0.8959811803578613,
+   "ceiling_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "q_star": 0.8511821213399682,
+   "best_miss": 0.3174837354395568,
+   "best_miss_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "m_star": 0.3674837354395568,
+   "m_star_absolute": 0.4
+  },
+  "rural_highway|10": {
+   "scenario": "rural_highway",
+   "density": 10.0,
+   "ceiling_rwcr": 0.9132716072032991,
+   "ceiling_setting": [
+    "greedy_farthest",
+    "fallback_n_slots",
+    "2"
+   ],
+   "q_star": 0.8676080268431341,
+   "best_miss": 0.27953767175086985,
+   "best_miss_setting": [
+    "dvcast",
+    "n_slots",
+    "30"
+   ],
+   "m_star": 0.32953767175086984,
+   "m_star_absolute": 0.4
+  },
+  "rural_highway|40": {
+   "scenario": "rural_highway",
+   "density": 40.0,
+   "ceiling_rwcr": 0.8997071622604869,
+   "ceiling_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "q_star": 0.8547218041474625,
+   "best_miss": 0.3521998059839059,
+   "best_miss_setting": [
+    "greedy_farthest",
+    "fallback_n_slots",
+    "2"
+   ],
+   "m_star": 0.40219980598390587,
+   "m_star_absolute": 0.4
+  },
+  "urban_nlos|1": {
+   "scenario": "urban_nlos",
+   "density": 1.0,
+   "ceiling_rwcr": 0.5686518537241699,
+   "ceiling_setting": [
+    "slotted_1p",
+    "n_slots",
+    "12"
+   ],
+   "q_star": 0.5402192610379614,
+   "best_miss": 0.4905794205794206,
+   "best_miss_setting": [
+    "slotted_1p",
+    "n_slots",
+    "12"
+   ],
+   "m_star": 0.5405794205794207,
+   "m_star_absolute": 0.4
+  },
+  "urban_nlos|2": {
+   "scenario": "urban_nlos",
+   "density": 2.0,
+   "ceiling_rwcr": 0.779201726091299,
+   "ceiling_setting": [
+    "flooding",
+    "",
+    ""
+   ],
+   "q_star": 0.7402416397867341,
+   "best_miss": 0.27118649466475553,
+   "best_miss_setting": [
+    "flooding",
+    "",
+    ""
+   ],
+   "m_star": 0.3211864946647555,
+   "m_star_absolute": 0.4
+  },
+  "urban_nlos|3": {
+   "scenario": "urban_nlos",
+   "density": 3.0,
+   "ceiling_rwcr": 0.9760286771894275,
+   "ceiling_setting": [
+    "p_persistence_03",
+    "p",
+    "0.9"
+   ],
+   "q_star": 0.9272272433299561,
+   "best_miss": 0.07741777180084211,
+   "best_miss_setting": [
+    "p_persistence_03",
+    "p",
+    "0.9"
+   ],
+   "m_star": 0.12741777180084213,
+   "m_star_absolute": 0.4
+  },
+  "urban_nlos|5": {
+   "scenario": "urban_nlos",
+   "density": 5.0,
+   "ceiling_rwcr": 0.9719838464408875,
+   "ceiling_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "q_star": 0.9233846541188431,
+   "best_miss": 0.07933952237400568,
+   "best_miss_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "m_star": 0.1293395223740057,
+   "m_star_absolute": 0.4
+  },
+  "urban_nlos|10": {
+   "scenario": "urban_nlos",
+   "density": 10.0,
+   "ceiling_rwcr": 0.967870643200494,
+   "ceiling_setting": [
+    "p_persistence_03",
+    "p",
+    "0.9"
+   ],
+   "q_star": 0.9194771110404693,
+   "best_miss": 0.08354472958681344,
+   "best_miss_setting": [
+    "p_persistence_03",
+    "p",
+    "0.9"
+   ],
+   "m_star": 0.13354472958681346,
+   "m_star_absolute": 0.4
+  },
+  "urban_nlos|40": {
+   "scenario": "urban_nlos",
+   "density": 40.0,
+   "ceiling_rwcr": 0.9658270523765216,
+   "ceiling_setting": [
+    "counter_based",
+    "counter_threshold",
+    "6"
+   ],
+   "q_star": 0.9175356997576954,
+   "best_miss": 0.10658082674344319,
+   "best_miss_setting": [
+    "counter_based",
+    "counter_threshold",
+    "6"
+   ],
+   "m_star": 0.1565808267434432,
+   "m_star_absolute": 0.4
+  },
+  "urban_nlos|80": {
+   "scenario": "urban_nlos",
+   "density": 80.0,
+   "ceiling_rwcr": 0.9231987837330127,
+   "ceiling_setting": [
+    "greedy_farthest",
+    "fallback_n_slots",
+    "8"
+   ],
+   "q_star": 0.877038844546362,
+   "best_miss": 0.24816660890696918,
+   "best_miss_setting": [
+    "greedy_farthest",
+    "fallback_n_slots",
+    "32"
+   ],
+   "m_star": 0.29816660890696917,
+   "m_star_absolute": 0.4
+  },
+  "urban_grid|1": {
+   "scenario": "urban_grid",
+   "density": 1.0,
+   "ceiling_rwcr": 0.9911827240289306,
+   "ceiling_setting": [
+    "flooding",
+    "",
+    ""
+   ],
+   "q_star": 0.941623587827484,
+   "best_miss": 0.4211111111111111,
+   "best_miss_setting": [
+    "flooding",
+    "",
+    ""
+   ],
+   "m_star": 0.4711111111111111,
+   "m_star_absolute": 0.4
+  },
+  "urban_grid|2": {
+   "scenario": "urban_grid",
+   "density": 2.0,
+   "ceiling_rwcr": 0.9892686474348767,
+   "ceiling_setting": [
+    "flooding",
+    "",
+    ""
+   ],
+   "q_star": 0.9398052150631329,
+   "best_miss": 0.13716624448822592,
+   "best_miss_setting": [
+    "flooding",
+    "",
+    ""
+   ],
+   "m_star": 0.18716624448822594,
+   "m_star_absolute": 0.4
+  },
+  "urban_grid|3": {
+   "scenario": "urban_grid",
+   "density": 3.0,
+   "ceiling_rwcr": 0.9897528366700346,
+   "ceiling_setting": [
+    "p_persistence_03",
+    "p",
+    "0.7"
+   ],
+   "q_star": 0.9402651948365328,
+   "best_miss": 0.0491939505361363,
+   "best_miss_setting": [
+    "p_persistence_03",
+    "p",
+    "0.7"
+   ],
+   "m_star": 0.0991939505361363,
+   "m_star_absolute": 0.4
+  },
+  "urban_grid|5": {
+   "scenario": "urban_grid",
+   "density": 5.0,
+   "ceiling_rwcr": 0.9883604181562422,
+   "ceiling_setting": [
+    "p_persistence_03",
+    "p",
+    "0.5"
+   ],
+   "q_star": 0.9389423972484301,
+   "best_miss": 0.03234437487002467,
+   "best_miss_setting": [
+    "p_persistence_03",
+    "p",
+    "0.5"
+   ],
+   "m_star": 0.08234437487002468,
+   "m_star_absolute": 0.4
+  },
+  "urban_grid|10": {
+   "scenario": "urban_grid",
+   "density": 10.0,
+   "ceiling_rwcr": 0.9940911917395056,
+   "ceiling_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "q_star": 0.9443866321525303,
+   "best_miss": 0.01937910814317545,
+   "best_miss_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "m_star": 0.06937910814317545,
+   "m_star_absolute": 0.4
+  },
+  "urban_grid|20": {
+   "scenario": "urban_grid",
+   "density": 20.0,
+   "ceiling_rwcr": 0.9921359074129141,
+   "ceiling_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "q_star": 0.9425291120422684,
+   "best_miss": 0.02355380222938097,
+   "best_miss_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "m_star": 0.07355380222938097,
+   "m_star_absolute": 0.4
+  },
+  "urban_grid|40": {
+   "scenario": "urban_grid",
+   "density": 40.0,
+   "ceiling_rwcr": 0.9871944603523595,
+   "ceiling_setting": [
+    "counter_based",
+    "counter_threshold",
+    "4"
+   ],
+   "q_star": 0.9378347373347414,
+   "best_miss": 0.04085542868481684,
+   "best_miss_setting": [
+    "greedy_farthest",
+    "fallback_n_slots",
+    "2"
+   ],
+   "m_star": 0.09085542868481684,
+   "m_star_absolute": 0.4
+  },
+  "urban_grid|80": {
+   "scenario": "urban_grid",
+   "density": 80.0,
+   "ceiling_rwcr": 0.9474841877055358,
+   "ceiling_setting": [
+    "dvcast",
+    "n_slots",
+    "8"
+   ],
+   "q_star": 0.900109978320259,
+   "best_miss": 0.1789385073559948,
+   "best_miss_setting": [
+    "dvcast",
+    "n_slots",
+    "8"
+   ],
+   "m_star": 0.2289385073559948,
+   "m_star_absolute": 0.4
+  }
+ }
+}
