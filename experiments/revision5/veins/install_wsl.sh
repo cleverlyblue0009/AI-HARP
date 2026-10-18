@@ -7,6 +7,8 @@ set -euo pipefail
 J=${J:-4}
 P=$HOME/veins-r5
 step=${1:-build}
+# Windows PATH leaks into WSL (CMake found miniconda's Windows gtest.lib): keep Linux paths only.
+export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '^/mnt/' | paste -sd:)
 
 if [ "$step" = deps ]; then
   apt-get update -q
@@ -29,10 +31,10 @@ if [ ! -x "$P/omnetpp-6.0.3/bin/opp_run" ]; then
   cd "$P"
 fi
 
-if [ ! -x "$P/sumo-1.19.0/bin/sumo" ]; then
+if [ ! -x "$P/sumo-1.19.0/bin/duarouter" ]; then
   [ -f sumo-src-1.19.0.tar.gz ] || wget -q https://sumo.dlr.de/releases/1.19.0/sumo-src-1.19.0.tar.gz
   [ -d sumo-1.19.0 ] || tar xzf sumo-src-1.19.0.tar.gz
-  cmake -S sumo-1.19.0 -B sumo-1.19.0/build/cmake-build -DCMAKE_BUILD_TYPE=Release
+  cmake -S sumo-1.19.0 -B sumo-1.19.0/build/cmake-build -DCMAKE_BUILD_TYPE=Release -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON -DCMAKE_IGNORE_PREFIX_PATH=/mnt/c
   cmake --build sumo-1.19.0/build/cmake-build -j"$J"
 fi
 
