@@ -96,6 +96,27 @@ def write_veins_cfg(sumo: str, d: Path, t0: float, t_end: float) -> None:
                    cwd=d, check=True, capture_output=True)
 
 
+def veins_params(scenario: str, phy, net_xml: Path) -> dict:
+    """Veins analogue-model parameters for the SAME nominal physics as the custom PHY (no calibration):
+    BreakpointPathlossModel with the custom dual-slope exponents and breakpoint, L01 = the custom
+    reference loss at 1 m (free space) minus both antenna gains (Veins antennas are isotropic here), L02 continuous at the
+    breakpoint; NakagamiFading with the custom m. Not representable in Veins 5.3 and therefore absent:
+    log-normal shadowing, the beacon-load DCC. maxInterfDist: mean received power -110 dBm."""
+    assert phy.reference_distance_m == 1.0, "Veins' breakpoint model has a 1 m reference"
+    l01 = phy.reference_loss_db - phy.tx_gain_dbi - phy.rx_gain_dbi
+    bp, a1, a2 = phy.breakpoint_distance_m, phy.path_loss_exponent, phy.path_loss_exponent_far
+    l02 = l01 + 10 * a1 * math.log10(bp)
+    budget = phy.tx_power_dbm + 110.0                       # dB of loss to reach -110 dBm
+    d_int = bp * 10 ** ((budget - l02) / (10 * a2)) if budget > l02 else 10 ** ((budget - l01) / (10 * a1))
+    loc = ET.parse(net_xml).getroot().find("location")
+    x0, y0, x1, y1 = (float(v) for v in loc.get("convBoundary").split(","))
+    return {"L01": l01, "L02": l02, "alpha1": a1, "alpha2": a2, "breakpointDistance": bp,
+            "nakagami_m": float(phy.nakagami_m), "centerFrequency": phy.frequency_hz,
+            "txPower_mW": 10 ** (phy.tx_power_dbm / 10), "noiseFloor_dBm": phy.noise_dbm,
+            "minPowerLevel_dBm": phy.sensitivity_dbm, "maxInterfDist_m": round(d_int, 1),
+            "playgroundSizeX_m": math.ceil(x1 - min(x0, 0) + 200), "playgroundSizeY_m": math.ceil(y1 - min(y0, 0) + 200)}
+
+
 def export(scenario: str, density: float, seed: int, out: Path = OUT) -> Path:
     scfg = load_scenario(scenario)
     phy_cfg = load_yaml("phy.yaml")
@@ -146,7 +167,10 @@ def export(scenario: str, density: float, seed: int, out: Path = OUT) -> Path:
                                 "corner_loss_db": phy_cfg["nlos"]["corner_loss_db"][scenario],
                                 "beacon": {k: v for k, v in phy_cfg["mac"].items() if "beacon" in k or "dcc" in k},
                                 "frame_duration_s": res.mac.frame_duration_s}
+    net_xml = next(d.glob("*.net.xml"))
+    bundle_veins = veins_params(scenario, res.phy, net_xml)
     bundle = {
+        "veins": bundle_veins,
         "scenario": scenario, "density": density, "seed": seed, "dt": dt, "t0_sumo_s": t0, "warmup_s": warmup, "fcd_check_windows": chk,
         "n_steps": int(canon.n_steps), "sumocfg": "veins.sumocfg", "files": files,
         "vehicles": [{"index": i, "sumo_id": str(v), "active": intervals(canon.active[:, i])}

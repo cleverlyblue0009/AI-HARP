@@ -1,0 +1,69 @@
+// Revision-5 H3: classical dissemination schemes in Veins, mirroring sim/engine.py's decision rules.
+#pragma once
+
+#include <fstream>
+#include <map>
+#include <string>
+#include <vector>
+
+#include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
+#include "AiharpMsg_m.h"
+
+namespace veins {
+
+class AiharpApp : public DemoBaseApplLayer {
+public:
+    void initialize(int stage) override;
+    void finish() override;
+    void receiveSignal(cComponent* source, simsignal_t signalID, bool b, cObject* details) override;
+    using DemoBaseApplLayer::receiveSignal;
+    /** No hazard transmission pending or recent, origin done, window long enough (AiharpManager). */
+    static bool quiescent(simtime_t now, double minEnd);
+
+protected:
+    enum Kind { FLOODING, P_PERSISTENCE, SLOTTED_1P, WEIGHTED_P, COUNTER_BASED };
+    enum Ev { EV_ORIGIN = 100, EV_TX, EV_BEACON };
+    static constexpr int NO_STEP = -1;
+
+    struct Shared {                       // one per run (single-process simulation)
+        bool loaded = false;
+        double t0 = 0, dt = 0.1, commRange = 0, ttl = 60;
+        int nSteps = 0, maxHops = 32, originIdx = -1, originStep = -1;
+        std::map<std::string, int> indexOf;                          // SUMO id -> trace index
+        std::map<int, std::vector<std::pair<int, int>>> active;      // trace index -> [first, last] steps
+        std::ofstream log;
+        int pending = 0;                  // armed transmission events, all vehicles
+        bool originDone = false;
+        double lastTx = -1;
+    };
+    static Shared S;
+    static void loadShared(const std::string& nodesFile, const std::string& logFile);
+
+    // policy
+    Kind kind = FLOODING;
+    double knob = 0;
+
+    // per-vehicle message state (sim/engine.py arrays, one entry per vehicle)
+    int idx = -1;
+    bool holds = false;
+    int informedStep = NO_STEP, hops = 0, dupCount = 0, txSched = NO_STEP, cancelAtDups = NO_STEP, txCount = 0;
+    double busySince = -1, busyActive = 0, activeTime = 0, activeSince = -1;
+    long beaconsSent = 0;
+    cMessage* txEvt = nullptr;
+    cMessage* beaconEvt = nullptr;
+    cMessage* originEvt = nullptr;
+
+    void onWSM(BaseFrame1609_4* wsm) override;
+    void onBSM(DemoSafetyMessage* bsm) override {}
+    void handleSelfMsg(cMessage* msg) override;
+
+    int stepAt(simtime_t t) const;
+    bool isActive(int step) const;
+    simtime_t timeOf(int step) const;
+    void decide(int step, const char* trigger, double senderDist);
+    void schedule(int step);
+    void disarm();
+    void transmit(int step);
+};
+
+} // namespace veins
