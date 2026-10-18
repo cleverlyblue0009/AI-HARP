@@ -1274,3 +1274,57 @@ to hand to the fallback.
   so no other stream moves). Verified: with the knob on, rural d=2 and d=20 runs are now bit-identical to default,
   while urban d=20 and rural d=80 change. The fit and the rerun were redone; the invalid outputs are kept,
   labelled, in `results/revision3/R9/invalid_rng_drift/` (README there). R8 training is unaffected (knob off).
+
+
+## R9. Calibrated-channel stress test
+
+Regenerate: `python -m experiments.revision3.r9_calibrated_channel fit` → `results/revision3/R9/r9_fit.json`;
+`... rerun` → `r9_baseline_runs.csv` (55 settings × 4 headline cells × 10 eval seeds) and `r9_agent_ref_s{0..4}.csv`
+(full model, τ=0.5, sampled, biases −2…+3); `... analyse` → `r9_analysis.json`. Code: `sim/mac.py`
+(`extra_loss_*`, off by default), `sim/engine.py` (applied after the background-beacon check, own RNG stream
+`extra_loss`), `common/seeding.py`. With the knob off every run is bit-identical to before; with it on, cells where
+the loss is zero are bit-identical too (verified).
+
+**Fitted function.** Extra per-reception loss
+**p(n) = 0.9004 · clip((n − 250)/(300 − 250), 0, 1)**, n = the receiver's neighbours within carrier-sense range.
+Ramp start from the validation geometry: n ≈ 12.4 × density in Amador's 8-lane, 778 m scenario, so the published
+step between 20 and 30 veh/km/lane lies between n ≈ 249 and 373. Ramp end and level fitted jointly (n1 ∈ {300, 330, 373},
+p_max by bisection, 10 seeds; the pair with the smallest maximum deviation over 30–50 kept; 30-seed verification):
+
+| veh/km/lane | 10 | 20 | 30 | 40 | 50 |
+|---|---|---|---|---|---|
+| Amador ETSI CBF | 0.9998 | 0.9961 | 0.9280 | 0.9371 | 0.9372 |
+| ours, calibrated (30 seeds) | 0.9977 | 0.9977 | 0.9172 | 0.9386 | 0.9428 |
+| deviation | −0.0021 | +0.0016 | **−0.0108** | +0.0015 | +0.0056 |
+
+**The 0.01 criterion is met at 4 of 5 densities and missed at d = 30 by 0.0008.** No member of this functional
+family does better: the one-parameter fit (n1 = 373, p_max 0.910) missed at both 30 (+0.011) and 40 (−0.011); its
+outputs are kept in `R9/superseded_1param_fit/`, and every finding below is identical under it. The published curve is
+non-monotone (0.928 at 30, 0.937 at 40), which a monotone loss in n can only approximate. Physically the fit is
+harsh: about 90% of receptions are lost once a receiver has ≥ 300 neighbours in carrier-sense range. It is a
+stress test, not a validated channel model.
+
+**Where the knob bites.** Receivers in rural d=2 and d=20 never exceed 250 neighbours, so those cells are
+bit-identical to the default channel. Rural d=80 and urban_nlos d=20 are affected.
+
+| | default channel | calibrated channel | same / changed |
+|---|---|---|---|
+| best single fixed setting | dvcast(n_slots=30) | slotted_1p(n_slots=8) | **changed** |
+| rural d=2: ceiling / oracle | 0.675 / dvcast 1.560 | 0.675 / dvcast 1.560 | same (cell unaffected) |
+| rural d=20: ceiling / oracle | 0.925 / greedy 0.704 | 0.925 / greedy 0.704 | same (cell unaffected) |
+| rural d=80: ceiling / oracle | 0.915 / weighted_p 1.512 | 0.876 / **dvcast 5.030** | **changed** |
+| urban d=20: ceiling / oracle | 0.975 / counter 0.533 | **0.484** / **slotted_1p 1.398** | **changed** |
+| coverage saturation at rural d=20 (best RWCR spread across 6 families excl. p-persistence) | 0.0025 | 0.0025 | same (< 0.01) |
+| rural d=80 family spread | 0.008 | 0.136 | saturation **breaks** in the dense corridor |
+| urban d=20 family spread | 0.023 | 0.413 | saturation **breaks** |
+| R4 adaptive pick meets eval target (rural d=2 / 20 / 80 / urban 20) | no / yes / no / yes | no / yes / no / **no** | **changed** in urban d=20 (counter_based(1): 0.533 → 0.979, below q*) |
+| agent cells matched s0–s4 | 1 / 1 / 3 / 3 / 3 | **1 / 1 / 1 / 1 / 1** | **changed**: seeds 2–4 lose rural d=80 and urban d=20 |
+| agent rural d=20 cost (regret) s0–s4 | 0.717 (+1.8), 0.725 (+3.1), 0.554 (−21.3), 0.668 (−5.2), 0.534 (−24.1) | identical | same (cell unaffected) |
+| agent rural d=20 margin s0–s4 | +1.9 / +0.7 / +31.9 / +9.4 / +36.8% | +25.3 / +23.9 / +62.2 / +34.6 / +68.3% | larger (the best fixed setting changed to slotted_1p(8), costing 0.898 there) |
+
+**Reading.** If the simulator is made as lossy in dense traffic as Amador's ETSI-CBF reference implies, every
+dense-cell conclusion moves. Coverage no longer saturates in urban_nlos d=20 or rural d=80; their oracle schemes
+change; the per-cell oracle cost at rural d=80 more than triples; and the agent's success outside rural d=20
+(seeds 2–4) does not survive. The sparse and medium corridor (rural d=2, d=20), including every rural d=20 agent
+number, is untouched, because the calibrated loss is zero there. This is the precise sense in which the
+headline corridor result is robust to the validation gap and the dense-cell results are not.
