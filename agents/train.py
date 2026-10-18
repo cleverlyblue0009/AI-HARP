@@ -233,10 +233,15 @@ def run_seeded_episode(
     the caller's torch stream (PPO minibatch shuffling) is left untouched.
     """
     torch_state = torch.get_rng_state()
+    cpu0 = time.process_time()
     try:
         torch.manual_seed(int(episode_seed))
         policy.reset(0, np.random.default_rng(int(episode_seed)))
-        return run_episode(spec, policy, objective, cfgs)
+        transitions, info = run_episode(spec, policy, objective, cfgs)
+        # CPU-seconds of THIS process for the episode (revision-5 C5 compute accounting;
+        # logging only, no RNG draw).
+        info["cpu_s"] = time.process_time() - cpu0
+        return transitions, info
     finally:
         torch.set_rng_state(torch_state)
 
@@ -753,6 +758,7 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int | None,
 
             transitions: list = []
             infos: list[dict[str, float]] = []
+            main_cpu0 = time.process_time()
             # One seed per episode, drawn in order from the training RNG, so a
             # run is identical whether its episodes run serially or in workers.
             episode_seeds = [int(rng.integers(2**31 - 1)) for _ in specs]
@@ -807,6 +813,11 @@ def train(cfg: dict[str, Any], cfgs: dict[str, Any], updates: int | None,
                 "stage_update": stage_update,
                 "early_stop_run": early.run if stage_name == "finetune" else 0,
                 "elapsed_s": round(time.time() - t0, 1),
+                # Compute accounting (revision-5 C5): CPU-seconds of the main process for this
+                # update (PPO + orchestration, and the episodes too when there is no pool) and
+                # of the rollout workers' episodes when there is one.
+                "main_cpu_s": round(time.process_time() - main_cpu0, 3),
+                "rollout_cpu_s": round(float(sum(i.get("cpu_s", 0.0) for i in infos)), 3) if pool is not None else 0.0,
                 "densities": sorted(set(s.density for s in specs)),
                 "reward_mean": float(np.mean([i["reward_mean"] for i in infos])),
                 "transmissions": float(np.mean([i["transmissions"] for i in infos])),

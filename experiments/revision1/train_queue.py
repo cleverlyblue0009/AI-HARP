@@ -52,13 +52,30 @@ SEEDS = (1, 2)
 #: Revision-2 (user, 2026-10-17): R6 = full-model seeds 3 and 4; R7 = no-relevance seed 1.
 PLAN: tuple[tuple[str, int], ...] = (("ref", 1), ("ref", 2), ("gcn", 1), ("mlp", 1),
                                      ("star", 1), ("ref", 3), ("ref", 4), ("norel", 1),
-                                     ("rungB", 0), ("rungB", 1), ("rungC", 0), ("rungC", 1))
+                                     ("rungB", 0), ("rungB", 1), ("rungC", 0), ("rungC", 1),
+                                     # revision-5 (pre-registered priority order)
+                                     ("ref", 5), ("ref", 6), ("ref", 7), ("ref", 8), ("ref", 9),
+                                     ("rungB", 2), ("rungB", 3), ("rungB", 4), ("rungC", 2), ("rungC", 3), ("rungC", 4),
+                                     ("gcn", 2), ("gcn", 3), ("gcn", 4), ("mlp", 2), ("mlp", 3), ("mlp", 4),
+                                     ("norel", 2), ("norel", 3), ("norel", 4))
+#: revision-5 budget extension: full-model seeds 0-2 resumed exactly from 1,000 to 2,000 updates.
+EXTENSIONS = ("ref_s0_u2000", "ref_s1_u2000", "ref_s2_u2000")
 
 
 def queue() -> list[tuple[str, list[str], dict]]:
-    """(name, train flags, info); the full model's seeds first, then ablations."""
-    return [(f"{v}_s{s}", ["--seed", str(s)] + VARIANTS[v], {"variant": v, "seed": s})
-            for v, s in PLAN]
+    """(name, train flags, info); the full model's seeds first, then ablations, then extensions."""
+    q = [(f"{v}_s{s}", ["--seed", str(s)] + VARIANTS[v], {"variant": v, "seed": s}) for v, s in PLAN]
+    q += [(n, ["--finetune-max-updates", "1800"],
+           {"variant": "ref", "seed": int(n.split("_s")[1].split("_")[0]),
+            "extends": _ext_source(n).relative_to(PROJECT_ROOT).as_posix()})
+          for n in EXTENSIONS]
+    return q
+
+
+def _ext_source(name: str) -> Path:
+    seed = int(name.split("_s")[1].split("_")[0])
+    return (PROJECT_ROOT / "checkpoints" / "campaign" / "ref" if seed == 0
+            else PROJECT_ROOT / "checkpoints" / "revision1" / f"ref_s{seed}")
 
 
 def live(name: str, stale_s: float = 900.0) -> bool:
@@ -71,7 +88,7 @@ def live(name: str, stale_s: float = 900.0) -> bool:
 
 def status(name: str) -> str:
     d = ROOT / name
-    if (d / "run_summary.json").exists() and (name != "ref_s0_u2000" or _extended(d)):
+    if (d / "run_summary.json").exists() and (not name.endswith("_u2000") or _extended(d)):
         return "done"
     if (d / "ckpt_latest.pt").exists():
         return "partial"
@@ -92,10 +109,10 @@ def command(name: str, flags: list[str], workers: str) -> list[str]:
         module, keep = flags[-3][1:], flags[-2:]          # e.g. privileged.train_privileged --rung B
         flags = flags[:-3]
     base = [sys.executable, "-u", "-m", module, "--keep-awake", "--quiet"] + keep
-    if name == "ref_s0_u2000":
+    if name.endswith("_u2000"):
         if not (d / "ckpt_latest.pt").exists():
             d.mkdir(parents=True, exist_ok=True)
-            src = PROJECT_ROOT / "checkpoints" / "campaign" / "ref"
+            src = _ext_source(name)
             for f in ("ckpt_latest.pt", "history.jsonl"):
                 shutil.copy2(src / f, d / f)
         return base + ["--resume", str(d / "ckpt_latest.pt"), "--out", str(d),

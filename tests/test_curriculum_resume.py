@@ -137,8 +137,12 @@ def _cfgs():
             "experiment": load_yaml("experiment.yaml")}
 
 
+#: Wall-clock and CPU-time fields: measurements of the machine, not of the run.
+TIMING_FIELDS = {"elapsed_s", "main_cpu_s", "rollout_cpu_s"}
+
+
 def _strip(history):
-    return [{k: v for k, v in r.items() if k != "elapsed_s"} for r in history]
+    return [{k: v for k, v in r.items() if k not in TIMING_FIELDS} for r in history]
 
 
 def test_resume_reproduces_an_uninterrupted_run_exactly(tmp_path):
