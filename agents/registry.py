@@ -23,6 +23,7 @@ from agents.persistence import (
     SlottedPersistence,
     WeightedPPersistence,
 )
+from agents.rule_baselines import RelevanceAwareRule, StoreCarryForwardSlotted
 from common.config import load_yaml
 
 _REGISTRY: dict[str, Callable[..., Policy]] = {
@@ -42,6 +43,9 @@ _REGISTRY: dict[str, Callable[..., Policy]] = {
     "greedy_farthest": GreedyFarthestRelay,
     # 7. DV-CAST-style store-carry-forward
     "dvcast": DvCast,
+    # revision-5 (C4/C5): non-learning baselines with the policy's information
+    "rar": RelevanceAwareRule,
+    "scf_slotted": StoreCarryForwardSlotted,
 }
 
 
