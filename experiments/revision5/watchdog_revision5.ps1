@@ -44,3 +44,15 @@ foreach ($j in $jobs) {
     $status += "$($j.n)=$(if ($isDone) {'done'} elseif ($isAlive) {'alive'} elseif (-not $isReady) {'waiting'} else {'LAUNCHED'})"
 }
 "$(Get-Date -Format s) $($status -join ' ')" | Add-Content $log
+
+# --- Priorities (user, 2026-10-18): training trees AboveNormal, simulation sweeps BelowNormal. --
+# Scheduling only; results are deterministic per task and unaffected.
+$all = @(Get-CimInstance Win32_Process -Filter "Name='python.exe'")
+function Tree($rootPattern) {
+    $ids = @($all | Where-Object { $_.CommandLine -match $rootPattern } | ForEach-Object { $_.ProcessId })
+    do { $n = $ids.Count; $ids = @($ids + @($all | Where-Object { $ids -contains $_.ParentProcessId } | ForEach-Object { $_.ProcessId }) | Select-Object -Unique) } while ($ids.Count -gt $n)
+    $ids
+}
+foreach ($p in @(@{ pat = "agents\.train|train_privileged"; cls = "AboveNormal" }, @{ pat = "experiments\.revision5\.sweep"; cls = "BelowNormal" })) {
+    foreach ($id in (Tree $p.pat)) { try { (Get-Process -Id $id -ErrorAction Stop).PriorityClass = $p.cls } catch {} }
+}

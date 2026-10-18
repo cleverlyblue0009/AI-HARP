@@ -124,10 +124,11 @@ def main(argv=None) -> int:
     else:
         rates = (gate_rates(a.runs, a.random_gate_from, a.cells, a.channel, a.backend)
                  if a.random_gate_from else None)
-        for run in a.runs:
-            ck = checkpoint_for(run)
-            sha = checkpoint_sha(ck)
-            for sc, d in cl:
+        cks = {run: checkpoint_for(run) for run in a.runs}
+        shas = {run: checkpoint_sha(ck) for run, ck in cks.items()}
+        for sc, d in cl:                             # cell-major: headline cells (H2) finish first
+            for run in a.runs:
+                ck, sha = cks[run], shas[run]
                 for s in sd:
                     for tau in ([0.5] if rates is not None else a.taus):
                         for b in BIASES:

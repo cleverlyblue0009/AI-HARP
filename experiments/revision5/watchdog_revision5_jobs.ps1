@@ -22,3 +22,9 @@ $jobs += @{ n = "sel_classical"; alive = "sweep classical --seedset SEL"; ready 
 $jobs += @{ n = "sel_rule"; alive = "sweep rule --seedset SEL"; ready = { (Rows "$runs\classical__SEL__grid24__default__fallback.csv") -ge 26400 };
             done = { (Rows "$runs\rule__SEL__grid24__default__fallback.csv") -ge 18720 };
             cmd = "$gpu -u -m experiments.revision5.sweep rule --seedset SEL --cells grid24 --jobs 3 >> logs\revision5\sel_rule.log 2>&1" }
+
+# B4. SEL agent, full model seeds 0-4, 24 cells (cell-major, so the 4 headline cells finish first);
+#     started early on existing checkpoints beside SEL classical (user, 2026-10-18).
+$jobs += @{ n = "sel_agent_s0_4"; alive = "sweep agent --seedset SEL --cells grid24 --runs ref_s0"; ready = { Frozen };
+            done = { (Rows "$runs\agent__SEL__grid24__default__fallback.csv") -ge 14400 };
+            cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset SEL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 2 >> logs\revision5\sel_agent_s0_4.log 2>&1" }
