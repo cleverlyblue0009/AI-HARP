@@ -46,3 +46,23 @@ $jobs += @{ n = "eval_classical_sumo"; alive = "sweep classical --seedset EVAL -
 $jobs += @{ n = "veins_net"; alive = "veins.queue run --seeds 200 201"; ready = { Test-Path "cache\veins_runs\VALIDATED" };
             done = { @(Get-ChildItem cache\veins_runs\h3\*.run.json -ErrorAction SilentlyContinue).Count -ge 2200 -and ((& $gpu -m experiments.revision5.veins.queue status --seeds 200 201 202 203 204 205 206 207 208 209) -match " 0 to do") };
             cmd = "$gpu -u -m experiments.revision5.veins.queue run --seeds 200 201 202 203 204 205 206 207 208 209 --jobs 5 >> logs\revision5\veins_net.log 2>&1" }
+
+# B8. EVAL classical and EVAL rule, 24 cells (every setting, so the bootstrap can redo the selection).
+$jobs += @{ n = "eval_classical"; alive = "sweep classical --seedset EVAL --cells grid24"; ready = { (Rows "$runs\rule__SEL__grid24__default__fallback.csv") -ge 18720 };
+            done = { (Rows "$runs\classical__EVAL__grid24__default__fallback.csv") -ge 39600 };
+            cmd = "$gpu -u -m experiments.revision5.sweep classical --seedset EVAL --cells grid24 --jobs 3 >> logs\revision5\eval_classical.log 2>&1" }
+$jobs += @{ n = "eval_rule"; alive = "sweep rule --seedset EVAL"; ready = { (Rows "$runs\classical__EVAL__grid24__default__fallback.csv") -ge 39600 };
+            done = { (Rows "$runs\rule__EVAL__grid24__default__fallback.csv") -ge 28080 };
+            cmd = "$gpu -u -m experiments.revision5.sweep rule --seedset EVAL --cells grid24 --jobs 3 >> logs\revision5\eval_rule.log 2>&1" }
+
+# B9. Agent, H2 first: SEL headline seeds 5-9 -> EVAL headline seeds 5-9 -> EVAL 24 cells seeds 0-4 (cell-major,
+#     so the headline cells -- H2's seeds 0-4 -- come first).
+$jobs += @{ n = "sel_agent_s5_9"; alive = "sweep agent --seedset SEL --cells headline"; ready = { (Rows "$runs\agent__SEL__grid24__default__fallback.csv") -ge 14400 };
+            done = { (Rows "$runs\agent__SEL__headline__default__fallback__s5_9.csv") -ge 2400 };
+            cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset SEL --cells headline --runs ref_s5 ref_s6 ref_s7 ref_s8 ref_s9 --tag s5_9 --jobs 2 >> logs\revision5\sel_agent_s5_9.log 2>&1" }
+$jobs += @{ n = "eval_agent_s5_9"; alive = "sweep agent --seedset EVAL --cells headline"; ready = { (Rows "$runs\agent__SEL__headline__default__fallback__s5_9.csv") -ge 2400 };
+            done = { (Rows "$runs\agent__EVAL__headline__default__fallback__s5_9.csv") -ge 3600 };
+            cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset EVAL --cells headline --runs ref_s5 ref_s6 ref_s7 ref_s8 ref_s9 --tag s5_9 --jobs 2 >> logs\revision5\eval_agent_s5_9.log 2>&1" }
+$jobs += @{ n = "eval_agent_s0_4"; alive = "sweep agent --seedset EVAL --cells grid24"; ready = { (Rows "$runs\agent__EVAL__headline__default__fallback__s5_9.csv") -ge 3600 };
+            done = { (Rows "$runs\agent__EVAL__grid24__default__fallback.csv") -ge 21600 };
+            cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset EVAL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 2 >> logs\revision5\eval_agent_s0_4.log 2>&1" }
