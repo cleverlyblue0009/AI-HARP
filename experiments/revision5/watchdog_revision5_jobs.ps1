@@ -34,3 +34,15 @@ $jobs += @{ n = "sel_agent_s0_4"; alive = "sweep agent --seedset SEL --cells gri
 $jobs += @{ n = "veins_export"; alive = "veins.queue export"; ready = { $true };
             done = { @(Get-ChildItem cache\veins\*_s2[0-9][0-9]\bundle.json -ErrorAction SilentlyContinue | Where-Object { $_.Directory.Name -match '_s20[0-9]$' }).Count -ge 40 };
             cmd = "set SUMO_HOME=D:\sumo\sumo-1.19.0&& $gpu -u -m experiments.revision5.veins.queue export --seeds 200 201 202 203 204 205 206 207 208 209 >> logs\revision5\veins_export.log 2>&1" }
+
+# B6. Custom simulator on SUMO, 4 headline cells x EVAL seeds 200-229 x 55 classical settings: the paired
+#     custom side of H3's network layer (200-209) and of the 3-fold cross-fitted audit (DEVIATIONS D1).
+$jobs += @{ n = "eval_classical_sumo"; alive = "sweep classical --seedset EVAL --cells headline --channel default --backend sumo"; ready = { Frozen };
+            done = { (Rows "$runs\classical__EVAL__headline__default__sumo.csv") -ge 6600 };
+            cmd = "set SUMO_HOME=D:\sumo\sumo-1.19.0&& $gpu -u -m experiments.revision5.sweep classical --seedset EVAL --cells headline --channel default --backend sumo --jobs 2 >> logs\revision5\eval_classical_sumo.log 2>&1" }
+
+# B7. H3 Veins replays, network layer first: EVAL seeds 200-209, all 55 settings, 4 headline cells (2200).
+#     Gated on the greedy/DV-CAST validation (flag written by hand after both validation replays pass).
+$jobs += @{ n = "veins_net"; alive = "veins.queue run --seeds 200 201"; ready = { Test-Path "cache\veins_runs\VALIDATED" };
+            done = { @(Get-ChildItem cache\veins_runs\h3\*.run.json -ErrorAction SilentlyContinue).Count -ge 2200 -and ((& $gpu -m experiments.revision5.veins.queue status --seeds 200 201 202 203 204 205 206 207 208 209) -match " 0 to do") };
+            cmd = "$gpu -u -m experiments.revision5.veins.queue run --seeds 200 201 202 203 204 205 206 207 208 209 --jobs 10 >> logs\revision5\veins_net.log 2>&1" }

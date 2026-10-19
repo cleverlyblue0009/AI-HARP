@@ -11,8 +11,12 @@
 //
 // Neighbour tables (greedy_farthest, DV-CAST): the custom engine takes them from trace geometry within the
 // nominal range (with an NLOS link-budget test in urban_nlos), standing in for "vehicles whose beacons
-// arrive". Here they are what a real stack has: the latest decoded beacon (position, velocity) per sender,
-// entries expiring after 1.05 s (covers the 1 Hz DCC floor), positions extrapolated to now.
+// arrive". Here the information source is what a real stack has: the latest decoded beacon (position,
+// velocity) per sender, entries expiring after 1.05 s (covers the 1 Hz DCC floor), positions extrapolated
+// to now -- restricted, as the DecisionContext contract defines neighbours, to the nominal range. (The first
+// port omitted that restriction; greedy then named relays beyond the nominal range from beacons that got
+// through on favourable fading, none decoded the designation, and the 2026-10-19 validation replay was
+// re-run after the fix.)
 // Greedy designations ride in the frame (relay1/relay2) and take effect when the designated vehicle
 // decodes that frame as its first copy.
 //
@@ -20,7 +24,7 @@
 // (the custom MAC's per-epoch draw); 802.11 would otherwise send epoch-aligned frames simultaneously.
 //
 // Log lines (CSV): Q,t,originDone,txPending,timerPending,lastTx,minEnd (manager, every 10 s)
-//   O,t,step,idx | T,t,step,idx,hops,sched_t | R,t,step,idx,sender,dist,new,hops,designated
+//   O,t,step,idx | T,t,step,idx,hops,sched_t,relay1,relay2 | R,t,step,idx,sender,dist,new,hops,designated
 //   D,t,step,idx,trigger,action,delay | X,t,step,idx,reason
 
 #include "AiharpApp.h"
@@ -164,7 +168,9 @@ std::vector<AiharpApp::Neighbour> AiharpApp::neighbours() const
         double age = now - kv.second.t;
         if (age > NEIGHBOUR_TTL_S) continue;
         Coord p = kv.second.pos + kv.second.vel * age;
-        out.push_back({kv.first, p, kv.second.vel, curPosition.distance(p)});
+        double d = curPosition.distance(p);
+        if (d > S.commRange) continue;      // DecisionContext: neighbours are within the nominal range
+        out.push_back({kv.first, p, kv.second.vel, d});
     }
     return out;
 }
@@ -431,11 +437,13 @@ void AiharpApp::transmit(int step)
     m->setSchedTime(timeOf(step).dbl());
     m->setRelay1(pendingRelays[0]);
     m->setRelay2(pendingRelays[1]);
+    int r1 = pendingRelays[0], r2 = pendingRelays[1];
     pendingRelays[0] = pendingRelays[1] = -1;
     sendDelayedDown(m, intuniform(0, S.cwSlots - 1) * S.slotTime);   // custom MAC's per-epoch backoff draw
     txCount++;
     S.lastTx = simTime().dbl();
-    S.log << "T," << simTime() << "," << step << "," << idx << "," << hops << "," << timeOf(step) << "\n";
+    S.log << "T," << simTime() << "," << step << "," << idx << "," << hops << "," << timeOf(step) << "," << r1 << ","
+          << r2 << "\n";
 }
 
 void AiharpApp::onBSM(DemoSafetyMessage* bsm)

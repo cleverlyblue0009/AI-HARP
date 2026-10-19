@@ -80,7 +80,7 @@ def reconstruct(ev: dict, ctx: RunResult) -> tuple[RunResult, dict]:
         informed_step[origin_index] = origin_step
     tx_steps: dict[int, list[int]] = {}
     tx_time: dict[tuple[int, int], float] = {}
-    for t, step, idx, h, sched in ev["T"]:
+    for t, step, idx, h, sched, *_ in ev["T"]:
         i, s = int(idx), int(step)
         tx_count[i] += 1
         tx_steps.setdefault(s, []).append(i)
