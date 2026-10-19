@@ -28,6 +28,11 @@ $V install -q torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
 $V install -q torch-geometric==2.8.0 scipy==1.13.1 pandas==2.3.3 PyYAML==6.0.3 networkx==3.6.1 psutil==7.2.2 \
               tqdm==4.70.1 pytest
 $V install -q matplotlib==3.11.2 || echo "WARN: matplotlib==3.11.2 not installable (not used on the VM)"
+# ENVIRONMENT.md: numpy < 2 is load-bearing for torch 2.2.2; a later install upgraded it to 2.5.4 on the first
+# attempt, so it is re-pinned last and verified.
+$V install -q --force-reinstall --no-deps numpy==1.26.4
+$V check || echo "WARN: pip check reported conflicts (see above)"
+"$HOME/venv/bin/python" -c "import numpy; assert numpy.__version__ == '1.26.4', numpy.__version__"
 "$HOME/venv/bin/python" -c "import numpy, torch, torch_geometric, scipy, pandas; print('python ok', numpy.__version__, torch.__version__, torch_geometric.__version__)"
 
 sudo bash experiments/revision5/veins/install_wsl.sh deps

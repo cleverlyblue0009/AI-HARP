@@ -47,6 +47,6 @@ if [ ! -f "$P/veins-veins-5.3/src/libveins.so" ]; then
 fi
 
 echo "versions:"
-"$P/omnetpp-6.0.3/bin/opp_run" -v | head -2
-"$P/sumo-1.19.0/bin/sumo" --version | head -1
+"$P/omnetpp-6.0.3/bin/opp_run" -v | head -2 || true
+"$P/sumo-1.19.0/bin/sumo" --version | head -1 || true
 ls -l "$P/veins-veins-5.3/src/libveins.so"
