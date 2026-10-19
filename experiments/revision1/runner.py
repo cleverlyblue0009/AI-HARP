@@ -17,7 +17,9 @@ import csv
 import json
 import logging
 import os
+import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures.process import BrokenProcessPool
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
@@ -155,18 +157,40 @@ def run_tasks(tasks: Sequence[dict[str, Any]], path: Path, jobs: int = 4,
         if todo:
             print(f"[runner] {len(todo)} runs to do ({len(tasks) - len(todo)} cached) -> {path.name}",
                   flush=True)
+        # A task that raises is logged with its traceback and skipped (not written, so it is retried on the
+        # next launch). Before 2026-10-19 one exception left the pool computing every remaining task for
+        # nothing: the executor's exit waits for all futures before the error surfaces.
+        failed = 0
+
+        def _report(t: dict[str, Any], exc: BaseException) -> None:
+            nonlocal failed
+            failed += 1
+            print(f"[runner] FAILED {t['task_hash']} {t['scenario']} d={t['density']:g} s={t['seed']} "
+                  f"{t['policy']} {t.get('param')}={t.get('value')}: {exc!r}\n"
+                  + "".join(traceback.format_exception(exc)), flush=True)
+
         if jobs <= 1:
             for i, t in enumerate(todo, 1):
-                w.writerow(run_task(t)); fh.flush()
+                try:
+                    w.writerow(run_task(t)); fh.flush()
+                except Exception as exc:  # noqa: BLE001 -- logged, retried on the next launch
+                    _report(t, exc)
                 if i % log_every == 0:
                     print(f"[runner] {i}/{len(todo)}", flush=True)
         else:
             with ProcessPoolExecutor(max_workers=jobs, initializer=_init) as ex:
-                futs = [ex.submit(run_task, t) for t in todo]
+                futs = {ex.submit(run_task, t): t for t in todo}
                 for i, f in enumerate(as_completed(futs), 1):
-                    w.writerow(f.result()); fh.flush()
+                    try:
+                        w.writerow(f.result()); fh.flush()
+                    except BrokenProcessPool:
+                        raise                     # the pool is gone; the watchdog relaunches the job
+                    except Exception as exc:  # noqa: BLE001 -- logged, retried on the next launch
+                        _report(futs[f], exc)
                     if i % log_every == 0:
                         print(f"[runner] {i}/{len(todo)}", flush=True)
+        if failed:
+            print(f"[runner] {failed} task(s) failed; they will be retried on the next launch", flush=True)
     want = {t["task_hash"] for t in tasks}
     return [r for r in load_rows(path) + other if r["task_hash"] in want]
 
