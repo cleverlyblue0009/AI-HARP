@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import functools
 import subprocess
 import sys
 import time
@@ -14,6 +15,7 @@ from common.config import PROJECT_ROOT, config_hash
 OUT_ROOT = PROJECT_ROOT / "results" / "revision1"
 
 
+@functools.lru_cache(maxsize=1)   # once per process: the code a process runs is the code it loaded
 def git_commit() -> str:
     try:
         sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=PROJECT_ROOT,

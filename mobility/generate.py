@@ -161,6 +161,19 @@ def trace_cache_key(
     return config_hash(payload)
 
 
+#: Per-process memo of loaded traces (a sweep runs every setting of a cell/seed back to back). Traces are
+#: never modified after generation, so sharing the object is safe; it also carries per-step caches of
+#: trace-only quantities (sim/engine.py neighbour counts).
+_LOADED: dict[str, Trace] = {}
+_LOADED_MAX = 2
+
+
+def _remember(key: str, trace: Trace) -> None:
+    _LOADED[key] = trace
+    while len(_LOADED) > _LOADED_MAX:
+        _LOADED.pop(next(iter(_LOADED)))
+
+
 def get_trace(
     scenario: str | dict[str, Any],
     density_veh_km_lane: float,
@@ -186,6 +199,8 @@ def get_trace(
                           speed_factor, headway_factor, duration_s)
     cache_path = TRACE_CACHE / f"{scfg['name']}_d{density_veh_km_lane:g}_s{seed}_{key}.npz"
 
+    if use_cache and str(cache_path) in _LOADED:
+        return _LOADED[str(cache_path)]
     if use_cache and cache_path.exists():
         try:
             trace = load_trace(cache_path)
@@ -197,6 +212,7 @@ def get_trace(
             cache_path.unlink(missing_ok=True)
         else:
             logger.info("Trace cache HIT  %s | %s", cache_path.name, _fmt(trace.summary()))
+            _remember(str(cache_path), trace)
             return trace
 
     logger.info(

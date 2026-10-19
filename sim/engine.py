@@ -523,9 +523,22 @@ class DisseminationEngine:
     def _neighbour_counts(
         self, step: int, act: np.ndarray, of: np.ndarray, radius: float
     ) -> np.ndarray:
-        """Active neighbours within ``radius`` of each vehicle in ``of``."""
+        """Active neighbours within ``radius`` of each vehicle in ``of``.
+
+        Depends only on (trace, step, radius), so the counts for every active vehicle are computed once and
+        kept on the trace object, which a sweep reuses across all settings of a cell/seed. Each count is the
+        same elementwise computation as before (the norm of the same 2-vector), so results are identical."""
         tr = self.trace
         rx_idx = np.flatnonzero(act)
+        if np.array_equal(act, tr.active[step]):
+            cache = tr.__dict__.setdefault("_nb_counts", {})
+            full = cache.get((step, radius))
+            if full is None:
+                pos = np.stack([tr.x[step, rx_idx], tr.y[step, rx_idx]], axis=1)
+                d = np.linalg.norm(pos[:, None, :] - pos[None, :, :], axis=2)
+                full = (d <= radius).sum(axis=1) - 1  # exclude self
+                cache[(step, radius)] = full
+            return full[np.searchsorted(rx_idx, of)]
         pos = np.stack([tr.x[step, rx_idx], tr.y[step, rx_idx]], axis=1)
         q = np.stack([tr.x[step, of], tr.y[step, of]], axis=1)
         d = np.linalg.norm(q[:, None, :] - pos[None, :, :], axis=2)
