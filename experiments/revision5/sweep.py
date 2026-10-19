@@ -106,6 +106,7 @@ def main(argv=None) -> int:
     ap.add_argument("--random-gate-from", default=None, help="seed set whose learned-gate rates to match (SEL)")
     ap.add_argument("--tag", default="")
     ap.add_argument("--jobs", type=int, default=3)
+    ap.add_argument("--slice", default=None, help="i/n: only tasks with int(task_hash, 16) %% n == i (offload VMs)")
     a = ap.parse_args(argv)
 
     pp, sd, cl = phy_patch(a.channel), seeds(a.seedset), cells(a.cells)
@@ -143,7 +144,11 @@ def main(argv=None) -> int:
                                 fixed = agent_params(ck, tau=tau, deterministic=False)
                             tasks.append(task(sc, d, "ai_harp", s, param="suppression_bias", value=b,
                                               fixed=fixed, phy_patch=pp, backend=bk))
-    name = f"{a.track}__{a.seedset}__{a.cells}__{a.channel}__{a.backend}" + (f"__{a.tag}" if a.tag else "")
+    if a.slice:
+        si, sn = (int(x) for x in a.slice.split("/"))
+        tasks = [t for t in tasks if int(t["task_hash"], 16) % sn == si]
+    name = (f"{a.track}__{a.seedset}__{a.cells}__{a.channel}__{a.backend}" + (f"__{a.tag}" if a.tag else "")
+            + (f"__slice{si}of{sn}" if a.slice else ""))
     d = out_dir("runs", 5)
     meta = d / f"{name}_meta.json"
     stamps = json.loads(meta.read_text()) if meta.exists() else []

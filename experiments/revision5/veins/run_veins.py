@@ -29,6 +29,21 @@ VEINS = HOME / "veins-veins-5.3"
 SUMO = HOME / "sumo-1.19.0" / "bin" / "sumo"
 
 
+def _sha(p: Path) -> str:
+    import hashlib
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def _repo_commit() -> str:
+    r = os.environ.get("AIHARP_REPO", "")
+    if not r:
+        return "unknown"
+    try:
+        return subprocess.run(["git", "-C", r, "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+    except Exception:
+        return "unknown"
+
+
 def config_xml(v: dict, obstacles: bool) -> str:
     p = lambda n, val, t="double": f'<parameter name="{n}" type="{t}" value="{val}"/>'
     models = [
@@ -121,7 +136,8 @@ def run(bundle: Path, policy: str, knob: float, seed: int, out: Path) -> dict:
     t_wall = time.time()
     proc = subprocess.run(cmd, cwd=work, env=env, capture_output=True, text=True)
     wall = time.time() - t_wall
-    rec = {"min_end_s": min_end, "bundle": bundle.name, "policy": policy, "knob": knob, "seed": seed, "exit_code": proc.returncode,
+    rec = {"host": os.uname().nodename, "app_sha256": _sha(APP / "aiharp"), "repo_commit": _repo_commit(),
+           "bundle_trace_sha256": b.get("trace_sha256"), "min_end_s": min_end, "bundle": bundle.name, "policy": policy, "knob": knob, "seed": seed, "exit_code": proc.returncode,
            "wall_s": round(wall, 1), "cmd": cmd, "stdout_tail": proc.stdout[-3000:], "stderr_tail": proc.stderr[-3000:]}
     fcd = work / "fcd_veins.xml"
     if fcd.exists():

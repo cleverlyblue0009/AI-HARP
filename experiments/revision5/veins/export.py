@@ -45,6 +45,17 @@ def intervals(mask: np.ndarray) -> list[list[int]]:
     return [[int(a), int(b) - 1] for a, b in zip(np.flatnonzero(d == 1), np.flatnonzero(d == -1))]
 
 
+def trace_sha256(tr) -> str:
+    """Identity of a canonical trace (positions where active, activity, ids): the laptop recomputes it from
+    its own cached trace to accept bundles exported on other machines."""
+    import hashlib
+    h = hashlib.sha256()
+    for a in (np.where(tr.active, tr.x, 0.0), np.where(tr.active, tr.y, 0.0), tr.active,
+              np.asarray(tr.vehicle_ids).astype(str)):
+        h.update(np.ascontiguousarray(a).tobytes())
+    return h.hexdigest()
+
+
 def sha(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
@@ -217,6 +228,7 @@ def export(scenario: str, density: float, seed: int, out: Path = OUT) -> Path:
                          "cw_slots": int(m.cw_slots), "slot_time_s": float(m.slot_time_s)})
     bundle = {
         "veins": bundle_veins,
+        "trace_sha256": trace_sha256(canon),
         "scenario": scenario, "density": density, "seed": seed, "dt": dt, "t0_sumo_s": t0, "warmup_s": warmup, "buildings": buildings, "fcd_check_windows": chk,
         "n_steps": int(canon.n_steps), "sumocfg": "veins.sumocfg", "files": files,
         "vehicles": [{"index": i, "sumo_id": str(v), "active": intervals(canon.active[:, i])}
