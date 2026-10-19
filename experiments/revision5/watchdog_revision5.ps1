@@ -11,6 +11,12 @@ $log = "logs\revision5\watchdog.log"
 # results\revision5\runs\invalid_sumo_backend). Jobs that need SUMO set it in their own command line.
 Remove-Item Env:SUMO_HOME -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force logs\revision5 | Out-Null
+# Orphaned multiprocessing pool workers (parent gone) keep the dead job's log file open, so the relaunched
+# job's ">> log" redirection fails and it never starts (2026-10-19). Kill them before anything is launched.
+$allp = @(Get-CimInstance Win32_Process)
+$live = @($allp | ForEach-Object { $_.ProcessId })
+$allp | Where-Object { $_.Name -eq 'python.exe' -and $_.CommandLine -match 'multiprocessing' -and ($live -notcontains $_.ParentProcessId) } |
+    ForEach-Object { try { Stop-Process -Id $_.ProcessId -Force -ErrorAction Stop; "$(Get-Date -Format s) killed orphaned worker $($_.ProcessId)" | Add-Content "logs\revision5\watchdog.log" } catch {} }
 $procs = @(Get-CimInstance Win32_Process -Filter "Name='python.exe'" | ForEach-Object { $_.CommandLine })
 function Alive($pattern) { [bool]($procs | Where-Object { $_ -match $pattern }) }
 function Launch($name, $cmdline) {
