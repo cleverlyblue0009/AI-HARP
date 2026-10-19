@@ -85,7 +85,7 @@ def reconstruct(ev: dict, ctx: RunResult) -> tuple[RunResult, dict]:
         tx_count[i] += 1
         tx_steps.setdefault(s, []).append(i)
         tx_time[(i, s)] = float(t)
-    for t, step, idx, sender, dist, new, h in ev["R"]:
+    for t, step, idx, sender, dist, new, h, *_ in ev["R"]:
         if new == "1":
             r = int(idx)
             informed_step[r] = int(step)
@@ -99,7 +99,7 @@ def reconstruct(ev: dict, ctx: RunResult) -> tuple[RunResult, dict]:
     tx_events = sorted((int(s), int(i)) for s, ii in tx_steps.items() for i in ii)
     rx_sorted = sorted(ev["R"], key=lambda p: float(p[0]))
     k = 0
-    for t, step, idx, sender, dist, new, h in rx_sorted:
+    for t, step, idx, sender, dist, new, h, *_ in rx_sorted:
         while k < len(tx_events) and tx_time[(tx_events[k][1], tx_events[k][0])] <= float(t):
             last_tx[tx_events[k][1]] = tx_events[k][0]
             k += 1
@@ -145,10 +145,10 @@ def reconstruct(ev: dict, ctx: RunResult) -> tuple[RunResult, dict]:
     inf_time = {origin_index: None}
     for t, step, idx in ev["O"]:
         inf_time[int(idx)] = float(t)
-    for t, step, idx, sender, dist, new, h in rx_sorted:
+    for t, step, idx, sender, dist, new, h, *_ in rx_sorted:
         if new == "1":
             inf_time[int(idx)] = float(t)
-    delays = [float(t) - inf_time[int(sender)] for t, step, idx, sender, dist, new, h in rx_sorted
+    delays = [float(t) - inf_time[int(sender)] for t, step, idx, sender, dist, new, h, *_ in rx_sorted
               if new == "1" and inf_time.get(int(sender)) is not None]
     raw = {"pdr_bins_m": BIN_M, "bins_attempts": bins_att, "bins_success": bins_ok,
            "single_hop_delays_s": delays}

@@ -1,14 +1,27 @@
 // Revision-5 H3: classical dissemination schemes in Veins, mirroring sim/engine.py.
 //
 // Timing (engine semantics): decisions happen in 100 ms epochs aligned to the trace (step k <-> SUMO time
-// t0 + k*dt). BROADCAST -> transmit at step+1; DEFER(d) -> step+max(1,d); a pending transmission is
-// cancelled once dupCount >= cancelAtDups. TTL (60 s) and the hop limit (32) are checked before sending.
-// A vehicle takes part only in steps where it is active in the trace (in the corridor); elsewhere it
-// neither transmits, beacons nor processes receptions. Policy decisions (agents/*.py) are reproduced
-// rule for rule; the policy random draws come from OMNeT++'s RNG (seed-set = run seed).
+// t0 + k*dt). BROADCAST/RELAY -> transmit at step+1; DEFER(d) -> step+max(1,d); CARRY(d) -> re-decide
+// (TIMER) at step+max(1,d), skipped while a transmission is pending; SUPPRESS clears both. A pending
+// transmission is cancelled once dupCount >= cancelAtDups; otherwise a policy with duplicate callbacks
+// (DV-CAST) re-decides on a duplicate when no transmission is pending. TTL (60 s) and the hop limit (32)
+// are checked before sending. A vehicle takes part only in steps where it is active in the trace (in the
+// corridor). Policy decisions (agents/*.py) are reproduced rule for rule; random draws come from
+// OMNeT++'s RNG (seed-set = run seed).
 //
-// Log lines (CSV): Q,t,originDone,pending,lastTx,minEnd (manager, every 10 s) | O,t,step,idx | T,t,step,idx,hops,sched_t | R,t,step,idx,sender,dist,new,hops
-//                  D,t,step,idx,trigger,action,delay | X,t,step,idx,reason
+// Neighbour tables (greedy_farthest, DV-CAST): the custom engine takes them from trace geometry within the
+// nominal range (with an NLOS link-budget test in urban_nlos), standing in for "vehicles whose beacons
+// arrive". Here they are what a real stack has: the latest decoded beacon (position, velocity) per sender,
+// entries expiring after 1.05 s (covers the 1 Hz DCC floor), positions extrapolated to now.
+// Greedy designations ride in the frame (relay1/relay2) and take effect when the designated vehicle
+// decodes that frame as its first copy.
+//
+// Channel access: each hazard frame is handed to the MAC after a uniform backoff slot in [0, CWmin]
+// (the custom MAC's per-epoch draw); 802.11 would otherwise send epoch-aligned frames simultaneously.
+//
+// Log lines (CSV): Q,t,originDone,txPending,timerPending,lastTx,minEnd (manager, every 10 s)
+//   O,t,step,idx | T,t,step,idx,hops,sched_t | R,t,step,idx,sender,dist,new,hops,designated
+//   D,t,step,idx,trigger,action,delay | X,t,step,idx,reason
 
 #include "AiharpApp.h"
 
@@ -22,6 +35,8 @@ using namespace veins;
 Define_Module(veins::AiharpApp);
 
 AiharpApp::Shared AiharpApp::S;
+
+static const char* ACT_NAME[] = {"suppress", "broadcast", "defer", "carry", "relay"};
 
 void AiharpApp::loadShared(const std::string& nodesFile, const std::string& logFile)
 {
@@ -70,12 +85,15 @@ void AiharpApp::initialize(int stage)
         else if (p == "slotted_1p") kind = SLOTTED_1P;
         else if (p == "weighted_p") kind = WEIGHTED_P;
         else if (p == "counter_based") kind = COUNTER_BASED;
+        else if (p == "greedy_farthest") kind = GREEDY_FARTHEST;
+        else if (p == "dvcast") kind = DVCAST;
         else throw cRuntimeError("unknown policy %s", p.c_str());
         knob = par("knob").doubleValue();
         std::string sumoId = mobility->getExternalId();
         auto it = S.indexOf.find(sumoId);
         idx = it == S.indexOf.end() ? -1 : it->second;   // vehicles never in the corridor stay silent
         txEvt = new cMessage("tx", EV_TX);
+        timerEvt = new cMessage("timer", EV_TIMER);
         beaconEvt = new cMessage("beacon", EV_BEACON);
         originEvt = new cMessage("origin", EV_ORIGIN);
         if (cModule* m = getParentModule()->getSubmodule("nic")->getSubmodule("mac1609_4"))
@@ -91,13 +109,17 @@ void AiharpApp::initialize(int stage)
 
 bool AiharpApp::quiescent(simtime_t now, double minEnd)
 {
-    return S.loaded && S.originDone && S.pending == 0 && now.dbl() >= minEnd && now.dbl() - S.lastTx >= 1.0;
+    if (!S.loaded || !S.originDone || S.txPending != 0) return false;
+    double tOrigin = S.t0 + S.originStep * S.dt;
+    bool timersIdle = S.timerPending == 0 || now.dbl() > tOrigin + S.ttl + S.dt;   // after the TTL nothing can send
+    return timersIdle && now.dbl() >= minEnd && now.dbl() - S.lastTx >= 1.0;
 }
 
 void AiharpApp::logState(simtime_t now, double minEnd)
 {
     if (!S.loaded) return;
-    S.log << "Q," << now << "," << S.originDone << "," << S.pending << "," << S.lastTx << "," << minEnd << "\n";
+    S.log << "Q," << now << "," << S.originDone << "," << S.txPending << "," << S.timerPending << "," << S.lastTx
+          << "," << minEnd << "\n";
 }
 
 simtime_t AiharpApp::timeOf(int step) const { return S.t0 + step * S.dt; }
@@ -134,6 +156,19 @@ double AiharpApp::beaconRate(int step) const
     return std::min(std::max(allowed, S.dccMin), S.beaconHz);
 }
 
+std::vector<AiharpApp::Neighbour> AiharpApp::neighbours() const
+{
+    std::vector<Neighbour> out;
+    double now = simTime().dbl();
+    for (auto& kv : nbTable) {
+        double age = now - kv.second.t;
+        if (age > NEIGHBOUR_TTL_S) continue;
+        Coord p = kv.second.pos + kv.second.vel * age;
+        out.push_back({kv.first, p, kv.second.vel, curPosition.distance(p)});
+    }
+    return out;
+}
+
 void AiharpApp::receiveSignal(cComponent* source, simsignal_t signalID, bool b, cObject* details)
 {
     if (signalID != Mac1609_4::sigChannelBusy) return cListener::receiveSignal(source, signalID, b, details);
@@ -151,8 +186,9 @@ void AiharpApp::handleSelfMsg(cMessage* msg)
     switch (msg->getKind()) {
     case EV_BEACON: {
         if (isActive(step)) {
-            DemoSafetyMessage* bsm = new DemoSafetyMessage("beacon");
+            AiharpBeacon* bsm = new AiharpBeacon("beacon");
             populateWSM(bsm);
+            bsm->setSenderIdx(idx);
             sendDown(bsm);
             beaconsSent++;
             if (activeSince < 0) activeSince = simTime().dbl();
@@ -175,69 +211,205 @@ void AiharpApp::handleSelfMsg(cMessage* msg)
         break;
     }
     case EV_TX:
-        S.pending--;                                         // the event has fired
+        S.txPending--;                                       // the event has fired
         transmit(step);
+        break;
+    case EV_TIMER:
+        S.timerPending--;
+        if (timerSched == step) {
+            timerSched = NO_STEP;
+            // engine: due timers need holds & active; skipped while a transmission is queued
+            if (holds && isActive(step) && txSched == NO_STEP) decide(step, "timer", maxSenderDist);
+        }
         break;
     default:
         DemoBaseApplLayer::handleSelfMsg(msg);
     }
 }
 
-void AiharpApp::decide(int step, const char* trigger, double senderDist)
+AiharpApp::Decision AiharpApp::policyDecide(const char* trigger, double senderDist, bool hasSender,
+                                            Coord senderPos, bool duplicate, bool designated)
 {
-    // agents/*.py decide(); ORIGINATE always broadcasts.
-    std::string action = "broadcast";
-    int delay = 1, cancel = NO_STEP;
-    bool originate = std::string(trigger) == "originate";
-    if (!originate) {
-        double R = S.commRange;
-        switch (kind) {
-        case FLOODING: break;
-        case P_PERSISTENCE:
-            if (!(uniform(0, 1) < knob)) action = "suppress";
-            break;
-        case WEIGHTED_P: {
-            double p = R <= 0 ? knob : std::min(std::max(senderDist / R, 0.0), knob);   // min_p = 0, max_p = knob
-            if (!(uniform(0, 1) < p)) action = "suppress";
-            break;
+    // agents/*.py decide()
+    Decision d;
+    std::string trig(trigger);
+    bool originate = trig == "originate";
+    double R = S.commRange;
+    auto slotOf = [&](int n) {
+        double frac = R <= 0 ? 1.0 : std::min(std::max(senderDist, 0.0), R) / R;
+        return std::min(std::max((int) std::floor(n * (1.0 - frac)), 0), n - 1);
+    };
+    // progress of each neighbour along the propagation direction (DecisionContext.progress)
+    auto progress = [&](const std::vector<Neighbour>& nb) {
+        std::vector<double> pr(nb.size(), 0.0);
+        if (!hasSender) return pr;
+        Coord sd = senderPos - curPosition;
+        double norm = std::sqrt(sd.x * sd.x + sd.y * sd.y);
+        if (norm < 1e-9) return pr;
+        double ux = -sd.x / norm, uy = -sd.y / norm;
+        for (size_t k = 0; k < nb.size(); ++k) {
+            Coord dd = nb[k].pos - curPosition;
+            pr[k] = dd.x * ux + dd.y * uy;
         }
-        case SLOTTED_1P: {                                   // p = 1, slot_epochs = 1, cancel_on_duplicates = 1
-            int n = (int) knob;
-            double frac = R <= 0 ? 1.0 : std::min(std::max(senderDist, 0.0), R) / R;
-            int slot = std::min(std::max((int) std::floor(n * (1.0 - frac)), 0), n - 1);
-            action = "defer"; delay = 1 + slot; cancel = 1;
-            break;
-        }
-        case COUNTER_BASED: {                                // max_delay_epochs = 5, min_distance_fraction = 0.35
-            if (senderDist < 0.35 * R) { action = "suppress"; break; }
-            action = "defer"; delay = 1 + intuniform(0, 4); cancel = (int) knob - 1;
-            break;
-        }
-        }
+        return pr;
+    };
+    switch (kind) {
+    case FLOODING:
+        break;
+    case P_PERSISTENCE:
+        if (!originate && !(uniform(0, 1) < knob)) d.act = SUPPRESS;
+        break;
+    case WEIGHTED_P: {
+        if (originate) break;
+        double p = R <= 0 ? knob : std::min(std::max(senderDist / R, 0.0), knob);   // min_p = 0, max_p = knob
+        if (!(uniform(0, 1) < p)) d.act = SUPPRESS;
+        break;
     }
-    S.log << "D," << simTime() << "," << step << "," << idx << "," << trigger << "," << action << "," << delay << "\n";
-    if (cancel != NO_STEP) cancelAtDups = cancel;
-    if (action == "suppress") {
-        txSched = NO_STEP;
-        disarm();
+    case SLOTTED_1P:                                         // p = 1, slot_epochs = 1, cancel_on_duplicates = 1
+        if (originate) break;
+        d.act = DEFER; d.delay = 1 + slotOf((int) knob); d.cancel = 1;
+        break;
+    case COUNTER_BASED:                                      // max_delay_epochs = 5, min_distance_fraction = 0.35
+        if (originate) break;
+        if (senderDist < 0.35 * R) { d.act = SUPPRESS; break; }
+        d.act = DEFER; d.delay = 1 + intuniform(0, 4); d.cancel = (int) knob - 1;
+        break;
+    case GREEDY_FARTHEST: {                                  // fallback_epochs = 3, seed_both_directions
+        if (originate || designated) {
+            auto nb = neighbours();
+            if (nb.empty()) break;                           // no relay to name: BROADCAST_NOW
+            if (!hasSender) {                                // origination: farthest on each side of the corridor
+                double minx = 1e300, maxx = -1e300, miny = 1e300, maxy = -1e300;
+                for (auto& n : nb) {
+                    Coord dd = n.pos - curPosition;
+                    minx = std::min(minx, dd.x); maxx = std::max(maxx, dd.x);
+                    miny = std::min(miny, dd.y); maxy = std::max(maxy, dd.y);
+                }
+                bool useX = (maxx - minx) >= (maxy - miny);
+                int k = 0;
+                for (int side : {+1, -1}) {
+                    int best = -1;
+                    double bestD = -1;
+                    for (auto& n : nb) {
+                        Coord dd = n.pos - curPosition;
+                        double a = useX ? dd.x : dd.y;
+                        if ((side > 0 ? a > 0 : a < 0) && n.dist > bestD) { bestD = n.dist; best = n.idx; }
+                    }
+                    if (best >= 0) d.relays[k++] = best;
+                }
+            }
+            else {
+                auto pr = progress(nb);
+                int best = -1;
+                double bestP = 0.0;
+                for (size_t k = 0; k < nb.size(); ++k)
+                    if (pr[k] > 0.0 && (best < 0 || pr[k] > bestP)) { bestP = pr[k]; best = nb[k].idx; }
+                if (best >= 0) d.relays[0] = best;
+            }
+            if (d.relays[0] >= 0) d.act = RELAY;
+            break;
+        }
+        d.act = DEFER; d.delay = 3 + slotOf((int) knob); d.cancel = 1;
+        break;
     }
-    else
-        schedule(step + std::max(1, delay));
+    case DVCAST: {                                           // slot_epochs = 1, cancel 1, carry_recheck_epochs = 10
+        if (originate) break;
+        if (txCount > 0) { d.act = SUPPRESS; break; }
+        if (trig == "receive" && duplicate) { d.act = SUPPRESS; break; }
+        auto nb = neighbours();
+        enum { WELL, SPARSE, DISC } regime;
+        if (nb.empty()) regime = DISC;
+        else {
+            bool ahead = !hasSender;
+            if (hasSender)
+                for (double p : progress(nb)) ahead |= p > 0.0;
+            if (ahead) regime = WELL;
+            else {
+                Coord own = mobility->getHeading().toCoord();
+                bool opposing = false;
+                for (auto& n : nb) {
+                    double sp = std::sqrt(n.vel.x * n.vel.x + n.vel.y * n.vel.y);
+                    if (sp <= 0.5) continue;
+                    double dot = (n.vel.x * own.x + n.vel.y * own.y) / std::max(sp, 1e-9);
+                    if (std::acos(std::min(std::max(dot, -1.0), 1.0)) > M_PI / 2) opposing = true;
+                }
+                regime = opposing ? SPARSE : DISC;
+            }
+        }
+        if (regime == WELL) {
+            if (trig == "timer") break;                      // BROADCAST_NOW
+            d.act = DEFER; d.delay = 1 + slotOf((int) knob); d.cancel = 1;
+        }
+        else if (regime == DISC) {
+            d.act = CARRY; d.delay = 10;
+        }
+        break;                                               // SPARSE: BROADCAST_NOW
+    }
+    }
+    return d;
 }
 
-void AiharpApp::schedule(int step)
+void AiharpApp::decide(int step, const char* trigger, double senderDist, bool hasSender, Coord senderPos,
+                       bool duplicate, bool designated)
+{
+    Decision d = policyDecide(trigger, senderDist, hasSender, senderPos, duplicate, designated);
+    S.log << "D," << simTime() << "," << step << "," << idx << "," << trigger << "," << ACT_NAME[d.act] << ","
+          << d.delay << "\n";
+    // sim/engine.py _apply
+    if (d.cancel != NO_STEP) cancelAtDups = d.cancel;
+    switch (d.act) {
+    case SUPPRESS:
+        txSched = NO_STEP; disarmTx();
+        timerSched = NO_STEP; disarmTimer();
+        break;
+    case BROADCAST:
+        pendingRelays[0] = pendingRelays[1] = -1;
+        scheduleTx(step + 1);
+        break;
+    case DEFER:
+        pendingRelays[0] = pendingRelays[1] = -1;
+        scheduleTx(step + std::max(1, d.delay));
+        break;
+    case CARRY:
+        scheduleTimer(step + std::max(1, d.delay));
+        break;
+    case RELAY:
+        pendingRelays[0] = d.relays[0];
+        pendingRelays[1] = d.relays[1];
+        scheduleTx(step + 1);
+        break;
+    }
+}
+
+void AiharpApp::scheduleTx(int step)
 {
     txSched = step;
-    disarm();
+    disarmTx();
     scheduleAt(timeOf(step), txEvt);
-    S.pending++;
+    S.txPending++;
 }
 
-void AiharpApp::disarm()
+void AiharpApp::disarmTx()
 {
-    if (txEvt->isScheduled()) {
+    if (txEvt && txEvt->isScheduled()) {
         cancelEvent(txEvt);
-        S.pending--;
+        S.txPending--;
+    }
+}
+
+void AiharpApp::scheduleTimer(int step)
+{
+    timerSched = step;
+    disarmTimer();
+    scheduleAt(timeOf(step), timerEvt);
+    S.timerPending++;
+}
+
+void AiharpApp::disarmTimer()
+{
+    if (timerEvt && timerEvt->isScheduled()) {
+        cancelEvent(timerEvt);
+        S.timerPending--;
     }
 }
 
@@ -257,10 +429,20 @@ void AiharpApp::transmit(int step)
     m->setSenderIdx(idx);
     m->setSenderPos(curPosition);
     m->setSchedTime(timeOf(step).dbl());
+    m->setRelay1(pendingRelays[0]);
+    m->setRelay2(pendingRelays[1]);
+    pendingRelays[0] = pendingRelays[1] = -1;
     sendDelayedDown(m, intuniform(0, S.cwSlots - 1) * S.slotTime);   // custom MAC's per-epoch backoff draw
     txCount++;
     S.lastTx = simTime().dbl();
     S.log << "T," << simTime() << "," << step << "," << idx << "," << hops << "," << timeOf(step) << "\n";
+}
+
+void AiharpApp::onBSM(DemoSafetyMessage* bsm)
+{
+    AiharpBeacon* b = dynamic_cast<AiharpBeacon*>(bsm);
+    if (!b || b->getSenderIdx() < 0 || !isActive(stepAt(simTime()))) return;
+    nbTable[b->getSenderIdx()] = {b->getSenderPos(), b->getSenderSpeed(), simTime().dbl()};
 }
 
 void AiharpApp::onWSM(BaseFrame1609_4* wsm)
@@ -270,23 +452,27 @@ void AiharpApp::onWSM(BaseFrame1609_4* wsm)
     int step = stepAt(simTime());
     if (!isActive(step)) return;                             // engine: receivers are active vehicles only
     double dist = curPosition.distance(m->getSenderPos());
+    maxSenderDist = std::max(maxSenderDist, dist);
     bool fresh = !holds;
+    bool designated = fresh && (m->getRelay1() == idx || m->getRelay2() == idx);
     S.log << "R," << simTime() << "," << step << "," << idx << "," << m->getSenderIdx() << "," << dist << ","
-          << (fresh ? 1 : 0) << "," << m->getHops() << "\n";
+          << (fresh ? 1 : 0) << "," << m->getHops() << "," << (designated ? 1 : 0) << "\n";
     if (fresh) {
         holds = true;
         informedStep = step;
         hops = m->getHops() + 1;
-        decide(step, "receive", dist);
+        decide(step, "receive", dist, true, m->getSenderPos(), false, designated);
     }
     else {
         dupCount++;
         if (cancelAtDups != NO_STEP && dupCount >= cancelAtDups && txSched > step) {
             txSched = NO_STEP;
             cancelAtDups = NO_STEP;
-            disarm();
+            disarmTx();
             S.log << "X," << simTime() << "," << step << "," << idx << ",cancel\n";
         }
+        else if (kind == DVCAST && txSched == NO_STEP)       // wants_duplicate_callbacks
+            decide(step, "receive", dist, true, m->getSenderPos(), true, false);
     }
 }
 
@@ -301,11 +487,13 @@ void AiharpApp::finish()
         recordScalar("beaconsSent", beaconsSent);
         recordScalar("hazardTx", txCount);
     }
-    disarm();
+    disarmTx();
+    disarmTimer();
     cancelAndDelete(txEvt);
+    cancelAndDelete(timerEvt);
     cancelAndDelete(beaconEvt);
     cancelAndDelete(originEvt);
-    txEvt = beaconEvt = originEvt = nullptr;
+    txEvt = timerEvt = beaconEvt = originEvt = nullptr;
     DemoBaseApplLayer::finish();
     S.log.flush();
 }

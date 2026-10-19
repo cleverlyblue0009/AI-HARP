@@ -4,9 +4,8 @@
     python -m experiments.revision5.veins.queue run    --seeds 200 201 ... --jobs 2
 
 Cells: the 4 headline cells (protocol.json). Settings: the classical POLICY_SWEEPS settings of the
-families implemented in the Veins app (flooding, p_persistence_03, slotted_1p, weighted_p,
-counter_based -- 40 of 55); greedy_farthest and dvcast need neighbour tables and are NOT implemented,
-which is reported, not hidden. A run is done when its run.json exists with exit code 0 and an identical
+families -- all 7, 55 settings (greedy_farthest and dvcast use beacon neighbour tables in Veins;
+see AiharpApp.cc). A run is done when its run.json exists with exit code 0 and an identical
 trace; anything else (failure, non-identical trace) is kept on disk and retried, never dropped.
 Outputs: cache/veins_runs/h3/ (logs, scalars, run records), scored later by veins_metrics.py.
 """
@@ -24,8 +23,9 @@ from common.config import PROJECT_ROOT
 from experiments.revision5.sweep import HEADLINE
 
 VEINS_POLICY = {"flooding": "flooding", "p_persistence_03": "p_persistence", "slotted_1p": "slotted_1p",
-                "weighted_p": "weighted_p", "counter_based": "counter_based"}
-NOT_IMPLEMENTED = ("greedy_farthest", "dvcast")
+                "weighted_p": "weighted_p", "counter_based": "counter_based",
+                "greedy_farthest": "greedy_farthest", "dvcast": "dvcast"}
+NOT_IMPLEMENTED: tuple[str, ...] = ()
 BUNDLES = PROJECT_ROOT / "cache" / "veins"
 RUNS = PROJECT_ROOT / "cache" / "veins_runs" / "h3"
 WSL_ROOT = "/mnt/c/Users/UPASANA/AI-HARP"
