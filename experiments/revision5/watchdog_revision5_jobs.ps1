@@ -45,4 +45,4 @@ $jobs += @{ n = "eval_classical_sumo"; alive = "sweep classical --seedset EVAL -
 #     Gated on the greedy/DV-CAST validation (flag written by hand after both validation replays pass).
 $jobs += @{ n = "veins_net"; alive = "veins.queue run --seeds 200 201"; ready = { Test-Path "cache\veins_runs\VALIDATED" };
             done = { @(Get-ChildItem cache\veins_runs\h3\*.run.json -ErrorAction SilentlyContinue).Count -ge 2200 -and ((& $gpu -m experiments.revision5.veins.queue status --seeds 200 201 202 203 204 205 206 207 208 209) -match " 0 to do") };
-            cmd = "$gpu -u -m experiments.revision5.veins.queue run --seeds 200 201 202 203 204 205 206 207 208 209 --jobs 10 >> logs\revision5\veins_net.log 2>&1" }
+            cmd = "$gpu -u -m experiments.revision5.veins.queue run --seeds 200 201 202 203 204 205 206 207 208 209 --jobs 4 >> logs\revision5\veins_net.log 2>&1" }
