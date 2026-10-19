@@ -64,7 +64,7 @@ $jobs += @{ n = "sel_agent_s5_9"; alive = "sweep agent --seedset SEL --cells hea
             cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset SEL --cells headline --runs ref_s5 ref_s6 ref_s7 ref_s8 ref_s9 --tag s5_9 --jobs 2 >> logs\revision5\sel_agent_s5_9.log 2>&1" }
 $jobs += @{ n = "eval_agent_s5_9"; alive = "sweep agent --seedset EVAL --cells headline"; ready = { (Rows "$runs\agent__SEL__headline__default__fallback__s5_9.csv") -ge 2400 };
             done = { (Rows "$runs\agent__EVAL__headline__default__fallback__s5_9.csv") -ge 3600 };
-            cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset EVAL --cells headline --runs ref_s5 ref_s6 ref_s7 ref_s8 ref_s9 --tag s5_9 --jobs 2 >> logs\revision5\eval_agent_s5_9.log 2>&1" }
+            cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset EVAL --cells headline --runs ref_s5 ref_s6 ref_s7 ref_s8 ref_s9 --tag s5_9 --jobs 4 >> logs\revision5\eval_agent_s5_9.log 2>&1" }
 $jobs += @{ n = "eval_agent_s0_4"; alive = "sweep agent --seedset EVAL --cells grid24"; ready = { (Rows "$runs\agent__EVAL__headline__default__fallback__s5_9.csv") -ge 3600 };
             done = { (Rows "$runs\agent__EVAL__grid24__default__fallback.csv") -ge 21600 };
-            cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset EVAL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 2 >> logs\revision5\eval_agent_s0_4.log 2>&1" }
+            cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset EVAL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 4 >> logs\revision5\eval_agent_s0_4.log 2>&1" }
