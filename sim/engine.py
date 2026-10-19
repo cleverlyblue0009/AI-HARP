@@ -54,6 +54,9 @@ class SimSettings:
     max_originators: int = 1
     rx_prune_margin_db: float = 15.0
     record_transmissions: bool = True
+    #: Revision-5 H3: also record every (transmission, in-nominal-range receiver) outcome with its distance
+    #: (RunResult.meta["rx_pairs"]). Off by default; it only appends to a list and draws nothing.
+    record_rx_pairs: bool = False
     #: Compute the risk-field features once per epoch instead of once per
     #: decision. They depend only on (trace, step, hazard), so the result is
     #: identical; measured at 11% of rollout time (20,242 calls in 3 updates).
@@ -174,6 +177,7 @@ class DisseminationEngine:
         rng_fade = self.seeds.rng("fading")
         rng_pol = self.seeds.rng("policy")
         self._feats_cache = None
+        self._rx_pairs: list = []
         self.policy.reset(self.N, rng_pol)
 
         N = self.N
@@ -276,6 +280,7 @@ class DisseminationEngine:
                 "comm_range_m": round(self.comm_range_m, 1),
                 "cs_range_m": round(self.cs_range_m, 1),
                 "rx_prune_range_m": round(self.rx_range_m, 1),
+                **({"rx_pairs": self._rx_pairs} if cfg.record_rx_pairs else {}),
             },
             **counters,
         )
@@ -392,6 +397,10 @@ class DisseminationEngine:
         in_nominal = (d <= self.comm_range_m) & ~is_tx[None, :]
         in_nominal[np.arange(n_tx), np.searchsorted(rx_idx, tx)] = False  # exclude self
         counters["n_rx_attempts"] += int(in_nominal.sum())
+        if self.cfg.record_rx_pairs:
+            k_tx, k_rx = np.nonzero(in_nominal)
+            self._rx_pairs.extend(zip([step] * len(k_tx), tx[k_tx].tolist(), rx_idx[k_rx].tolist(),
+                                      d[k_tx, k_rx].round(2).tolist(), decoded[k_tx, k_rx].tolist()))
         counters["n_rx_success"] += int((decoded & in_nominal).sum())
         counters["n_fail_sensitivity"] += int((in_nominal & ~above_sens).sum())
         counters["n_fail_sinr"] += int((in_nominal & above_sens & ~above_sinr).sum())

@@ -7,6 +7,9 @@ $root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Set-Location $root
 $gpu = "D:\aiharp-gpu\Scripts\python.exe"
 $log = "logs\revision5\watchdog.log"
+# Never inherit SUMO_HOME: backend "auto" would then pick SUMO (incident 2026-10-19, SEL rows quarantined in
+# results\revision5\runs\invalid_sumo_backend). Jobs that need SUMO set it in their own command line.
+Remove-Item Env:SUMO_HOME -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force logs\revision5 | Out-Null
 $procs = @(Get-CimInstance Win32_Process -Filter "Name='python.exe'" | ForEach-Object { $_.CommandLine })
 function Alive($pattern) { [bool]($procs | Where-Object { $_ -match $pattern }) }

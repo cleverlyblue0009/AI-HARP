@@ -35,7 +35,7 @@ def main() -> int:
     bad, worst = [], 0.0
     for (b, s), r in sorted(ref.items()):
         new = run_task(task("rural_highway", 20.0, "ai_harp", s, param="suppression_bias", value=b,
-                            fixed=agent_params(ck, tau=0.5, deterministic=False)))
+                            fixed=agent_params(ck, tau=0.5, deterministic=False), backend="fallback"))
         for f in FIELDS:
             x, y = float(r[f]), float(new[f])
             d = 0.0 if (x != x and y != y) else abs(x - y)

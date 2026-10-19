@@ -29,3 +29,12 @@ Veins application; they are development runs, not H3 data, and are not reused.
 
 **Also decided with this entry:** greedy_farthest and DV-CAST are ported to Veins before scaling up (all
 55 classical settings); if either cannot be ported, that is reported explicitly.
+
+## D2 — incident, no protocol change: SEL sweeps ran on the wrong mobility backend (2026-10-19T10:05+05:30)
+
+The first SEL classical and SEL agent sweeps (00:31–09:56) ran on SUMO mobility instead of the fallback
+backend, because SUMO_HOME had been set as a user variable and the runner used backend "auto". Found by the
+bit-exact gate before any SEL result was computed or inspected. The rows are quarantined in
+`results/revision5/runs/invalid_sumo_backend/` (README there), the backend is now explicit everywhere in the
+protocol runner, and both SEL sweeps restart from zero. Training was not affected (verified). Cost: ~9.5 h of
+SEL compute.

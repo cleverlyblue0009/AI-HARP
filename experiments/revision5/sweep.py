@@ -109,7 +109,9 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
 
     pp, sd, cl = phy_patch(a.channel), seeds(a.seedset), cells(a.cells)
-    bk = "sumo" if a.backend == "sumo" else "auto"
+    # Explicit, never "auto": "auto" picks SUMO whenever SUMO_HOME is set, which silently put the first SEL
+    # sweeps on SUMO mobility (2026-10-19; quarantined in runs/invalid_sumo_backend/).
+    bk = "sumo" if a.backend == "sumo" else "fallback"
     tasks = []
     if a.track == "classical":
         for sc, d in cl:
