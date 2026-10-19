@@ -43,7 +43,9 @@ $jobs += @{ n = "eval_classical_sumo"; alive = "sweep classical --seedset EVAL -
 
 # B7. H3 Veins replays, network layer first: EVAL seeds 200-209, all 55 settings, 4 headline cells (2200).
 #     Gated on the greedy/DV-CAST validation (flag written by hand after both validation replays pass).
-$jobs += @{ n = "veins_net"; alive = "veins.queue run --seeds 200 201"; ready = { Test-Path "cache\veins_runs\VALIDATED" };
+# 2026-10-20: all remaining Veins replays moved to the three gated Azure VMs (experiments/revision5/cloud);
+# the laptop's own queue is retired (its 1,051 clean replays are kept and on the VMs' skip list).
+$jobs += @{ n = "veins_net"; alive = "veins.queue run --seeds 200 201"; ready = { $false };
             done = { @(Get-ChildItem cache\veins_runs\h3\*.run.json -ErrorAction SilentlyContinue).Count -ge 2200 -and ((& $gpu -m experiments.revision5.veins.queue status --seeds 200 201 202 203 204 205 206 207 208 209) -match " 0 to do") };
             cmd = "$gpu -u -m experiments.revision5.veins.queue run --seeds 200 201 202 203 204 205 206 207 208 209 --jobs 5 >> logs\revision5\veins_net.log 2>&1" }
 
