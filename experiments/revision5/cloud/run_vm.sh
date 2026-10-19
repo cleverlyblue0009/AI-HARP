@@ -14,7 +14,7 @@ if ! "$HOME/venv/bin/python" -m experiments.revision5.cloud.gate --ref "$HOME/ga
 fi
 echo "$(date -Is) gate PASSED; starting Veins slice $SLICE/3" >> "$HOME/run_vm.log"
 until grep -q "slice complete" "$HOME/vm_veins.log" 2>/dev/null; do
-  "$HOME/venv/bin/python" -u -m experiments.revision5.cloud.vm_veins --slice "$SLICE" --n 3 --seeds 200-229 --jobs 3 \
+  "$HOME/venv/bin/python" -u -m experiments.revision5.cloud.vm_veins --slice "$SLICE" --n 3 --seeds 200-229 --jobs "${JOBS:-4}" \
       --skip "$HOME/skip.txt" >> "$HOME/vm_veins.log" 2>&1
   sleep 30
 done
