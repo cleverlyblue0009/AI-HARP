@@ -247,6 +247,19 @@ class CorruptTraceError(ValueError):
 
 
 def load_trace(path: Path) -> Trace:
+    # Windows: opening a file at the instant another worker renames a freshly generated copy of the same
+    # trace into place raises PermissionError (two such races on 2026-10-19). It is the same data; retry.
+    for attempt in range(20):
+        try:
+            return _load_trace_once(path)
+        except PermissionError:
+            if attempt == 19:
+                raise
+            time.sleep(0.25)
+    raise AssertionError("unreachable")
+
+
+def _load_trace_once(path: Path) -> Trace:
     # np.load sniffs the magic bytes and reports non-zip garbage as "pickled
     # data" (a ValueError), indistinguishable from a format mismatch; check first.
     with open(path, "rb") as fh:
@@ -256,8 +269,8 @@ def load_trace(path: Path) -> Trace:
     try:
         return _load_trace(path)
     except (zipfile.BadZipFile, EOFError, KeyError, OSError, json.JSONDecodeError) as exc:
-        if isinstance(exc, FileNotFoundError):
-            raise
+        if isinstance(exc, (FileNotFoundError, PermissionError)):
+            raise                                     # not corruption (PermissionError: retried above)
         raise CorruptTraceError(f"{path.name}: {type(exc).__name__}: {exc}") from exc
 
 
