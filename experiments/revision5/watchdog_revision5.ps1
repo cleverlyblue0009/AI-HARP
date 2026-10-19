@@ -62,6 +62,6 @@ function Tree($rootPattern) {
     do { $n = $ids.Count; $ids = @($ids + @($all | Where-Object { $ids -contains $_.ParentProcessId } | ForEach-Object { $_.ProcessId }) | Select-Object -Unique) } while ($ids.Count -gt $n)
     $ids
 }
-foreach ($p in @(@{ pat = "agents\.train|train_privileged"; cls = "AboveNormal" }, @{ pat = "experiments\.revision5\.sweep"; cls = "BelowNormal" })) {
+foreach ($p in @(@{ pat = "agents\.train|train_privileged"; cls = "AboveNormal" }, @{ pat = "experiments\.revision5\.sweep"; cls = "Normal" })) {
     foreach ($id in (Tree $p.pat)) { try { (Get-Process -Id $id -ErrorAction Stop).PriorityClass = $p.cls } catch {} }
 }
