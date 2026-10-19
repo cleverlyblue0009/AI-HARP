@@ -90,11 +90,29 @@ class MetricContext:
     oracle: OracleRiskField | None = None
 
 
+def _trace_memo(tr, risk: RiskField, hazard: Hazard) -> dict[str, Any]:
+    """Per-trace memo of policy-independent quantities (oracle field, relevance matrices, the
+    estimation-agreement block). They depend only on (trace, hazard, risk field), and a sweep scores every
+    setting of a cell/seed on the same trace object (mobility.generate memo). Keyed by the risk-field type
+    and its parameters and by the hazard, so a different risk field never shares an entry."""
+    key = (type(risk).__qualname__, repr(getattr(risk, "__dict__", None)), repr(hazard))
+    store = tr.__dict__.setdefault("_metric_memo", {})
+    if key not in store:
+        if len(store) > 4:
+            store.clear()
+        store[key] = {}
+    return store[key]
+
+
 def _build_context(res: RunResult, risk: RiskField, hazard: Hazard) -> MetricContext:
     tr = res.trace
-    oracle = build_oracle_risk_field(risk, hazard)
-    rel = oracle.relevance_matrix(tr, hazard)
-    peak, at_risk = oracle.at_risk_set(rel)
+    memo = _trace_memo(tr, risk, hazard)
+    if "oracle" not in memo:
+        oracle = build_oracle_risk_field(risk, hazard)
+        rel = oracle.relevance_matrix(tr, hazard)
+        memo.update(oracle=oracle, rel=rel, peak_at_risk=oracle.at_risk_set(rel))
+    oracle, rel = memo["oracle"], memo["rel"]
+    peak, at_risk = memo["peak_at_risk"]
 
     informed = res.informed_step >= 0
     idx = np.flatnonzero(informed)
@@ -477,7 +495,10 @@ def compute_metrics(res: RunResult, hz_cfg: dict[str, Any]) -> dict[str, Any]:
         "origin_step": int(res.origin_step),
         "origin_time_s": float(res.origin_step * tr.dt) if res.origin_step >= 0 else float("nan"),
     }
-    out.update(estimation_agreement(tr, hazard, risk, ctx.oracle))
+    memo = _trace_memo(tr, risk, hazard)
+    if "estimation_agreement" not in memo:
+        memo["estimation_agreement"] = estimation_agreement(tr, hazard, risk, ctx.oracle)
+    out.update(memo["estimation_agreement"])
     out.update(actionable_deadline_miss_rate(ctx, res, hazard, hz_cfg))
     out.update(stopping_deadline_warned(ctx, res, hazard, hz_cfg))
     out.update(traffic_regime(res))
