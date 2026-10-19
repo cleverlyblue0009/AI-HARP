@@ -2,7 +2,7 @@
 # Build the H3 Veins application (experiments/revision5/veins/aiharp) into ~/veins-r5/aiharp/aiharp.
 set -euo pipefail
 source "$HOME/veins-r5/env.sh"
-SRC=/mnt/c/Users/UPASANA/AI-HARP/experiments/revision5/veins/aiharp
+SRC=${AIHARP_SRC:-/mnt/c/Users/UPASANA/AI-HARP}/experiments/revision5/veins/aiharp
 DST=$VR5/aiharp
 mkdir -p "$DST"
 for f in "$SRC"/*; do tr -d '\r' < "$f" > "$DST/$(basename "$f")"; done
