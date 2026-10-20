@@ -1,0 +1,59 @@
+{
+ "run": "mlp_s2",
+ "variant": "mlp",
+ "seed": 2,
+ "rc": 0,
+ "hours_this_session": 2.276,
+ "git_commit": "b6778ae1d834389ba860e60291fd419b7840b122",
+ "command": "python -u -m agents.train --keep-awake --quiet --out .\\checkpoints\\revision1\\mlp_s2 --workers 5 --seed 2 --encoder mlp",
+ "checkpoint_dir": "checkpoints/revision1/mlp_s2",
+ "config_hash": "68c77f1e39a3",
+ "training_seed": 2,
+ "encoder": "mlp",
+ "include_neighbour_edges": true,
+ "final_update": 1000,
+ "checkpoint_sha": "dd0160887784fc24",
+ "run_summary": {
+  "stopped": "max_updates",
+  "total_updates": 1000,
+  "plan": [
+   [
+    "pretrain",
+    200
+   ],
+   [
+    "finetune",
+    800
+   ]
+  ],
+  "final_stage": "finetune",
+  "final_stage_update": 800,
+  "early_stop_window": 30,
+  "early_stop_run": 0,
+  "elapsed_s_this_session": 8167.0,
+  "ppo_device": "cuda",
+  "bit_reproducible": true,
+  "resumed_from": null,
+  "initialised_from": null,
+  "last_shortfall_by_group": {
+   "rural_highway|1": 0.5771856947005967,
+   "rural_highway|20": -0.032440592611266535,
+   "rural_highway|5": -0.04053598983076833,
+   "rural_highway|80": -0.037677077901984254,
+   "urban_nlos|1": 0.31688669925651614,
+   "urban_nlos|10": -0.1646188268501254,
+   "urban_nlos|3": 0.11872701103309628,
+   "urban_nlos|80": -0.04759330790261217
+  },
+  "last_lambda_by_group": {
+   "rural_highway|1": 1.95756709737151,
+   "rural_highway|20": 1.7638560646944392,
+   "rural_highway|5": 20.48940571932143,
+   "rural_highway|80": 0.910142453783654,
+   "urban_nlos|1": 28.884439837538103,
+   "urban_nlos|10": 7.258558111217383,
+   "urban_nlos|3": 8.655508988413121,
+   "urban_nlos|80": 2.8090822611235806
+  }
+ }
+}

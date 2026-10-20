@@ -1,0 +1,55 @@
+{
+ "run": "ref_s8",
+ "variant": "ref",
+ "seed": 8,
+ "rc": 0,
+ "hours_this_session": 3.662,
+ "git_commit": "17881d5d5495916398f0e509dc8dca720db1a958",
+ "command": "python -u -m agents.train --keep-awake --quiet --out .\\checkpoints\\revision1\\ref_s8 --workers 5 --seed 8",
+ "checkpoint_dir": "checkpoints/revision1/ref_s8",
+ "config_hash": "1a6322352735",
+ "training_seed": 8,
+ "encoder": "gatv2",
+ "include_neighbour_edges": true,
+ "final_update": 1000,
+ "checkpoint_sha": "148ba16fe272fe50",
+ "run_summary": {
+  "stopped": "max_updates",
+  "total_updates": 1000,
+  "plan": [
+   [
+    "pretrain",
+    200
+   ],
+   [
+    "finetune",
+    800
+   ]
+  ],
+  "final_stage": "finetune",
+  "final_stage_update": 800,
+  "early_stop_window": 30,
+  "early_stop_run": 0,
+  "elapsed_s_this_session": 13170.7,
+  "ppo_device": "cuda",
+  "bit_reproducible": true,
+  "resumed_from": null,
+  "initialised_from": null,
+  "last_shortfall_by_group": {
+   "rural_highway|1": 0.05465856363728839,
+   "rural_highway|2": -0.2614940647175545,
+   "rural_highway|40": -0.008117959092183557,
+   "urban_nlos|2": -0.03607970348429089,
+   "urban_nlos|3": 0.171825645152617,
+   "urban_nlos|80": -0.07152560846192894
+  },
+  "last_lambda_by_group": {
+   "rural_highway|1": 0.1456833423643828,
+   "rural_highway|2": 42.324517258876874,
+   "rural_highway|40": 11.25640130220303,
+   "urban_nlos|2": 28.823525486881113,
+   "urban_nlos|3": 6.70479860707947,
+   "urban_nlos|80": 1.7170062769174788
+  }
+ }
+}

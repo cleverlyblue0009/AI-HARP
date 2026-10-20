@@ -1,0 +1,56 @@
+{
+ "run": "ref_s2_u2000",
+ "variant": "ref",
+ "seed": 2,
+ "extends": "checkpoints/revision1/ref_s2",
+ "rc": 0,
+ "hours_this_session": 2.201,
+ "git_commit": "b6778ae1d834389ba860e60291fd419b7840b122",
+ "command": "python -u -m agents.train --keep-awake --quiet --resume .\\checkpoints\\revision1\\ref_s2_u2000\\ckpt_latest.pt --out .\\checkpoints\\revision1\\ref_s2_u2000 --workers 5 --finetune-max-updates 1800",
+ "checkpoint_dir": "checkpoints/revision1/ref_s2_u2000",
+ "config_hash": "73207c904910",
+ "training_seed": 2,
+ "encoder": "gatv2",
+ "include_neighbour_edges": true,
+ "final_update": 2000,
+ "checkpoint_sha": "1a0bbf2824dbb6ef",
+ "run_summary": {
+  "stopped": "max_updates",
+  "total_updates": 2000,
+  "plan": [
+   [
+    "pretrain",
+    200
+   ],
+   [
+    "finetune",
+    1800
+   ]
+  ],
+  "final_stage": "finetune",
+  "final_stage_update": 1800,
+  "early_stop_window": 30,
+  "early_stop_run": 0,
+  "elapsed_s_this_session": 7915.1,
+  "ppo_device": "cuda",
+  "bit_reproducible": true,
+  "resumed_from": "C:\\Users\\UPASANA\\AI-HARP\\checkpoints\\revision1\\ref_s2_u2000\\ckpt_latest.pt",
+  "initialised_from": null,
+  "last_shortfall_by_group": {
+   "rural_highway|10": 0.028444756926481577,
+   "rural_highway|5": -0.06854624058127125,
+   "urban_nlos|1": -0.5055059313027984,
+   "urban_nlos|2": -0.04167392835902283,
+   "urban_nlos|20": 0.045239801314742596,
+   "urban_nlos|5": -0.107411636334792
+  },
+  "last_lambda_by_group": {
+   "rural_highway|10": 1.5625937800340188,
+   "rural_highway|5": 11.520397929037442,
+   "urban_nlos|1": 52.28535360613776,
+   "urban_nlos|2": 29.51474767146005,
+   "urban_nlos|20": 19.903691884566996,
+   "urban_nlos|5": 0.0
+  }
+ }
+}

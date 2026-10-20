@@ -1,0 +1,57 @@
+{
+ "run": "norel_s4",
+ "variant": "norel",
+ "seed": 4,
+ "rc": 0,
+ "hours_this_session": 3.271,
+ "git_commit": "b6778ae1d834389ba860e60291fd419b7840b122",
+ "command": "python -u -m agents.train --keep-awake --quiet --out .\\checkpoints\\revision1\\norel_s4 --workers 5 --seed 4 --drop-node-feature relevance_causal",
+ "checkpoint_dir": "checkpoints/revision1/norel_s4",
+ "config_hash": "6fd7263cd77f",
+ "training_seed": 4,
+ "encoder": "gatv2",
+ "include_neighbour_edges": true,
+ "final_update": 1000,
+ "checkpoint_sha": "7086f2dd4c60a4e5",
+ "run_summary": {
+  "stopped": "max_updates",
+  "total_updates": 1000,
+  "plan": [
+   [
+    "pretrain",
+    200
+   ],
+   [
+    "finetune",
+    800
+   ]
+  ],
+  "final_stage": "finetune",
+  "final_stage_update": 800,
+  "early_stop_window": 30,
+  "early_stop_run": 0,
+  "elapsed_s_this_session": 11763.7,
+  "ppo_device": "cuda",
+  "bit_reproducible": true,
+  "resumed_from": null,
+  "initialised_from": null,
+  "last_shortfall_by_group": {
+   "rural_highway|1": 0.08934562860456473,
+   "rural_highway|2": -0.25683847395181286,
+   "rural_highway|5": 0.05145387888032908,
+   "rural_highway|80": -0.007981224056680215,
+   "urban_nlos|20": 0.003307044010058942,
+   "urban_nlos|3": -0.5222928691943995,
+   "urban_nlos|5": 0.04691419433038679
+  },
+  "last_lambda_by_group": {
+   "rural_highway|1": 0.8184097462868671,
+   "rural_highway|2": 35.53653392465752,
+   "rural_highway|5": 10.007175578892767,
+   "rural_highway|80": 0.49451231348712665,
+   "urban_nlos|20": 18.598729173208113,
+   "urban_nlos|3": 0.0,
+   "urban_nlos|5": 11.89481384209253
+  }
+ }
+}
