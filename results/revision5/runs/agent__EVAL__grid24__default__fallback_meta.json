@@ -1,0 +1,63 @@
+[
+ {
+  "task": "revision5/agent__EVAL__grid24__default__fallback",
+  "git_commit": "b6778ae1d834389ba860e60291fd419b7840b122",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep agent --seedset EVAL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 4",
+  "config_hash": "efa332a1c2b5",
+  "config": {
+   "track": "agent",
+   "cells": "grid24",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "ref_s0",
+    "ref_s1",
+    "ref_s2",
+    "ref_s3",
+    "ref_s4"
+   ],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   200,
+   201,
+   202,
+   203,
+   204,
+   205,
+   206,
+   207,
+   208,
+   209,
+   210,
+   211,
+   212,
+   213,
+   214,
+   215,
+   216,
+   217,
+   218,
+   219,
+   220,
+   221,
+   222,
+   223,
+   224,
+   225,
+   226,
+   227,
+   228,
+   229
+  ],
+  "generated": "2026-10-20 03:51:29",
+  "n_runs": 21600
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "task": "revision5/rule__SEL__grid24__default__fallback",
+  "git_commit": "f8d66cee0157b875281b0a4baecf563836552206",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep rule --seedset SEL --cells grid24 --jobs 3",
+  "config_hash": "ea8e503fbdaf",
+  "config": {
+   "track": "rule",
+   "cells": "grid24",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-10-19 18:51:17",
+  "n_runs": 18720
+ }
+]

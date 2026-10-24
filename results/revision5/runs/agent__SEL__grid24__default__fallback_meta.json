@@ -1,0 +1,359 @@
+[
+ {
+  "task": "revision5/agent__SEL__grid24__default__fallback",
+  "git_commit": "66c84d7c5d5ed541ec1c646a2ce04d62a5a0b933",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep agent --seedset SEL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 2",
+  "config_hash": "efa332a1c2b5",
+  "config": {
+   "track": "agent",
+   "cells": "grid24",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "ref_s0",
+    "ref_s1",
+    "ref_s2",
+    "ref_s3",
+    "ref_s4"
+   ],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-10-19 10:54:59",
+  "n_runs": 14400
+ },
+ {
+  "task": "revision5/agent__SEL__grid24__default__fallback",
+  "git_commit": "6ad488fd0a6c2730e5ffbec36d40dc316da244bc",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep agent --seedset SEL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 2",
+  "config_hash": "efa332a1c2b5",
+  "config": {
+   "track": "agent",
+   "cells": "grid24",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "ref_s0",
+    "ref_s1",
+    "ref_s2",
+    "ref_s3",
+    "ref_s4"
+   ],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-10-19 12:18:55",
+  "n_runs": 14400
+ },
+ {
+  "task": "revision5/agent__SEL__grid24__default__fallback",
+  "git_commit": "6ad488fd0a6c2730e5ffbec36d40dc316da244bc",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m x agent --seedset SEL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4",
+  "config_hash": "efa332a1c2b5",
+  "config": {
+   "track": "agent",
+   "cells": "grid24",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "ref_s0",
+    "ref_s1",
+    "ref_s2",
+    "ref_s3",
+    "ref_s4"
+   ],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-10-19 12:21:48",
+  "n_runs": 14400
+ },
+ {
+  "task": "revision5/agent__SEL__grid24__default__fallback",
+  "git_commit": "6ad488fd0a6c2730e5ffbec36d40dc316da244bc",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep agent --seedset SEL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 2",
+  "config_hash": "efa332a1c2b5",
+  "config": {
+   "track": "agent",
+   "cells": "grid24",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "ref_s0",
+    "ref_s1",
+    "ref_s2",
+    "ref_s3",
+    "ref_s4"
+   ],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-10-19 12:43:05",
+  "n_runs": 14400
+ },
+ {
+  "task": "revision5/agent__SEL__grid24__default__fallback",
+  "git_commit": "1c40dd1cf3ce1c6ab1bbd0c6b5dadfce00f3046d-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep agent --seedset SEL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 2",
+  "config_hash": "efa332a1c2b5",
+  "config": {
+   "track": "agent",
+   "cells": "grid24",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "ref_s0",
+    "ref_s1",
+    "ref_s2",
+    "ref_s3",
+    "ref_s4"
+   ],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-10-19 13:37:36",
+  "n_runs": 14400
+ },
+ {
+  "task": "revision5/agent__SEL__grid24__default__fallback",
+  "git_commit": "f8d66cee0157b875281b0a4baecf563836552206",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep agent --seedset SEL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 2",
+  "config_hash": "efa332a1c2b5",
+  "config": {
+   "track": "agent",
+   "cells": "grid24",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "ref_s0",
+    "ref_s1",
+    "ref_s2",
+    "ref_s3",
+    "ref_s4"
+   ],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-10-19 15:01:38",
+  "n_runs": 14400
+ },
+ {
+  "task": "revision5/agent__SEL__grid24__default__fallback",
+  "git_commit": "f63d351d4f554b6938a531431f90448d9aa933b3",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep agent --seedset SEL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 2",
+  "config_hash": "efa332a1c2b5",
+  "config": {
+   "track": "agent",
+   "cells": "grid24",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "ref_s0",
+    "ref_s1",
+    "ref_s2",
+    "ref_s3",
+    "ref_s4"
+   ],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-10-19 23:56:37",
+  "n_runs": 14400
+ }
+]
