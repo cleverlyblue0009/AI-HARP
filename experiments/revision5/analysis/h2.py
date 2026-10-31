@@ -19,16 +19,22 @@ from experiments.revision5.analysis.common import (B, D_R, EVAL, GRID24, HEADLIN
 from experiments.revision5.sweep import checkpoint_for
 
 
-def agent_tables(runs: list[str], cells, seeds, files: list[str]) -> dict[str, dict]:
-    """{run: {cell: Table over biases}} for the learned-gate (tau 0.5) rows of each training seed."""
+def agent_tables(runs: list[str], cells, seeds, files: list[str], variant: str = "learned",
+                 extra=()) -> dict[str, dict]:
+    """{run: {cell: Table over biases}} for each training seed's rows of one gate variant:
+    "learned" (tau 0.5), "tau0" (ungated) or "rgate" (random gate at the learned gate's SEL rate)."""
     sha = {checkpoint_sha(checkpoint_for(r)): r for r in runs}
     allrows = [r for f in files for r in rows(f)]
     out = {}
     for s, run in sha.items():
         def where(r, s=s):
             q = json.loads(r["params_json"])
-            return q.get("checkpoint_sha") == s and float(q.get("tau", -1)) == 0.5 and "random_gate_rate" not in q
-        out[run] = tables(allrows, cells, seeds, key=lambda r: (float(r["value"]),), where=where)
+            if q.get("checkpoint_sha") != s:
+                return False
+            if variant == "rgate":
+                return "random_gate_rate" in q
+            return "random_gate_rate" not in q and float(q.get("tau", -1)) == (0.0 if variant == "tau0" else 0.5)
+        out[run] = tables(allrows, cells, seeds, key=lambda r: (float(r["value"]),), where=where, extra=extra)
     return out
 
 
@@ -96,14 +102,23 @@ def analyse(cells, runs, asel, aev, csel, cev, rsel, rev, th, D_of, nB, rng):
 
     def summary(T, per, bs, comp):
         bs = np.array(bs, dtype=float)
-        ok = bs[np.isfinite(bs)]
-        res = {"statistic_pooled_relative_cost_difference": finite(T),
-               "per_cell": {f"{c[0]} d={c[1]:g}": v for c, v in per.items()},
-               "cells_both_qualify": len(per), "bootstrap_finite_replicates": int(ok.size), "B": nB}
+        # NaN = no cell where both qualify (statistic undefined): excluded and counted. +inf = the policy's mean cost
+        # is infinite in a cell (some EVAL seeds inform nobody at risk): KEPT, as the largest values.
+        ok = bs[~np.isnan(bs)]
+        fin = {c: v for c, v in per.items() if math.isfinite(v)}
+        res = {"statistic_pooled_relative_cost_difference": T if math.isfinite(T) else ("inf" if T > 0 else None),
+               "per_cell": {f"{c[0]} d={c[1]:g}": (v if math.isfinite(v) else "inf") for c, v in per.items()},
+               "nonfinite_cells": [f"{c[0]} d={c[1]:g}" for c in per if c not in fin],
+               "sensitivity_excluding_nonfinite_cells": (float(np.mean(list(fin.values()))) if fin else None),
+               "cells_both_qualify": len(per), "B": nB,
+               "bootstrap_undefined_replicates_nan": int(np.isnan(bs).sum()),
+               "bootstrap_infinite_replicates": int(np.isinf(bs).sum())}
+        q = lambda x: float(np.quantile(ok, x, method="inverted_cdf"))
         if ok.size:
-            lo, hi = np.percentile(ok, [2.5, 97.5])
-            lo90, hi90 = np.percentile(ok, [5, 95])
-            res.update(ci95=[float(lo), float(hi)], ci90=[float(lo90), float(hi90)],
+            lo, hi = q(0.025), q(0.975)
+            lo90, hi90 = q(0.05), q(0.95)
+            js = lambda x: x if math.isfinite(x) else ("inf" if x > 0 else "-inf")
+            res.update(ci95=[js(lo), js(hi)], ci90=[js(lo90), js(hi90)],
                        p_two_sided=float(min(1.0, 2 * min((ok <= 0).mean(), (ok >= 0).mean()))),
                        P_policy_cheaper=float((ok < 0).mean()), superiority=bool(hi < 0),
                        inferiority=bool(lo > 0), equivalence_TOST_5pct=bool(lo90 > -0.05 and hi90 < 0.05))

@@ -1,0 +1,1638 @@
+{
+ "provenance": {
+  "task": "revision5/analysis/secondary.json",
+  "git_commit": "59cab46646ac31d6ccfa17eda72f452ee93805ee-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.analysis.secondary --B 50 --only interp,sensitivity,ladder",
+  "config_hash": "f7480dfe6c84",
+  "config": {
+   "B": 50,
+   "sections": [
+    "interp",
+    "ladder",
+    "sensitivity"
+   ]
+  },
+  "seeds": null,
+  "generated": "2026-10-31 12:01:53",
+  "n_runs": null
+ },
+ "ladder": {
+  "status": "pending: ladder rows incomplete"
+ },
+ "interp": {
+  "rural_highway d=2": {
+   "classical_families": {
+    "flooding": {
+     "realised_SEL_to_EVAL": 2.630914178414179,
+     "interpolated_EVAL_estimate": 2.630914178414179
+    },
+    "p_persistence_03": {
+     "realised_SEL_to_EVAL": 2.630914178414179,
+     "interpolated_EVAL_estimate": 2.630914178414179
+    },
+    "slotted_1p": {
+     "realised_SEL_to_EVAL": 1.7470439446174741,
+     "interpolated_EVAL_estimate": 1.7470439446174741
+    },
+    "weighted_p": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "counter_based": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "greedy_farthest": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "dvcast": {
+     "realised_SEL_to_EVAL": 1.7116182972800622,
+     "interpolated_EVAL_estimate": 1.778199531949532
+    }
+   },
+   "policy_seeds": {
+    "ref_s0": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s1": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s2": {
+     "realised_SEL_to_EVAL": 2.2390280063074184,
+     "interpolated_EVAL_estimate": 2.2390280063074184
+    },
+    "ref_s3": {
+     "realised_SEL_to_EVAL": 2.253225848225848,
+     "interpolated_EVAL_estimate": 2.067789664039664
+    },
+    "ref_s4": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s5": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s6": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s7": {
+     "realised_SEL_to_EVAL": 2.343750329191505,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s8": {
+     "realised_SEL_to_EVAL": 2.198559049882579,
+     "interpolated_EVAL_estimate": 1.8940860528360528
+    },
+    "ref_s9": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    }
+   },
+   "rule": {
+    "realised_SEL_to_EVAL": 1.7470439446174741,
+    "interpolated_EVAL_estimate": 1.744013641587171
+   },
+   "label": "interpolated = estimate, not an implementable configuration"
+  },
+  "rural_highway d=20": {
+   "classical_families": {
+    "flooding": {
+     "realised_SEL_to_EVAL": 3.3638292313354654,
+     "interpolated_EVAL_estimate": 3.3638292313354654
+    },
+    "p_persistence_03": {
+     "realised_SEL_to_EVAL": 1.0037942415577112,
+     "interpolated_EVAL_estimate": 1.0037942415577112
+    },
+    "slotted_1p": {
+     "realised_SEL_to_EVAL": 0.6777101672059227,
+     "interpolated_EVAL_estimate": 0.6777101672059227
+    },
+    "weighted_p": {
+     "realised_SEL_to_EVAL": 0.8963747804055642,
+     "interpolated_EVAL_estimate": 0.8963747804055642
+    },
+    "counter_based": {
+     "realised_SEL_to_EVAL": 0.7226476489556355,
+     "interpolated_EVAL_estimate": 0.7226476489556355
+    },
+    "greedy_farthest": {
+     "realised_SEL_to_EVAL": 0.6707204171305727,
+     "interpolated_EVAL_estimate": 0.6707204171305727
+    },
+    "dvcast": {
+     "realised_SEL_to_EVAL": 0.6815131457342737,
+     "interpolated_EVAL_estimate": 0.6815131457342737
+    }
+   },
+   "policy_seeds": {
+    "ref_s0": {
+     "realised_SEL_to_EVAL": 0.6865577669395893,
+     "interpolated_EVAL_estimate": 0.6865577669395893
+    },
+    "ref_s1": {
+     "realised_SEL_to_EVAL": 0.7044600310157468,
+     "interpolated_EVAL_estimate": 0.7044600310157468
+    },
+    "ref_s2": {
+     "realised_SEL_to_EVAL": 0.7592909833242033,
+     "interpolated_EVAL_estimate": 0.5360543494616762
+    },
+    "ref_s3": {
+     "realised_SEL_to_EVAL": 0.5375725887740219,
+     "interpolated_EVAL_estimate": 0.5375725887740219
+    },
+    "ref_s4": {
+     "realised_SEL_to_EVAL": 0.7586846746396254,
+     "interpolated_EVAL_estimate": 0.7586846746396254
+    },
+    "ref_s5": {
+     "realised_SEL_to_EVAL": 0.6880299272979619,
+     "interpolated_EVAL_estimate": 0.7555761494425646
+    },
+    "ref_s6": {
+     "realised_SEL_to_EVAL": 0.6688143746460377,
+     "interpolated_EVAL_estimate": 0.6688143746460377
+    },
+    "ref_s7": {
+     "realised_SEL_to_EVAL": 0.7575343721775348,
+     "interpolated_EVAL_estimate": 0.7575343721775348
+    },
+    "ref_s8": {
+     "realised_SEL_to_EVAL": 0.8584003778339125,
+     "interpolated_EVAL_estimate": 0.8584003778339125
+    },
+    "ref_s9": {
+     "realised_SEL_to_EVAL": 0.6625315073993964,
+     "interpolated_EVAL_estimate": 0.6625315073993964
+    }
+   },
+   "rule": {
+    "realised_SEL_to_EVAL": 0.41586035364685964,
+    "interpolated_EVAL_estimate": 0.41586035364685964
+   },
+   "label": "interpolated = estimate, not an implementable configuration"
+  },
+  "rural_highway d=80": {
+   "classical_families": {
+    "flooding": {
+     "realised_SEL_to_EVAL": 11.568334795368573,
+     "interpolated_EVAL_estimate": 11.568334795368573
+    },
+    "p_persistence_03": {
+     "realised_SEL_to_EVAL": 1.0731652939594887,
+     "interpolated_EVAL_estimate": 0.6454069885207652
+    },
+    "slotted_1p": {
+     "realised_SEL_to_EVAL": 1.6171291607735934,
+     "interpolated_EVAL_estimate": 1.6171291607735934
+    },
+    "weighted_p": {
+     "realised_SEL_to_EVAL": 1.017382323076776,
+     "interpolated_EVAL_estimate": 0.78334234314361
+    },
+    "counter_based": {
+     "realised_SEL_to_EVAL": 1.9402930173693786,
+     "interpolated_EVAL_estimate": 1.9402930173693786
+    },
+    "greedy_farthest": {
+     "realised_SEL_to_EVAL": 1.5835088523833882,
+     "interpolated_EVAL_estimate": 1.5835088523833882
+    },
+    "dvcast": {
+     "realised_SEL_to_EVAL": 1.6256550244030608,
+     "interpolated_EVAL_estimate": 1.6256550244030608
+    }
+   },
+   "policy_seeds": {
+    "ref_s0": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s1": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s2": {
+     "realised_SEL_to_EVAL": 1.033207070071849,
+     "interpolated_EVAL_estimate": 0.8575398349240954
+    },
+    "ref_s3": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s4": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": 0.9737890223477693
+    },
+    "ref_s5": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": 0.7862290936717207
+    },
+    "ref_s6": {
+     "realised_SEL_to_EVAL": 0.9505860930076367,
+     "interpolated_EVAL_estimate": 0.5816369249619697
+    },
+    "ref_s7": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s8": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s9": {
+     "realised_SEL_to_EVAL": 0.9960968035281775,
+     "interpolated_EVAL_estimate": 0.9724859390294662
+    }
+   },
+   "rule": {
+    "realised_SEL_to_EVAL": 0.354556847610031,
+    "interpolated_EVAL_estimate": 0.354556847610031
+   },
+   "label": "interpolated = estimate, not an implementable configuration"
+  },
+  "urban_nlos d=20": {
+   "classical_families": {
+    "flooding": {
+     "realised_SEL_to_EVAL": 1.9028172868971382,
+     "interpolated_EVAL_estimate": 1.9028172868971382
+    },
+    "p_persistence_03": {
+     "realised_SEL_to_EVAL": 0.9647758144848357,
+     "interpolated_EVAL_estimate": 0.9647758144848357
+    },
+    "slotted_1p": {
+     "realised_SEL_to_EVAL": 0.5726603220905715,
+     "interpolated_EVAL_estimate": 0.5726603220905715
+    },
+    "weighted_p": {
+     "realised_SEL_to_EVAL": 0.6696436475723251,
+     "interpolated_EVAL_estimate": null
+    },
+    "counter_based": {
+     "realised_SEL_to_EVAL": 0.5371380136174159,
+     "interpolated_EVAL_estimate": 0.5371380136174159
+    },
+    "greedy_farthest": {
+     "realised_SEL_to_EVAL": 0.5562999334629616,
+     "interpolated_EVAL_estimate": 0.5562999334629616
+    },
+    "dvcast": {
+     "realised_SEL_to_EVAL": 0.5739697263342362,
+     "interpolated_EVAL_estimate": 0.5739697263342362
+    }
+   },
+   "policy_seeds": {
+    "ref_s0": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s1": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": 0.8439002102126252
+    },
+    "ref_s2": {
+     "realised_SEL_to_EVAL": 0.7456112378597215,
+     "interpolated_EVAL_estimate": 0.7456112378597215
+    },
+    "ref_s3": {
+     "realised_SEL_to_EVAL": 0.7197060857769245,
+     "interpolated_EVAL_estimate": 0.652765201133136
+    },
+    "ref_s4": {
+     "realised_SEL_to_EVAL": 0.9573173755481377,
+     "interpolated_EVAL_estimate": 0.794030466279064
+    },
+    "ref_s5": {
+     "realised_SEL_to_EVAL": 0.8737589441582541,
+     "interpolated_EVAL_estimate": 0.7870292483334593
+    },
+    "ref_s6": {
+     "realised_SEL_to_EVAL": 0.8567579205521966,
+     "interpolated_EVAL_estimate": 0.8204078051048388
+    },
+    "ref_s7": {
+     "realised_SEL_to_EVAL": 0.8917998997782315,
+     "interpolated_EVAL_estimate": 0.7977504572379951
+    },
+    "ref_s8": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": null
+    },
+    "ref_s9": {
+     "realised_SEL_to_EVAL": null,
+     "interpolated_EVAL_estimate": 0.7689409700729931
+    }
+   },
+   "rule": {
+    "realised_SEL_to_EVAL": 0.45039819121514274,
+    "interpolated_EVAL_estimate": 0.4477853877665799
+   },
+   "label": "interpolated = estimate, not an implementable configuration"
+  }
+ },
+ "sensitivity": {
+  "settings": {
+   "q0.90_tol0.02_realised": {
+    "rural_highway d=2": {
+     "q_star": 0.5620097953812009,
+     "m_star": 0.5520005574136009,
+     "adaptive_family": null,
+     "adaptive_cost": null,
+     "oracle_family": "flooding",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8251710719581219,
+     "m_star": 0.32749328311976306,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s2",
+      "ref_s4",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8"
+     ],
+     "policy_mean_cost": 0.8351140586180797,
+     "margin": 0.24510010026354045
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8249914873211022,
+     "m_star": 0.3394763863180826,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 1.4941529759110062,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.8745708303252077,
+     "m_star": 0.09673339496289048,
+     "adaptive_family": "dvcast",
+     "adaptive_cost": 0.5739697263342362,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    }
+   },
+   "q0.90_tol0.02_interp": {
+    "rural_highway d=2": {
+     "q_star": 0.5620097953812009,
+     "m_star": 0.5520005574136009,
+     "adaptive_family": "flooding",
+     "adaptive_cost": 2.630914178414179,
+     "oracle_family": "flooding",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8251710719581219,
+     "m_star": 0.32749328311976306,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8622149611655835,
+     "margin": 0.2855057623774877
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8249914873211022,
+     "m_star": 0.3394763863180826,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 1.017382323076776,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [
+      "ref_s2"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.8745708303252077,
+     "m_star": 0.09673339496289048,
+     "adaptive_family": "slotted_1p",
+     "adaptive_cost": 0.5726603220905715,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    }
+   },
+   "q0.90_tol0.05_realised": {
+    "rural_highway d=2": {
+     "q_star": 0.5620097953812009,
+     "m_star": 0.5820005574136009,
+     "adaptive_family": null,
+     "adaptive_cost": null,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3",
+      "ref_s8"
+     ],
+     "policy_mean_cost": 1.990301033389269,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8251710719581219,
+     "m_star": 0.35749328311976303,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.6858639970185503,
+     "margin": 0.0225780809726408
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8249914873211022,
+     "m_star": 0.36947638631808255,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 1.017382323076776,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8765308386033613,
+     "margin": -0.13844498894717416
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.8745708303252077,
+     "m_star": 0.1267333949628905,
+     "adaptive_family": "counter_based",
+     "adaptive_cost": 0.5371380136174159,
+     "oracle_family": "counter_based",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8031672202443539,
+     "margin": 0.4952716059608866
+    }
+   },
+   "q0.90_tol0.05_interp": {
+    "rural_highway d=2": {
+     "q_star": 0.5620097953812009,
+     "m_star": 0.5820005574136009,
+     "adaptive_family": "slotted_1p",
+     "adaptive_cost": 1.7470439446174741,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3",
+      "ref_s8"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8251710719581219,
+     "m_star": 0.35749328311976303,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.6926186192330106,
+     "margin": 0.03264877815427347
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8249914873211022,
+     "m_star": 0.36947638631808255,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 0.6199511527882959,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.7630969422613714,
+     "margin": 0.23089849713039823
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.8745708303252077,
+     "m_star": 0.1267333949628905,
+     "adaptive_family": "counter_based",
+     "adaptive_cost": 0.5371380136174159,
+     "oracle_family": "counter_based",
+     "policy_seeds_qualifying": [
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.7596017970133138,
+     "margin": 0.4141650334849525
+    }
+   },
+   "q0.90_tol0.10_realised": {
+    "rural_highway d=2": {
+     "q_star": 0.5620097953812009,
+     "m_star": 0.6320005574136008,
+     "adaptive_family": null,
+     "adaptive_cost": null,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3",
+      "ref_s8"
+     ],
+     "policy_mean_cost": 1.990301033389269,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8251710719581219,
+     "m_star": 0.4074932831197631,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.6191422860158038,
+     "margin": -0.07689959899450616
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8249914873211022,
+     "m_star": 0.4194763863180826,
+     "adaptive_family": "p_persistence_03",
+     "adaptive_cost": 0.767950672086807,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8"
+     ],
+     "policy_mean_cost": 0.6830678114375395,
+     "margin": -0.11053165748082394
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.8745708303252077,
+     "m_star": 0.17673339496289048,
+     "adaptive_family": "counter_based",
+     "adaptive_cost": 0.5371380136174159,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8"
+     ],
+     "policy_mean_cost": 0.608013085742446,
+     "margin": 0.13194946238810012
+    }
+   },
+   "q0.90_tol0.10_interp": {
+    "rural_highway d=2": {
+     "q_star": 0.5620097953812009,
+     "m_star": 0.6320005574136008,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 1.5745626133126132,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8"
+     ],
+     "policy_mean_cost": 2.0088549290629323,
+     "margin": 0.2758177490551752
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8251710719581219,
+     "m_star": 0.4074932831197631,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.6268261511431894,
+     "margin": -0.06544346178571481
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8249914873211022,
+     "m_star": 0.4194763863180826,
+     "adaptive_family": "p_persistence_03",
+     "adaptive_cost": 0.5224777788141124,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.5434754876602673,
+     "margin": 0.040188711745433814
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.8745708303252077,
+     "m_star": 0.17673339496289048,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 0.4919706398337793,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.5830290253507968,
+     "margin": 0.18508906455837115
+    }
+   },
+   "q0.95_tol0.02_realised": {
+    "rural_highway d=2": {
+     "q_star": 0.5932325617912676,
+     "m_star": 0.5520005574136009,
+     "adaptive_family": null,
+     "adaptive_cost": null,
+     "oracle_family": "flooding",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8710139092891286,
+     "m_star": 0.32749328311976306,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s2",
+      "ref_s4",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8"
+     ],
+     "policy_mean_cost": 0.8351140586180797,
+     "margin": 0.24510010026354045
+    },
+    "rural_highway d=80": {
+     "q_star": 0.87082434772783,
+     "m_star": 0.3394763863180826,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 1.4941529759110062,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.923158098676608,
+     "m_star": 0.09673339496289048,
+     "adaptive_family": "dvcast",
+     "adaptive_cost": 0.5739697263342362,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    }
+   },
+   "q0.95_tol0.02_interp": {
+    "rural_highway d=2": {
+     "q_star": 0.5932325617912676,
+     "m_star": 0.5520005574136009,
+     "adaptive_family": "flooding",
+     "adaptive_cost": 2.630914178414179,
+     "oracle_family": "flooding",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8710139092891286,
+     "m_star": 0.32749328311976306,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8622149611655835,
+     "margin": 0.2855057623774877
+    },
+    "rural_highway d=80": {
+     "q_star": 0.87082434772783,
+     "m_star": 0.3394763863180826,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 1.017382323076776,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [
+      "ref_s2"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.923158098676608,
+     "m_star": 0.09673339496289048,
+     "adaptive_family": "slotted_1p",
+     "adaptive_cost": 0.5726603220905715,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    }
+   },
+   "q0.95_tol0.05_realised": {
+    "rural_highway d=2": {
+     "q_star": 0.5932325617912676,
+     "m_star": 0.5820005574136009,
+     "adaptive_family": null,
+     "adaptive_cost": null,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8710139092891286,
+     "m_star": 0.35749328311976303,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.708187660404803,
+     "margin": 0.055861193900313744
+    },
+    "rural_highway d=80": {
+     "q_star": 0.87082434772783,
+     "m_star": 0.36947638631808255,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 1.017382323076776,
+     "oracle_family": "p_persistence_03",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s6",
+      "ref_s9"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.923158098676608,
+     "m_star": 0.1267333949628905,
+     "adaptive_family": "counter_based",
+     "adaptive_cost": 0.5371380136174159,
+     "oracle_family": "counter_based",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7"
+     ],
+     "policy_mean_cost": 0.8408252439455776,
+     "margin": 0.5653802609927869
+    }
+   },
+   "q0.95_tol0.05_interp": {
+    "rural_highway d=2": {
+     "q_star": 0.5932325617912676,
+     "m_star": 0.5820005574136009,
+     "adaptive_family": "slotted_1p",
+     "adaptive_cost": 1.7470439446174741,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3",
+      "ref_s8"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8710139092891286,
+     "m_star": 0.35749328311976303,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.6926186192330106,
+     "margin": 0.03264877815427347
+    },
+    "rural_highway d=80": {
+     "q_star": 0.87082434772783,
+     "m_star": 0.36947638631808255,
+     "adaptive_family": "p_persistence_03",
+     "adaptive_cost": 0.6454069885207652,
+     "oracle_family": "p_persistence_03",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8343361629870067,
+     "margin": 0.29272873989055515
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.923158098676608,
+     "m_star": 0.1267333949628905,
+     "adaptive_family": "counter_based",
+     "adaptive_cost": 0.5371380136174159,
+     "oracle_family": "counter_based",
+     "policy_seeds_qualifying": [
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.7763044495292291,
+     "margin": 0.4452606776070831
+    }
+   },
+   "q0.95_tol0.10_realised": {
+    "rural_highway d=2": {
+     "q_star": 0.5932325617912676,
+     "m_star": 0.6320005574136008,
+     "adaptive_family": null,
+     "adaptive_cost": null,
+     "oracle_family": "dvcast",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8710139092891286,
+     "m_star": 0.4074932831197631,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.708187660404803,
+     "margin": 0.055861193900313744
+    },
+    "rural_highway d=80": {
+     "q_star": 0.87082434772783,
+     "m_star": 0.4194763863180826,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 1.017382323076776,
+     "oracle_family": "p_persistence_03",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s6",
+      "ref_s9"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.923158098676608,
+     "m_star": 0.17673339496289048,
+     "adaptive_family": "counter_based",
+     "adaptive_cost": 0.5371380136174159,
+     "oracle_family": "counter_based",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7"
+     ],
+     "policy_mean_cost": 0.8408252439455776,
+     "margin": 0.5653802609927869
+    }
+   },
+   "q0.95_tol0.10_interp": {
+    "rural_highway d=2": {
+     "q_star": 0.5932325617912676,
+     "m_star": 0.6320005574136008,
+     "adaptive_family": "dvcast",
+     "adaptive_cost": 1.597756364006364,
+     "oracle_family": "dvcast",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3",
+      "ref_s7",
+      "ref_s8"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8710139092891286,
+     "m_star": 0.4074932831197631,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.6720029470780611,
+     "margin": 0.0019121677449080998
+    },
+    "rural_highway d=80": {
+     "q_star": 0.87082434772783,
+     "m_star": 0.4194763863180826,
+     "adaptive_family": "p_persistence_03",
+     "adaptive_cost": 0.6279634227824844,
+     "oracle_family": "p_persistence_03",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8343361629870067,
+     "margin": 0.3286381542576027
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.923158098676608,
+     "m_star": 0.17673339496289048,
+     "adaptive_family": "counter_based",
+     "adaptive_cost": 0.5371380136174159,
+     "oracle_family": "counter_based",
+     "policy_seeds_qualifying": [
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.7627128416051049,
+     "margin": 0.41995692404737883
+    }
+   },
+   "q0.98_tol0.02_realised": {
+    "rural_highway d=2": {
+     "q_star": 0.6119662216373076,
+     "m_star": 0.5520005574136009,
+     "adaptive_family": null,
+     "adaptive_cost": null,
+     "oracle_family": "flooding",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8985196116877326,
+     "m_star": 0.32749328311976306,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s2",
+      "ref_s3",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8788454138979247,
+     "margin": 0.3103006729059139
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8983240639718668,
+     "m_star": 0.3394763863180826,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 1.5835088523833882,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.9523104596874483,
+     "m_star": 0.09673339496289048,
+     "adaptive_family": "dvcast",
+     "adaptive_cost": 0.5739697263342362,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    }
+   },
+   "q0.98_tol0.02_interp": {
+    "rural_highway d=2": {
+     "q_star": 0.6119662216373076,
+     "m_star": 0.5520005574136009,
+     "adaptive_family": "flooding",
+     "adaptive_cost": 2.630914178414179,
+     "oracle_family": "flooding",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8985196116877326,
+     "m_star": 0.32749328311976306,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8637683122216877,
+     "margin": 0.28782170657186557
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8983240639718668,
+     "m_star": 0.3394763863180826,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 1.2973952766912638,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.9523104596874483,
+     "m_star": 0.09673339496289048,
+     "adaptive_family": "slotted_1p",
+     "adaptive_cost": 0.5726603220905715,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    }
+   },
+   "q0.98_tol0.05_realised": {
+    "rural_highway d=2": {
+     "q_star": 0.6119662216373076,
+     "m_star": 0.5820005574136009,
+     "adaptive_family": null,
+     "adaptive_cost": null,
+     "oracle_family": "flooding",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8985196116877326,
+     "m_star": 0.35749328311976303,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8788454138979247,
+     "margin": 0.3103006729059139
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8983240639718668,
+     "m_star": 0.36947638631808255,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 1.5835088523833882,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.9523104596874483,
+     "m_star": 0.1267333949628905,
+     "adaptive_family": "dvcast",
+     "adaptive_cost": 0.5739697263342362,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    }
+   },
+   "q0.98_tol0.05_interp": {
+    "rural_highway d=2": {
+     "q_star": 0.6119662216373076,
+     "m_star": 0.5820005574136009,
+     "adaptive_family": "flooding",
+     "adaptive_cost": 2.630914178414179,
+     "oracle_family": "flooding",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3",
+      "ref_s8"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8985196116877326,
+     "m_star": 0.35749328311976303,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8215474737491407,
+     "margin": 0.22487321507793867
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8983240639718668,
+     "m_star": 0.36947638631808255,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 1.2973952766912638,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.9523104596874483,
+     "m_star": 0.1267333949628905,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.5562999334629616,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    }
+   },
+   "q0.98_tol0.10_realised": {
+    "rural_highway d=2": {
+     "q_star": 0.6119662216373076,
+     "m_star": 0.6320005574136008,
+     "adaptive_family": null,
+     "adaptive_cost": null,
+     "oracle_family": "flooding",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8985196116877326,
+     "m_star": 0.4074932831197631,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8788454138979247,
+     "margin": 0.3103006729059139
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8983240639718668,
+     "m_star": 0.4194763863180826,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 1.5835088523833882,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.9523104596874483,
+     "m_star": 0.17673339496289048,
+     "adaptive_family": "slotted_1p",
+     "adaptive_cost": 0.5550546479355308,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    }
+   },
+   "q0.98_tol0.10_interp": {
+    "rural_highway d=2": {
+     "q_star": 0.6119662216373076,
+     "m_star": 0.6320005574136008,
+     "adaptive_family": "slotted_1p",
+     "adaptive_cost": 2.525499242418774,
+     "oracle_family": "flooding",
+     "policy_seeds_qualifying": [
+      "ref_s2",
+      "ref_s3",
+      "ref_s8"
+     ],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "rural_highway d=20": {
+     "q_star": 0.8985196116877326,
+     "m_star": 0.4074932831197631,
+     "adaptive_family": "greedy_farthest",
+     "adaptive_cost": 0.6707204171305727,
+     "oracle_family": "greedy_farthest",
+     "policy_seeds_qualifying": [
+      "ref_s0",
+      "ref_s1",
+      "ref_s2",
+      "ref_s3",
+      "ref_s4",
+      "ref_s5",
+      "ref_s6",
+      "ref_s7",
+      "ref_s8",
+      "ref_s9"
+     ],
+     "policy_mean_cost": 0.8215474737491407,
+     "margin": 0.22487321507793867
+    },
+    "rural_highway d=80": {
+     "q_star": 0.8983240639718668,
+     "m_star": 0.4194763863180826,
+     "adaptive_family": "weighted_p",
+     "adaptive_cost": 1.2973952766912638,
+     "oracle_family": "weighted_p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    },
+    "urban_nlos d=20": {
+     "q_star": 0.9523104596874483,
+     "m_star": 0.17673339496289048,
+     "adaptive_family": "slotted_1p",
+     "adaptive_cost": 0.5550546479355308,
+     "oracle_family": "slotted_1p",
+     "policy_seeds_qualifying": [],
+     "policy_mean_cost": null,
+     "margin": null
+    }
+   }
+  },
+  "baseline": "q0.95_tol0.05_realised",
+  "flags_vs_baseline": {
+   "q0.90_tol0.02_realised": [
+    "rural_highway d=2: oracle family slotted_1p -> flooding",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> slotted_1p",
+    "urban_nlos d=20: adaptive pick counter_based -> dvcast",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.90_tol0.02_interp": [
+    "rural_highway d=2: oracle family slotted_1p -> flooding",
+    "rural_highway d=2: adaptive pick None -> flooding",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> slotted_1p",
+    "urban_nlos d=20: adaptive pick counter_based -> slotted_1p",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.90_tol0.05_realised": [
+    "rural_highway d=2: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.90_tol0.05_interp": [
+    "rural_highway d=2: adaptive pick None -> slotted_1p",
+    "rural_highway d=2: qualifying policy seeds changed",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.90_tol0.10_realised": [
+    "rural_highway d=2: oracle family slotted_1p -> greedy_farthest",
+    "rural_highway d=2: qualifying policy seeds changed",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: adaptive pick weighted_p -> p_persistence_03",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> weighted_p",
+    "urban_nlos d=20: qualifying policy seeds changed",
+    "rural d=20 margin sign +0.056 -> -0.077"
+   ],
+   "q0.90_tol0.10_interp": [
+    "rural_highway d=2: oracle family slotted_1p -> greedy_farthest",
+    "rural_highway d=2: adaptive pick None -> greedy_farthest",
+    "rural_highway d=2: qualifying policy seeds changed",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: adaptive pick weighted_p -> p_persistence_03",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> weighted_p",
+    "urban_nlos d=20: adaptive pick counter_based -> weighted_p",
+    "urban_nlos d=20: qualifying policy seeds changed",
+    "rural d=20 margin sign +0.056 -> -0.065"
+   ],
+   "q0.95_tol0.02_realised": [
+    "rural_highway d=2: oracle family slotted_1p -> flooding",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> slotted_1p",
+    "urban_nlos d=20: adaptive pick counter_based -> dvcast",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.95_tol0.02_interp": [
+    "rural_highway d=2: oracle family slotted_1p -> flooding",
+    "rural_highway d=2: adaptive pick None -> flooding",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> slotted_1p",
+    "urban_nlos d=20: adaptive pick counter_based -> slotted_1p",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.95_tol0.05_realised": [],
+   "q0.95_tol0.05_interp": [
+    "rural_highway d=2: adaptive pick None -> slotted_1p",
+    "rural_highway d=2: qualifying policy seeds changed",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: adaptive pick weighted_p -> p_persistence_03",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.95_tol0.10_realised": [
+    "rural_highway d=2: oracle family slotted_1p -> dvcast"
+   ],
+   "q0.95_tol0.10_interp": [
+    "rural_highway d=2: oracle family slotted_1p -> dvcast",
+    "rural_highway d=2: adaptive pick None -> dvcast",
+    "rural_highway d=2: qualifying policy seeds changed",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: adaptive pick weighted_p -> p_persistence_03",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.98_tol0.02_realised": [
+    "rural_highway d=2: oracle family slotted_1p -> flooding",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: adaptive pick weighted_p -> greedy_farthest",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> slotted_1p",
+    "urban_nlos d=20: adaptive pick counter_based -> dvcast",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.98_tol0.02_interp": [
+    "rural_highway d=2: oracle family slotted_1p -> flooding",
+    "rural_highway d=2: adaptive pick None -> flooding",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> slotted_1p",
+    "urban_nlos d=20: adaptive pick counter_based -> slotted_1p",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.98_tol0.05_realised": [
+    "rural_highway d=2: oracle family slotted_1p -> flooding",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: adaptive pick weighted_p -> greedy_farthest",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> greedy_farthest",
+    "urban_nlos d=20: adaptive pick counter_based -> dvcast",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.98_tol0.05_interp": [
+    "rural_highway d=2: oracle family slotted_1p -> flooding",
+    "rural_highway d=2: adaptive pick None -> flooding",
+    "rural_highway d=2: qualifying policy seeds changed",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> greedy_farthest",
+    "urban_nlos d=20: adaptive pick counter_based -> greedy_farthest",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.98_tol0.10_realised": [
+    "rural_highway d=2: oracle family slotted_1p -> flooding",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: adaptive pick weighted_p -> greedy_farthest",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> slotted_1p",
+    "urban_nlos d=20: adaptive pick counter_based -> slotted_1p",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ],
+   "q0.98_tol0.10_interp": [
+    "rural_highway d=2: oracle family slotted_1p -> flooding",
+    "rural_highway d=2: adaptive pick None -> slotted_1p",
+    "rural_highway d=2: qualifying policy seeds changed",
+    "rural_highway d=20: qualifying policy seeds changed",
+    "rural_highway d=80: oracle family p_persistence_03 -> weighted_p",
+    "rural_highway d=80: qualifying policy seeds changed",
+    "urban_nlos d=20: oracle family counter_based -> slotted_1p",
+    "urban_nlos d=20: adaptive pick counter_based -> slotted_1p",
+    "urban_nlos d=20: qualifying policy seeds changed"
+   ]
+  }
+ }
+}
