@@ -192,19 +192,37 @@ def score(run_json: Path) -> dict:
 
 
 def main(argv=None) -> int:
+    """Score every replay into results/revision5/veins/veins_rows.jsonl (row metrics + the raw H3 ingredients of
+    <name>.h3.json); resumable by replay name."""
+    import os
+    import sys
+    import numpy
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("runs_dir", type=Path)
     ap.add_argument("--out", type=Path, default=None)
     a = ap.parse_args(argv)
-    rows = [score(p) for p in sorted(a.runs_dir.glob("*.run.json"))]
-    out = a.out or a.runs_dir / "veins_rows.csv"
-    keys = sorted({k for r in rows for k in r}, key=lambda k: (k not in rows[0], k)) if rows else []
-    with open(out, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=keys)
-        w.writeheader()
-        w.writerows(rows)
-    for r in rows:
-        print({k: (round(v, 4) if isinstance(v, float) and not math.isnan(v) else v) for k, v in r.items()})
+    os.environ.setdefault("SUMO_HOME", "D:/sumo/sumo-1.19.0")
+    print(f"[env] {sys.executable} numpy {numpy.__version__}", flush=True)
+    out = a.out or Path(__file__).resolve().parents[3] / "results" / "revision5" / "veins" / "veins_rows.jsonl"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    done = {json.loads(l)["name"] for l in out.open(encoding="utf-8")} if out.exists() else set()
+    todo = [p for p in sorted(a.runs_dir.glob("*.run.json")) if p.name[: -len(".run.json")] not in done]
+    print(f"[veins_metrics] {len(todo)} replays to score ({len(done)} already)", flush=True)
+    with out.open("a", encoding="utf-8") as fh:
+        for i, p in enumerate(todo, 1):
+            name = p.name[: -len(".run.json")]
+            try:
+                row = score(p)
+            except Exception as exc:  # noqa: BLE001 -- logged; rerun scores it again
+                print(f"[veins_metrics] FAILED {name}: {exc!r}", flush=True)
+                continue
+            h3 = Path(str(p.parent / name) + ".h3.json")
+            raw = json.loads(h3.read_text()) if h3.exists() else None
+            fh.write(json.dumps({"name": name, "row": row, "raw": raw}, default=str) + "\n")
+            fh.flush()
+            if i % 200 == 0:
+                print(f"[veins_metrics] {i}/{len(todo)}", flush=True)
+    print("[veins_metrics] done", flush=True)
     return 0
 
 

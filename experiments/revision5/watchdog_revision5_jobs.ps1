@@ -129,3 +129,6 @@ $h2 = Chain "s2_st_eval_agent" "agent --seedset EVAL --cells grid24 --channel ca
 $jobs += @{ n = "s3_custom_h3"; alive = "veins.custom_h3"; ready = { $true };
             done = { (Test-Path "results\revision5\veins\custom_h3.jsonl") -and ((Get-Content "results\revision5\veins\custom_h3.jsonl" | Measure-Object -Line).Lines -ge 2200) };
             cmd = "$gpu -u -m experiments.revision5.veins.custom_h3 --jobs 2 >> logs\revision5\s3_custom_h3.log 2>&1" }
+$jobs += @{ n = "s3_veins_score"; alive = "veins.veins_metrics"; ready = { $true };
+            done = { (Test-Path "results\revision5\veins\veins_rows.jsonl") -and ((Get-Content "results\revision5\veins\veins_rows.jsonl" | Measure-Object -Line).Lines -ge 6600) };
+            cmd = "$gpu -u -m experiments.revision5.veins.veins_metrics cache\veins_runs\h3 >> logs\revision5\s3_veins_score.log 2>&1" }
