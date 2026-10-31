@@ -95,3 +95,32 @@ $b1 = AgentPair "s1_tau0" $S $runs "tau0" "--taus 0" 10 { $true }
 $b2 = AgentPair "s1_rgate" $S $runs "rgate" "--random-gate-from SEL" 10 $b1
 $runs_list = "ref_s0_u2000@1200 ref_s0_u2000@1500 ref_s0_u2000@1700 ref_s0_u2000@2000 ref_s1_u2000@1200 ref_s1_u2000@1500 ref_s1_u2000@1700 ref_s1_u2000@2000 ref_s2_u2000@1200 ref_s2_u2000@1500 ref_s2_u2000@1700 ref_s2_u2000@2000"
 $b3 = AgentPair "s1_budget" $S $runs "budget" "" 12 $b2
+
+# ---- Step 2 (2026-10-31): stress test (R9 calibrated channel, 24 cells) and SUMO (headline cells).
+#      Stress thresholds are frozen and committed (that path only) before any stress SEL/EVAL job may start (D5).
+$thrS = "results\revision5\thresholds_stress.json"
+function FrozenS { if (Test-Path $thrS) { git ls-files --error-unmatch $thrS 2>$null | Out-Null; return ($LASTEXITCODE -eq 0) }; return $false }
+$SU = "set SUMO_HOME=D:\sumo\sumo-1.19.0&&"
+function Chain($name, $cmdArgs, $file, $n, $ready, $jobsN, $prefix = "") {
+    $f = "$runs\$file.csv"
+    $script:jobs += @{ n = $name; alive = [regex]::Escape($cmdArgs); ready = $ready;
+        done = [scriptblock]::Create("(Rows '$f') -ge $n");
+        cmd = "$prefix$gpu -u -m experiments.revision5.sweep $cmdArgs --jobs $jobsN >> logs\revision5\$name.log 2>&1" }
+    return [scriptblock]::Create("(Rows '$f') -ge $n")
+}
+# classical/rule chain
+$c0 = Chain "s2_st_cal" "classical --seedset CAL --cells grid24 --channel calibrated" "classical__CAL__grid24__calibrated__fallback" 13200 { $true } 2
+$jobs += @{ n = "s2_st_thresholds"; alive = "thresholds --channel calibrated"; ready = $c0; done = { FrozenS };
+            cmd = "$gpu -u -m experiments.revision5.thresholds --channel calibrated >> logs\revision5\s2_st_thresholds.log 2>&1 & if exist $thrS git add -f $thrS && git commit -m ""revision-5: freeze stress-test q*/m* from CAL on the calibrated channel (thresholds_stress.json, D5), before any stress SEL/EVAL run"" -m ""Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"" -- $thrS >> logs\revision5\s2_st_thresholds.log 2>&1" }
+$c1 = Chain "s2_st_sel_classical" "classical --seedset SEL --cells grid24 --channel calibrated" "classical__SEL__grid24__calibrated__fallback" 26400 { FrozenS } 3
+$c2 = Chain "s2_st_sel_rule" "rule --seedset SEL --cells grid24 --channel calibrated" "rule__SEL__grid24__calibrated__fallback" 18720 $c1 3
+$c3 = Chain "s2_st_eval_classical" "classical --seedset EVAL --cells grid24 --channel calibrated" "classical__EVAL__grid24__calibrated__fallback" 39600 $c2 3
+$c4 = Chain "s2_st_eval_rule" "rule --seedset EVAL --cells grid24 --channel calibrated" "rule__EVAL__grid24__calibrated__fallback" 28080 $c3 3
+$c5 = Chain "s2_sumo_sel_classical" "classical --seedset SEL --cells headline --channel default --backend sumo" "classical__SEL__headline__default__sumo" 4400 $c4 3 $SU
+$c6 = Chain "s2_sumo_sel_rule" "rule --seedset SEL --cells headline --channel default --backend sumo" "rule__SEL__headline__default__sumo" 3120 $c5 3 $SU
+# agent jobs wait for the Step 1 chains (CPU)
+$R10 = "ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 ref_s5 ref_s6 ref_s7 ref_s8 ref_s9"; $R5 = "ref_s0 ref_s1 ref_s2 ref_s3 ref_s4"
+$g1 = Chain "s2_sumo_sel_agent" "agent --seedset SEL --cells headline --channel default --backend sumo --runs $R10" "agent__SEL__headline__default__sumo" 4800 $a3 5 $SU
+$g2 = Chain "s2_sumo_eval_agent" "agent --seedset EVAL --cells headline --channel default --backend sumo --runs $R10" "agent__EVAL__headline__default__sumo" 7200 $g1 5 $SU
+$h1 = Chain "s2_st_sel_agent" "agent --seedset SEL --cells grid24 --channel calibrated --runs $R5" "agent__SEL__grid24__calibrated__fallback" 14400 ([scriptblock]::Create("(FrozenS) -and (& {$b3})")) 5
+$h2 = Chain "s2_st_eval_agent" "agent --seedset EVAL --cells grid24 --channel calibrated --runs $R5" "agent__EVAL__grid24__calibrated__fallback" 21600 $h1 5

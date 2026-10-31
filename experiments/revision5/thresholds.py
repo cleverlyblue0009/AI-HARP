@@ -22,7 +22,15 @@ SRC = out_dir("runs", 5) / "classical__CAL__grid24__default__fallback.csv"
 OUT = out_dir("", 5) / "thresholds.json"
 
 
-def main() -> int:
+def main(argv=None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--channel", default="default", choices=["default", "calibrated"])
+    a = ap.parse_args(argv)
+    global SRC, OUT
+    if a.channel == "calibrated":                  # DEVIATIONS D5: the stress-test channel's own thresholds
+        SRC = out_dir("runs", 5) / "classical__CAL__grid24__calibrated__fallback.csv"
+        OUT = out_dir("", 5) / "thresholds_stress.json"
     if OUT.exists():
         raise SystemExit(f"{OUT} exists and is frozen; not overwriting")
     cl, sd, ks = cells("grid24"), seeds("CAL"), knob_settings()

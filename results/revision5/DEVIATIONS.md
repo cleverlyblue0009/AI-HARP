@@ -52,3 +52,17 @@ pre-registered point. Retraining to save those two points was not chosen (it wou
 interpolating points).
 
 **Results seen before this change:** none — no budget-checkpoint evaluation row existed when this entry was written.
+
+## D5 — stress-test channel: own CAL thresholds (pre-specified extension) (2026-10-31T11:15+05:30)
+
+**What:** the 24-cell stress test on the R9 calibrated extra-loss channel (`--channel calibrated`) runs the full
+protocol separately: CAL classical (seeds 300–309) -> q*, m* for this channel frozen in
+`results/revision5/thresholds_stress.json` -> SEL and EVAL for classical, rule (RAR + SCF) and full-model seeds 0–4.
+The default-channel thresholds are not reused, because q* and m* are properties of the channel.
+
+**Why this is an extension, not a change:** the pre-registration lists the stress test but does not say which
+thresholds it uses; the default channel's protocol is unchanged.
+
+**Results seen:** none — no calibrated-channel row of any kind exists when this entry is written
+(`results/revision5/runs/` has no `*calibrated*` file). Rule baselines get no CAL run: CAL only sets the thresholds,
+which the protocol derives from the classical schemes.
