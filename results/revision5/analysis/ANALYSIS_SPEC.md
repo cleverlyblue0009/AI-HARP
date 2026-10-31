@@ -64,3 +64,20 @@ over the 30 seeds. Winner and statistic as in H1; the bootstrap resamples seeds 
 ## Holm
 
 Over the three pre-registered p-values: H1 (binomial), H2 (bootstrap two-sided), H3 (bootstrap p for ρ ≤ 0.6).
+
+## Addendum (2026-10-31T12:05+05:30): ledger verdicts
+
+Written before any stress-test, SUMO-policy or Veins-H3 statistic exists (H1/H2 had been computed; their verdicts are
+inputs to the "Set." column). PREREGISTRATION.md names no ledger rule; this mirrors revision 3's R13 logic.
+
+* Columns per claim: **Set.** (default channel, held-out SEL->EVAL protocol), **Cal.** (24-cell stress test, own
+  thresholds, D5), **SUMO** (headline cells on SUMO mobility), **Veins** (H3 cross-fitted H1 and network layer; classical
+  claims only — the policy is not ported), **Seeds** (training seeds behind a policy claim), **Resampling/held-out**
+  (the bootstrap interval or Clopper–Pearson bound behind Set.), **Verdict**.
+* **stable** — holds in Set. and in every applicable column (Cal., SUMO, Veins; the 18-setting sensitivity grid
+  without a flag that reverses the claim), and, for a policy claim, rests on ≥ 3 training seeds.
+* **sensitive** — holds in Set. but fails or reverses in at least one applicable column.
+* **not supported** — does not hold in Set. (including a non-significant result for a directional claim).
+* A column whose rows are incomplete reads "not tested", never "holds".
+* Groups: classical schemes (H1 and per-cell winners), and the tested policy at its training budget (H2 vs adaptive
+  classical and vs the best rule, qualification in the headline cells).
