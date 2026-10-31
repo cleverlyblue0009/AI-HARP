@@ -27,6 +27,7 @@ STREAMS = (
     "extra_loss",    # revision-3 R9 calibrated-channel knob: its OWN stream, so enabling
                      # it never shifts the mac stream (keys are name hashes, so adding a
                      # stream leaves every other stream unchanged)
+    "sub_epoch",     # revision-5 D6 sub-epoch timing mode (beacon schedule, backoff); own stream, off by default
 )
 
 

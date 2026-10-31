@@ -178,6 +178,7 @@ class DisseminationEngine:
         rng_pol = self.seeds.rng("policy")
         self._feats_cache = None
         self._rx_pairs: list = []
+        self._cbr_samples: list = []
         self.policy.reset(self.N, rng_pol)
 
         N = self.N
@@ -211,6 +212,8 @@ class DisseminationEngine:
             act = tr.active[step]
             if not act.any():
                 continue
+            if self.mac.timing == "sub_epoch" and step % 10 == 0:
+                self._cbr_samples.append(self._sub_epoch_cbr(step, act))
 
             # -- 1. hazard detection / message origination -------------------
             if origin_index == NO_STEP and t >= self.hazard.onset_time_s:
@@ -281,6 +284,8 @@ class DisseminationEngine:
                 "cs_range_m": round(self.cs_range_m, 1),
                 "rx_prune_range_m": round(self.rx_range_m, 1),
                 **({"rx_pairs": self._rx_pairs} if cfg.record_rx_pairs else {}),
+                **({"sub_epoch_cbr": float(np.nanmean(self._cbr_samples)) if self._cbr_samples else float("nan")}
+                   if self.mac.timing == "sub_epoch" else {}),
             },
             **counters,
         )
@@ -354,7 +359,11 @@ class DisseminationEngine:
         pos_tx, pos_rx = pos[tx], pos[rx_idx]
 
         # --- which concurrent frames actually overlap in time ---------------
-        overlap = self._overlap_matrix(pos_tx, n_tx, counters, rng_mac)
+        sub = mac.timing == "sub_epoch"
+        if sub:     # revision-5 D6: explicit 13 us timing (the default path below is unchanged)
+            overlap, b_send, ov_b, ovt_b = self._sub_epoch_timing(tx, step, act, rx_idx, pos, counters)
+        else:
+            overlap = self._overlap_matrix(pos_tx, n_tx, counters, rng_mac)
 
         # --- received power for every (tx, rx) link -------------------------
         d = np.linalg.norm(pos_tx[:, None, :] - pos_rx[None, :, :], axis=2)
@@ -371,6 +380,9 @@ class DisseminationEngine:
 
         # --- SINR per link --------------------------------------------------
         interference = overlap.astype(float) @ p_lin          # [n_tx, n_rx]
+        if sub:
+            sinr_hz_db = p_dbm - 10.0 * np.log10(phy.noise_mw + interference)
+            interference = interference + self._beacon_interference(b_send, ov_b, rx_idx, pos, rng_fade)
         sinr_db = p_dbm - 10.0 * np.log10(phy.noise_mw + interference)
 
         is_tx = np.isin(rx_idx, tx)                            # half-duplex
@@ -381,8 +393,14 @@ class DisseminationEngine:
 
         # Background CAM/BSM load, evaluated at the receiver.
         nb_rx = self._neighbour_counts(step, act, rx_idx, self.cs_range_m)
-        survive_p = mac.beacon_survival_probability(nb_rx)     # [n_rx]
-        beacon_ok = rng_mac.random(d.shape) < survive_p[None, :]
+        if sub:
+            # explicit beacons: their interference is in the SINR above; a receiver whose own beacon overlaps the
+            # frame is transmitting (half duplex) and cannot decode it
+            blocked = (ovt_b.astype(float) @ (b_send[:, None] == rx_idx[None, :]).astype(float)) > 0
+            beacon_ok = ~blocked
+        else:
+            survive_p = mac.beacon_survival_probability(nb_rx)     # [n_rx]
+            beacon_ok = rng_mac.random(d.shape) < survive_p[None, :]
 
         decoded = above_sens & above_sinr & beacon_ok & ~is_tx[None, :]
         # R9 calibrated-channel knob (off by default; draws nothing when off).
@@ -403,10 +421,15 @@ class DisseminationEngine:
                                       d[k_tx, k_rx].round(2).tolist(), decoded[k_tx, k_rx].tolist()))
         counters["n_rx_success"] += int((decoded & in_nominal).sum())
         counters["n_fail_sensitivity"] += int((in_nominal & ~above_sens).sum())
-        counters["n_fail_sinr"] += int((in_nominal & above_sens & ~above_sinr).sum())
-        counters["n_fail_beacon"] += int(
-            (in_nominal & above_sens & above_sinr & ~beacon_ok).sum()
-        )
+        if sub:     # SINR loss to other hazard frames vs loss only the beacons cause (incl. half duplex)
+            ok_hz = sinr_hz_db >= phy.sinr_threshold_db
+            counters["n_fail_sinr"] += int((in_nominal & above_sens & ~ok_hz).sum())
+            counters["n_fail_beacon"] += int((in_nominal & above_sens & ok_hz & ~(above_sinr & beacon_ok)).sum())
+        else:
+            counters["n_fail_sinr"] += int((in_nominal & above_sens & ~above_sinr).sum())
+            counters["n_fail_beacon"] += int(
+                (in_nominal & above_sens & above_sinr & ~beacon_ok).sum()
+            )
 
         # Blame each interference loss on the transmitters that overlapped
         # it, split equally, so the attributed total equals n_fail_sinr.
@@ -484,6 +507,99 @@ class DisseminationEngine:
                     "n_decoded": int((decoded[k] & in_nominal[k]).sum()),
                     "n_new": int((decoded[k] & in_nominal[k]).sum()),
                 })
+
+    # ------------------------------------------------ sub-epoch timing (D6) --
+    def _senses(self, pos_a: np.ndarray, pos_b: np.ndarray) -> np.ndarray:
+        """[a, b]: does a vehicle at pos_a sense a frame sent from pos_b (median power >= carrier-sense threshold)?"""
+        phy = self.phy
+        if len(pos_a) == 0 or len(pos_b) == 0:
+            return np.zeros((len(pos_a), len(pos_b)), dtype=bool)
+        dd = np.maximum(np.linalg.norm(pos_a[:, None, :] - pos_b[None, :, :], axis=2), phy.reference_distance_m)
+        return (phy.median_rx_power_dbm(dd) - phy.nlos_excess_db(pos_a, pos_b)) >= self.mac.carrier_sense_threshold_dbm
+
+    def _sub_epoch_timing(self, tx, step, act, rx_idx, pos, counters):
+        """Explicit timing inside one epoch on the 13 us slot grid (revision-5 D6).
+
+        Every active vehicle has a background beacon with probability rate_DCC x dt at a uniform slot; each hazard
+        frame starts at AIFS + backoff x slot and defers past beacons and earlier hazard frames its transmitter
+        senses; a beacon whose start falls inside a hazard frame its sender senses defers past it. Overlap then only
+        remains between frames whose senders cannot sense each other, or that start in the same slot.
+        Returns (hazard overlap [n_tx, n_tx], beacon senders [n_b], beacon interferes [n_tx, n_b],
+        beacon airtime overlaps [n_tx, n_b]).
+        """
+        mac = self.mac
+        rng = self.seeds.rng("sub_epoch")
+        slot, T_f, T_b = mac.slot_time_s, mac.frame_duration_s, mac.beacon_duration_s
+        aifs = mac.sifs_s + mac.aifsn * slot
+        n_grid = max(int(round(self.dt / slot)), 1)
+        nb = self._neighbour_counts(step, act, rx_idx, self.cs_range_m)
+        rate = mac.effective_beacon_hz(nb) if mac.background_beacon_enabled else np.zeros(rx_idx.size)
+        has = rng.random(rx_idx.size) < np.minimum(rate * self.dt, 1.0)
+        b_send = rx_idx[has]
+        b_start = rng.integers(0, n_grid, b_send.size) * slot
+        t = aifs + rng.integers(0, mac.cw_slots, tx.size) * slot
+        pos_tx, pos_b = pos[tx], pos[b_send]
+        S_tb = self._senses(pos_tx, pos_b)            # [n_tx, n_b] (sensing taken as symmetric)
+        S_tt = self._senses(pos_tx, pos_tx)
+        start = np.full(tx.size, np.nan)
+        deferred = 0
+        for k in np.argsort(t, kind="stable"):
+            tk, moved = float(t[k]), True
+            while moved:
+                moved = False
+                on = S_tb[k] & (b_start <= tk) & (tk < b_start + T_b)
+                if on.any():
+                    tk, moved = float((b_start[on] + T_b).max() + aifs), True
+                done = np.flatnonzero(np.isfinite(start))
+                on = done[S_tt[k, done] & (start[done] < tk) & (tk < start[done] + T_f)]
+                if on.size:
+                    tk, moved = float((start[on] + T_f).max() + aifs), True
+            deferred += int(tk > t[k])
+            start[k] = tk
+        counters["n_busy_deferrals"] += deferred
+        for k in range(tx.size):                      # beacons sensing a hazard frame on air at their start defer
+            hit = S_tb[k] & (b_start > start[k]) & (b_start < start[k] + T_f)
+            b_start[hit] = start[k] + T_f + aifs
+        same = np.isclose(start[:, None], start[None, :])
+        overlap = (np.abs(start[:, None] - start[None, :]) < T_f) & (~S_tt | same)
+        np.fill_diagonal(overlap, False)
+        ovt_b = (b_start[None, :] < start[:, None] + T_f) & (start[:, None] < b_start[None, :] + T_b)
+        ov_b = ovt_b & (~S_tb | np.isclose(b_start[None, :], start[:, None]))
+        n_tie = int(np.triu(overlap & same, 1).sum())
+        counters["n_backoff_ties"] += n_tie
+        counters["n_hidden_overlaps"] += int(np.triu(overlap, 1).sum()) - n_tie
+        return overlap, b_send, ov_b, ovt_b
+
+    def _beacon_interference(self, b_send, ov_b, rx_idx, pos, rng_fade) -> np.ndarray:
+        """[n_tx, n_rx] interference power (mW) from the beacons overlapping each hazard frame, through the same
+        path-loss / shadowing / fading / NLOS model as the hazard links (only interfering beacons are evaluated)."""
+        phy = self.phy
+        used = np.flatnonzero(ov_b.any(axis=0))
+        out = np.zeros((ov_b.shape[0], rx_idx.size))
+        if used.size == 0:
+            return out
+        src = b_send[used]
+        dd = np.maximum(np.linalg.norm(pos[src][:, None, :] - pos[rx_idx][None, :, :], axis=2),
+                        phy.reference_distance_m)
+        ids_t = np.broadcast_to(src[:, None], dd.shape)
+        ids_r = np.broadcast_to(rx_idx[None, :], dd.shape)
+        p = phy.rx_power_dbm(ids_t, ids_r, dd, rng_fade) - phy.nlos_excess_db(pos[src], pos[rx_idx])
+        p_lin = np.where(dd <= self.rx_range_m, 10.0 ** (p / 10.0), 0.0)
+        p_lin[src[:, None] == rx_idx[None, :]] = 0.0    # own beacon: handled as half duplex
+        return ov_b[:, used].astype(float) @ p_lin
+
+    def _sub_epoch_cbr(self, step: int, act: np.ndarray) -> float:
+        """Mean over active vehicles of the busy fraction they sense: sum over the senders j they sense of
+        rate_DCC(j) x T_beacon, capped at 1."""
+        mac, tr = self.mac, self.trace
+        a = np.flatnonzero(act)
+        if a.size == 0 or not mac.background_beacon_enabled:
+            return float("nan")
+        p = np.stack([tr.x[step, a], tr.y[step, a]], axis=1)
+        rate = mac.effective_beacon_hz(self._neighbour_counts(step, act, a, self.cs_range_m))
+        S = self._senses(p, p)
+        np.fill_diagonal(S, False)
+        return float(np.mean(np.minimum(S.astype(float) @ (rate * mac.beacon_duration_s), 1.0)))
 
     # --------------------------------------------------------------- overlap --
     def _overlap_matrix(

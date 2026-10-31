@@ -72,6 +72,9 @@ class MacModel:
     #: validation curve is matched; see experiments/revision3/r9_calibrated_channel.py.
     #: Disabled (p_max = 0) by default, and then no random number is drawn, so every
     #: uncalibrated run is bit-identical to before the knob existed. [FITTED]
+    #: Revision-5 D6: "epoch" (default; unchanged) or "sub_epoch" (explicit 13 us timing of hazard frames and
+    #: background beacons within an epoch, geometric beacon interference, sensed-power busy ratio).
+    timing: str = "epoch"
     extra_loss_p_max: float = 0.0
     extra_loss_n0: float = 0.0
     extra_loss_n1: float = 1.0
@@ -211,4 +214,5 @@ def build_mac(phy_cfg: dict[str, Any], phy_model: Any) -> MacModel:
         extra_loss_p_max=float((m.get("extra_loss") or {}).get("p_max", 0.0)),
         extra_loss_n0=float((m.get("extra_loss") or {}).get("n0", 0.0)),
         extra_loss_n1=float((m.get("extra_loss") or {}).get("n1", 1.0)),
+        timing=str(m.get("timing", "epoch")),
     )

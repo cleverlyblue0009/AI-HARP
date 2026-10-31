@@ -429,6 +429,8 @@ def overhead_metrics(res: RunResult, ctx: MetricContext) -> dict[str, float]:
         cs_r = float(res.meta.get("cs_range_m", 0.0))
         frac = min(1.0, (2 * cs_r / span) if span > 0 else 1.0)
         beacon_cbr = res.mac.channel_busy_ratio(mean_concurrent * frac)
+    if res.meta.get("sub_epoch_cbr") is not None:      # revision-5 D6: sensed-power busy ratio of the sub-epoch mode
+        beacon_cbr = float(res.meta["sub_epoch_cbr"])
 
     return {
         "transmissions": float(res.n_transmissions),
