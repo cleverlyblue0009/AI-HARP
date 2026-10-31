@@ -103,3 +103,36 @@ SUMO: 6,600 / 6,600 metric rows. **Both H3 parts are therefore computed.**
 
 **Results seen before this entry:** no H3 statistic; only the two port-validation replays of 2026-10-19
 (results/revision5/veins/port_validation.md) and the two development flooding replays already disclosed in D1.
+
+## D6 — H3 failed: executing the pre-registered fail branch (sub-epoch timing mode) (2026-10-31T18:59+05:30)
+
+**Seen before this entry:** the full H3 result (results/revision5/analysis/h3.json, commit 0908711): Spearman rho 0.564
+[-0.117, 0.791], p(rho <= 0.6) = 0.776; PDR-vs-distance and busy-ratio criteria fail (Veins delivers more at short range,
+the custom busy ratio is 33–89 % higher); median single-hop delay and the cross-fitted H1 verdict agree. Pre-registered
+rule: "Fail: add a sub-epoch timing mode (13 µs slots, AIFS/backoff; default unchanged), calibrate it only on the
+validation metrics, freeze it, and re-run." The user chose to follow it (2026-10-31).
+
+**The mode** (`mac.timing: sub_epoch`; default `epoch`, which stays bit-identical — verified by the rule-7 gate):
+within an epoch with hazard transmissions, every active vehicle has a background beacon with probability
+rate_DCC x 0.1 s at a uniform start on the 13 µs grid; each hazard frame starts at AIFS + backoff x 13 µs and defers
+past any beacon its transmitter senses (mean received power >= the carrier-sense threshold); a beacon collides with a
+hazard frame only if their airtimes overlap and its sender could not sense the hazard frame (hidden, or same slot);
+reception is the existing SINR/capture test with all overlapping hazard frames and beacons as interference (replacing
+the distance-blind Bernoulli survival exp(-lambda T_vuln)); the reported busy ratio is each vehicle's expected busy
+fraction from frames it senses above the carrier-sense threshold (beacons at their DCC rates + hazard airtime),
+averaged over active vehicles. Hazard decisions remain on the 100 ms epoch.
+
+**Calibration (fixed now, before any calibration number exists):**
+* free parameters, mode only: carrier-sense threshold {−95, −92, −88, −85} dBm x capture SINR threshold {4, 6, 8, 10} dB
+  (16 points);
+* calibration data: Veins replays of the **audit seeds 210–219** (not the H3 validation seeds 200–209), 5 settings
+  (flooding; p_persistence_03 p=0.3; slotted_1p n=8; weighted_p max_p=0.5; counter_based C=3) x 4 headline cells
+  x 10 seeds = 200 paired runs per point;
+* loss = max over cells of the largest |ΔPDR| over 50 m bins up to the nominal range + mean over cells of the relative
+  |Δ busy ratio|; ties -> the point closest to the current phy.yaml values (SINR 8 dB, carrier sense −92 dBm);
+* the minimum is frozen in configs (mode on only for the H3 re-run), recorded with its loss, and never revisited.
+
+**Re-run:** custom network-layer runs (seeds 200–209, all 55 settings) and the custom metric rows for the cross-fitted
+audit (seeds 200–229) in the frozen mode; H3 recomputed with the same code and definitions (D3). If H3 still fails,
+the pre-registered consequence applies: the classical audit computed in Veins becomes primary and custom-simulator
+claims are restricted accordingly.
