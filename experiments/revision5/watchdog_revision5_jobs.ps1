@@ -132,3 +132,5 @@ $jobs += @{ n = "s3_custom_h3"; alive = "veins.custom_h3"; ready = { $true };
 $jobs += @{ n = "s3_veins_score"; alive = "veins.veins_metrics"; ready = { $true };
             done = { (Test-Path "results\revision5\veins\veins_rows.jsonl") -and ((Get-Content "results\revision5\veins\veins_rows.jsonl" | Measure-Object -Line).Lines -ge 6600) };
             cmd = "$gpu -u -m experiments.revision5.veins.veins_metrics cache\veins_runs\h3 >> logs\revision5\s3_veins_score.log 2>&1" }
+# rule rows on SUMO for EVAL too (only classical EVAL existed; the SUMO comparison against the best rule needs them)
+$c7 = Chain "s2_sumo_eval_rule" "rule --seedset EVAL --cells headline --channel default --backend sumo" "rule__EVAL__headline__default__sumo" 4680 $c6 3 $SU
