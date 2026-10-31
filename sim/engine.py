@@ -179,6 +179,7 @@ class DisseminationEngine:
         self._feats_cache = None
         self._rx_pairs: list = []
         self._cbr_samples: list = []
+        self._hz_busy_sum, self._n_act_steps = 0.0, 0
         self.policy.reset(self.N, rng_pol)
 
         N = self.N
@@ -212,8 +213,10 @@ class DisseminationEngine:
             act = tr.active[step]
             if not act.any():
                 continue
-            if self.mac.timing == "sub_epoch" and step % 10 == 0:
-                self._cbr_samples.append(self._sub_epoch_cbr(step, act))
+            if self.mac.timing == "sub_epoch":
+                self._n_act_steps += 1
+                if step % 10 == 0:
+                    self._cbr_samples.append(self._sub_epoch_cbr(step, act))
 
             # -- 1. hazard detection / message origination -------------------
             if origin_index == NO_STEP and t >= self.hazard.onset_time_s:
@@ -284,8 +287,7 @@ class DisseminationEngine:
                 "cs_range_m": round(self.cs_range_m, 1),
                 "rx_prune_range_m": round(self.rx_range_m, 1),
                 **({"rx_pairs": self._rx_pairs} if cfg.record_rx_pairs else {}),
-                **({"sub_epoch_cbr": float(np.nanmean(self._cbr_samples)) if self._cbr_samples else float("nan")}
-                   if self.mac.timing == "sub_epoch" else {}),
+                **(self._sub_epoch_meta() if self.mac.timing == "sub_epoch" else {}),
             },
             **counters,
         )
@@ -362,6 +364,9 @@ class DisseminationEngine:
         sub = mac.timing == "sub_epoch"
         if sub:     # revision-5 D6: explicit 13 us timing (the default path below is unchanged)
             overlap, b_send, ov_b, ovt_b = self._sub_epoch_timing(tx, step, act, rx_idx, pos, counters)
+            # hazard airtime each active vehicle senses this epoch (own frames excluded), for the busy ratio
+            S_rt = self._senses(pos_rx, pos_tx) & (rx_idx[:, None] != tx[None, :])
+            self._hz_busy_sum += float(np.mean(np.minimum(S_rt.sum(axis=1) * mac.frame_duration_s / self.dt, 1.0)))
         else:
             overlap = self._overlap_matrix(pos_tx, n_tx, counters, rng_mac)
 
@@ -589,8 +594,53 @@ class DisseminationEngine:
         return ov_b[:, used].astype(float) @ p_lin
 
     def _sub_epoch_cbr(self, step: int, act: np.ndarray) -> float:
+        """Beacon busy ratio at ``step``; depends only on (trace, step, channel), so it is kept on the trace object
+        like the neighbour counts and reused by every setting of a cell/seed."""
+        mac = self.mac
+        if not np.array_equal(act, self.trace.active[step]):
+            return self._sub_epoch_cbr_calc(step, act)
+        cache = self.trace.__dict__.setdefault("_sub_cbr", {})
+        key = (step, mac.carrier_sense_threshold_dbm, self.cs_range_m, mac.beacon_duration_s,
+               mac.background_beacon_enabled)
+        if key not in cache:
+            cache[key] = self._sub_epoch_cbr_calc(step, act)
+        return cache[key]
+
+    def _sub_epoch_cbr_calc(self, step: int, act: np.ndarray) -> float:
         """Mean over active vehicles of the busy fraction they sense: sum over the senders j they sense of
         rate_DCC(j) x T_beacon, capped at 1."""
+        mac, tr = self.mac, self.trace
+        a = np.flatnonzero(act)
+        if a.size == 0 or not mac.background_beacon_enabled:
+            return float("nan")
+        from scipy.spatial import cKDTree
+
+        phy = self.phy
+        if phy.has_buildings:            # few vehicles, per-pair NLOS geometry: the dense form is the faster one
+            return self._sub_epoch_cbr_dense(step, act)
+        p = np.stack([tr.x[step, a], tr.y[step, a]], axis=1)
+        w = mac.effective_beacon_hz(self._neighbour_counts(step, act, a, self.cs_range_m)) * mac.beacon_duration_s
+        # Open road (no NLOS excess): a pair senses each other iff its median power reaches the threshold, which
+        # needs distance <= the carrier-sense range, so only KD-tree candidate pairs are evaluated (same test).
+        ij = cKDTree(p).query_pairs(self.cs_range_m * (1 + 1e-9) + 1e-6, output_type="ndarray")
+        busy = np.zeros(a.size)
+        if ij.size:
+            i, j = ij[:, 0], ij[:, 1]
+            med = phy.median_rx_power_dbm(np.maximum(np.linalg.norm(p[i] - p[j], axis=1), phy.reference_distance_m))
+            s = med >= mac.carrier_sense_threshold_dbm
+            busy += np.bincount(i, weights=s * w[j], minlength=a.size)
+            busy += np.bincount(j, weights=s * w[i], minlength=a.size)
+        return float(np.mean(np.minimum(busy, 1.0)))
+
+    def _sub_epoch_meta(self) -> dict:
+        """Busy ratio of the sub-epoch mode: beacon part (sampled every 10 epochs) + hazard part (every epoch with
+        active vehicles; epochs without hazard frames count as 0), capped at 1."""
+        b = float(np.nanmean(self._cbr_samples)) if self._cbr_samples else float("nan")
+        h = self._hz_busy_sum / self._n_act_steps if self._n_act_steps else 0.0
+        return {"sub_epoch_cbr": min(b + h, 1.0), "sub_epoch_cbr_beacon": b, "sub_epoch_cbr_hazard": h}
+
+    def _sub_epoch_cbr_dense(self, step: int, act: np.ndarray) -> float:
+        """Reference O(n^2) form of _sub_epoch_cbr (tests only)."""
         mac, tr = self.mac, self.trace
         a = np.flatnonzero(act)
         if a.size == 0 or not mac.background_beacon_enabled:
