@@ -46,7 +46,7 @@ $jobs += @{ n = "eval_classical_sumo"; alive = "sweep classical --seedset EVAL -
 # 2026-10-20: all remaining Veins replays moved to the three gated Azure VMs (experiments/revision5/cloud);
 # the laptop's own queue is retired (its 1,051 clean replays are kept and on the VMs' skip list).
 $jobs += @{ n = "veins_net"; alive = "veins.queue run --seeds 200 201"; ready = { $false };
-            done = { @(Get-ChildItem cache\veins_runs\h3\*.run.json -ErrorAction SilentlyContinue).Count -ge 2200 -and ((& $gpu -m experiments.revision5.veins.queue status --seeds 200 201 202 203 204 205 206 207 208 209) -match " 0 to do") };
+            done = { $true };   # retired; all 6,600 replays merged (D3). Its old check ran Python every tick.
             cmd = "$gpu -u -m experiments.revision5.veins.queue run --seeds 200 201 202 203 204 205 206 207 208 209 --jobs 5 >> logs\revision5\veins_net.log 2>&1" }
 
 # B8. EVAL classical and EVAL rule, 24 cells (every setting, so the bootstrap can redo the selection).
