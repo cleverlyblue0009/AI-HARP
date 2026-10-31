@@ -1,0 +1,39 @@
+{
+ "stopped": "max_updates",
+ "total_updates": 1000,
+ "plan": [
+  [
+   "pretrain",
+   200
+  ],
+  [
+   "finetune",
+   800
+  ]
+ ],
+ "final_stage": "finetune",
+ "final_stage_update": 800,
+ "early_stop_window": 30,
+ "early_stop_run": 0,
+ "elapsed_s_this_session": 7718.3,
+ "ppo_device": "cuda",
+ "bit_reproducible": true,
+ "resumed_from": null,
+ "initialised_from": null,
+ "last_shortfall_by_group": {
+  "rural_highway|1": -0.2646665447013865,
+  "rural_highway|2": 0.0648245423315491,
+  "rural_highway|5": -0.04380293888736296,
+  "urban_nlos|1": 0.03661114730802182,
+  "urban_nlos|5": 0.02706708684951753,
+  "urban_nlos|80": -0.07491443884639072
+ },
+ "last_lambda_by_group": {
+  "rural_highway|1": 1.8785620590367398,
+  "rural_highway|2": 53.108866489280764,
+  "rural_highway|5": 14.795007867066076,
+  "urban_nlos|1": 32.85338728806848,
+  "urban_nlos|5": 3.8946285739792303,
+  "urban_nlos|80": 2.398226990468729
+ }
+}

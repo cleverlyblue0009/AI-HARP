@@ -1,0 +1,41 @@
+{
+ "stopped": "max_updates",
+ "total_updates": 2000,
+ "plan": [
+  [
+   "pretrain",
+   200
+  ],
+  [
+   "finetune",
+   1800
+  ]
+ ],
+ "final_stage": "finetune",
+ "final_stage_update": 1800,
+ "early_stop_window": 30,
+ "early_stop_run": 0,
+ "elapsed_s_this_session": 7957.0,
+ "ppo_device": "cuda",
+ "bit_reproducible": true,
+ "resumed_from": "C:\\Users\\UPASANA\\AI-HARP\\checkpoints\\revision1\\ref_s1_u2000\\ckpt_latest.pt",
+ "initialised_from": null,
+ "last_shortfall_by_group": {
+  "rural_highway|2": -0.05108336338072865,
+  "rural_highway|20": -0.057161966652222826,
+  "rural_highway|3": -0.14597029271257742,
+  "rural_highway|5": -0.03086346745485662,
+  "urban_nlos|1": -0.7472294515562177,
+  "urban_nlos|2": 0.19002741253848376,
+  "urban_nlos|80": 0.013197578966266481
+ },
+ "last_lambda_by_group": {
+  "rural_highway|2": 61.126288641240826,
+  "rural_highway|20": 0.9710130303583707,
+  "rural_highway|3": 21.08560688750826,
+  "rural_highway|5": 15.465487918966002,
+  "urban_nlos|1": 30.456133440010813,
+  "urban_nlos|2": 41.8000141488113,
+  "urban_nlos|80": 0.013197578966266481
+ }
+}
