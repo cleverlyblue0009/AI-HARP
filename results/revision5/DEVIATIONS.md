@@ -38,3 +38,17 @@ bit-exact gate before any SEL result was computed or inspected. The rows are qua
 `results/revision5/runs/invalid_sumo_backend/` (README there), the backend is now explicit everywhere in the
 protocol runner, and both SEL sweeps restart from zero. Training was not affected (verified). Cost: ~9.5 h of
 SEL compute.
+
+## D4 — budget checkpoints at 1,200 and 1,700 instead of 1,250 and 1,750 (2026-10-31T11:08+05:30)
+
+**Pre-registered:** budget extension of full-model seeds 0–2 to 2,000 updates, evaluated at 1,250, 1,500, 1,750 and
+2,000 updates.
+
+**Changed to:** 1,200, 1,500, 1,700 and 2,000 (plus the existing 1,000-update evaluation of the same seeds).
+
+**Why:** the extension runs saved checkpoints every 100 updates (`checkpoints/revision1/ref_s{0,1,2}_u2000/ckpt_0011..0020`),
+so no 1,250- or 1,750-update checkpoint exists. Rule applied: the last checkpoint saved before each missing
+pre-registered point. Retraining to save those two points was not chosen (it would add ~9 h of training for two
+interpolating points).
+
+**Results seen before this change:** none — no budget-checkpoint evaluation row existed when this entry was written.

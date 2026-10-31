@@ -77,10 +77,13 @@ def checkpoint_for(run: str) -> Path:
 def gate_rates(runs: list[str], seedset: str, cellset: str, channel: str, backend: str) -> dict:
     """Learned-gate fallback rate per (run, cell, bias), measured on `seedset` (SEL by protocol)."""
     rates = {}
+    # Every agent file of this seed set/channel/backend (any cell set or tag, e.g. the seeds 5-9 file), except
+    # random-gate files; rows are told apart by checkpoint_sha and (cell, bias).
+    files = [f for f in sorted(out_dir("runs", 5).glob(f"agent__{seedset}__*__{channel}__{backend}*.csv"))
+             if "rgate" not in f.name and "slice" not in f.name]
     for run in runs:
-        f = out_dir("runs", 5) / f"agent__{seedset}__{cellset}__{channel}__{backend}.csv"
         acc = {}
-        for r in load_rows(f):
+        for r in (row for f in files for row in load_rows(f)):
             q = json.loads(r["params_json"])
             if q.get("checkpoint_sha") is None or float(q.get("tau", -1)) != 0.5 or "random_gate_rate" in q:
                 continue
@@ -108,6 +111,9 @@ def main(argv=None) -> int:
     ap.add_argument("--jobs", type=int, default=3)
     ap.add_argument("--slice", default=None, help="i/n: only tasks with int(task_hash, 16) %% n == i (offload VMs)")
     a = ap.parse_args(argv)
+    import sys
+    import numpy
+    print(f"[env] {sys.executable} numpy {numpy.__version__}", flush=True)   # rule: pinned interpreter only
 
     pp, sd, cl = phy_patch(a.channel), seeds(a.seedset), cells(a.cells)
     # Explicit, never "auto": "auto" picks SUMO whenever SUMO_HOME is set, which silently put the first SEL

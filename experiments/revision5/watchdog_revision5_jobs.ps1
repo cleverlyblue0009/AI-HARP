@@ -68,3 +68,30 @@ $jobs += @{ n = "eval_agent_s5_9"; alive = "sweep agent --seedset EVAL --cells h
 $jobs += @{ n = "eval_agent_s0_4"; alive = "sweep agent --seedset EVAL --cells grid24"; ready = { (Rows "$runs\agent__EVAL__headline__default__fallback__s5_9.csv") -ge 3600 };
             done = { (Rows "$runs\agent__EVAL__grid24__default__fallback.csv") -ge 21600 };
             cmd = "$gpu -u -m experiments.revision5.sweep agent --seedset EVAL --cells grid24 --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 --jobs 4 >> logs\revision5\eval_agent_s0_4.log 2>&1" }
+
+# ---- Step 1 (2026-10-31): trained-but-unevaluated runs, 4 headline cells, SEL (400-419) then EVAL (200-229),
+#      biases -2..3, sampled actions. Two chains of 5 workers each. Per checkpoint: SEL 480 rows, EVAL 720 rows.
+function AgentPair($name, $module, $runs, $tag, $extra, $nRuns, $after) {
+    $sel = "$runs\agent__SEL__headline__default__fallback__$tag.csv"
+    $ev  = "$runs\agent__EVAL__headline__default__fallback__$tag.csv"
+    $nSel = 480 * $nRuns; $nEv = 720 * $nRuns
+    $script:jobs += @{ n = "${name}_sel"; alive = "--seedset SEL --cells headline .*--tag $tag"; ready = $after;
+        done = [scriptblock]::Create("(Rows '$sel') -ge $nSel");
+        cmd = "$gpu -u -m $module agent --seedset SEL --cells headline --runs $($runs_list) $extra --tag $tag --jobs 5 >> logs\revision5\${name}_sel.log 2>&1" }
+    $script:jobs += @{ n = "${name}_eval"; alive = "--seedset EVAL --cells headline .*--tag $tag"; ready = [scriptblock]::Create("(Rows '$sel') -ge $nSel");
+        done = [scriptblock]::Create("(Rows '$ev') -ge $nEv");
+        cmd = "$gpu -u -m $module agent --seedset EVAL --cells headline --runs $($runs_list) $extra --tag $tag --jobs 5 >> logs\revision5\${name}_eval.log 2>&1" }
+    return [scriptblock]::Create("(Rows '$ev') -ge $nEv")
+}
+$S = "experiments.revision5.sweep"; $P = "privileged.sweep_privileged"
+# chain A: ladder B -> ladder C (privileged path) -> variants
+$runs_list = "rungB_s0 rungB_s1 rungB_s2 rungB_s3 rungB_s4"; $a1 = AgentPair "s1_ladderB" $S $runs "ladderB" "" 5 { $true }
+$runs_list = "rungC_s0 rungC_s1 rungC_s2 rungC_s3 rungC_s4"; $a2 = AgentPair "s1_ladderC" $P $runs "ladderC" "" 5 $a1
+$runs_list = "gcn_s0 gcn_s1 gcn_s2 gcn_s3 gcn_s4 mlp_s0 mlp_s1 mlp_s2 mlp_s3 mlp_s4 norel_s0 norel_s1 norel_s2 norel_s3 norel_s4"
+$a3 = AgentPair "s1_variants" $S $runs "variants" "" 15 $a2
+# chain B: gate tau=0 -> random gate matched to the learned gate's SEL rate -> budget checkpoints
+$runs_list = "ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 ref_s5 ref_s6 ref_s7 ref_s8 ref_s9"
+$b1 = AgentPair "s1_tau0" $S $runs "tau0" "--taus 0" 10 { $true }
+$b2 = AgentPair "s1_rgate" $S $runs "rgate" "--random-gate-from SEL" 10 $b1
+$runs_list = "ref_s0_u2000@1200 ref_s0_u2000@1500 ref_s0_u2000@1700 ref_s0_u2000@2000 ref_s1_u2000@1200 ref_s1_u2000@1500 ref_s1_u2000@1700 ref_s1_u2000@2000 ref_s2_u2000@1200 ref_s2_u2000@1500 ref_s2_u2000@1700 ref_s2_u2000@2000"
+$b3 = AgentPair "s1_budget" $S $runs "budget" "" 12 $b2
