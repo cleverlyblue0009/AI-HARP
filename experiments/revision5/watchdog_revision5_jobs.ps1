@@ -124,3 +124,8 @@ $g1 = Chain "s2_sumo_sel_agent" "agent --seedset SEL --cells headline --channel 
 $g2 = Chain "s2_sumo_eval_agent" "agent --seedset EVAL --cells headline --channel default --backend sumo --runs $R10" "agent__EVAL__headline__default__sumo" 7200 $g1 5 $SU
 $h1 = Chain "s2_st_sel_agent" "agent --seedset SEL --cells grid24 --channel calibrated --runs $R5" "agent__SEL__grid24__calibrated__fallback" 14400 ([scriptblock]::Create("(FrozenS) -and (& {$b3})")) 5
 $h2 = Chain "s2_st_eval_agent" "agent --seedset EVAL --cells grid24 --channel calibrated --runs $R5" "agent__EVAL__grid24__calibrated__fallback" 21600 $h1 5
+
+# ---- Step 3 (2026-10-31, D3): custom-simulator network-layer runs for H3 (2,200 paired runs, record_rx_pairs).
+$jobs += @{ n = "s3_custom_h3"; alive = "veins.custom_h3"; ready = { $true };
+            done = { (Test-Path "results\revision5\veins\custom_h3.jsonl") -and ((Get-Content "results\revision5\veins\custom_h3.jsonl" | Measure-Object -Line).Lines -ge 2200) };
+            cmd = "$gpu -u -m experiments.revision5.veins.custom_h3 --jobs 2 >> logs\revision5\s3_custom_h3.log 2>&1" }

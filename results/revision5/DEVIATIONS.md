@@ -66,3 +66,40 @@ thresholds it uses; the default channel's protocol is unchanged.
 **Results seen:** none — no calibrated-channel row of any kind exists when this entry is written
 (`results/revision5/runs/` has no `*calibrated*` file). Rule baselines get no CAL run: CAL only sets the thresholds,
 which the protocol derives from the classical schemes.
+
+## D3 — H3 completion rule and operational definitions (2026-10-31T11:19+05:30)
+
+**Completion rule (user, 2026-10-31):** compute the network-layer criteria from the paired EVAL seeds 200–209; compute
+the cross-fitted Veins H1 audit only if all 30 seeds x 55 settings x 4 cells are complete; if the audit cannot finish
+within 48 h, report the network-layer criteria and the audit completion fraction, and no partial-seed Veins H1 verdict.
+
+**Completion at the time of writing:** Veins 6,600 / 6,600 replays (network layer 2,200 / 2,200; audit 6,600 / 6,600),
+every one with exit code 0 and an identical SUMO trace; 4,840 of them from the three gated Azure VMs. One replay
+(rural_highway d=80 s=221 counter_based 1) lacks its OMNeT++ scalar file (busy-ratio input only); it is being regenerated
+and accepted only if its event log is byte-identical, otherwise its busy ratio is reported missing. Custom simulator on
+SUMO: 6,600 / 6,600 metric rows. **Both H3 parts are therefore computed.**
+
+**Operational definitions (fixed here, before any Veins statistic is computed):**
+* Custom-simulator network-layer data: the 2,200 paired runs (seeds 200–209) are re-run on SUMO with
+  `SimSettings.record_rx_pairs` (records every in-nominal-range (tx, rx) outcome and distance; bit-neutral, verified by
+  the rule-7 gate) because the existing rows hold aggregates only.
+* PDR vs distance: per transmission, active receivers within the nominal range (excluding concurrent transmitters),
+  binned by distance in 50 m bins; pooled over all hazard transmissions of the 55 settings; criterion |Veins − custom|
+  <= 0.05 in every bin up to the nominal range; CIs by bootstrap over seeds.
+* Single-hop delay: reception time of a first copy minus the time the sender itself became informed (Veins: event times;
+  custom: (informed_step(r) − informed_step(sender)) x 0.1 s); criterion |median_Veins − median_custom| <= 0.1 s.
+* Channel busy ratio: Veins = mean over vehicles of busy time while active / active time (Mac1609_4 busy signal) per
+  replay; custom = the channel load its MAC model applies, `beacon_cbr` + `dissemination_cbr` from analysis.metrics;
+  criterion relative difference <= 20 %, per cell, on the medians over the paired replays.
+* Loss rates: in-range loss = 1 − PDR in both; the custom loss split (sensitivity / SINR / beacon) is reported, and for
+  Veins the MAC's SNIR- and TX/RX-lost counts (all frames, descriptive).
+* Matched cost (Spearman criterion): Algorithm 1 per (cell, scheme family) within each simulator on seeds 200–209 —
+  q* = 0.95 x max over the 55 settings of mean RWCR, guard = min mean actionable miss + 0.05, cost at q* by the
+  interpolated crossing (PolicyCurve.overhead_at); Spearman rho over the cell x family pairs where both simulators
+  have a finite matched cost; 95 % CI and the bootstrap p for rho <= 0.6 by resampling seeds (10,000 replicates).
+* Veins H1 (cross-fitted, D1): three folds 200–209 / 210–219 / 220–229; q*, m* and each family's selection on the
+  other two folds; scored on the held-out fold; the bootstrap redoes the whole procedure; identical procedure for
+  the custom simulator on SUMO.
+
+**Results seen before this entry:** no H3 statistic; only the two port-validation replays of 2026-10-19
+(results/revision5/veins/port_validation.md) and the two development flooding replays already disclosed in D1.
