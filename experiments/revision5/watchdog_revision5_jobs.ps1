@@ -144,3 +144,15 @@ $jobs += @{ n = "s3_veins_score"; alive = "veins.veins_metrics"; ready = { $true
             cmd = "$gpu -u -m experiments.revision5.veins.veins_metrics cache\veins_runs\h3 >> logs\revision5\s3_veins_score.log 2>&1" }
 # rule rows on SUMO for EVAL too (only classical EVAL existed; the SUMO comparison against the best rule needs them)
 $c7 = Chain "s2_sumo_eval_rule" "rule --seedset EVAL --cells headline --channel default --backend sumo" "rule__EVAL__headline__default__sumo" 4680 $c6 3 $SU
+
+# ---- DEVIATIONS D6 (2026-10-31): sub-epoch mode calibration on audit seeds 210-219 -> freeze -> frozen-mode re-run.
+$d6 = "results\revision5\veins\d6_calibration"
+function D6CalDone { foreach ($cs in -95, -92, -88, -85) { foreach ($s in 4, 6, 8, 10) {
+    if ((Rows "$d6\cs${cs}_sinr${s}.jsonl") + 1 -lt 200) { return $false } } }; return $true }
+$jobs += @{ n = "d6_calibrate"; alive = "d6_calibrate run"; ready = { $true }; done = { D6CalDone };
+            cmd = "$gpu -u -m experiments.revision5.veins.d6_calibrate run --jobs 4 >> logs\revision5\d6_calibrate.log 2>&1" }
+$jobs += @{ n = "d6_score"; alive = "d6_calibrate score"; ready = { D6CalDone }; done = { Test-Path "configs\phy_patch_d6_frozen.json" };
+            cmd = "$gpu -u -m experiments.revision5.veins.d6_calibrate score >> logs\revision5\d6_score.log 2>&1" }
+$jobs += @{ n = "d6_rerun"; alive = "d6_calibrate rerun"; ready = { Test-Path "configs\phy_patch_d6_frozen.json" };
+            done = { (Rows "results\revision5\veins\custom_h3_subepoch.jsonl") + 1 -ge 6600 };
+            cmd = "$gpu -u -m experiments.revision5.veins.d6_calibrate rerun --jobs 4 >> logs\revision5\d6_rerun.log 2>&1" }
