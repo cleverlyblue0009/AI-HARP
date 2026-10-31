@@ -22,6 +22,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+from common.config import PROJECT_ROOT
 from experiments.revision5.sweep import HEADLINE
 from experiments.revision5.veins.queue import BUNDLES, RUNS, settings
 
@@ -47,7 +48,7 @@ def done(name: str) -> bool:
 
 def replay(args: tuple) -> str:
     bdir, pol, knob, seed = args
-    env = dict(os.environ, AIHARP_REPO=str(Path.home() / "AI-HARP"))
+    env = dict(os.environ, AIHARP_REPO=str(PROJECT_ROOT))
     subprocess.run([sys.executable, str(RUNNER), str(bdir), pol, repr(knob), str(seed), str(RUNS)],
                    capture_output=True, text=True, env=env)
     name = f"{bdir.name}__{pol}_{knob:g}__s{seed}"
