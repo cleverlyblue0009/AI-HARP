@@ -1,0 +1,419 @@
+{
+ "provenance": {
+  "task": "revision5/analysis/h1.json",
+  "git_commit": "de6d1633bbcfbe19e5545752acf3de7ffcd65962",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.analysis.h1 --B 10000",
+  "config_hash": "1e6b988f681b",
+  "config": {
+   "B": 10000,
+   "D": "inf"
+  },
+  "seeds": {
+   "CAL": [
+    300,
+    301,
+    302,
+    303,
+    304,
+    305,
+    306,
+    307,
+    308,
+    309
+   ],
+   "SEL": [
+    400,
+    401,
+    402,
+    403,
+    404,
+    405,
+    406,
+    407,
+    408,
+    409,
+    410,
+    411,
+    412,
+    413,
+    414,
+    415,
+    416,
+    417,
+    418,
+    419
+   ],
+   "EVAL": [
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209,
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    219,
+    220,
+    221,
+    222,
+    223,
+    224,
+    225,
+    226,
+    227,
+    228,
+    229
+   ]
+  },
+  "generated": "2026-10-31 11:41:34",
+  "n_runs": null
+ },
+ "hypothesis": "H1: no single classical scheme family is the cheapest qualifying family in all four headline cells",
+ "D": "inf",
+ "B": 10000,
+ "rng_seed": 20261031,
+ "share_one_family_wins_all_four": 0.0,
+ "count": 0,
+ "clopper_pearson_95": [
+  0.0,
+  0.0003688199146187622
+ ],
+ "binomial_p_lower_vs_0.05": 1.7220782772888934e-223,
+ "supported": true,
+ "families_that_won_all_four_in_replicates": {},
+ "point_estimate": {
+  "rural_highway d=2": {
+   "winner": "slotted_1p",
+   "q_star": 0.5932325617912676,
+   "m_star": 0.5820005574136009,
+   "families": {
+    "flooding": {
+     "pick": [
+      "flooding",
+      "",
+      ""
+     ],
+     "qualifies": true,
+     "cost": 2.630914178414179,
+     "eval_rwcr": 0.6581327279656541,
+     "eval_miss": 0.5377402784519489
+    },
+    "p_persistence_03": {
+     "pick": [
+      "p_persistence_03",
+      "p",
+      "1.0"
+     ],
+     "qualifies": true,
+     "cost": 2.630914178414179,
+     "eval_rwcr": 0.6581327279656541,
+     "eval_miss": 0.5377402784519489
+    },
+    "slotted_1p": {
+     "pick": [
+      "slotted_1p",
+      "n_slots",
+      "8"
+     ],
+     "qualifies": true,
+     "cost": 1.7470439446174741,
+     "eval_rwcr": 0.5949892496317902,
+     "eval_miss": 0.5804606696380151
+    },
+    "weighted_p": {
+     "pick": null,
+     "qualifies": false,
+     "cost": null
+    },
+    "counter_based": {
+     "pick": null,
+     "qualifies": false,
+     "cost": null
+    },
+    "greedy_farthest": {
+     "pick": null,
+     "qualifies": false,
+     "cost": null
+    },
+    "dvcast": {
+     "pick": [
+      "dvcast",
+      "n_slots",
+      "20"
+     ],
+     "qualifies": false,
+     "cost": 1.7116182972800622,
+     "eval_rwcr": 0.5503863473508439,
+     "eval_miss": 0.6183269675912696
+    }
+   }
+  },
+  "rural_highway d=20": {
+   "winner": "greedy_farthest",
+   "q_star": 0.8710139092891286,
+   "m_star": 0.35749328311976303,
+   "families": {
+    "flooding": {
+     "pick": [
+      "flooding",
+      "",
+      ""
+     ],
+     "qualifies": true,
+     "cost": 3.3638292313354654,
+     "eval_rwcr": 0.919526325620634,
+     "eval_miss": 0.30716799654851795
+    },
+    "p_persistence_03": {
+     "pick": [
+      "p_persistence_03",
+      "p",
+      "0.3"
+     ],
+     "qualifies": true,
+     "cost": 1.0037942415577112,
+     "eval_rwcr": 0.9034798594579633,
+     "eval_miss": 0.31969493379076613
+    },
+    "slotted_1p": {
+     "pick": [
+      "slotted_1p",
+      "n_slots",
+      "50"
+     ],
+     "qualifies": true,
+     "cost": 0.6777101672059227,
+     "eval_rwcr": 0.9174427571611207,
+     "eval_miss": 0.3101374325027482
+    },
+    "weighted_p": {
+     "pick": [
+      "weighted_p",
+      "max_p",
+      "0.35"
+     ],
+     "qualifies": true,
+     "cost": 0.8963747804055642,
+     "eval_rwcr": 0.8931429168847488,
+     "eval_miss": 0.32989005353349105
+    },
+    "counter_based": {
+     "pick": [
+      "counter_based",
+      "counter_threshold",
+      "1"
+     ],
+     "qualifies": true,
+     "cost": 0.7226476489556355,
+     "eval_rwcr": 0.9170542221386714,
+     "eval_miss": 0.30917730939675825
+    },
+    "greedy_farthest": {
+     "pick": [
+      "greedy_farthest",
+      "fallback_n_slots",
+      "32"
+     ],
+     "qualifies": true,
+     "cost": 0.6707204171305727,
+     "eval_rwcr": 0.9170813461527738,
+     "eval_miss": 0.3066483934659728
+    },
+    "dvcast": {
+     "pick": [
+      "dvcast",
+      "n_slots",
+      "50"
+     ],
+     "qualifies": true,
+     "cost": 0.6815131457342737,
+     "eval_rwcr": 0.9178106650087285,
+     "eval_miss": 0.30946477490488083
+    }
+   }
+  },
+  "rural_highway d=80": {
+   "winner": "weighted_p",
+   "q_star": 0.87082434772783,
+   "m_star": 0.36947638631808255,
+   "families": {
+    "flooding": {
+     "pick": [
+      "flooding",
+      "",
+      ""
+     ],
+     "qualifies": true,
+     "cost": 11.568334795368573,
+     "eval_rwcr": 0.9134546747287847,
+     "eval_miss": 0.3130054461740357
+    },
+    "p_persistence_03": {
+     "pick": [
+      "p_persistence_03",
+      "p",
+      "0.1"
+     ],
+     "qualifies": true,
+     "cost": 1.0731652939594887,
+     "eval_rwcr": 0.8861914310004729,
+     "eval_miss": 0.33590501226940256
+    },
+    "slotted_1p": {
+     "pick": [
+      "slotted_1p",
+      "n_slots",
+      "50"
+     ],
+     "qualifies": true,
+     "cost": 1.6171291607735934,
+     "eval_rwcr": 0.9157082850221786,
+     "eval_miss": 0.3113539492659178
+    },
+    "weighted_p": {
+     "pick": [
+      "weighted_p",
+      "max_p",
+      "0.1"
+     ],
+     "qualifies": true,
+     "cost": 1.017382323076776,
+     "eval_rwcr": 0.8909987865199838,
+     "eval_miss": 0.3308146301007795
+    },
+    "counter_based": {
+     "pick": [
+      "counter_based",
+      "counter_threshold",
+      "1"
+     ],
+     "qualifies": true,
+     "cost": 1.9402930173693786,
+     "eval_rwcr": 0.9140924661793395,
+     "eval_miss": 0.3127810976111779
+    },
+    "greedy_farthest": {
+     "pick": [
+      "greedy_farthest",
+      "fallback_n_slots",
+      "32"
+     ],
+     "qualifies": true,
+     "cost": 1.5835088523833882,
+     "eval_rwcr": 0.9131144190588311,
+     "eval_miss": 0.3113319617841483
+    },
+    "dvcast": {
+     "pick": [
+      "dvcast",
+      "n_slots",
+      "50"
+     ],
+     "qualifies": true,
+     "cost": 1.6256550244030608,
+     "eval_rwcr": 0.915353021062606,
+     "eval_miss": 0.3111025401557152
+    }
+   }
+  },
+  "urban_nlos d=20": {
+   "winner": "counter_based",
+   "q_star": 0.923158098676608,
+   "m_star": 0.1267333949628905,
+   "families": {
+    "flooding": {
+     "pick": [
+      "flooding",
+      "",
+      ""
+     ],
+     "qualifies": true,
+     "cost": 1.9028172868971382,
+     "eval_rwcr": 0.969040774601728,
+     "eval_miss": 0.0779592039868617
+    },
+    "p_persistence_03": {
+     "pick": [
+      "p_persistence_03",
+      "p",
+      "0.5"
+     ],
+     "qualifies": true,
+     "cost": 0.9647758144848357,
+     "eval_rwcr": 0.9606404654220025,
+     "eval_miss": 0.08589093392236874
+    },
+    "slotted_1p": {
+     "pick": [
+      "slotted_1p",
+      "n_slots",
+      "30"
+     ],
+     "qualifies": true,
+     "cost": 0.5726603220905715,
+     "eval_rwcr": 0.9623649816795808,
+     "eval_miss": 0.0863147478332451
+    },
+    "weighted_p": {
+     "pick": [
+      "weighted_p",
+      "max_p",
+      "1.0"
+     ],
+     "qualifies": false,
+     "cost": 0.6696436475723251,
+     "eval_rwcr": 0.9108574012673281,
+     "eval_miss": 0.13353939817217844
+    },
+    "counter_based": {
+     "pick": [
+      "counter_based",
+      "counter_threshold",
+      "1"
+     ],
+     "qualifies": true,
+     "cost": 0.5371380136174159,
+     "eval_rwcr": 0.945893550168244,
+     "eval_miss": 0.09943890139330357
+    },
+    "greedy_farthest": {
+     "pick": [
+      "greedy_farthest",
+      "fallback_n_slots",
+      "32"
+     ],
+     "qualifies": true,
+     "cost": 0.5562999334629616,
+     "eval_rwcr": 0.9609192070074942,
+     "eval_miss": 0.09912266963532955
+    },
+    "dvcast": {
+     "pick": [
+      "dvcast",
+      "n_slots",
+      "30"
+     ],
+     "qualifies": true,
+     "cost": 0.5739697263342362,
+     "eval_rwcr": 0.963849890421785,
+     "eval_miss": 0.08506966814894916
+    }
+   }
+  }
+ },
+ "point_one_family_wins_all_four": false
+}
