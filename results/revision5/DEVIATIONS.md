@@ -136,3 +136,14 @@ averaged over active vehicles. Hazard decisions remain on the 100 ms epoch.
 audit (seeds 200–229) in the frozen mode; H3 recomputed with the same code and definitions (D3). If H3 still fails,
 the pre-registered consequence applies: the classical audit computed in Veins becomes primary and custom-simulator
 claims are restricted accordingly.
+
+**D6 implementation note (2026-10-31T19:40+05:30, written before any calibration run or number exists).** (a) Busy ratio of the
+mode, as implemented: beacon part = mean over active vehicles of min(1, sum over the vehicles they sense of
+rate_DCC x T_beacon), sampled every 10th epoch (trace-only; memoised per trace); hazard part = per epoch, mean over
+active vehicles of min(1, sensed hazard frames (own excluded) x T_frame / 0.1 s), averaged over all epochs with active
+vehicles (0 where none is sent); reported busy ratio = their sum, capped at 1 (metrics beacon_cbr / dissemination_cbr
+carry the two parts, so the D3 sum is unchanged in form). (b) "relative |Δ busy ratio|" uses the D3 denominator
+(the custom median). (c) "closest to the current values" = Euclidean distance in (dBm, dB). (d) PDR bins empty in one
+simulator are skipped in the loss and listed. (e) Veins' own CCA threshold is −65 dBm (ccaThreshold default; the ini
+sets minPowerLevel −85 dBm) — outside the pre-declared grid; the grid is not changed. Driver:
+experiments/revision5/veins/d6_calibrate.py (run / score / rerun); frozen point -> configs/phy_patch_d6_frozen.json.
