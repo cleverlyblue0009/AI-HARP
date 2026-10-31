@@ -1,6 +1,16 @@
 # Revision-5 simulation tracks for watchdog_revision5.ps1 (dot-sourced; adds to $jobs).
 # Each job resumes from its CSV; "done" = the expected number of rows exists.
-function Rows($p) { if (Test-Path $p) { (Get-Content $p | Measure-Object -Line).Lines - 1 } else { 0 } }
+# Line count minus header, read in 1 MB blocks with ReadWrite sharing (works while a job appends; Get-Content took
+# minutes on the 46 MB Veins JSONL and stalled every watchdog tick on 2026-10-31).
+function Rows($p) {
+    if (-not (Test-Path $p)) { return 0 }
+    $fs = [System.IO.File]::Open((Resolve-Path $p).Path, 'Open', 'Read', 'ReadWrite')
+    try { $buf = New-Object byte[] 4194304; $n = 0
+          while (($r = $fs.Read($buf, 0, $buf.Length)) -gt 0) {
+              $n += ([System.Text.Encoding]::ASCII.GetString($buf, 0, $r).Split([char]10)).Count - 1 } }
+    finally { $fs.Close() }
+    return $n - 1
+}
 $runs = "results\revision5\runs"
 
 # B1. CAL classical, 24 cells: q*, m* are frozen from these (thresholds.json) before any SEL/EVAL run.
@@ -127,10 +137,10 @@ $h2 = Chain "s2_st_eval_agent" "agent --seedset EVAL --cells grid24 --channel ca
 
 # ---- Step 3 (2026-10-31, D3): custom-simulator network-layer runs for H3 (2,200 paired runs, record_rx_pairs).
 $jobs += @{ n = "s3_custom_h3"; alive = "veins.custom_h3"; ready = { $true };
-            done = { (Test-Path "results\revision5\veins\custom_h3.jsonl") -and ((Get-Content "results\revision5\veins\custom_h3.jsonl" | Measure-Object -Line).Lines -ge 2200) };
+            done = { (Rows "results\revision5\veins\custom_h3.jsonl") + 1 -ge 2200 };
             cmd = "$gpu -u -m experiments.revision5.veins.custom_h3 --jobs 2 >> logs\revision5\s3_custom_h3.log 2>&1" }
 $jobs += @{ n = "s3_veins_score"; alive = "veins.veins_metrics"; ready = { $true };
-            done = { (Test-Path "results\revision5\veins\veins_rows.jsonl") -and ((Get-Content "results\revision5\veins\veins_rows.jsonl" | Measure-Object -Line).Lines -ge 6600) };
+            done = { (Rows "results\revision5\veins\veins_rows.jsonl") + 1 -ge 6600 };
             cmd = "$gpu -u -m experiments.revision5.veins.veins_metrics cache\veins_runs\h3 >> logs\revision5\s3_veins_score.log 2>&1" }
 # rule rows on SUMO for EVAL too (only classical EVAL existed; the SUMO comparison against the best rule needs them)
 $c7 = Chain "s2_sumo_eval_rule" "rule --seedset EVAL --cells headline --channel default --backend sumo" "rule__EVAL__headline__default__sumo" 4680 $c6 3 $SU
