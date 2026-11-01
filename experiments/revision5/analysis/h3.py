@@ -2,6 +2,7 @@
 DEVIATIONS D3 and ANALYSIS_SPEC). Writes results/revision5/analysis/h3.json.
 
     python -m experiments.revision5.analysis.h3 [--B 10000]
+    python -m experiments.revision5.analysis.h3 --mode sub_epoch     (DEVIATIONS D6 re-run -> h3_subepoch.json)
 
 Inputs (committed): results/revision5/veins/veins_rows.jsonl (Veins replays, scored by analysis.metrics),
 results/revision5/veins/custom_h3.jsonl (custom network-layer runs), results/revision5/runs/
@@ -137,8 +138,20 @@ def crossfit_verdict(t30, nB, rng) -> dict:
 
 
 # ---- network layer -----------------------------------------------------------------------------------------------
-def network(vraw, vrows) -> dict:
-    cust = [json.loads(l) for l in (VEINS / "custom_h3.jsonl").open(encoding="utf-8")]
+def subepoch_records() -> list[dict]:
+    return [json.loads(l) for l in (VEINS / "custom_h3_subepoch.jsonl").open(encoding="utf-8")]
+
+
+def subepoch_rows(recs) -> list[dict]:
+    """Custom metric rows of the frozen sub-epoch re-run (D6), in the shape of custom_rows()."""
+    return [{**r["metrics"], "scenario": r["scenario"], "density": r["density"], "seed": r["seed"],
+             "policy": r["policy"], "param": r["metrics"].get("param", ""),
+             "value": 0.0 if r["value"] in ("", None) else float(r["value"])} for r in recs]
+
+
+def network(vraw, vrows, cust=None) -> dict:
+    if cust is None:
+        cust = [json.loads(l) for l in (VEINS / "custom_h3.jsonl").open(encoding="utf-8")]
     out = {}
     for sc, d in HEADLINE:
         R = NOMINAL[sc]
@@ -199,10 +212,15 @@ def network(vraw, vrows) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--B", type=int, default=B)
+    ap.add_argument("--mode", choices=("epoch", "sub_epoch"), default="epoch")
     a = ap.parse_args(argv)
     rng = np.random.default_rng(SEED_RNG)
     vr, vraw = veins_rows()
-    cr = custom_rows()
+    sub = a.mode == "sub_epoch"
+    recs = subepoch_records() if sub else None
+    if sub and len(recs) != 6600:
+        raise SystemExit(f"sub-epoch re-run incomplete: {len(recs)}/6600 records")
+    cr = subepoch_rows(recs) if sub else custom_rows()
     tv10, tc10 = tab(vr, NET), tab(cr, NET)
     rho, npairs = spearman(tv10, tc10)
     boots = []
@@ -215,7 +233,7 @@ def main(argv=None) -> int:
     p_rho = float((ok <= 0.6).mean()) if ok.size else float("nan")
     matched = {f"{c[0]} d={c[1]:g}": {"veins": {f: finite(v) for f, v in matched_costs(tv10[c]).items()},
                                       "custom": {f: finite(v) for f, v in matched_costs(tc10[c]).items()}} for c in HEADLINE}
-    net = network(vraw, vr)
+    net = network(vraw, vr, [r for r in recs if int(r["seed"]) in NET] if sub else None)
     tv30, tc30 = tab(vr, ALL), tab(cr, ALL)
     h1_veins = crossfit_verdict(tv30, a.B, np.random.default_rng(SEED_RNG + 1))
     h1_custom = crossfit_verdict(tc30, a.B, np.random.default_rng(SEED_RNG + 1))
@@ -234,10 +252,16 @@ def main(argv=None) -> int:
         "crossfit_H1": {"veins": h1_veins, "custom_on_sumo": h1_custom},
         "criteria": crit, "all_criteria_pass": all(crit.values()),
         "decision": ("pass: custom simulator validated for these metrics in these cells" if all(crit.values()) else
-                     "fail: per the pre-registered rule, add the sub-epoch timing mode, calibrate on the validation "
-                     "metrics only, freeze, re-run"),
+                     ("fail after the D6 re-run: per the pre-registered consequence the classical audit computed in "
+                      "Veins is primary and custom-simulator claims are restricted" if sub else
+                      "fail: per the pre-registered rule, add the sub-epoch timing mode, calibrate on the validation "
+                      "metrics only, freeze, re-run")),
     }
-    print(write("h3.json", payload, {"B": a.B}, seeds={"network": NET, "audit": ALL}))
+    if sub:
+        payload["mode"] = {"mac_timing": "sub_epoch", "phy_patch": recs[0]["phy_patch"],
+                           "source": "DEVIATIONS D6; configs/phy_patch_d6_frozen.json"}
+    print(write("h3_subepoch.json" if sub else "h3.json", payload, {"B": a.B, "mode": a.mode},
+                seeds={"network": NET, "audit": ALL}))
     print({"rho": rho, "ci95": [lo, hi], "p_rho_le_0.6": p_rho, **crit})
     return 0
 

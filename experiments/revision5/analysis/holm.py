@@ -23,7 +23,14 @@ def main() -> int:
                          "H2": "bootstrap two-sided p of the pooled relative cost difference (policy vs adaptive classical)",
                          "H3": "bootstrap p for Spearman rho <= 0.6 (the Holm-tested component; the other H3 criteria "
                                "are pass/fail)"}}
-    print(write("holm.json", payload, {"inputs": ["h1.json", "h2.json", "h3.json"]}))
+    sub = OUT / "h3_subepoch.json"          # DEVIATIONS D6: H3 recomputed after the pre-registered fail branch
+    if sub.exists():
+        p6 = {**p, "H3": json.loads(sub.read_text())["spearman"]["p_rho_le_0.6"]}
+        a6 = holm(p6)
+        payload["after_D6_subepoch_rerun"] = {"raw_p": p6, "holm_adjusted_p": a6,
+                                              "reject_at_0.05": {k: bool(v < 0.05) for k, v in a6.items()},
+                                              "note": "H3 p from h3_subepoch.json (frozen sub-epoch mode); H1, H2 unchanged"}
+    print(write("holm.json", payload, {"inputs": ["h1.json", "h2.json", "h3.json"] + (["h3_subepoch.json"] if sub.exists() else [])}))
     print(payload["raw_p"], payload["holm_adjusted_p"])
     return 0
 
