@@ -120,7 +120,7 @@ def fig_veins_delay() -> Path:
         ax.set_xlabel("Single-hop delay (s)")
         ax.grid(alpha=0.25, lw=0.4)
     axs[0].set_ylabel("CDF")
-    axs[0].legend(frameon=False, loc="upper left")
+    axs[-1].legend(frameon=False, loc="lower right", handlelength=1.2, handletextpad=0.4, borderaxespad=0.1)
     return _save(fig, "fig_veins_delay")
 
 
