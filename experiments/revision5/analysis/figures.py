@@ -25,6 +25,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib import font_manager  # noqa: E402
+from matplotlib.ticker import FuncFormatter, LogLocator, NullFormatter  # noqa: E402
 
 from common.config import PROJECT_ROOT  # noqa: E402
 from experiments.revision5.analysis.common import EVAL, HEADLINE, OUT, SEL, rows, tables  # noqa: E402
@@ -46,7 +47,8 @@ def style() -> None:
         "font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8, "legend.fontsize": 7, "xtick.labelsize": 7,
         "ytick.labelsize": 7, "axes.linewidth": 0.6, "lines.linewidth": 1.0, "savefig.bbox": "tight",
         "savefig.pad_inches": 0.02, "axes.spines.top": False, "axes.spines.right": False,
-        "pdf.compression": 9, "svg.hashsalt": "aiharp"})
+        "pdf.compression": 9, "svg.hashsalt": "aiharp", "mathtext.fontset": "custom",
+        "mathtext.rm": "Liberation Serif", "mathtext.it": "Liberation Serif:italic", "mathtext.bf": "Liberation Serif:bold"})
 
 
 def _save(fig, name: str) -> Path:
@@ -167,32 +169,48 @@ def fig_training() -> Path:
                 ys.append(v)
         ax.plot(xs, ys, lw=0.6, alpha=0.8, label=f"seed {k}" if k < 10 else None)
     ax.set_yscale("log")
+    ax.yaxis.set_minor_formatter(NullFormatter())
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}"))
+    ax.yaxis.set_major_locator(LogLocator(base=10, subs=(1.0, 2.0, 5.0)))
     ax.set_xlabel("Training update")
-    ax.set_ylabel(f"Multiplier $\\lambda$ ({g.replace('|', ', d=')})")
+    sc, d = g.split("|")
+    ax.set_ylabel(f"Multiplier $\\lambda$ ({'rural highway' if sc == 'rural_highway' else sc.replace('_', ' ')}, d={d})")
     ax.grid(alpha=0.25, lw=0.4)
     ax.legend(frameon=False, fontsize=5.5, ncol=2)
     return _save(fig, "fig_training")
 
 
 def fig_heldout() -> Path:
-    sel = tables(rows("classical__SEL__grid24__default__fallback.csv"), HEADLINE, SEL)
+    """Held-out (EVAL) cost vs RWCR of every classical setting, with q*, the SEL-selected adaptive classical and best
+    rule picks, and each policy seed's SEL-selected pick (from secondary.json, gate study, tau 0.5, seeds 0-9)."""
     ev = tables(rows("classical__EVAL__grid24__default__fallback.csv"), HEADLINE, EVAL)
-    fig, ax = plt.subplots(figsize=(W1, 2.4))
-    lo, hi = math.inf, 0.0
-    for (c, mk) in zip(HEADLINE, "osD^"):
-        s, e = sel[c], ev[c]
-        x = s.mean("cost")
-        y = np.array([e.mean("cost")[e.settings.index(k)] for k in s.settings])
-        ok = np.isfinite(x) & np.isfinite(y) & (x > 0) & (y > 0)
-        ax.scatter(x[ok], y[ok], s=5, marker=mk, lw=0.3, label=_label(f"{c[0]} d={c[1]:g}"))
-        lo, hi = min(lo, x[ok].min(), y[ok].min()), max(hi, x[ok].max(), y[ok].max())
-    ax.plot([lo, hi], [lo, hi], color="0.5", lw=0.5, ls="--")
-    ax.set_xscale("log")
-    ax.set_yscale("log")
-    ax.set_xlabel("SEL mean cost (tx per at-risk informed)")
-    ax.set_ylabel("EVAL mean cost")
-    ax.grid(alpha=0.25, lw=0.4)
-    ax.legend(frameon=False, fontsize=6)
+    sec = json.loads((OUT / "secondary.json").read_text())["gate"]["cells"]
+    fig, axs = plt.subplots(1, 4, figsize=(W2, 1.9), sharey=False)
+    for i, (ax, c) in enumerate(zip(axs, HEADLINE)):
+        e, s = ev[c], sec[f"{c[0]} d={c[1]:g}"]
+        x, y = e.mean("cost"), e.mean("rwcr")
+        ok = np.isfinite(x) & np.isfinite(y) & (x > 0)
+        ax.scatter(x[ok], y[ok], s=3, color="0.6", lw=0, label="Classical settings")
+        ax.axhline(s["q_star"], color="0.3", lw=0.5, ls="--", label="$q^*$")
+        for key, mk, col, lab in (("adaptive_classical", "D", COL["veins"], "Adaptive classical (SEL)"),
+                                  ("best_rule", "s", COL["sub"], "Best rule (SEL)")):
+            p = s[key]
+            if p and p["cost"] is not None:
+                ax.scatter([p["cost"]], [p["rwcr"]], s=14, marker=mk, facecolor="none", edgecolor=col, lw=0.8, label=lab)
+        pp = [v for v in s["methods"]["learned_gate_tau0.5"]["per_seed"].values() if v and v["cost"] is not None]
+        if pp:
+            ax.scatter([v["cost"] for v in pp], [v["rwcr"] for v in pp], s=8, marker="^", color=COL["custom"], lw=0,
+                       label="Policy seeds (SEL)")
+        ax.set_xscale("log")
+        ax.xaxis.set_minor_formatter(NullFormatter())
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}"))
+        ax.xaxis.set_major_locator(LogLocator(base=10, subs=(1.0, 2.0, 5.0)))
+        ax.set_title(_label(f"{c[0]} d={c[1]:g}"))
+        ax.grid(alpha=0.25, lw=0.4)
+    axs[0].set_ylabel("EVAL RWCR")
+    fig.supxlabel("EVAL cost (transmissions per at-risk vehicle informed, log scale)", fontsize=8, y=-0.06)
+    h, l = axs[1].get_legend_handles_labels()
+    fig.legend(h, l, frameon=False, fontsize=6.5, ncol=5, loc="upper center", bbox_to_anchor=(0.5, -0.1))
     return _save(fig, "fig_heldout")
 
 

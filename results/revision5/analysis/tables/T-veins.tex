@@ -1,0 +1,15 @@
+% T-veins. Veins vs custom-on-SUMO, network seeds 200-229, 55 settings. Criteria: PDR within 0.05 in every 50 m bin below the nominal range; busy ratio within 20%; median single-hop delay within 100 ms. Spearman rho of matched costs: epoch 0.564 [-0.117, 0.791], p(rho<=0.6) 0.776; sub-epoch 0.842 [0.373, 0.933], p 0.169. H3 fails in both modes.
+\begin{tabular}{llrlllllll}
+\hline
+Cell & Custom mode & PDR max gap & Pass & Busy ratio V / C & Rel. diff. & Pass & Median delay V / C (s) & Pass & In-range loss V / C \\
+\hline
+R2 & epoch & 0.460 & no & 0.022 / 0.033 & +33.2\% & no & 0.100 / 0.100 & yes & 0.059 / 0.104 \\
+R2 & sub-epoch (D6) & 0.331 & no & 0.022 / 0.021 & +1.4\% & yes & 0.100 / 0.100 & yes & 0.059 / 0.133 \\
+R20 & epoch & 0.340 & no & 0.193 / 0.349 & +44.6\% & no & 0.100 / 0.100 & yes & 0.557 / 0.721 \\
+R20 & sub-epoch (D6) & 0.301 & no & 0.193 / 0.215 & +10.0\% & yes & 0.100 / 0.100 & yes & 0.557 / 0.767 \\
+R80 & epoch & 0.316 & no & 0.341 / 0.621 & +45.1\% & no & 0.100 / 0.100 & yes & 0.817 / 0.909 \\
+R80 & sub-epoch (D6) & 0.261 & no & 0.341 / 0.612 & +44.3\% & no & 0.100 / 0.100 & yes & 0.817 / 0.925 \\
+U20 & epoch & 0.457 & no & 0.069 / 0.621 & +88.9\% & no & 0.101 / 0.100 & yes & 0.914 / 0.959 \\
+U20 & sub-epoch (D6) & 0.187 & no & 0.069 / 0.136 & +49.4\% & no & 0.101 / 0.100 & yes & 0.914 / 0.935 \\
+\hline
+\end{tabular}

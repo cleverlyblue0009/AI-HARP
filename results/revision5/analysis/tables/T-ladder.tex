@@ -1,0 +1,10 @@
+% T-ladder. Rungs A/B/C, training seeds 0-4; columns as in T-ablation.
+\begin{tabular}{lrlllllll}
+\hline
+Method & Cells reached & R2 qual. & R20 qual. & R80 qual. & U20 qual. & R20 cost mean $\pm$ SD & R20 95\% CI & R20 margin vs adaptive \\
+\hline
+A: full model & 2 & 2/5 & 5/5$^\ast$ & 1/5 & 3/5$^\ast$ & 0.689 $\pm$ 0.091 & [0.591, 0.849] & +2.8\% \\
+B: oracle reward & 2 & 0/5 & 4/5$^\ast$ & 0/5 & 4/5$^\ast$ & 0.661 $\pm$ 0.027 & [0.600, 0.799] & -1.4\% \\
+C: oracle input (non-deployable) & 2 & 2/5 & 4/5$^\ast$ & 1/5 & 3/5$^\ast$ & 0.778 $\pm$ 0.055 & [0.724, 0.902] & +15.9\% \\
+\hline
+\end{tabular}

@@ -1,0 +1,203 @@
+{
+ "provenance": {
+  "task": "revision5/analysis/ledger.json",
+  "git_commit": "c2fe8fc0b02c4f1f6df8bd44dbf15d786b00c977",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.analysis.ledger",
+  "config_hash": "964d857e571d",
+  "config": {
+   "sources": [
+    "h1.json",
+    "h2.json",
+    "h2_grid24.json",
+    "h3.json",
+    "h3_subepoch.json",
+    "holm.json",
+    "secondary.json"
+   ]
+  },
+  "seeds": null,
+  "generated": "2026-11-01 21:55:25",
+  "n_runs": null
+ },
+ "rules": "Columns per claim: Set. (default channel, held-out SEL->EVAL), Cal. (24-cell stress test, own thresholds, D5), SUMO\n(headline cells, SUMO mobility, frozen default CAL thresholds), Veins (H3 cross-fitted H1; classical claims only),\nSens. (the 18-setting grid), Seeds, Resampling/held-out, Verdict.\n  stable         holds in Set. and in every applicable column (and >= 3 training seeds for a policy claim)\n  sensitive      holds in Set. but fails, reverses or is undefined in at least one applicable column\n  not supported  does not hold in Set. (including a non-significant directional result)\nA column whose rows are incomplete reads \"not tested\". A column in which the claimed comparison is undefined (e.g. the\npolicy qualifies in no cell) counts as not holding: a stable verdict needs positive evidence in every column.\nAfter DEVIATIONS D6 (H3 still failing) the Veins column is primary for classical claims and every custom-simulator\ncolumn is restricted to relative comparisons; the ledger records this, it does not change the verdict rule.\nEvery value is read from committed analysis outputs or recomputed (point estimates only) from committed rows.",
+ "D6_consequence": "H3 fails in both timing modes; the classical audit computed in Veins is primary and custom-simulator claims are restricted to relative comparisons (DEVIATIONS D6).",
+ "groups": {
+  "classical_schemes": [
+   {
+    "claim": "H1: no single classical family is the cheapest qualifying family in all four headline cells",
+    "columns": {
+     "Set.": {
+      "holds": true,
+      "evidence": "share of replicates with one winner in all four cells 0.0 (CP95 [0.0, 0.0003688199146187622]); Holm p 5.17e-223"
+     },
+     "Cal.": {
+      "holds": true,
+      "evidence": "point winners on the calibrated channel: {'rural_highway d=2': 'slotted_1p', 'rural_highway d=20': 'greedy_farthest', 'rural_highway d=80': 'greedy_farthest', 'urban_nlos d=20': None}"
+     },
+     "SUMO": {
+      "holds": true,
+      "evidence": "point winners on SUMO mobility (default CAL thresholds): {'rural_highway d=2': None, 'rural_highway d=20': 'greedy_farthest', 'rural_highway d=80': 'weighted_p', 'urban_nlos d=20': None}"
+     },
+     "Veins": {
+      "holds": true,
+      "evidence": "cross-fitted H1 in Veins supported=True (share 0.0, CP95 [0.0, 0.0003688199146187622]); point winners {'rural_highway d=2': None, 'rural_highway d=20': None, 'rural_highway d=80': 'dvcast', 'urban_nlos d=20': None}"
+     },
+     "Sens.": {
+      "holds": true,
+      "evidence": "settings in which one EVAL-hindsight family is cheapest in all four cells: 0 of 18 []"
+     },
+     "Seeds": {
+      "holds": null,
+      "evidence": "n/a (classical)"
+     },
+     "Resampling/held-out": {
+      "holds": null,
+      "evidence": "hierarchical bootstrap B=10000 over CAL x SEL x EVAL seeds; selection on SEL, scoring on EVAL"
+     }
+    },
+    "verdict": "stable"
+   },
+   {
+    "claim": "Per-cell H1 winners: slotted_1p (rural d=2), greedy_farthest (rural d=20), weighted_p (rural d=80), counter_based (urban d=20)",
+    "columns": {
+     "Set.": {
+      "holds": true,
+      "evidence": "H1 point winners: {'rural_highway d=2': 'slotted_1p', 'rural_highway d=20': 'greedy_farthest', 'rural_highway d=80': 'weighted_p', 'urban_nlos d=20': 'counter_based'}"
+     },
+     "Cal.": {
+      "holds": false,
+      "evidence": "calibrated channel: {'rural_highway d=2': 'slotted_1p', 'rural_highway d=20': 'greedy_farthest', 'rural_highway d=80': 'greedy_farthest', 'urban_nlos d=20': None}"
+     },
+     "SUMO": {
+      "holds": false,
+      "evidence": "SUMO mobility: {'rural_highway d=2': None, 'rural_highway d=20': 'greedy_farthest', 'rural_highway d=80': 'weighted_p', 'urban_nlos d=20': None}"
+     },
+     "Veins": {
+      "holds": false,
+      "evidence": "Veins cross-fitted point winners: {'rural_highway d=2': None, 'rural_highway d=20': None, 'rural_highway d=80': 'dvcast', 'urban_nlos d=20': None} (no qualifying family in three cells)"
+     },
+     "Sens.": {
+      "holds": null,
+      "evidence": "n/a (the grid reports EVAL-hindsight families, not the H1 winner)"
+     },
+     "Seeds": {
+      "holds": null,
+      "evidence": "n/a (classical)"
+     },
+     "Resampling/held-out": {
+      "holds": null,
+      "evidence": "point estimate (per-cell winner identity is not bootstrapped)"
+     }
+    },
+    "verdict": "sensitive"
+   }
+  ],
+  "tested_policy_at_training_budget": [
+   {
+    "claim": "H2: the policy is cheaper than the SEL-selected adaptive classical scheme",
+    "columns": {
+     "Set.": {
+      "holds": false,
+      "evidence": "pooled relative cost difference +31.1% (policy minus adaptive, relative), CI95 [-0.8%, +57.9%], two-sided p 0.0636, Holm p 0.1271; P(policy cheaper) 0.0318"
+     },
+     "Cal.": {
+      "holds": false,
+      "evidence": "24 cells, seeds 0-4: statistic inf, CI95 [+94.7%, inf], superiority=False"
+     },
+     "SUMO": {
+      "holds": false,
+      "evidence": "undefined: the policy qualifies in no SUMO headline cell {'rural_highway d=2': False, 'rural_highway d=20': False, 'rural_highway d=80': False, 'urban_nlos d=20': False}"
+     },
+     "Veins": {
+      "holds": null,
+      "evidence": "n/a (policy not ported to Veins)"
+     },
+     "Sens.": {
+      "holds": false,
+      "evidence": "settings with a negative margin in every cell where it is defined: 0 of 18"
+     },
+     "Seeds": {
+      "holds": null,
+      "evidence": "10 training seeds"
+     },
+     "Resampling/held-out": {
+      "holds": null,
+      "evidence": "hierarchical bootstrap B=10000 over training x EVAL seeds; 528 undefined replicates excluded"
+     }
+    },
+    "verdict": "not supported"
+   },
+   {
+    "claim": "The policy is costlier than the SEL-selected best rule baseline",
+    "columns": {
+     "Set.": {
+      "holds": true,
+      "evidence": "pooled relative cost difference +78.5%, CI95 [+29.8%, +178.9%], two-sided p 0.00026 (exploratory, not in the Holm family)"
+     },
+     "Cal.": {
+      "holds": true,
+      "evidence": "24 cells, seeds 0-4: statistic inf, CI95 [+152.7%, inf], inferiority=True"
+     },
+     "SUMO": {
+      "holds": false,
+      "evidence": "undefined: the policy qualifies in no SUMO headline cell {'rural_highway d=2': False, 'rural_highway d=20': False, 'rural_highway d=80': False, 'urban_nlos d=20': False}"
+     },
+     "Veins": {
+      "holds": null,
+      "evidence": "n/a (policy not ported to Veins)"
+     },
+     "Sens.": {
+      "holds": null,
+      "evidence": "not tested (the sensitivity grid compares against adaptive classical only)"
+     },
+     "Seeds": {
+      "holds": null,
+      "evidence": "10 training seeds"
+     },
+     "Resampling/held-out": {
+      "holds": null,
+      "evidence": "hierarchical bootstrap B=10000; 2285 undefined replicates excluded"
+     }
+    },
+    "verdict": "sensitive"
+   },
+   {
+    "claim": "The policy qualifies in rural d=20 and urban d=20 and not in rural d=2 or rural d=80",
+    "columns": {
+     "Set.": {
+      "holds": true,
+      "evidence": "cell-aggregate qualification (10 seeds): {'rural_highway d=2': False, 'rural_highway d=20': True, 'rural_highway d=80': False, 'urban_nlos d=20': True}; seed x cell qualification 20/40 (Wilson95 [0.352, 0.648])"
+     },
+     "Cal.": {
+      "holds": false,
+      "evidence": "calibrated channel, seeds 0-4: {'rural_highway d=2': False, 'rural_highway d=20': True, 'rural_highway d=80': False, 'urban_nlos d=20': False}; 9 of 24 cells reached"
+     },
+     "SUMO": {
+      "holds": false,
+      "evidence": "SUMO mobility, seeds 0-9: {'rural_highway d=2': False, 'rural_highway d=20': False, 'rural_highway d=80': False, 'urban_nlos d=20': False}"
+     },
+     "Veins": {
+      "holds": null,
+      "evidence": "n/a (policy not ported to Veins)"
+     },
+     "Sens.": {
+      "holds": false,
+      "evidence": "settings in which the cells with >= 5 of 10 qualifying seeds are exactly rural d=20 and urban d=20: 2 of 18"
+     },
+     "Seeds": {
+      "holds": null,
+      "evidence": "10 training seeds"
+     },
+     "Resampling/held-out": {
+      "holds": null,
+      "evidence": "Wilson interval over (seed, cell) picks; selection on SEL, scoring on EVAL"
+     }
+    },
+    "verdict": "sensitive"
+   }
+  ]
+ }
+}

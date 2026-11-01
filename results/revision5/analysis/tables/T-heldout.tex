@@ -1,0 +1,19 @@
+% T-heldout. EVAL seeds 200-229, selection on SEL 400-419. Policy cost: mean over seeds that pick, with hierarchical 95% CI. H2 pooled relative cost difference vs adaptive classical +31.1% [-0.8%, +57.9%]; vs best rule +78.5% [+29.8%, +178.9%]. Safety columns: mean actionable miss, stop-deadline warned share (actionable), p95 time-to-inform (s); for the policy, means over picking seeds.
+\begin{tabular}{lllllllrrr}
+\hline
+Cell & $q^*$ / $m^*$ & Method & Pick & EVAL cost & Qual. & Qual. (miss$\le$0.40) & Miss & Warned & p95 TIR \\
+\hline
+R2 & 0.593 / 0.582 & Adaptive classical & dvcast (n\_slots=20) & 1.712 & no & no & 0.618 & 0.378 & 3.05 \\
+R2 & 0.593 / 0.582 & Best rule & scf\_slotted (slots\_timeout=[8, 10]) & 1.747 & yes & no & 0.580 & 0.413 & 1.64 \\
+R2 & 0.593 / 0.582 & Policy (10 seeds) & 4/10 pick, 2 qualify & -- [1.878, --] & no & 0/10 seeds & 0.568 & 0.425 & 0.66 \\
+R20 & 0.871 / 0.357 & Adaptive classical & greedy\_farthest (fallback\_n\_slots=32) & 0.671 & yes & yes & 0.307 & 0.691 & 2.04 \\
+R20 & 0.871 / 0.357 & Best rule & rar (abc=[2.0, 0.0, 0.0]) & 0.416 & yes & yes & 0.357 & 0.641 & 0.84 \\
+R20 & 0.871 / 0.357 & Policy (10 seeds) & 10/10 pick, 9 qualify & 0.708 [0.638, 0.892] & yes & 9/10 seeds & 0.345 & 0.653 & 0.53 \\
+R80 & 0.871 / 0.369 & Adaptive classical & weighted\_p (max\_p=0.1) & 1.017 & yes & yes & 0.331 & 0.669 & 0.50 \\
+R80 & 0.871 / 0.369 & Best rule & rar (abc=[1.0, 0.0, 0.0]) & 0.355 & yes & yes & 0.340 & 0.660 & 0.61 \\
+R80 & 0.871 / 0.369 & Policy (10 seeds) & 3/10 pick, 3 qualify & -- [0.841, 1.164] & no & 3/10 seeds & 0.342 & 0.658 & 0.41 \\
+U20 & 0.923 / 0.127 & Adaptive classical & counter\_based (counter\_threshold=1) & 0.537 & yes & yes & 0.099 & 0.901 & 1.02 \\
+U20 & 0.923 / 0.127 & Best rule & rar (abc=[1.0, 1.0, 0.25]) & 0.450 & yes & yes & 0.118 & 0.882 & 1.71 \\
+U20 & 0.923 / 0.127 & Policy (10 seeds) & 6/10 pick, 6 qualify & 0.841 [0.738, 0.897] & yes & 6/10 seeds & 0.115 & 0.885 & 0.41 \\
+\hline
+\end{tabular}

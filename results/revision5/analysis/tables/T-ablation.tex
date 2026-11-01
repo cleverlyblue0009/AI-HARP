@@ -1,0 +1,11 @@
+% T-ablation. Encoder variants, training seeds 0-4. Qual.: seeds whose pick qualifies on EVAL; * = cell aggregate qualifies. R20 = rural highway d=20.
+\begin{tabular}{lrlllllll}
+\hline
+Method & Cells reached & R2 qual. & R20 qual. & R80 qual. & U20 qual. & R20 cost mean $\pm$ SD & R20 95\% CI & R20 margin vs adaptive \\
+\hline
+Full model (GATv2) & 2 & 2/5 & 5/5$^\ast$ & 1/5 & 3/5$^\ast$ & 0.689 $\pm$ 0.091 & [0.581, 0.854] & +2.8\% \\
+GCN encoder & 3 & 1/5 & 4/5$^\ast$ & 3/5$^\ast$ & 4/5$^\ast$ & 0.646 $\pm$ 0.028 & [0.610, 0.878] & -3.6\% \\
+MLP encoder & 4 & 4/5$^\ast$ & 4/5$^\ast$ & 5/5$^\ast$ & 5/5$^\ast$ & 1.129 $\pm$ 0.302 & [0.913, 1.416] & +68.4\% \\
+No relevance feature & 1 & 0/5 & 5/5$^\ast$ & 2/5 & 2/5 & 0.724 $\pm$ 0.102 & [0.613, 0.865] & +8.0\% \\
+\hline
+\end{tabular}
