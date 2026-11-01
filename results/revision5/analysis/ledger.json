@@ -1,7 +1,7 @@
 {
  "provenance": {
   "task": "revision5/analysis/ledger.json",
-  "git_commit": "c2fe8fc0b02c4f1f6df8bd44dbf15d786b00c977",
+  "git_commit": "c5ef4c6466a05a070b1ff4ea815e4eefc433d581-dirty",
   "python": "3.12.9",
   "numpy": "1.26.4",
   "interpreter": "aiharp-gpu",
@@ -19,7 +19,7 @@
    ]
   },
   "seeds": null,
-  "generated": "2026-11-01 21:55:25",
+  "generated": "2026-11-01 21:59:34",
   "n_runs": null
  },
  "rules": "Columns per claim: Set. (default channel, held-out SEL->EVAL), Cal. (24-cell stress test, own thresholds, D5), SUMO\n(headline cells, SUMO mobility, frozen default CAL thresholds), Veins (H3 cross-fitted H1; classical claims only),\nSens. (the 18-setting grid), Seeds, Resampling/held-out, Verdict.\n  stable         holds in Set. and in every applicable column (and >= 3 training seeds for a policy claim)\n  sensitive      holds in Set. but fails, reverses or is undefined in at least one applicable column\n  not supported  does not hold in Set. (including a non-significant directional result)\nA column whose rows are incomplete reads \"not tested\". A column in which the claimed comparison is undefined (e.g. the\npolicy qualifies in no cell) counts as not holding: a stable verdict needs positive evidence in every column.\nAfter DEVIATIONS D6 (H3 still failing) the Veins column is primary for classical claims and every custom-simulator\ncolumn is restricted to relative comparisons; the ledger records this, it does not change the verdict rule.\nEvery value is read from committed analysis outputs or recomputed (point estimates only) from committed rows.",
@@ -105,7 +105,7 @@
      },
      "Cal.": {
       "holds": false,
-      "evidence": "24 cells, seeds 0-4: statistic inf, CI95 [+94.7%, inf], superiority=False"
+      "evidence": "calibrated stress test, seeds 0-4, cells where both qualify (9): rural_highway d=20: +2.8%, rural_highway d=40: +10.7%, urban_nlos d=2: inf, urban_nlos d=5: +35.0%, urban_nlos d=10: +20.1%, urban_grid d=1: +51.5%, urban_grid d=2: +91.2%, urban_grid d=3: +127.3%, urban_grid d=5: +116.7%. (Default-channel 24-cell H2, h2_grid24.json: inf, CI95 [+94.7%, inf])"
      },
      "SUMO": {
       "holds": false,
@@ -139,7 +139,7 @@
      },
      "Cal.": {
       "holds": true,
-      "evidence": "24 cells, seeds 0-4: statistic inf, CI95 [+152.7%, inf], inferiority=True"
+      "evidence": "calibrated stress test, seeds 0-4, cells where both qualify (7): rural_highway d=20: +65.8%, rural_highway d=40: +96.5%, urban_nlos d=2: inf, urban_nlos d=5: +20.9%, urban_nlos d=10: +16.9%, urban_grid d=2: +161.3%, urban_grid d=3: +126.1%. (Default-channel 24-cell, h2_grid24.json: inf, CI95 [+152.7%, inf])"
      },
      "SUMO": {
       "holds": false,

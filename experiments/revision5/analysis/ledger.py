@@ -124,15 +124,28 @@ def main(argv=None) -> int:
                 same.append(k)
         return same
 
+    def stress_rel(key):
+        """Calibrated stress test (D5), seeds 0-4: per cell where the policy aggregate and the comparator both qualify,
+        policy mean cost / comparator cost - 1 (point estimates; the stress test has no pooled bootstrap)."""
+        out = {}
+        for c, v in sec["stress"]["cells"].items():
+            a, p = v[key], v["methods"]["policy"]["aggregate"]
+            if a and a["qualifies"] and a["cost"] and p["qualifies"]:
+                out[c] = "inf" if p["cost_mean"] is None else p["cost_mean"] / a["cost"] - 1
+        return out
+
+    sa, sr = stress_rel("adaptive_classical"), stress_rel("best_rule")
+    srt = lambda d: ", ".join(f"{c}: {fmt(x)}" for c, x in d.items())  # noqa: E731
     gm, gq = grid_margin_neg(), grid_reach()
     p1 = {
         "Set.": col(bool(va["superiority"]),
                     f"pooled relative cost difference {fmt(va['statistic_pooled_relative_cost_difference'])} "
                     f"(policy minus adaptive, relative), CI95 {ci(va)}, two-sided p {va['p_two_sided']:.4f}, Holm p "
                     f"{holm['holm_adjusted_p']['H2']:.4f}; P(policy cheaper) {va['P_policy_cheaper']:.4f}"),
-        "Cal.": col(bool(ga["superiority"]), f"24 cells, seeds 0-4: statistic "
-                                             f"{fmt(ga['statistic_pooled_relative_cost_difference'])}, "
-                                             f"CI95 {ci(ga)}, superiority={ga['superiority']}"),
+        "Cal.": col(bool(sa) and all(x != "inf" and x < 0 for x in sa.values()),
+                    f"calibrated stress test, seeds 0-4, cells where both qualify ({len(sa)}): {srt(sa)}. "
+                    f"(Default-channel 24-cell H2, h2_grid24.json: {fmt(ga['statistic_pooled_relative_cost_difference'])}, "
+                    f"CI95 {ci(ga)})"),
         "SUMO": col(False, f"undefined: the policy qualifies in no SUMO headline cell {sumo_reach}"),
         "Veins": col(None, "n/a (policy not ported to Veins)"),
         "Sens.": col(not not gm and len(gm) == len(sens),
@@ -145,9 +158,10 @@ def main(argv=None) -> int:
         "Set.": col(bool(vr["inferiority"]),
                     f"pooled relative cost difference {fmt(vr['statistic_pooled_relative_cost_difference'])}, "
                     f"CI95 {ci(vr)}, two-sided p {vr['p_two_sided']:.2g} (exploratory, not in the Holm family)"),
-        "Cal.": col(bool(gr["inferiority"]), f"24 cells, seeds 0-4: statistic "
-                                             f"{fmt(gr['statistic_pooled_relative_cost_difference'])}, CI95 {ci(gr)}, "
-                                             f"inferiority={gr['inferiority']}"),
+        "Cal.": col(bool(sr) and all(x == "inf" or x > 0 for x in sr.values()),
+                    f"calibrated stress test, seeds 0-4, cells where both qualify ({len(sr)}): {srt(sr)}. "
+                    f"(Default-channel 24-cell, h2_grid24.json: {fmt(gr['statistic_pooled_relative_cost_difference'])}, "
+                    f"CI95 {ci(gr)})"),
         "SUMO": col(False, f"undefined: the policy qualifies in no SUMO headline cell {sumo_reach}"),
         "Veins": col(None, "n/a (policy not ported to Veins)"),
         "Sens.": col(None, "not tested (the sensitivity grid compares against adaptive classical only)"),

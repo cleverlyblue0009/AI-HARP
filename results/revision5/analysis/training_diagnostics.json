@@ -1,7 +1,7 @@
 {
  "provenance": {
   "task": "revision5/analysis/training_diagnostics.json",
-  "git_commit": "04daf45561e0b7a01d798983781469c1a565c2a8-dirty",
+  "git_commit": "c5ef4c6466a05a070b1ff4ea815e4eefc433d581-dirty",
   "python": "3.12.9",
   "numpy": "1.26.4",
   "interpreter": "aiharp-gpu",
@@ -50,7 +50,7 @@
    ]
   },
   "seeds": null,
-  "generated": "2026-10-31 11:58:35",
+  "generated": "2026-11-01 22:00:13",
   "n_runs": null
  },
  "runs": {
