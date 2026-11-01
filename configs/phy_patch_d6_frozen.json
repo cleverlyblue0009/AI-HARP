@@ -1,0 +1,14 @@
+{
+  "phy_patch": {
+    "mac": {
+      "timing": "sub_epoch",
+      "carrier_sense_threshold_dbm": -85.0
+    },
+    "receiver": {
+      "sinr_threshold_db": 10.0
+    }
+  },
+  "loss": 0.6520969233804635,
+  "source": "DEVIATIONS D6",
+  "calibration": "results/revision5/analysis/d6_calibration.json"
+}
