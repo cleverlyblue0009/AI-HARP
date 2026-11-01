@@ -1,0 +1,70 @@
+[
+ {
+  "task": "revision5/agent__EVAL__headline__default__fallback__budget",
+  "git_commit": "6b71d5053fa1cb9adab0c0d59724b9bd40af8b4b",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep agent --seedset EVAL --cells headline --runs ref_s0_u2000@1200 ref_s0_u2000@1500 ref_s0_u2000@1700 ref_s0_u2000@2000 ref_s1_u2000@1200 ref_s1_u2000@1500 ref_s1_u2000@1700 ref_s1_u2000@2000 ref_s2_u2000@1200 ref_s2_u2000@1500 ref_s2_u2000@1700 ref_s2_u2000@2000 --tag budget --jobs 5",
+  "config_hash": "0f242c60aaee",
+  "config": {
+   "track": "agent",
+   "cells": "headline",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "ref_s0_u2000@1200",
+    "ref_s0_u2000@1500",
+    "ref_s0_u2000@1700",
+    "ref_s0_u2000@2000",
+    "ref_s1_u2000@1200",
+    "ref_s1_u2000@1500",
+    "ref_s1_u2000@1700",
+    "ref_s1_u2000@2000",
+    "ref_s2_u2000@1200",
+    "ref_s2_u2000@1500",
+    "ref_s2_u2000@1700",
+    "ref_s2_u2000@2000"
+   ],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   200,
+   201,
+   202,
+   203,
+   204,
+   205,
+   206,
+   207,
+   208,
+   209,
+   210,
+   211,
+   212,
+   213,
+   214,
+   215,
+   216,
+   217,
+   218,
+   219,
+   220,
+   221,
+   222,
+   223,
+   224,
+   225,
+   226,
+   227,
+   228,
+   229
+  ],
+  "generated": "2026-11-01 11:28:51",
+  "n_runs": 8640
+ }
+]

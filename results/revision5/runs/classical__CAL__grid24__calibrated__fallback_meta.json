@@ -1,0 +1,45 @@
+[
+ {
+  "task": "revision5/classical__CAL__grid24__calibrated__fallback",
+  "git_commit": "2991328cc1991ac9d4838c8c32333ada72b2b603",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep classical --seedset CAL --cells grid24 --channel calibrated --jobs 2",
+  "config_hash": "05dc42462e63",
+  "config": {
+   "track": "classical",
+   "cells": "grid24",
+   "channel": "calibrated",
+   "backend": "fallback",
+   "runs": [],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": {
+    "mac": {
+     "extra_loss": {
+      "p_max": 0.900390625,
+      "n0": 250.0,
+      "n1": 300.0
+     }
+    }
+   }
+  },
+  "seeds": [
+   300,
+   301,
+   302,
+   303,
+   304,
+   305,
+   306,
+   307,
+   308,
+   309
+  ],
+  "generated": "2026-10-31 11:18:29",
+  "n_runs": 13200
+ }
+]

@@ -1,0 +1,68 @@
+[
+ {
+  "task": "revision5/agent__EVAL__headline__default__fallback__tau0",
+  "git_commit": "79622654420e616ff7ab4bd64ede1ee15d0fb56d",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep agent --seedset EVAL --cells headline --runs ref_s0 ref_s1 ref_s2 ref_s3 ref_s4 ref_s5 ref_s6 ref_s7 ref_s8 ref_s9 --taus 0 --tag tau0 --jobs 5",
+  "config_hash": "b2e3b5c18950",
+  "config": {
+   "track": "agent",
+   "cells": "headline",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "ref_s0",
+    "ref_s1",
+    "ref_s2",
+    "ref_s3",
+    "ref_s4",
+    "ref_s5",
+    "ref_s6",
+    "ref_s7",
+    "ref_s8",
+    "ref_s9"
+   ],
+   "taus": [
+    0.0
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   200,
+   201,
+   202,
+   203,
+   204,
+   205,
+   206,
+   207,
+   208,
+   209,
+   210,
+   211,
+   212,
+   213,
+   214,
+   215,
+   216,
+   217,
+   218,
+   219,
+   220,
+   221,
+   222,
+   223,
+   224,
+   225,
+   226,
+   227,
+   228,
+   229
+  ],
+  "generated": "2026-10-31 13:31:17",
+  "n_runs": 7200
+ }
+]

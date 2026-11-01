@@ -1,0 +1,128 @@
+[
+ {
+  "task": "revision5/rule__EVAL__grid24__calibrated__fallback",
+  "git_commit": "a282dbe95bfd66f6e9c4add1b3bbf277a9055c43",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep rule --seedset EVAL --cells grid24 --channel calibrated --jobs 3",
+  "config_hash": "dc93870883b6",
+  "config": {
+   "track": "rule",
+   "cells": "grid24",
+   "channel": "calibrated",
+   "backend": "fallback",
+   "runs": [],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": {
+    "mac": {
+     "extra_loss": {
+      "p_max": 0.900390625,
+      "n0": 250.0,
+      "n1": 300.0
+     }
+    }
+   }
+  },
+  "seeds": [
+   200,
+   201,
+   202,
+   203,
+   204,
+   205,
+   206,
+   207,
+   208,
+   209,
+   210,
+   211,
+   212,
+   213,
+   214,
+   215,
+   216,
+   217,
+   218,
+   219,
+   220,
+   221,
+   222,
+   223,
+   224,
+   225,
+   226,
+   227,
+   228,
+   229
+  ],
+  "generated": "2026-10-31 23:21:58",
+  "n_runs": 28080
+ },
+ {
+  "task": "revision5/rule__EVAL__grid24__calibrated__fallback",
+  "git_commit": "a282dbe95bfd66f6e9c4add1b3bbf277a9055c43",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep rule --seedset EVAL --cells grid24 --channel calibrated --jobs 3",
+  "config_hash": "dc93870883b6",
+  "config": {
+   "track": "rule",
+   "cells": "grid24",
+   "channel": "calibrated",
+   "backend": "fallback",
+   "runs": [],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": {
+    "mac": {
+     "extra_loss": {
+      "p_max": 0.900390625,
+      "n0": 250.0,
+      "n1": 300.0
+     }
+    }
+   }
+  },
+  "seeds": [
+   200,
+   201,
+   202,
+   203,
+   204,
+   205,
+   206,
+   207,
+   208,
+   209,
+   210,
+   211,
+   212,
+   213,
+   214,
+   215,
+   216,
+   217,
+   218,
+   219,
+   220,
+   221,
+   222,
+   223,
+   224,
+   225,
+   226,
+   227,
+   228,
+   229
+  ],
+  "generated": "2026-11-01 09:39:27",
+  "n_runs": 28080
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "task": "revision5/rule__SEL__headline__default__sumo",
+  "git_commit": "6b71d5053fa1cb9adab0c0d59724b9bd40af8b4b",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep rule --seedset SEL --cells headline --channel default --backend sumo --jobs 3",
+  "config_hash": "06c7894c25da",
+  "config": {
+   "track": "rule",
+   "cells": "headline",
+   "channel": "default",
+   "backend": "sumo",
+   "runs": [],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-11-01 11:32:22",
+  "n_runs": 3120
+ }
+]

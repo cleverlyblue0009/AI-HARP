@@ -1,0 +1,55 @@
+[
+ {
+  "task": "revision5/classical__SEL__grid24__calibrated__fallback",
+  "git_commit": "79622654420e616ff7ab4bd64ede1ee15d0fb56d",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep classical --seedset SEL --cells grid24 --channel calibrated --jobs 3",
+  "config_hash": "05dc42462e63",
+  "config": {
+   "track": "classical",
+   "cells": "grid24",
+   "channel": "calibrated",
+   "backend": "fallback",
+   "runs": [],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": {
+    "mac": {
+     "extra_loss": {
+      "p_max": 0.900390625,
+      "n0": 250.0,
+      "n1": 300.0
+     }
+    }
+   }
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-10-31 13:51:11",
+  "n_runs": 26400
+ }
+]

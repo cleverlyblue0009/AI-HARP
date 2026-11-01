@@ -1,0 +1,73 @@
+[
+ {
+  "task": "revision5/agent__EVAL__headline__default__fallback__variants",
+  "git_commit": "04d3eda9ad2fb69b4b714906fd752f1d2c63f19d",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision5.sweep agent --seedset EVAL --cells headline --runs gcn_s0 gcn_s1 gcn_s2 gcn_s3 gcn_s4 mlp_s0 mlp_s1 mlp_s2 mlp_s3 mlp_s4 norel_s0 norel_s1 norel_s2 norel_s3 norel_s4 --tag variants --jobs 5",
+  "config_hash": "0a34d3e5015e",
+  "config": {
+   "track": "agent",
+   "cells": "headline",
+   "channel": "default",
+   "backend": "fallback",
+   "runs": [
+    "gcn_s0",
+    "gcn_s1",
+    "gcn_s2",
+    "gcn_s3",
+    "gcn_s4",
+    "mlp_s0",
+    "mlp_s1",
+    "mlp_s2",
+    "mlp_s3",
+    "mlp_s4",
+    "norel_s0",
+    "norel_s1",
+    "norel_s2",
+    "norel_s3",
+    "norel_s4"
+   ],
+   "taus": [
+    0.5
+   ],
+   "random_gate_from": null,
+   "phy_patch": null
+  },
+  "seeds": [
+   200,
+   201,
+   202,
+   203,
+   204,
+   205,
+   206,
+   207,
+   208,
+   209,
+   210,
+   211,
+   212,
+   213,
+   214,
+   215,
+   216,
+   217,
+   218,
+   219,
+   220,
+   221,
+   222,
+   223,
+   224,
+   225,
+   226,
+   227,
+   228,
+   229
+  ],
+  "generated": "2026-11-01 11:51:15",
+  "n_runs": 10800
+ }
+]
