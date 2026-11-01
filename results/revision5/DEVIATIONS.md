@@ -147,3 +147,17 @@ carry the two parts, so the D3 sum is unchanged in form). (b) "relative |Δ busy
 simulator are skipped in the loss and listed. (e) Veins' own CCA threshold is −65 dBm (ccaThreshold default; the ini
 sets minPowerLevel −85 dBm) — outside the pre-declared grid; the grid is not changed. Driver:
 experiments/revision5/veins/d6_calibrate.py (run / score / rerun); frozen point -> configs/phy_patch_d6_frozen.json.
+
+**D6 outcome (2026-11-01T11:40+05:30).** Calibration (results/revision5/analysis/d6_calibration.json): minimum loss 0.652 at
+carrier sense −85 dBm, capture SINR 10 dB (a corner of the pre-declared grid; loss at the phy.yaml values −92 dBm / 8 dB
+was 0.698); frozen in configs/phy_patch_d6_frozen.json. Frozen-mode re-run: 6,600 runs, 0 failures. H3 recomputed with
+the same code and definitions (h3_subepoch.json): Spearman ρ 0.842, 95 % CI [0.373, 0.933], p(ρ ≤ 0.6) = 0.169 (was
+0.564 [−0.117, 0.791], p 0.776); PDR-vs-distance fails in every cell (largest bin gap 0.19–0.33, criterion 0.05); busy
+ratio passes in rural d=2 (1.4 %) and d=20 (10 %) but fails in rural d=80 (44 %) and urban NLOS d=20 (49 %); median
+single-hop delay and the cross-fitted H1 verdict (supported in both) agree. **H3 fails.** Holm with the post-D6 H3 p:
+H1 5.2e-223 (reject), H2 0.127, H3 0.169. Pre-registered consequence, applied: the classical audit computed in Veins
+(cross-fitted H1) is primary; custom-simulator claims are restricted to relative comparisons inside the custom
+simulator (scheme and policy rankings, selection and qualification), and no absolute packet-level number from the
+custom simulator (PDR, busy ratio, loss rates) is presented as validated. The policy (H2 and all secondary policy
+results) exists only in the custom simulator and is reported with that restriction. Both H3 results (epoch and
+sub-epoch) are reported; the epoch-mode one is the pre-registered primary test.
