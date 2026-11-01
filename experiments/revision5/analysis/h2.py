@@ -65,7 +65,7 @@ def method_eval(sel, ev, c, q, m, D, si, ei):
 def policy_eval(asel, aev, runs_idx, runs, c, q, m, D, si, ei):
     """Policy in a cell: every (resampled) training seed picks its bias on SEL; cost = mean over seeds with a pick."""
     per = {}
-    for r in set(runs[i] for i in runs_idx):
+    for r in sorted(set(runs[i] for i in runs_idx), key=runs.index):   # run order: output key order is deterministic
         k = select(asel[r][c], q, m, D, si)
         if k < 0:
             per[r] = None

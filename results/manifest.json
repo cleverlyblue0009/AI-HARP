@@ -36,9 +36,9 @@
    "exists": true,
    "script": "experiments/revision5/analysis/h2.py",
    "command": "python -m experiments.revision5.analysis.h2 --B 10000",
-   "commit": "04daf45561e0b7a01d798983781469c1a565c2a8-dirty",
+   "commit": "e6b70b4c8c86e799bbe7bff6c89cd83ba4a03933-dirty",
    "config_hash": "781e319dfdbc",
-   "generated": "2026-10-31 11:57:17",
+   "generated": "2026-11-01 23:17:00",
    "sources": [
     "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
     "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv",
@@ -50,16 +50,16 @@
     "results/revision5/runs/agent__EVAL__headline__default__fallback__s5_9.csv",
     "results/revision5/thresholds.json"
    ],
-   "sha256": "85ed8acd26f4fd71b2db8d8be13c0ca8d935cb6e16ff4fba2f0d220052a46223"
+   "sha256": "4202fd2cca7b25e3ead3cc16937307f68ff8a651fa480d489b971e7b30247fd5"
   },
   {
    "output": "results/revision5/analysis/h2_Dr.json",
    "exists": true,
    "script": "experiments/revision5/analysis/h2.py",
    "command": "python -m experiments.revision5.analysis.h2 --B 10000 --D Dr",
-   "commit": "59cab46646ac31d6ccfa17eda72f452ee93805ee-dirty",
+   "commit": "e6b70b4c8c86e799bbe7bff6c89cd83ba4a03933-dirty",
    "config_hash": "21af85a664fb",
-   "generated": "2026-10-31 11:59:56",
+   "generated": "2026-11-01 23:18:02",
    "sources": [
     "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
     "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv",
@@ -71,16 +71,16 @@
     "results/revision5/runs/agent__EVAL__headline__default__fallback__s5_9.csv",
     "results/revision5/thresholds.json"
    ],
-   "sha256": "427515d98113ad1734ad9ae06e10ccc5bec21a5b9de667a8c2936f171829a230"
+   "sha256": "e76326866dd74df8c938329f28e83573931c65558cc1e6433141bd2f756ac5e4"
   },
   {
    "output": "results/revision5/analysis/h2_grid24.json",
    "exists": true,
    "script": "experiments/revision5/analysis/h2.py",
    "command": "python -m experiments.revision5.analysis.h2 --B 10000 --grid24",
-   "commit": "e667507fa7de2db3dbea22dfd1fe95aedf87706e",
+   "commit": "e6b70b4c8c86e799bbe7bff6c89cd83ba4a03933-dirty",
    "config_hash": "1a6a13515346",
-   "generated": "2026-10-31 12:07:42",
+   "generated": "2026-11-01 23:21:50",
    "sources": [
     "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
     "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv",
@@ -90,7 +90,7 @@
     "results/revision5/runs/agent__EVAL__grid24__default__fallback.csv",
     "results/revision5/thresholds.json"
    ],
-   "sha256": "23bbe7c553706ccf9a6d4b7f78123d3283080db49c4816da47a81031fd01d21a"
+   "sha256": "b5b9f2af10a1631a9d4b7c85acd1cdd94861f4a2baf0fe6d40097a00153ee5ce"
   },
   {
    "output": "results/revision5/analysis/h3.json",

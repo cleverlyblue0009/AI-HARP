@@ -1,7 +1,7 @@
 {
  "provenance": {
   "task": "revision5/analysis/h2.json",
-  "git_commit": "04daf45561e0b7a01d798983781469c1a565c2a8-dirty",
+  "git_commit": "e6b70b4c8c86e799bbe7bff6c89cd83ba4a03933-dirty",
   "python": "3.12.9",
   "numpy": "1.26.4",
   "interpreter": "aiharp-gpu",
@@ -68,7 +68,7 @@
     229
    ]
   },
-  "generated": "2026-10-31 11:57:17",
+  "generated": "2026-11-01 23:17:00",
   "n_runs": null
  },
  "hypothesis": "H2: policy vs retuned (SEL-selected) adaptive classical, deployable on both sides",
@@ -140,12 +140,14 @@
      "n_pick": 4
     },
     "policy_per_seed": {
-     "ref_s8": {
-      "bias": 1.0,
-      "cost": 2.198559049882579,
-      "rwcr": 0.5770584561421692,
-      "miss": 0.591497740796368,
-      "qualifies": false
+     "ref_s0": null,
+     "ref_s1": null,
+     "ref_s2": {
+      "bias": -2.0,
+      "cost": 2.2390280063074184,
+      "rwcr": 0.6336706126156368,
+      "miss": 0.5519469099846674,
+      "qualifies": true
      },
      "ref_s3": {
       "bias": -2.0,
@@ -154,18 +156,9 @@
       "miss": 0.5370246583232853,
       "qualifies": true
      },
+     "ref_s4": null,
      "ref_s5": null,
      "ref_s6": null,
-     "ref_s2": {
-      "bias": -2.0,
-      "cost": 2.2390280063074184,
-      "rwcr": 0.6336706126156368,
-      "miss": 0.5519469099846674,
-      "qualifies": true
-     },
-     "ref_s4": null,
-     "ref_s9": null,
-     "ref_s1": null,
      "ref_s7": {
       "bias": -1.0,
       "cost": 2.343750329191505,
@@ -173,7 +166,14 @@
       "miss": 0.5896747546038164,
       "qualifies": false
      },
-     "ref_s0": null
+     "ref_s8": {
+      "bias": 1.0,
+      "cost": 2.198559049882579,
+      "rwcr": 0.5770584561421692,
+      "miss": 0.591497740796368,
+      "qualifies": false
+     },
+     "ref_s9": null
     },
     "comparator": {
      "pick": [
@@ -196,11 +196,25 @@
      "n_pick": 10
     },
     "policy_per_seed": {
-     "ref_s8": {
-      "bias": 3.0,
-      "cost": 0.8584003778339125,
-      "rwcr": 0.8828410158792311,
-      "miss": 0.3451240389984863,
+     "ref_s0": {
+      "bias": 1.0,
+      "cost": 0.6865577669395893,
+      "rwcr": 0.8745217611194526,
+      "miss": 0.3559386327220706,
+      "qualifies": true
+     },
+     "ref_s1": {
+      "bias": 1.0,
+      "cost": 0.7044600310157468,
+      "rwcr": 0.8864377773949162,
+      "miss": 0.34288463645037864,
+      "qualifies": true
+     },
+     "ref_s2": {
+      "bias": 0.0,
+      "cost": 0.7592909833242033,
+      "rwcr": 0.9038004941474971,
+      "miss": 0.3239780676052774,
       "qualifies": true
      },
      "ref_s3": {
@@ -208,6 +222,13 @@
       "cost": 0.5375725887740219,
       "rwcr": 0.8777206505142439,
       "miss": 0.3513487842662372,
+      "qualifies": true
+     },
+     "ref_s4": {
+      "bias": 1.0,
+      "cost": 0.7586846746396254,
+      "rwcr": 0.888941197483201,
+      "miss": 0.3353570193756197,
       "qualifies": true
      },
      "ref_s5": {
@@ -224,34 +245,6 @@
       "miss": 0.34407541526442453,
       "qualifies": true
      },
-     "ref_s2": {
-      "bias": 0.0,
-      "cost": 0.7592909833242033,
-      "rwcr": 0.9038004941474971,
-      "miss": 0.3239780676052774,
-      "qualifies": true
-     },
-     "ref_s4": {
-      "bias": 1.0,
-      "cost": 0.7586846746396254,
-      "rwcr": 0.888941197483201,
-      "miss": 0.3353570193756197,
-      "qualifies": true
-     },
-     "ref_s9": {
-      "bias": 1.0,
-      "cost": 0.6625315073993964,
-      "rwcr": 0.8886102509472,
-      "miss": 0.33755226940813543,
-      "qualifies": true
-     },
-     "ref_s1": {
-      "bias": 1.0,
-      "cost": 0.7044600310157468,
-      "rwcr": 0.8864377773949162,
-      "miss": 0.34288463645037864,
-      "qualifies": true
-     },
      "ref_s7": {
       "bias": 2.0,
       "cost": 0.7575343721775348,
@@ -259,11 +252,18 @@
       "miss": 0.35010064793212614,
       "qualifies": true
      },
-     "ref_s0": {
+     "ref_s8": {
+      "bias": 3.0,
+      "cost": 0.8584003778339125,
+      "rwcr": 0.8828410158792311,
+      "miss": 0.3451240389984863,
+      "qualifies": true
+     },
+     "ref_s9": {
       "bias": 1.0,
-      "cost": 0.6865577669395893,
-      "rwcr": 0.8745217611194526,
-      "miss": 0.3559386327220706,
+      "cost": 0.6625315073993964,
+      "rwcr": 0.8886102509472,
+      "miss": 0.33755226940813543,
       "qualifies": true
      }
     },
@@ -286,8 +286,17 @@
      "n_pick": 3
     },
     "policy_per_seed": {
-     "ref_s8": null,
+     "ref_s0": null,
+     "ref_s1": null,
+     "ref_s2": {
+      "bias": 0.0,
+      "cost": 1.033207070071849,
+      "rwcr": 0.8769296874270549,
+      "miss": 0.3419250707289015,
+      "qualifies": true
+     },
      "ref_s3": null,
+     "ref_s4": null,
      "ref_s5": null,
      "ref_s6": {
       "bias": -2.0,
@@ -296,24 +305,15 @@
       "miss": 0.34075751495827,
       "qualifies": true
      },
-     "ref_s2": {
-      "bias": 0.0,
-      "cost": 1.033207070071849,
-      "rwcr": 0.8769296874270549,
-      "miss": 0.3419250707289015,
-      "qualifies": true
-     },
-     "ref_s4": null,
+     "ref_s7": null,
+     "ref_s8": null,
      "ref_s9": {
       "bias": -2.0,
       "cost": 0.9960968035281775,
       "rwcr": 0.8747892680259602,
       "miss": 0.34369802809747263,
       "qualifies": true
-     },
-     "ref_s1": null,
-     "ref_s7": null,
-     "ref_s0": null
+     }
     },
     "comparator": {
      "pick": [
@@ -336,12 +336,27 @@
      "n_pick": 6
     },
     "policy_per_seed": {
-     "ref_s8": null,
+     "ref_s0": null,
+     "ref_s1": null,
+     "ref_s2": {
+      "bias": -2.0,
+      "cost": 0.7456112378597215,
+      "rwcr": 0.933993623498517,
+      "miss": 0.11170564295482818,
+      "qualifies": true
+     },
      "ref_s3": {
       "bias": -2.0,
       "cost": 0.7197060857769245,
       "rwcr": 0.931125049139009,
       "miss": 0.11487467734788108,
+      "qualifies": true
+     },
+     "ref_s4": {
+      "bias": -2.0,
+      "cost": 0.9573173755481377,
+      "rwcr": 0.9288795487682605,
+      "miss": 0.11657236999397343,
       "qualifies": true
      },
      "ref_s5": {
@@ -358,22 +373,6 @@
       "miss": 0.11854651894520513,
       "qualifies": true
      },
-     "ref_s2": {
-      "bias": -2.0,
-      "cost": 0.7456112378597215,
-      "rwcr": 0.933993623498517,
-      "miss": 0.11170564295482818,
-      "qualifies": true
-     },
-     "ref_s4": {
-      "bias": -2.0,
-      "cost": 0.9573173755481377,
-      "rwcr": 0.9288795487682605,
-      "miss": 0.11657236999397343,
-      "qualifies": true
-     },
-     "ref_s9": null,
-     "ref_s1": null,
      "ref_s7": {
       "bias": -2.0,
       "cost": 0.8917998997782315,
@@ -381,7 +380,8 @@
       "miss": 0.11115781566392681,
       "qualifies": true
      },
-     "ref_s0": null
+     "ref_s8": null,
+     "ref_s9": null
     },
     "comparator": {
      "pick": [
@@ -452,12 +452,14 @@
      "n_pick": 4
     },
     "policy_per_seed": {
-     "ref_s8": {
-      "bias": 1.0,
-      "cost": 2.198559049882579,
-      "rwcr": 0.5770584561421692,
-      "miss": 0.591497740796368,
-      "qualifies": false
+     "ref_s0": null,
+     "ref_s1": null,
+     "ref_s2": {
+      "bias": -2.0,
+      "cost": 2.2390280063074184,
+      "rwcr": 0.6336706126156368,
+      "miss": 0.5519469099846674,
+      "qualifies": true
      },
      "ref_s3": {
       "bias": -2.0,
@@ -466,18 +468,9 @@
       "miss": 0.5370246583232853,
       "qualifies": true
      },
+     "ref_s4": null,
      "ref_s5": null,
      "ref_s6": null,
-     "ref_s2": {
-      "bias": -2.0,
-      "cost": 2.2390280063074184,
-      "rwcr": 0.6336706126156368,
-      "miss": 0.5519469099846674,
-      "qualifies": true
-     },
-     "ref_s4": null,
-     "ref_s9": null,
-     "ref_s1": null,
      "ref_s7": {
       "bias": -1.0,
       "cost": 2.343750329191505,
@@ -485,7 +478,14 @@
       "miss": 0.5896747546038164,
       "qualifies": false
      },
-     "ref_s0": null
+     "ref_s8": {
+      "bias": 1.0,
+      "cost": 2.198559049882579,
+      "rwcr": 0.5770584561421692,
+      "miss": 0.591497740796368,
+      "qualifies": false
+     },
+     "ref_s9": null
     },
     "comparator": {
      "pick": [
@@ -508,11 +508,25 @@
      "n_pick": 10
     },
     "policy_per_seed": {
-     "ref_s8": {
-      "bias": 3.0,
-      "cost": 0.8584003778339125,
-      "rwcr": 0.8828410158792311,
-      "miss": 0.3451240389984863,
+     "ref_s0": {
+      "bias": 1.0,
+      "cost": 0.6865577669395893,
+      "rwcr": 0.8745217611194526,
+      "miss": 0.3559386327220706,
+      "qualifies": true
+     },
+     "ref_s1": {
+      "bias": 1.0,
+      "cost": 0.7044600310157468,
+      "rwcr": 0.8864377773949162,
+      "miss": 0.34288463645037864,
+      "qualifies": true
+     },
+     "ref_s2": {
+      "bias": 0.0,
+      "cost": 0.7592909833242033,
+      "rwcr": 0.9038004941474971,
+      "miss": 0.3239780676052774,
       "qualifies": true
      },
      "ref_s3": {
@@ -520,6 +534,13 @@
       "cost": 0.5375725887740219,
       "rwcr": 0.8777206505142439,
       "miss": 0.3513487842662372,
+      "qualifies": true
+     },
+     "ref_s4": {
+      "bias": 1.0,
+      "cost": 0.7586846746396254,
+      "rwcr": 0.888941197483201,
+      "miss": 0.3353570193756197,
       "qualifies": true
      },
      "ref_s5": {
@@ -536,34 +557,6 @@
       "miss": 0.34407541526442453,
       "qualifies": true
      },
-     "ref_s2": {
-      "bias": 0.0,
-      "cost": 0.7592909833242033,
-      "rwcr": 0.9038004941474971,
-      "miss": 0.3239780676052774,
-      "qualifies": true
-     },
-     "ref_s4": {
-      "bias": 1.0,
-      "cost": 0.7586846746396254,
-      "rwcr": 0.888941197483201,
-      "miss": 0.3353570193756197,
-      "qualifies": true
-     },
-     "ref_s9": {
-      "bias": 1.0,
-      "cost": 0.6625315073993964,
-      "rwcr": 0.8886102509472,
-      "miss": 0.33755226940813543,
-      "qualifies": true
-     },
-     "ref_s1": {
-      "bias": 1.0,
-      "cost": 0.7044600310157468,
-      "rwcr": 0.8864377773949162,
-      "miss": 0.34288463645037864,
-      "qualifies": true
-     },
      "ref_s7": {
       "bias": 2.0,
       "cost": 0.7575343721775348,
@@ -571,11 +564,18 @@
       "miss": 0.35010064793212614,
       "qualifies": true
      },
-     "ref_s0": {
+     "ref_s8": {
+      "bias": 3.0,
+      "cost": 0.8584003778339125,
+      "rwcr": 0.8828410158792311,
+      "miss": 0.3451240389984863,
+      "qualifies": true
+     },
+     "ref_s9": {
       "bias": 1.0,
-      "cost": 0.6865577669395893,
-      "rwcr": 0.8745217611194526,
-      "miss": 0.3559386327220706,
+      "cost": 0.6625315073993964,
+      "rwcr": 0.8886102509472,
+      "miss": 0.33755226940813543,
       "qualifies": true
      }
     },
@@ -598,8 +598,17 @@
      "n_pick": 3
     },
     "policy_per_seed": {
-     "ref_s8": null,
+     "ref_s0": null,
+     "ref_s1": null,
+     "ref_s2": {
+      "bias": 0.0,
+      "cost": 1.033207070071849,
+      "rwcr": 0.8769296874270549,
+      "miss": 0.3419250707289015,
+      "qualifies": true
+     },
      "ref_s3": null,
+     "ref_s4": null,
      "ref_s5": null,
      "ref_s6": {
       "bias": -2.0,
@@ -608,24 +617,15 @@
       "miss": 0.34075751495827,
       "qualifies": true
      },
-     "ref_s2": {
-      "bias": 0.0,
-      "cost": 1.033207070071849,
-      "rwcr": 0.8769296874270549,
-      "miss": 0.3419250707289015,
-      "qualifies": true
-     },
-     "ref_s4": null,
+     "ref_s7": null,
+     "ref_s8": null,
      "ref_s9": {
       "bias": -2.0,
       "cost": 0.9960968035281775,
       "rwcr": 0.8747892680259602,
       "miss": 0.34369802809747263,
       "qualifies": true
-     },
-     "ref_s1": null,
-     "ref_s7": null,
-     "ref_s0": null
+     }
     },
     "comparator": {
      "pick": [
@@ -648,12 +648,27 @@
      "n_pick": 6
     },
     "policy_per_seed": {
-     "ref_s8": null,
+     "ref_s0": null,
+     "ref_s1": null,
+     "ref_s2": {
+      "bias": -2.0,
+      "cost": 0.7456112378597215,
+      "rwcr": 0.933993623498517,
+      "miss": 0.11170564295482818,
+      "qualifies": true
+     },
      "ref_s3": {
       "bias": -2.0,
       "cost": 0.7197060857769245,
       "rwcr": 0.931125049139009,
       "miss": 0.11487467734788108,
+      "qualifies": true
+     },
+     "ref_s4": {
+      "bias": -2.0,
+      "cost": 0.9573173755481377,
+      "rwcr": 0.9288795487682605,
+      "miss": 0.11657236999397343,
       "qualifies": true
      },
      "ref_s5": {
@@ -670,22 +685,6 @@
       "miss": 0.11854651894520513,
       "qualifies": true
      },
-     "ref_s2": {
-      "bias": -2.0,
-      "cost": 0.7456112378597215,
-      "rwcr": 0.933993623498517,
-      "miss": 0.11170564295482818,
-      "qualifies": true
-     },
-     "ref_s4": {
-      "bias": -2.0,
-      "cost": 0.9573173755481377,
-      "rwcr": 0.9288795487682605,
-      "miss": 0.11657236999397343,
-      "qualifies": true
-     },
-     "ref_s9": null,
-     "ref_s1": null,
      "ref_s7": {
       "bias": -2.0,
       "cost": 0.8917998997782315,
@@ -693,7 +692,8 @@
       "miss": 0.11115781566392681,
       "qualifies": true
      },
-     "ref_s0": null
+     "ref_s8": null,
+     "ref_s9": null
     },
     "comparator": {
      "pick": [
