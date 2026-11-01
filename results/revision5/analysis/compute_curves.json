@@ -1,7 +1,7 @@
 {
  "provenance": {
   "task": "revision5/analysis/compute_curves.json",
-  "git_commit": "c5ef4c6466a05a070b1ff4ea815e4eefc433d581-dirty",
+  "git_commit": "f6d6d75d9ed5d5c4e8a83f16dda5e249e7a6effe",
   "python": "3.12.9",
   "numpy": "1.26.4",
   "interpreter": "aiharp-gpu",
@@ -23,7 +23,7 @@
    "reps": 200
   },
   "seeds": null,
-  "generated": "2026-11-01 22:00:19",
+  "generated": "2026-11-01 22:13:24",
   "n_runs": null
  },
  "classical_random_search": {
@@ -867,10 +867,10 @@
        "cost_mean": null,
        "cost_sd": null,
        "cost_mean_ci95": [
-        1.8889383764383765,
-        2.4339112739112734
+        1.9034621859621856,
+        2.398660413660414
        ],
-       "bootstrap_defined": 638
+       "bootstrap_defined": 3410
       },
       "per_seed": {
        "ref_s0": null,
@@ -898,10 +898,10 @@
        "cost_mean": 2.2201672850569913,
        "cost_sd": 0.2672189655358421,
        "cost_mean_ci95": [
-        1.9471849446849445,
-        2.5090078440078436
+        1.9194877344877344,
+        2.489575489869608
        ],
-       "bootstrap_defined": 1359
+       "bootstrap_defined": 6654
       },
       "per_seed": {
        "ref_s0_u2000@1200": null,
@@ -940,10 +940,10 @@
        "cost_mean": null,
        "cost_sd": null,
        "cost_mean_ci95": [
-        1.8498264698264697,
-        2.4900236800236804
+        1.8470909645909643,
+        2.5643375143375144
        ],
-       "bootstrap_defined": 1316
+       "bootstrap_defined": 6339
       },
       "per_seed": {
        "ref_s0_u2000@1500": null,
@@ -971,10 +971,10 @@
        "cost_mean": 2.1036655242905242,
        "cost_sd": 0.1409877375961472,
        "cost_mean_ci95": [
-        1.8177104377104376,
+        1.8257030932030933,
         null
        ],
-       "bootstrap_defined": 1021
+       "bootstrap_defined": 5033
       },
       "per_seed": {
        "ref_s0_u2000@1700": {
@@ -1013,10 +1013,10 @@
        "cost_mean": null,
        "cost_sd": null,
        "cost_mean_ci95": [
-        1.7937373737373734,
-        2.3076078859412186
+        1.7817565150898484,
+        2.2932335257335255
        ],
-       "bootstrap_defined": 753
+       "bootstrap_defined": 3804
       },
       "per_seed": {
        "ref_s0_u2000@2000": {
@@ -1090,10 +1090,10 @@
        "cost_mean": 0.7167695937598465,
        "cost_sd": 0.037896888957089425,
        "cost_mean_ci95": [
-        0.5720893665119534,
-        0.8540689547538186
+        0.5718047190812773,
+        0.8558539639945321
        ],
-       "bootstrap_defined": 1942
+       "bootstrap_defined": 9747
       },
       "per_seed": {
        "ref_s0": {
@@ -1143,10 +1143,10 @@
        "cost_mean": 0.6414341610648799,
        "cost_sd": 0.12744263096526726,
        "cost_mean_ci95": [
-        0.5031914240988279,
-        0.8626101676966407
+        0.5172716581932226,
+        0.8544605584402177
        ],
-       "bootstrap_defined": 1989
+       "bootstrap_defined": 9928
       },
       "per_seed": {
        "ref_s0_u2000@1200": {
@@ -1196,10 +1196,10 @@
        "cost_mean": 0.6485377971748922,
        "cost_sd": 0.05733909402634972,
        "cost_mean_ci95": [
-        0.5657392316384223,
-        0.8168174801271469
+        0.5530537144010098,
+        0.8162867977102982
        ],
-       "bootstrap_defined": 1961
+       "bootstrap_defined": 9840
       },
       "per_seed": {
        "ref_s0_u2000@1500": {
@@ -1249,10 +1249,10 @@
        "cost_mean": 0.6867651300594843,
        "cost_sd": 0.06030880639980935,
        "cost_mean_ci95": [
-        0.6317189779011068,
-        0.8110465777480952
+        0.6336653420483452,
+        0.809970835276746
        ],
-       "bootstrap_defined": 1979
+       "bootstrap_defined": 9892
       },
       "per_seed": {
        "ref_s0_u2000@1700": {
@@ -1302,10 +1302,10 @@
        "cost_mean": 0.6208968721915326,
        "cost_sd": 0.06836075734517454,
        "cost_mean_ci95": [
-        0.5582828519550317,
-        0.8938370946128673
+        0.5610909991311545,
+        0.8973241483979169
        ],
-       "bootstrap_defined": 1985
+       "bootstrap_defined": 9936
       },
       "per_seed": {
        "ref_s0_u2000@2000": {
@@ -1409,10 +1409,10 @@
        "cost_mean": null,
        "cost_sd": null,
        "cost_mean_ci95": [
-        0.7685659005721618,
-        1.8173873598162646
+        0.7708362229722611,
+        1.8053980252754054
        ],
-       "bootstrap_defined": 511
+       "bootstrap_defined": 2557
       },
       "per_seed": {
        "ref_s0": null,
@@ -1455,10 +1455,10 @@
        "cost_mean": null,
        "cost_sd": null,
        "cost_mean_ci95": [
-        1.015520325524423,
-        1.4048467411545869
+        1.0212239225120059,
+        1.406683910226952
        ],
-       "bootstrap_defined": 520
+       "bootstrap_defined": 2531
       },
       "per_seed": {
        "ref_s0_u2000@1500": null,
@@ -1486,10 +1486,10 @@
        "cost_mean": null,
        "cost_sd": null,
        "cost_mean_ci95": [
-        0.8938446996570267,
-        1.001346634569973
+        0.8888382101394124,
+        1.0024238538064245
        ],
-       "bootstrap_defined": 96
+       "bootstrap_defined": 476
       },
       "per_seed": {
        "ref_s0_u2000@1700": null,
@@ -1506,10 +1506,10 @@
        "cost_mean": 1.0533175913980437,
        "cost_sd": 0.08585253755454021,
        "cost_mean_ci95": [
-        0.963585968416982,
-        1.1403594101485075
+        0.9640466746325931,
+        1.141839584280447
        ],
-       "bootstrap_defined": 1339
+       "bootstrap_defined": 6642
       },
       "per_seed": {
        "ref_s0_u2000@2000": {
@@ -1594,10 +1594,10 @@
        "cost_mean": null,
        "cost_sd": null,
        "cost_mean_ci95": [
-        0.6891898675758107,
-        0.8035353424828847
+        0.6750118836278246,
+        0.7979134264637242
        ],
-       "bootstrap_defined": 557
+       "bootstrap_defined": 2773
       },
       "per_seed": {
        "ref_s0": null,
@@ -1625,10 +1625,10 @@
        "cost_mean": 0.8419949690336493,
        "cost_sd": 0.003603783964752897,
        "cost_mean_ci95": [
-        0.7214528638721577,
-        0.9822354196483445
+        0.7229887805628324,
+        0.9804013130794683
        ],
-       "bootstrap_defined": 1355
+       "bootstrap_defined": 6806
       },
       "per_seed": {
        "ref_s0_u2000@1200": {
@@ -1667,10 +1667,10 @@
        "cost_mean": 0.7610111716390774,
        "cost_sd": 0.013453655206765678,
        "cost_mean_ci95": [
-        0.7206854745232466,
-        0.8045598935881895
+        0.7155419664315305,
+        0.8040095933629878
        ],
-       "bootstrap_defined": 1343
+       "bootstrap_defined": 6613
       },
       "per_seed": {
        "ref_s0_u2000@1500": null,
@@ -1709,10 +1709,10 @@
        "cost_mean": null,
        "cost_sd": null,
        "cost_mean_ci95": [
-        0.6874204687507367,
-        0.8913143641063465
+        0.6868325026950344,
+        0.8878080828984577
        ],
-       "bootstrap_defined": 790
+       "bootstrap_defined": 3922
       },
       "per_seed": {
        "ref_s0_u2000@1700": null,
@@ -1740,10 +1740,10 @@
        "cost_mean": 0.766994774674199,
        "cost_sd": 0.09041227911752718,
        "cost_mean_ci95": [
-        0.6907241867703182,
-        0.8514773534244051
+        0.690291637931489,
+        0.8494305654097437
        ],
-       "bootstrap_defined": 1026
+       "bootstrap_defined": 5106
       },
       "per_seed": {
        "ref_s0_u2000@2000": {

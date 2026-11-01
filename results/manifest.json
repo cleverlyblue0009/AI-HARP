@@ -1,0 +1,418 @@
+{
+ "description": "Revision-5 manifest: every output in results/revision5/analysis/ (and its tables and figures) -> source rows, script,",
+ "outputs": [
+  {
+   "output": "results/revision5/analysis/h1.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/h1.py",
+   "command": "python -m experiments.revision5.analysis.h1 --B 10000",
+   "commit": "de6d1633bbcfbe19e5545752acf3de7ffcd65962",
+   "config_hash": "1e6b988f681b",
+   "generated": "2026-10-31 11:41:34",
+   "sources": [
+    "results/revision5/runs/classical__CAL__grid24__default__fallback.csv",
+    "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv"
+   ],
+   "sha256": "f6f38002036013a35998ce845d0b66389f6853d6604449fdd7bbde62b709e6fd"
+  },
+  {
+   "output": "results/revision5/analysis/h1_Dr.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/h1.py",
+   "command": "python -m experiments.revision5.analysis.h1 --B 10000 --D Dr",
+   "commit": "de6d1633bbcfbe19e5545752acf3de7ffcd65962",
+   "config_hash": "510bc0bc9098",
+   "generated": "2026-10-31 11:44:28",
+   "sources": [
+    "results/revision5/runs/classical__CAL__grid24__default__fallback.csv",
+    "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv"
+   ],
+   "sha256": "09a0be2c799f616f37ae59216f85bdc0fd1952728eb299f4c1652b6c282c5b92"
+  },
+  {
+   "output": "results/revision5/analysis/h2.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/h2.py",
+   "command": "python -m experiments.revision5.analysis.h2 --B 10000",
+   "commit": "04daf45561e0b7a01d798983781469c1a565c2a8-dirty",
+   "config_hash": "781e319dfdbc",
+   "generated": "2026-10-31 11:57:17",
+   "sources": [
+    "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__SEL__headline__default__fallback__s5_9.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__fallback__s5_9.csv",
+    "results/revision5/thresholds.json"
+   ],
+   "sha256": "85ed8acd26f4fd71b2db8d8be13c0ca8d935cb6e16ff4fba2f0d220052a46223"
+  },
+  {
+   "output": "results/revision5/analysis/h2_Dr.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/h2.py",
+   "command": "python -m experiments.revision5.analysis.h2 --B 10000 --D Dr",
+   "commit": "59cab46646ac31d6ccfa17eda72f452ee93805ee-dirty",
+   "config_hash": "21af85a664fb",
+   "generated": "2026-10-31 11:59:56",
+   "sources": [
+    "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__SEL__headline__default__fallback__s5_9.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__fallback__s5_9.csv",
+    "results/revision5/thresholds.json"
+   ],
+   "sha256": "427515d98113ad1734ad9ae06e10ccc5bec21a5b9de667a8c2936f171829a230"
+  },
+  {
+   "output": "results/revision5/analysis/h2_grid24.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/h2.py",
+   "command": "python -m experiments.revision5.analysis.h2 --B 10000 --grid24",
+   "commit": "e667507fa7de2db3dbea22dfd1fe95aedf87706e",
+   "config_hash": "1a6a13515346",
+   "generated": "2026-10-31 12:07:42",
+   "sources": [
+    "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__EVAL__grid24__default__fallback.csv",
+    "results/revision5/thresholds.json"
+   ],
+   "sha256": "23bbe7c553706ccf9a6d4b7f78123d3283080db49c4816da47a81031fd01d21a"
+  },
+  {
+   "output": "results/revision5/analysis/h3.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/h3.py",
+   "command": "python -m experiments.revision5.analysis.h3 --B 10000",
+   "commit": "b696e083fcb8f1e10580618e01126dfa110ab146",
+   "config_hash": "06458e4f6ed7",
+   "generated": "2026-10-31 18:43:36",
+   "sources": [
+    "results/revision5/veins/veins_rows.jsonl",
+    "results/revision5/veins/custom_h3.jsonl",
+    "results/revision5/runs/classical__EVAL__headline__default__sumo.csv"
+   ],
+   "sha256": "4a70c3ed7f3e60c74f39800627c7f900f78e24bc93f588e6417ef7ddbecdb56f"
+  },
+  {
+   "output": "results/revision5/analysis/h3_subepoch.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/h3.py",
+   "command": "python -m experiments.revision5.analysis.h3 --mode sub_epoch",
+   "commit": "6b71d5053fa1cb9adab0c0d59724b9bd40af8b4b",
+   "config_hash": "44e44043a4e2",
+   "generated": "2026-11-01 11:39:27",
+   "sources": [
+    "results/revision5/veins/veins_rows.jsonl",
+    "results/revision5/veins/custom_h3_subepoch.jsonl",
+    "configs/phy_patch_d6_frozen.json"
+   ],
+   "sha256": "ea9f1bfa4459a519cf1c5346fd56aa58cf6d8273ec2229957e2c82c380d600bb"
+  },
+  {
+   "output": "results/revision5/analysis/d6_calibration.json",
+   "exists": true,
+   "script": "experiments/revision5/veins/d6_calibrate.py",
+   "command": "python -m experiments.revision5.veins.d6_calibrate score",
+   "commit": "a282dbe95bfd66f6e9c4add1b3bbf277a9055c43",
+   "config_hash": "b70b1463c73e",
+   "generated": "2026-11-01 00:31:12",
+   "sources": [
+    "results/revision5/veins/veins_rows.jsonl",
+    "results/revision5/veins/d6_calibration/*.jsonl"
+   ],
+   "sha256": "1f7e7de8caab2b414705089f343de20969d3ebdbae56f4863ea3548f0de4cd5a"
+  },
+  {
+   "output": "results/revision5/analysis/holm.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/holm.py",
+   "command": "python -m experiments.revision5.analysis.holm",
+   "commit": "6b71d5053fa1cb9adab0c0d59724b9bd40af8b4b",
+   "config_hash": "54d5a4e7fe54",
+   "generated": "2026-11-01 11:39:39",
+   "sources": [
+    "results/revision5/analysis/h1.json",
+    "results/revision5/analysis/h2.json",
+    "results/revision5/analysis/h3.json",
+    "results/revision5/analysis/h3_subepoch.json"
+   ],
+   "sha256": "51cc1afcac61d59ab39d3e0c4632d74a3126b3094ea7ba879b219fbfb6b0f6f1"
+  },
+  {
+   "output": "results/revision5/analysis/secondary.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/secondary.py",
+   "command": "python -m experiments.revision5.analysis.secondary --B 10000",
+   "commit": "f6d6d75d9ed5d5c4e8a83f16dda5e249e7a6effe",
+   "config_hash": "1d333523a2a3",
+   "generated": "2026-11-01 22:13:12",
+   "sources": [
+    "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__EVAL__grid24__default__fallback.csv",
+    "results/revision5/runs/agent__SEL__headline__default__fallback__s5_9.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__fallback__s5_9.csv",
+    "results/revision5/thresholds.json",
+    "results/revision5/thresholds_stress.json",
+    "results/revision5/runs/agent__SEL__headline__default__fallback__ladderB.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__fallback__ladderB.csv",
+    "results/revision5/runs/agent__SEL__headline__default__fallback__ladderC.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__fallback__ladderC.csv",
+    "results/revision5/runs/agent__SEL__headline__default__fallback__variants.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__fallback__variants.csv",
+    "results/revision5/runs/agent__SEL__headline__default__fallback__tau0.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__fallback__tau0.csv",
+    "results/revision5/runs/agent__SEL__headline__default__fallback__rgate.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__fallback__rgate.csv",
+    "results/revision5/runs/agent__SEL__headline__default__fallback__budget.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__fallback__budget.csv",
+    "results/revision5/runs/classical__SEL__grid24__calibrated__fallback.csv",
+    "results/revision5/runs/classical__EVAL__grid24__calibrated__fallback.csv",
+    "results/revision5/runs/rule__SEL__grid24__calibrated__fallback.csv",
+    "results/revision5/runs/rule__EVAL__grid24__calibrated__fallback.csv",
+    "results/revision5/runs/agent__SEL__grid24__calibrated__fallback.csv",
+    "results/revision5/runs/agent__EVAL__grid24__calibrated__fallback.csv",
+    "results/revision5/runs/classical__SEL__headline__default__sumo.csv",
+    "results/revision5/runs/classical__EVAL__headline__default__sumo.csv",
+    "results/revision5/runs/rule__SEL__headline__default__sumo.csv",
+    "results/revision5/runs/rule__EVAL__headline__default__sumo.csv",
+    "results/revision5/runs/agent__SEL__headline__default__sumo.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__sumo.csv"
+   ],
+   "sha256": "582fe8fbd2da5e8da62ee8eb0f840d73d681bd5d8253ac20f0263d8d0ca104ab"
+  },
+  {
+   "output": "results/revision5/analysis/training_diagnostics.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/training_diag.py",
+   "command": "python -m experiments.revision5.analysis.training_diag",
+   "commit": "c5ef4c6466a05a070b1ff4ea815e4eefc433d581-dirty",
+   "config_hash": "9d658cc1ab5e",
+   "generated": "2026-11-01 22:00:13",
+   "sources": [
+    "results/revision1/checkpoints/*_history.jsonl"
+   ],
+   "sha256": "7cde92de554eac939733c9c878295ec5e27dc2972515283951c856554758072c"
+  },
+  {
+   "output": "results/revision5/analysis/compute_curves.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/compute_curves.py",
+   "command": "python -m experiments.revision5.analysis.compute_curves",
+   "commit": "f6d6d75d9ed5d5c4e8a83f16dda5e249e7a6effe",
+   "config_hash": "4cb586719838",
+   "generated": "2026-11-01 22:13:24",
+   "sources": [
+    "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv",
+    "results/revision1/checkpoints/*_history.jsonl",
+    "results/revision5/analysis/secondary.json"
+   ],
+   "sha256": "4ce3224619bf15ba98211c74910875653c8f7fd0b9e37774199648b1ee4917cb"
+  },
+  {
+   "output": "results/revision5/analysis/ledger.json",
+   "exists": true,
+   "script": "experiments/revision5/analysis/ledger.py",
+   "command": "python -m experiments.revision5.analysis.ledger",
+   "commit": "f6d6d75d9ed5d5c4e8a83f16dda5e249e7a6effe",
+   "config_hash": "964d857e571d",
+   "generated": "2026-11-01 22:13:27",
+   "sources": [
+    "results/revision5/analysis/h1.json",
+    "results/revision5/analysis/h2.json",
+    "results/revision5/analysis/h2_grid24.json",
+    "results/revision5/analysis/h3.json",
+    "results/revision5/analysis/h3_subepoch.json",
+    "results/revision5/analysis/holm.json",
+    "results/revision5/analysis/secondary.json",
+    "results/revision5/runs/classical__CAL__grid24__calibrated__fallback.csv",
+    "results/revision5/runs/classical__SEL__grid24__calibrated__fallback.csv",
+    "results/revision5/runs/classical__EVAL__grid24__calibrated__fallback.csv",
+    "results/revision5/runs/classical__SEL__headline__default__sumo.csv",
+    "results/revision5/runs/classical__EVAL__headline__default__sumo.csv"
+   ],
+   "sha256": "099ccd5760009b3a6ee9d1df2a906dd92d3b1c343a2b11e8caac7ed24665c5ff"
+  },
+  {
+   "output": "results/revision5/analysis/tables/T-heldout.tex",
+   "exists": true,
+   "script": "experiments/revision5/analysis/tables.py",
+   "command": "python -m experiments.revision5.analysis.tables",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/analysis/secondary.json",
+    "results/revision5/analysis/h2.json"
+   ],
+   "sha256": "6f32a98c83701e868298d47140e52cf0bea420a987b7a925f288b821958e7041"
+  },
+  {
+   "output": "results/revision5/analysis/tables/T-veins.tex",
+   "exists": true,
+   "script": "experiments/revision5/analysis/tables.py",
+   "command": "python -m experiments.revision5.analysis.tables",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/analysis/h3.json",
+    "results/revision5/analysis/h3_subepoch.json"
+   ],
+   "sha256": "937eb646ed9e5b4b5d7bbf1ea846933473217134bb77ee0815ac288555b5c85b"
+  },
+  {
+   "output": "results/revision5/analysis/tables/T-ablation.tex",
+   "exists": true,
+   "script": "experiments/revision5/analysis/tables.py",
+   "command": "python -m experiments.revision5.analysis.tables",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/analysis/secondary.json"
+   ],
+   "sha256": "43884fa07739dda38d8649d3a91b4a2629ab37cce18e1fec5530ccb3c244d384"
+  },
+  {
+   "output": "results/revision5/analysis/tables/T-ladder.tex",
+   "exists": true,
+   "script": "experiments/revision5/analysis/tables.py",
+   "command": "python -m experiments.revision5.analysis.tables",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/analysis/secondary.json"
+   ],
+   "sha256": "b92373f4e55b295115c4a74123e39784348489756578aaed085fd47734b1fbb4"
+  },
+  {
+   "output": "results/revision5/analysis/tables/T-gate.tex",
+   "exists": true,
+   "script": "experiments/revision5/analysis/tables.py",
+   "command": "python -m experiments.revision5.analysis.tables",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/analysis/secondary.json"
+   ],
+   "sha256": "8257c7d96aae7450c0c153fd09a7a9ab9f9b2bdd46d7e64e00b26876ccf669a8"
+  },
+  {
+   "output": "results/revision5/analysis/tables/T-interp.tex",
+   "exists": true,
+   "script": "experiments/revision5/analysis/tables.py",
+   "command": "python -m experiments.revision5.analysis.tables",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/analysis/secondary.json"
+   ],
+   "sha256": "3b1b0be6d0829d2e4f18013add89b2c86ce943f48d6de5e208d352ea36fdbdad"
+  },
+  {
+   "output": "results/revision5/analysis/tables/T-sens.tex",
+   "exists": true,
+   "script": "experiments/revision5/analysis/tables.py",
+   "command": "python -m experiments.revision5.analysis.tables",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/analysis/secondary.json"
+   ],
+   "sha256": "f5ac2de96dbc0fc5f689083edda64191291dd64f022b01ce6dabac8888573a53"
+  },
+  {
+   "output": "results/revision5/figures/fig_veins_pdr.pdf",
+   "exists": true,
+   "script": "experiments/revision5/analysis/figures.py",
+   "command": "python -m experiments.revision5.analysis.figures",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/analysis/h3.json",
+    "results/revision5/analysis/h3_subepoch.json"
+   ],
+   "sha256": "dd090a7ba71a68dcee0889b1ab43eb586fe2e9b54cd04359ab9102b5b747211c"
+  },
+  {
+   "output": "results/revision5/figures/fig_veins_delay.pdf",
+   "exists": true,
+   "script": "experiments/revision5/analysis/figures.py",
+   "command": "python -m experiments.revision5.analysis.figures",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/veins/veins_rows.jsonl",
+    "results/revision5/veins/custom_h3.jsonl",
+    "results/revision5/veins/custom_h3_subepoch.jsonl"
+   ],
+   "sha256": "1e547fb44322ec9ae3b6e585d3bd1eab0640a053ecee5d1532a211ba04c36de3"
+  },
+  {
+   "output": "results/revision5/figures/fig_compute.pdf",
+   "exists": true,
+   "script": "experiments/revision5/analysis/figures.py",
+   "command": "python -m experiments.revision5.analysis.figures",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/analysis/compute_curves.json"
+   ],
+   "sha256": "faf2d6618082a8522e90fa777f4dbf0a7e163771898c41b58ff6c239a4443be1"
+  },
+  {
+   "output": "results/revision5/figures/fig_training.pdf",
+   "exists": true,
+   "script": "experiments/revision5/analysis/figures.py",
+   "command": "python -m experiments.revision5.analysis.figures",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/analysis/training_diagnostics.json",
+    "results/revision1/checkpoints/*_history.jsonl"
+   ],
+   "sha256": "ee2e63772637a502f549a75e38e660c08f2f29955b7a2dc6e131d8c5b95ffa7d"
+  },
+  {
+   "output": "results/revision5/figures/fig_heldout.pdf",
+   "exists": true,
+   "script": "experiments/revision5/analysis/figures.py",
+   "command": "python -m experiments.revision5.analysis.figures",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision5/runs/classical__EVAL__grid24__default__fallback.csv",
+    "results/revision5/analysis/secondary.json"
+   ],
+   "sha256": "7944ef1a40e04f7f3e5068a3a4fae5c024989493244ff113dd7056bc73eece49"
+  }
+ ]
+}
