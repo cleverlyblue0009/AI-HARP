@@ -13,17 +13,31 @@ import math
 
 import numpy as np
 
+from common.config import PROJECT_ROOT
 from experiments.evaluate_agent import checkpoint_sha
 from experiments.revision5.analysis.common import (B, D_R, EVAL, GRID24, HEADLINE, SEED_RNG, SEL, finite, newcombe,
                                                   rows, select, tables, thresholds, wilson, write)
 from experiments.revision5.sweep import checkpoint_for
 
 
+def run_sha(run: str) -> str:
+    """checkpoint_sha of a training run: from its checkpoint file if present (it must match the committed map), else
+    from the committed map results/revision5/checkpoint_shas.json (checkpoints are not committed)."""
+    m = json.loads((PROJECT_ROOT / "results" / "revision5" / "checkpoint_shas.json").read_text(encoding="utf-8"))["shas"]
+    p = checkpoint_for(run)
+    if p.exists():
+        s = checkpoint_sha(p)
+        if run in m and m[run] != s:
+            raise ValueError(f"{run}: checkpoint sha {s} differs from the committed map ({m[run]})")
+        return s
+    return m[run]
+
+
 def agent_tables(runs: list[str], cells, seeds, files: list[str], variant: str = "learned",
                  extra=()) -> dict[str, dict]:
     """{run: {cell: Table over biases}} for each training seed's rows of one gate variant:
     "learned" (tau 0.5), "tau0" (ungated) or "rgate" (random gate at the learned gate's SEL rate)."""
-    sha = {checkpoint_sha(checkpoint_for(r)): r for r in runs}
+    sha = {run_sha(r): r for r in runs}
     allrows = [r for f in files for r in rows(f)]
     out = {}
     for s, run in sha.items():
