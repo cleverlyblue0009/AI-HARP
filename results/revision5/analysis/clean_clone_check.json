@@ -1,0 +1,203 @@
+[
+ {
+  "output": "results/revision5/analysis/compute_curves.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/d6_calibration.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/h1.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/h1_Dr.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/h2.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/h2_Dr.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/h2_grid24.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/h3.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:config,config_hash,generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/h3_subepoch.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/holm.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/ledger.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/secondary.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/training_diagnostics.json",
+  "raw_bytes_identical": false,
+  "identical_after_eol_normalisation": false,
+  "identical_without_provenance": true,
+  "differing_fields": [
+   "provenance:generated,git_commit"
+  ]
+ },
+ {
+  "output": "results/revision5/analysis/tables/T-ablation.tex",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/analysis/tables/T-gate.tex",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/analysis/tables/T-heldout.tex",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/analysis/tables/T-interp.tex",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/analysis/tables/T-ladder.tex",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/analysis/tables/T-sens.tex",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/analysis/tables/T-veins.tex",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/figures/fig_compute.pdf",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/figures/fig_heldout.pdf",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/figures/fig_training.pdf",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/figures/fig_veins_delay.pdf",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ },
+ {
+  "output": "results/revision5/figures/fig_veins_pdr.pdf",
+  "raw_bytes_identical": true,
+  "identical_after_eol_normalisation": true,
+  "identical_without_provenance": null,
+  "differing_fields": []
+ }
+]

@@ -199,7 +199,7 @@ aside (`*.bak-<timestamp>`; nothing is deleted) and reruns every sweep in the pr
 checkpoints and Veins replays. Output map (rows → script → command → commit → config hash → SHA-256):
 `results/MANIFEST.md`, `results/manifest.json`.
 
-**Clean-clone check:** see section 7.
+**Clean-clone check:** passed (section 7).
 
 ## 6. CPU-hours per track
 
@@ -221,4 +221,21 @@ CPU field) and the analysis scripts.
 
 ## 7. Clean-clone reproduction check
 
-Pending at the time of writing; the result is added here when it finishes.
+Fresh `git clone --branch revision-5` into `D:\aiharp-clean` (commit d391f30), then `reproduce_revision5.ps1` (one
+command, analysis from committed rows; interpreter check passed: NumPy 1.26.4; exit code 0; 2026-11-01 23:15 →
+2026-11-02 00:14). Each regenerated output was compared with the committed version in that clone
+(`analysis/clean_clone_check.json`):
+
+* **h1.json, h1_Dr.json, h2.json, h2_Dr.json, h2_grid24.json, h3.json, h3_subepoch.json** and the six other JSON outputs:
+  **identical once the `provenance` block is removed** (parsed and re-serialised in file order). The whole files are
+  not byte-identical, and cannot be: the provenance stamp records the generation time and the commit. In h3.json the
+  stamp also differs in `config` (the committed file was written before `h3.py` gained `--mode`, so its stamp has no
+  `mode` key and a different config hash); its content is identical.
+* **All 7 tables and all 5 figures: byte-identical** as whole files.
+
+The check found two defects, both fixed before this final run and neither changing a number:
+1. The analysis needed the trained checkpoints (not committed) to identify which training run each policy row belongs
+   to; the first clean-clone run failed at h2. Fix: committed map `results/revision5/checkpoint_shas.json` (47 runs; every
+   hash verified against the committed rows), used when a checkpoint file is absent and checked against it when present.
+2. The per-seed entries of h2/h2_Dr/h2_grid24 were written in Python-set order, which changes between processes; all
+   values were identical. Fix: run order.
