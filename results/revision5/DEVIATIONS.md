@@ -161,3 +161,26 @@ simulator (scheme and policy rankings, selection and qualification), and no abso
 custom simulator (PDR, busy ratio, loss rates) is presented as validated. The policy (H2 and all secondary policy
 results) exists only in the custom simulator and is reported with that restriction. Both H3 results (epoch and
 sub-epoch) are reported; the epoch-mode one is the pre-registered primary test.
+
+## D7 — ledger: columns where the claimed comparison is undefined (2026-11-01T22:07+05:30)
+
+**Not specified before:** the ledger addendum (ANALYSIS_SPEC, 2026-10-31T12:05+05:30) says "a column whose rows are
+incomplete reads 'not tested', never 'holds'", but not how to score a column whose rows are complete while the claimed
+comparison is undefined there (the policy qualifies in no SUMO headline cell, so "policy vs adaptive classical / best
+rule" has no cell to compare).
+
+**Decided:** such a column counts as **not holding** (a "stable" verdict needs positive evidence in every applicable
+column). The H1 Cal. and SUMO columns, and the per-cell-winner columns, are point estimates recomputed from the committed
+rows with the H1 selection code (no bootstrap), and are labelled as such.
+
+**Seen before this entry:** all Step 1–2 secondary results (secondary.json, B = 2,000), including the SUMO policy
+result (qualifies in 0 of 4 headline cells) and the stress-test results; the first ledger draft. **Effect on verdicts:
+none.** With the alternative reading (undefined = not applicable): H2 is "not supported" from its Set. column alone;
+"policy costlier than the best rule" stays "sensitive" because its sensitivity-grid column is not tested; the
+qualification claim fails on SUMO (the policy reaches no cell, so the comparison is defined and false).
+
+**Also recorded:** the secondary bootstrap first ran with the script default B = 2,000; it was re-run with the
+pre-registered 10,000 replicates (ANALYSIS_SPEC "Bootstrap: 10,000 replicates") and all downstream outputs regenerated.
+Point estimates do not depend on B. For the Step 5 clean-clone check, the provenance stamp of every output carries the
+generation time and commit, so a regenerated file cannot be byte-identical as a whole; the check compares (a) the full
+files and (b) the outputs with the `provenance` block removed, and reports both.
