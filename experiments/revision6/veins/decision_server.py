@@ -1,10 +1,10 @@
 """Revision 6 Step 2: decision server for the learned policy in Veins (pinned interpreter, unchanged agent code).
 
-    python -m experiments.revision6.veins.decision_server --port 5701
+    python -m experiments.revision6.veins.decision_server --connect 127.0.0.1:5801 --config <worker cfg.json>
 
-One server per Veins worker. Each TCP connection is one replay. Before launching a replay the orchestrator writes
-cache/veins_runs/r6_bridge/server_<port>.json = {checkpoint, bias, tau, scenario, density, seed, n_vehicles, log};
-on accept the server builds the policy exactly as the custom evaluation does (registry "ai_harp" -> from_checkpoint
+One server per Veins worker; it dials that worker's WSL broker (bridge_broker.py). Each connection is one replay.
+Before launching a replay the orchestrator writes the worker's config file = {run, bias, tau, scenario, density, seed,
+n_vehicles, log, name}; at the replay's first request the server builds the policy exactly as the custom evaluation does (registry "ai_harp" -> from_checkpoint
 with tau, suppression_bias, deterministic=False; policy.phy = the run's PHY, experiments/run_sim.py) and resets it
 for the replay. Then, per newline-delimited JSON request (AiharpApp::bridgeDecide), it rebuilds the DecisionContext
 (agents/base.py) from the app's own state and beacon-derived neighbour table, calls policy.decide unchanged, and
@@ -114,49 +114,59 @@ class Session:
         return reply, {"stream": sk, "kind": act.kind.value}
 
 
-def serve(port: int, root: Path) -> None:
+def session(conn: socket.socket, cfg_path: Path) -> None:
+    """Serve one replay on one connection. The replay's configuration is read at its first request (the server may
+    connect before the orchestrator has written it)."""
+    conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+    buf, n, sess, log, cfg = b"", 0, None, None, {}
+    try:
+        while True:
+            chunk = conn.recv(65536)
+            if not chunk:
+                break
+            buf += chunk
+            while b"\n" in buf:
+                line, buf = buf.split(b"\n", 1)
+                if sess is None:
+                    cfg = json.loads(cfg_path.read_text())
+                    sess = Session(cfg)
+                    log = open(cfg["log"], "a", encoding="utf-8")
+                    log.write(json.dumps({"session": cfg}) + "\n")
+                    print(f"[server] replay {cfg.get('name')}", flush=True)
+                q = json.loads(line)
+                reply, info = sess.decide(q)
+                conn.sendall(reply.encode() + b"\n")
+                log.write(json.dumps({"req": q, "reply": reply, **info}) + "\n")
+                n += 1
+    finally:
+        if log:
+            log.close()
+        conn.close()
+        if sess is not None:
+            print(f"[server] replay {cfg.get('name')} done: {n} decisions", flush=True)
+
+
+def serve(connect: str, cfg_path: Path) -> None:
+    """Dial the WSL broker (bridge_broker.py) and serve one replay per connection, forever."""
+    import time
     import numpy
     print(f"[env] {sys.executable} numpy {numpy.__version__}", flush=True)
-    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    srv.bind(("0.0.0.0", port))
-    srv.listen(1)
-    print(f"[server] listening on {port}", flush=True)
+    host, port = connect.rsplit(":", 1)
     while True:
-        conn, peer = srv.accept()
-        conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        cfg = json.loads((root / f"server_{port}.json").read_text())
-        sess = Session(cfg)
-        log = open(cfg["log"], "a", encoding="utf-8")
-        log.write(json.dumps({"session": cfg}) + "\n")
-        print(f"[server] replay {cfg.get('name')} from {peer}", flush=True)
-        buf, n = b"", 0
         try:
-            while True:
-                chunk = conn.recv(65536)
-                if not chunk:
-                    break
-                buf += chunk
-                while b"\n" in buf:
-                    line, buf = buf.split(b"\n", 1)
-                    q = json.loads(line)
-                    reply, info = sess.decide(q)
-                    conn.sendall(reply.encode() + b"\n")
-                    log.write(json.dumps({"req": q, "reply": reply, **info}) + "\n")
-                    n += 1
-        finally:
-            log.close()
-            conn.close()
-            print(f"[server] replay {cfg.get('name')} done: {n} decisions", flush=True)
+            conn = socket.create_connection((host, int(port)))
+        except OSError:
+            time.sleep(1.0)
+            continue
+        session(conn, cfg_path)
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--port", type=int, required=True)
-    ap.add_argument("--root", type=Path, default=Path("cache/veins_runs/r6_bridge"))
+    ap.add_argument("--connect", required=True, help="the worker's broker, e.g. 127.0.0.1:5801")
+    ap.add_argument("--config", type=Path, required=True, help="replay configuration file written by the orchestrator")
     a = ap.parse_args(argv)
-    a.root.mkdir(parents=True, exist_ok=True)
-    serve(a.port, a.root)
+    serve(a.connect, a.config)
     return 0
 
 

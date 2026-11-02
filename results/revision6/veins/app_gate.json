@@ -1,0 +1,36 @@
+{
+ "provenance": {
+  "task": "revision6/veins/app_gate",
+  "git_commit": "dae519cda363e8359b85ba61a09d355f47e5371d-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m -",
+  "config_hash": "d86f6c842aff",
+  "config": {
+   "replay": "rural_highway_d20_s200 slotted_1p n=8 seed 200"
+  },
+  "seeds": null,
+  "generated": "2026-11-02 12:28:19"
+ },
+ "app_sha256": "ee1611db473ffc970bd2c8a0edd4954f2ded76ce23330af9595809a4b68e5dd3",
+ "revision5_app_sha256": "0b51338566156f07866c11d622956d95ce798991ac5bcaf2b53f37ede686db4d",
+ "replay": "rural_highway_d20_s200__slotted_1p_8__s200",
+ "events_sha256_uncompressed": {
+  "revision6_binary": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8",
+  "revision5_binary_same_run": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8",
+  "revision5_H3_replay_cache_veins_runs_h3": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8"
+ },
+ "event_lines": 2468,
+ "trace_identical_both": true,
+ "exit_codes": [
+  0,
+  0
+ ],
+ "wall_s": [
+  294.1,
+  299.9
+ ],
+ "pass": true,
+ "note": "a first gate attempt was invalid (both runs shared one working directory; fixed in run_veins6.py); the binary was rebuilt (full-precision F lines) before this gate run, which used the final binary"
+}

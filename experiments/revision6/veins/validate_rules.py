@@ -85,7 +85,7 @@ def main(argv=None) -> int:
     out = {"cell": f"{sc} d={d:g}", "seed": seed}
 
     # ---- RAR -------------------------------------------------------------------------------------------------
-    rar_name = f"{sc}_d{d:g}_s{seed}__rar_{'_'.join(f'{v:g}' for v in RAR_ABC)}__s{seed}"
+    rar_name = f"{sc}_d{d:g}_s{seed}__rar_{'_'.join(repr(v) for v in RAR_ABC)}__s{seed}"   # run_veins6 naming
     rec = json.loads((RUNS / f"{rar_name}.run.json").read_text())
     pol = RelevanceAwareRule(abc=list(RAR_ABC))
     n_dec = 0
@@ -127,7 +127,7 @@ def main(argv=None) -> int:
                   "decision_mismatches": len(mism), "mismatch_examples": mism[:10]}
 
     # ---- SCF -------------------------------------------------------------------------------------------------
-    scf_name = f"{sc}_d{d:g}_s{seed}__scf_slotted_{SCF_ST[0]:g}_{SCF_ST[1]:g}__s{seed}"
+    scf_name = f"{sc}_d{d:g}_s{seed}__scf_slotted_{SCF_ST[0]}_{SCF_ST[1]:g}__s{seed}"
     rec = json.loads((RUNS / f"{scf_name}.run.json").read_text())
     smism, n_dec = [], 0
     for f, dline in pairs(events(scf_name)):
