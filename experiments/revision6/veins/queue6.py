@@ -39,6 +39,7 @@ WSL_ROOT = "/mnt/c/Users/UPASANA/AI-HARP"
 RUNNER = f"{WSL_ROOT}/experiments/revision6/veins/run_veins6.py"
 BROKER = f"{WSL_ROOT}/experiments/revision6/veins/bridge_broker.py"
 BIASES = (-2.0, -1.0, 0.0, 1.0, 2.0, 3.0)
+POLICY_CELLS = tuple(c for c in HEADLINE if c != ("rural_highway", 80.0))     # D10: no rural d=80 for the policy
 PY = sys.executable
 
 
@@ -80,7 +81,7 @@ def tasks(mode: str, seeds, runs=(), biases=BIASES) -> list[tuple]:
     else:
         for run in runs:
             for b in biases:
-                for sc, d in HEADLINE:
+                for sc, d in POLICY_CELLS:
                     for s in seeds:
                         out.append((sc, d, s, "ai_harp", f"{run}_b{b:g}", (run, b)))
     return out
@@ -145,6 +146,7 @@ def main(argv=None) -> int:
     ap.add_argument("--runs", nargs="*", default=[f"ref_s{k}" for k in range(5)])
     ap.add_argument("--biases", type=float, nargs="*", default=list(BIASES))
     ap.add_argument("--jobs", type=int, default=4)
+    ap.add_argument("--reverse", action="store_true", help="work from the end of the list (a second queue beside a running one)")
     a = ap.parse_args(argv)
     print(f"[env] {sys.executable} numpy {numpy.__version__}", flush=True)
     app_sha = json.loads(GATE.read_text())["app_sha256"]
@@ -160,6 +162,8 @@ def main(argv=None) -> int:
         return 0
     ts = tasks(a.mode, seeds, a.runs, a.biases)
     todo = [t for t in ts if not done(name_of(*t[:5]), app_sha)]
+    if a.reverse:
+        todo.reverse()
     print(f"[queue6] {a.mode}: {len(ts)} replays, {len(todo)} to do, {a.jobs} workers", flush=True)
     RUNS.mkdir(parents=True, exist_ok=True)
     t0 = time.time()

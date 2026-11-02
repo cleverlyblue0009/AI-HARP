@@ -1,4 +1,4 @@
-{
+﻿{
  "gcn_s5": {
   "status": "finished (1,000 updates), never evaluated, unused",
   "source_file": "ckpt_final.pt",
@@ -18,7 +18,7 @@
   "sha256": "afe5b1020fa5101f01e163c43fc02974c22b1d36ff887d32d8b7af1a6a315cfc"
  },
  "gcn_s7_mixed_mobility_invalid": {
-  "status": "INVALID: fallback mobility to update 491, SUMO from update 492 (watchdog bug), stopped at 504, unused",
+  "status": "INVALID: fallback mobility to update 491, SUMO from update 492 (watchdog bug), stopped at 505, unused",
   "source_file": "ckpt_latest.pt",
   "updates": 505,
   "sha256": "01d7fdf82e38957f6db70fd78feda2d4ad6e27f9e28e3a1f2d968d43b360a31b"

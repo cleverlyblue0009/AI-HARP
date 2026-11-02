@@ -31,6 +31,32 @@ HOME = Path.home()
 APP6 = HOME / "veins-r6" / "aiharp"
 
 
+def claim_replay(name: str, app: Path, out: Path) -> Path | None:
+    """Claim a replay for this process; None if it has a good record already or a live process holds it."""
+    p = out / f"{name}.run.json"
+    if p.exists():
+        r = json.loads(p.read_text())
+        if r.get("exit_code") == 0 and r.get("fcd_check", {}).get("identical") and r.get("app_sha256") == r5._sha(app / "aiharp"):
+            return None
+    d = Path("/tmp/aiharp_runs6") / "claims"
+    d.mkdir(parents=True, exist_ok=True)
+    c = d / name
+    for _ in range(2):
+        try:
+            fd = os.open(c, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        except FileExistsError:
+            try:
+                os.kill(int(c.read_text() or 0), 0)
+                return None                                # held by a live process
+            except (ProcessLookupError, ValueError, FileNotFoundError):
+                c.unlink(missing_ok=True)                  # left by a killed process
+                continue
+        os.write(fd, str(os.getpid()).encode())
+        os.close(fd)
+        return c
+    return None
+
+
 def run(bundle: Path, policy: str, knobs: str, seed: int, out: Path, bridge: str = "", app: Path = APP6) -> dict:
     b = json.loads((bundle / "bundle.json").read_text())
     v = b["veins"]
@@ -119,5 +145,13 @@ if __name__ == "__main__":
     if "--app" in args:
         i = args.index("--app"); app = Path(args[i + 1]).expanduser(); del args[i:i + 2]
     bdir, pol, kn, sd, od = args[:5]
-    r = run(Path(bdir), pol, kn, int(sd), Path(od), bridge, app)
+    name = f"{Path(bdir).name}__{pol}_{kn.replace(',', '_').replace(' ', '')}__s{sd}"
+    claim = claim_replay(name, app, Path(od))        # two queues may share the task list (D10: freed cores)
+    if claim is None:
+        print(json.dumps({"skipped": name}))
+        raise SystemExit(0)
+    try:
+        r = run(Path(bdir), pol, kn, int(sd), Path(od), bridge, app)
+    finally:
+        claim.unlink(missing_ok=True)
     print(json.dumps({k: r[k] for k in ("bundle", "policy", "knobs", "seed", "exit_code", "wall_s", "fcd_check")}))
