@@ -1,0 +1,10 @@
+{
+ "run": "gcn_s9",
+ "variant": "gcn",
+ "seed": 9,
+ "rc": 3221226091,
+ "hours_this_session": 0.0,
+ "git_commit": "873e1d5de702887664f700e3004bcdd62d4b5d38",
+ "command": "python -u -m agents.train --keep-awake --quiet --out .\\checkpoints\\revision1\\gcn_s9 --workers 5 --seed 9 --encoder gcn",
+ "checkpoint_dir": "checkpoints/revision1/gcn_s9"
+}

@@ -17,26 +17,13 @@ function Launch($name, $cmdline) {
     "$(Get-Date -Format s) launched $name" | Add-Content $log
 }
 $r6 = "cache\veins_runs\r6"
-$names = @(); foreach ($v in 'gcn','mlp','norel','rungB','rungC') { foreach ($s in 5..9) { $names += "${v}_s$s" } }
-function TrainDone($lane) {
-    for ($i = $lane; $i -lt $names.Count; $i += 2) { if (-not (Test-Path "checkpoints\revision1\$($names[$i])\run_summary.json")) { return $false } }
-    return $true
-}
-$A2 = "ref_s5 ref_s6 ref_s7 ref_s8 ref_s9"; $A1 = "ref_s0 ref_s1 ref_s2 ref_s3 ref_s4"
-$veinsDone = { Test-Path "$r6\_DONE_policy_$($A2 -replace ' ','_')_200-209" }
+$A1 = "ref_s0 ref_s1 ref_s2 ref_s3 ref_s4"
 $jobs = @(
     @{ n = "veins_rules"; alive = "queue6 rules"; ready = { $true }; done = { Test-Path "$r6\_DONE_rules_200-209" };
        cmd = "$gpu -u -m experiments.revision6.veins.queue6 rules --seeds 200-209 --jobs 6 >> logs\revision6\tierA_rules.log 2>&1" },
     @{ n = "veins_policy_A"; alive = "queue6 policy --runs ref_s0"; ready = { Test-Path "$r6\_DONE_rules_200-209" };
        done = { Test-Path "$r6\_DONE_policy_$($A1 -replace ' ','_')_200-209" };
        cmd = "$gpu -u -m experiments.revision6.veins.queue6 policy --runs $A1 --seeds 200-209 --jobs 5 >> logs\revision6\tierA_policy_A.log 2>&1" },
-    @{ n = "veins_policy_A2"; alive = "queue6 policy --runs ref_s5"; ready = { Test-Path "$r6\_DONE_policy_$($A1 -replace ' ','_')_200-209" };
-       done = $veinsDone;
-       cmd = "$gpu -u -m experiments.revision6.veins.queue6 policy --runs $A2 --seeds 200-209 --jobs 5 >> logs\revision6\tierA_policy_A2.log 2>&1" },
-    @{ n = "train_lane0"; alive = "train_queue .*--lane 0"; ready = { $true }; done = { TrainDone 0 };
-       cmd = "$gpu -u -m experiments.revision1.train_queue --only $($names -join ' ') --lane 0 --lanes 2 --workers 5 --eval-jobs 0 >> logs\revision6\train_lane0.log 2>&1" },
-    @{ n = "train_lane1"; alive = "train_queue .*--lane 1"; ready = $veinsDone; done = { TrainDone 1 };
-       cmd = "$gpu -u -m experiments.revision1.train_queue --only $($names -join ' ') --lane 1 --lanes 2 --workers 5 --eval-jobs 0 >> logs\revision6\train_lane1.log 2>&1" }
 )
 $status = @()
 foreach ($j in $jobs) {

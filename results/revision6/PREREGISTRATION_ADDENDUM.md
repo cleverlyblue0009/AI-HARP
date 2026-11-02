@@ -131,3 +131,39 @@ re-run on the rebuilt binary; only those runs count.
 **Seen before this entry:** the first validation replays (RAR, SCF, policy on seed 200, rural d=20) and the sanity
 metrics of the policy replay (Veins RWCR 0.461, cost 1.47; custom 0.836, 0.693). The fix was identified from the
 input comparison (neighbour arrays vs trace geometry), not from those outcomes, and nothing else is changed.
+
+## D10 — scope cuts on cost and time (2026-11-02T21:50+05:30, decided by the author)
+
+**Numbering:** the author's instruction called this D9; D9 was already taken by the beacon-velocity fix above, so it is
+recorded as D10.
+
+**Decided:**
+1. **Rules, Tier A:** unchanged, all four cells. The section 3 cut (RAR β1 = 0.5) applies only if the 72-wall-hour limit
+   is actually missed, judged on elapsed time and throughput. Clock start: first replay, 2026-11-02T12:43+05:30; limit
+   2026-11-05T12:43+05:30.
+2. **Policy:** training seeds 0–4 only (Tier A-P), in rural d=2, rural d=20 and urban NLOS d=20. **Rural d=80 is not run
+   for the policy** (900 replays instead of 1,200). **Tier A-P2 (seeds 5–9, 1,200 replays) is cancelled.**
+3. **Step 5 / D8 (variant seeds 5–9) is stopped.** No partially trained run is evaluated. `T-ablation10`, `T-ladder10`
+   and `variants10.json` are therefore not produced as planned. What exists is committed in
+   `results/revision6/checkpoints_unused/`, labelled and unused: gcn_s5 (finished, 1,000 updates, never evaluated),
+   gcn_s6 (86 updates), gcn_s7 (restart, stopped at 334 updates), and the quarantined gcn_s7 whose updates from 492 on
+   used SUMO mobility by mistake (watchdog bug, fixed in f64380c).
+4. **Freed cores go to the Veins replays.** No VM.
+
+**Reason:** cost and time only. Projected Veins wall time was about 9 days on a single laptop (6 cores, 12 threads), with
+rural d=80 replays at about 1 h each. That figure was a projection: the revision-5 d=80 median of 1,712 s, scaled by the
+2.2× ratio of this laptop's d=20 median to revision 5's. No d=80 replay had finished when the projection was made.
+
+**What had and had not been seen when this was decided:**
+* **Not seen:** any Tier A rule or policy result. No Tier A replay has been scored; `veins6_score` has not been run on
+  `cache/veins_runs/r6/`, and no policy Tier A replay exists. Only replay status and wall times were read.
+* **Seen (the instruction asked for a statement that no Veins result had been viewed; that is not exact, so this is
+  stated instead):** the validation sanity replays, which were reported to the author earlier the same day. Seed 200,
+  rural d=20, final binary: policy (ref_s0, bias +1) RWCR 0.780, cost 1.262; RAR (1.0, 0.5, 0.0) RWCR 0.587, cost 0.181;
+  SCF-slotted (8, 5) RWCR 0.868, cost 0.224. Also the pre-D9 policy replay (D9 above). The assistant described the
+  policy sanity replay to the author as "a warning". No rural d=80 result of any rule or of the policy has been seen.
+
+**Consequences for the analysis:** the policy has no rural d=80 Veins result, so any comparison involving the policy
+covers three cells and five training seeds; V1–V4 and the Veins tables say so wherever they apply. Classical and rule
+methods keep all four cells. Rural d=80 is the densest cell, so omitting it for the policy limits what can be claimed
+about the policy under high density in Veins; this is stated in the report.
