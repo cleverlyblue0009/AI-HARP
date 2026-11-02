@@ -109,3 +109,25 @@ Training seeds 5–9 for GCN, MLP, no-relevance, rung B and rung C (priority in 
 cells, sampled actions, τ = 0.5; rung C on its privileged path). `T-ablation` and `T-ladder` are recomputed with 10
 seeds per variant (mean ± SD, bootstrap CIs) and reported next to the 5-seed versions. **No result of these runs has
 been seen; none exists when this is written.** Runs only on cores not needed by the Veins replays.
+
+## D9 — beacon velocity in the revision-6 app (2026-11-02T12:34+05:30, before any reported replay)
+
+**Found:** checking the policy request's neighbour arrays against the custom trace (the validation replay ref_s0, bias
++1, rural d=20, seed 200) showed every neighbour velocity equal to zero (median |Δvx| 19.4 m/s = the vehicles' speed;
+own state, positions and headings agreed to the expected one-epoch lag). Cause: `omnetpp.ini` sets
+`veinsmobility.setHostSpeed = false`, so Veins never sets the mobility speed, `getCurrentSpeed()` is (0, 0), and
+DemoBaseApplLayer copies that into every beacon's `senderSpeed`. Consequences for the policy: neighbour velocity,
+relevance and ETA features wrong; for every port using the beacon table, entries are not extrapolated to the
+decision time. **The revision-5 classical ports that use the beacon table (greedy_farthest, DV-CAST) ran with the
+same zero beacon velocities** (DV-CAST's opposing-traffic test saw no moving neighbour); this is reported in the
+revision-6 report; no revision-5 result is changed.
+
+**Fix (app content only; the configuration is unchanged, so the classical replays' configuration is untouched):**
+for the policy kinds rar, scf_slotted and ai_harp, each beacon's `senderSpeed` is set to the sender's velocity from
+its TraCI speed and heading (`heading.toCoord() × speed`), as a CAM/BSM carries it. Classical kinds keep the
+revision-5 behaviour exactly (the identity gate is re-run on the rebuilt binary). The rule and policy validations are
+re-run on the rebuilt binary; only those runs count.
+
+**Seen before this entry:** the first validation replays (RAR, SCF, policy on seed 200, rural d=20) and the sanity
+metrics of the policy replay (Veins RWCR 0.461, cost 1.47; custom 0.836, 0.693). The fix was identified from the
+input comparison (neighbour arrays vs trace geometry), not from those outcomes, and nothing else is changed.

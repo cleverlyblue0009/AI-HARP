@@ -91,6 +91,7 @@ def main(argv=None) -> int:
     n_dec = 0
     dr_inputs, dr_trace, dp_same_n, mism = [], [], [], []
     n_same_n = 0
+    pos_lag: dict = {}
     for f, dline in pairs(events(rar_name)):
         _, t, step, idx, trig, x, y, vx, vy, dr, rel, eta, n, sdist, u, p = f
         step, idx, n = int(step), int(idx), int(n)
@@ -101,6 +102,13 @@ def main(argv=None) -> int:
         feats = rf.features_at(tr, step, hz)
         rel_tr = float(feats["relevance"][idx])
         dr_trace.append(abs(rel_tr - rel))
+        # which trace step the Veins mobility state equals (to SUMO's printed precision)
+        for lag in (0, 1):
+            if step - lag >= 0 and abs(x - tr.x[step - lag, idx]) < 0.006 and abs(y - tr.y[step - lag, idx]) < 0.006:
+                pos_lag[lag] = pos_lag.get(lag, 0) + 1
+                break
+        else:
+            pos_lag["other"] = pos_lag.get("other", 0) + 1
         c = ctx_for(idx, step, dt, trig, n, sdist, R, rel=float(ref), rng=_FixedRng(u))
         p_py = pol.rebroadcast_probability(c)
         act = pol.decide(c)
@@ -122,6 +130,7 @@ def main(argv=None) -> int:
                   "rho_c_max_abs_diff_identical_inputs": max(dr_inputs) if dr_inputs else None,
                   "rho_c_max_abs_diff_vs_custom_trace": max(dr_trace) if dr_trace else None,
                   "rho_c_median_abs_diff_vs_custom_trace": float(np.median(dr_trace)) if dr_trace else None,
+                  "veins_position_equals_trace_step_minus_lag": {str(k): v for k, v in pos_lag.items()},
                   "decisions_with_same_neighbour_count": n_same_n,
                   "p_max_abs_diff_same_neighbour_count": max(dp_same_n) if dp_same_n else None,
                   "decision_mismatches": len(mism), "mismatch_examples": mism[:10]}
