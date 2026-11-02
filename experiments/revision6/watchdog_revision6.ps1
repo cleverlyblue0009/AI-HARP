@@ -7,8 +7,9 @@ $root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Set-Location $root
 $gpu = "D:\aiharp-gpu\Scripts\python.exe"
 $log = "logs\revision6\watchdog.log"
+# Never inherit SUMO_HOME: backend "auto" would then pick SUMO and training would leave its trace set (incident
+# 2026-11-02: gcn_s7 resumed on SUMO from update 492, quarantined). queue6.py sets it for the decision servers only.
 Remove-Item Env:SUMO_HOME -ErrorAction SilentlyContinue
-$env:SUMO_HOME = "D:\sumo\sumo-1.19.0"           # the decision servers read the cached SUMO traces
 $procs = @(Get-CimInstance Win32_Process -Filter "Name='python.exe'" | ForEach-Object { $_.CommandLine })
 function Alive($pattern) { [bool]($procs | Where-Object { $_ -match $pattern }) }
 function Launch($name, $cmdline) {
