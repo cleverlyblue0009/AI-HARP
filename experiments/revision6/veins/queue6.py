@@ -193,6 +193,11 @@ def main(argv=None) -> int:
             for w in workers:
                 w.close()
     print(f"[queue6] {a.mode} pass finished in {(time.time() - t0) / 3600:.2f} wall-hours", flush=True)
+    left = [t for t in ts if not done(name_of(*t[:5]), app_sha)]
+    if not left:                                    # completion marker for the watchdog's next stage
+        tag = a.mode if a.mode == "rules" else "policy_" + "_".join(a.runs)
+        (RUNS / f"_DONE_{tag}_{a.seeds}").write_text(time.strftime("%Y-%m-%dT%H:%M:%S"))
+    print(f"[queue6] {len(left)} replays still not done", flush=True)
     return 0
 
 
