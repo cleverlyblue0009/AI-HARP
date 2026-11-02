@@ -58,6 +58,9 @@ PLAN: tuple[tuple[str, int], ...] = (("ref", 1), ("ref", 2), ("gcn", 1), ("mlp",
                                      ("rungB", 2), ("rungB", 3), ("rungB", 4), ("rungC", 2), ("rungC", 3), ("rungC", 4),
                                      ("gcn", 2), ("gcn", 3), ("gcn", 4), ("mlp", 2), ("mlp", 3), ("mlp", 4),
                                      ("norel", 2), ("norel", 3), ("norel", 4))
+#: revision-6 D8 (results/revision6/PREREGISTRATION_ADDENDUM.md): variant seeds 5-9, priority GCN, MLP,
+#: no-relevance, rung B, rung C.
+PLAN += tuple((v, s) for v in ("gcn", "mlp", "norel", "rungB", "rungC") for s in range(5, 10))
 #: revision-5 budget extension: full-model seeds 0-2 resumed exactly from 1,000 to 2,000 updates.
 EXTENSIONS = ("ref_s0_u2000", "ref_s1_u2000", "ref_s2_u2000")
 
