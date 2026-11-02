@@ -58,7 +58,7 @@ def score(run_json: Path) -> dict:
         v = m.get(k, math.nan)
         row[k] = float(v) if isinstance(v, (int, float)) else v
     row["channel_busy_ratio"] = raw["channel_busy_ratio"]
-    row["action_mix"] = dict(Counter(d[5] for d in ev.get("D", [])))
+    row["action_mix"] = dict(Counter(d[4] for d in ev.get("D", [])))   # D: t, step, idx, trigger, action, delay
     return row
 
 

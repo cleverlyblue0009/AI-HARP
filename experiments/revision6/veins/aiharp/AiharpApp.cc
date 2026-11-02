@@ -254,6 +254,11 @@ void AiharpApp::handleSelfMsg(cMessage* msg)
             bsm->setSenderIdx(idx);
             auto di = S.dirOf.find(idx);
             bsm->setSenderDir(di == S.dirOf.end() ? 0 : di->second);
+            // D9: with veinsmobility.setHostSpeed = false the mobility speed is never set and populateWSM copies a
+            // zero velocity into every beacon; the new policy kinds send the CAM velocity from TraCI speed and heading
+            // (classical kinds keep the revision-5 beacon unchanged)
+            if (kind == RAR || kind == SCF_SLOTTED || kind == AI_HARP)
+                bsm->setSenderSpeed(mobility->getHeading().toCoord(mobility->getSpeed()));
             sendDown(bsm);
             beaconsSent++;
             if (activeSince < 0) activeSince = simTime().dbl();

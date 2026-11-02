@@ -1,0 +1,58 @@
+{
+ "provenance": {
+  "task": "revision6/veins/port_validation_rules",
+  "git_commit": "0c26e9765db2800fc4861eb7dd5b8429d6e93788-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision6.veins.validate_rules",
+  "config_hash": "4bc95d63b53a",
+  "config": {
+   "cell": [
+    "rural_highway",
+    20.0,
+    200
+   ],
+   "rar": [
+    1.0,
+    0.5,
+    0.0
+   ],
+   "scf": [
+    8,
+    5.0
+   ]
+  },
+  "seeds": [
+   200
+  ],
+  "generated": "2026-11-02 12:41:21"
+ },
+ "cell": "rural_highway d=20",
+ "seed": 200,
+ "rar": {
+  "replay": "rural_highway_d20_s200__rar_1.0_0.5_0.0__s200",
+  "exit_code": 0,
+  "trace_identical": true,
+  "decisions": 269,
+  "rho_c_max_abs_diff_identical_inputs": 0.0,
+  "rho_c_max_abs_diff_vs_custom_trace": 0.005189022527259113,
+  "rho_c_median_abs_diff_vs_custom_trace": 0.0,
+  "veins_position_equals_trace_step_minus_lag": {
+   "1": 269
+  },
+  "decisions_with_same_neighbour_count": 7,
+  "p_max_abs_diff_same_neighbour_count": 0.0021806354411183365,
+  "decision_mismatches": 0,
+  "mismatch_examples": []
+ },
+ "scf": {
+  "replay": "rural_highway_d20_s200__scf_slotted_8_5__s200",
+  "exit_code": 0,
+  "trace_identical": true,
+  "decisions": 424,
+  "decision_mismatches": 0,
+  "mismatch_examples": []
+ },
+ "pass": true
+}
