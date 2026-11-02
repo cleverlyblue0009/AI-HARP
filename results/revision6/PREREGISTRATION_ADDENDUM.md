@@ -1,7 +1,7 @@
 # Revision 6 — pre-registration addendum: rules and the learned policy in Veins; more diagnostic seeds
 
 Written 2026-11-02T12:05+05:30 on branch `revision-6` (from `origin/revision-5`, 59baa42), **before any revision-6 replay,
-port-validation replay or training run**. Push commit of this file: *recorded in the follow-up commit*.
+port-validation replay or training run**. Push commit of this file: `b695924`.
 
 **Seen before writing:** every revision-5 result (`results/revision5/`), including the custom-simulator rule and policy
 results on SUMO mobility (EVAL seeds 200–229), which form the custom side of V4. **Not seen (does not exist yet):** any
