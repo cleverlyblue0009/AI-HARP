@@ -167,3 +167,21 @@ rural d=80 replays at about 1 h each. That figure was a projection: the revision
 covers three cells and five training seeds; V1–V4 and the Veins tables say so wherever they apply. Classical and rule
 methods keep all four cells. Rural d=80 is the densest cell, so omitting it for the policy limits what can be claimed
 about the policy under high density in Veins; this is stated in the report.
+
+## D11 — analysis code before scoring (2026-11-05T00:00+05:30)
+
+**Changed in `experiments/revision6/analysis/veins_methods.py`, before any Tier A replay was scored:**
+1. **D10 scope:** the default runs are ref_s0–ref_s4, and the policy's qualification counts are out of three cells. V2,
+   V3 and the policy's V4 pairs already leave out cells without a policy result, so they cover three cells; V1, the
+   classical methods and the rules keep four.
+2. **Bug fix:** in the bootstrap, resampled training runs carry labels such as `ref_s0#3`, and the matched-cost lookup
+   compared those labels with the plain run names. Every replicate would have had no policy cost, so V2 and V3 would have
+   had no intervals or p-values. The lookup now strips the suffix. No definition, threshold, test or bootstrap setting
+   changes. Found by reading the code and confirmed on made-up numbers.
+
+**What had and had not been seen:**
+* **Not seen:** any Tier A score. `veins6_score` has not been run on `cache/veins_runs/r6/`; `veins6_rows.jsonl` and
+  `veins_methods.json` do not exist.
+* **Seen:** replay status and wall times; the simulated end time (`covered_until_s`) of the rural d=80 SCF-slotted
+  replays, read to explain why three were running long; and the last two lines of one unfinished event log (seed 205,
+  SCF-slotted 50 slots, timeout 2 s), which are not a metric.

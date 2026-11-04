@@ -1,6 +1,6 @@
 """Revision 6 Step 6: classical, rules and the learned policy in Veins -- V1-V4 (results/revision6/analysis/veins_methods.json).
 
-    python -m experiments.revision6.analysis.veins_methods [--B 10000] [--runs ref_s0 ... ref_s9]
+    python -m experiments.revision6.analysis.veins_methods [--B 10000] [--runs ref_s0 ... ref_s4]
 
 Definitions: results/revision6/PREREGISTRATION_ADDENDUM.md section 4 (Algorithm 1 inside Veins as D3: per cell q* = 0.95 x
 max mean RWCR over the 55 classical settings, m* = min mean actionable miss over them + 0.05; matched cost = the
@@ -10,6 +10,8 @@ an EVAL-HINDSIGHT comparison (thresholds, crossings and comparison on the same s
 Bootstrap: B replicates, RNG 20261102, replay seeds (and training runs) resampled with replacement; q*, m*, every
 crossing and every "best" recomputed; undefined replicates counted and excluded. Holm over V1-V3.
 Custom side of V4: the committed revision-5 custom-on-SUMO rows (epoch mode), same seeds, same definitions.
+Scope (addendum D10): the policy has training seeds 0-4 and no rural d=80, so V2, V3 and the policy's V4 pairs and
+qualification cover three cells; classical and rules keep all four, including V1.
 """
 
 from __future__ import annotations
@@ -29,8 +31,9 @@ from experiments.revision5.analysis.common import holm, rows, tables, wilson, wr
 from experiments.revision5.analysis.h2 import run_sha
 from experiments.revision5.analysis.h3 import FAMILIES, key, veins_rows
 from experiments.revision5.sweep import HEADLINE
+from experiments.revision6.veins.queue6 import POLICY_CELLS
 
-OUT = PROJECT_ROOT / "results" / "revision6" / "analysis"
+OUT =PROJECT_ROOT / "results" / "revision6" / "analysis"
 V6 = PROJECT_ROOT / "results" / "revision6" / "veins" / "veins6_rows.jsonl"
 SEEDS = list(range(200, 210))
 RNG_SEED = 20261102
@@ -108,7 +111,7 @@ def cell_eval(cell: dict, runs, idx=None) -> dict:
     q, m = thresholds(cell["classical"], idx)
     cls = {f: matched(cell["classical"], f, q, m, idx) for f in FAMILIES}
     rul = {f: matched(cell["rules"], f, q, m, idx) for f in RULES}
-    pol = {r: matched(cell["policy"][r], r, q, m, idx) for r in runs}
+    pol = {r: matched(cell["policy"][r], r.split("#")[0], q, m, idx) for r in runs}   # "#j": a resampled run's label
     fin = lambda d: {k: v for k, v in d.items() if math.isfinite(v)}  # noqa: E731
     bc = min(fin(cls).items(), key=lambda kv: kv[1], default=(None, math.inf))
     br = min(fin(rul).items(), key=lambda kv: kv[1], default=(None, math.inf))
@@ -138,12 +141,14 @@ def main(argv=None) -> int:
     import numpy
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--B", type=int, default=10000)
-    ap.add_argument("--runs", nargs="*", default=[f"ref_s{k}" for k in range(10)])
+    ap.add_argument("--runs", nargs="*", default=[f"ref_s{k}" for k in range(5)])
     a = ap.parse_args(argv)
     print(f"[env] {sys.executable} numpy {numpy.__version__}", flush=True)
     runs = a.runs
     vr, _ = veins_rows()
     rr, pr = veins6_rows(runs)
+    if any((r["scenario"], float(r["density"])) not in POLICY_CELLS for r in pr):
+        raise SystemExit("policy rows outside the D10 cells")
     V = build(vr, rr, pr, runs)
     cc, cr, cp = custom_rows(runs)
     C = build(cc, cr, cp, runs)
@@ -203,6 +208,9 @@ def main(argv=None) -> int:
     payload = {
         "label": "EVAL-hindsight comparison on Tier A seeds 200-209 (thresholds, crossings and comparison on the same seeds)",
         "runs": runs, "seeds": SEEDS, "B": a.B, "rng_seed": RNG_SEED,
+        "policy_cells": [CK(c) for c in POLICY_CELLS],
+        "scope": "Addendum D10: policy training seeds 0-4, rural d=80 not run for the policy; V2, V3 and the policy's V4 "
+                 "pairs cover three cells, V1 and the classical and rule methods cover four",
         "cells": {CK(c): {"q_star": e["q_star"], "m_star": e["m_star"],
                           "classical": {f: fin(v) for f, v in e["classical"].items()},
                           "best_classical": {"family": e["best_classical"][0], "cost": fin(e["best_classical"][1])},
@@ -267,14 +275,14 @@ def rule_settings_table(t, q, m) -> dict:
 
 def qualification(point: dict, runs) -> dict:
     out = {}
-    n = len(point)
-    for name, get in (("best_classical", lambda e: math.isfinite(e["best_classical"][1])),
-                      ("best_rule", lambda e: math.isfinite(e["best_rule"][1])),
-                      ("policy_aggregate", lambda e: math.isfinite(e["policy_aggregate"]))):
+    n, np_ = len(point), len(POLICY_CELLS)
+    for name, get, of in (("best_classical", lambda e: math.isfinite(e["best_classical"][1]), n),
+                          ("best_rule", lambda e: math.isfinite(e["best_rule"][1]), n),
+                          ("policy_aggregate", lambda e: math.isfinite(e["policy_aggregate"]), np_)):
         k = sum(1 for e in point.values() if get(e))
-        out[name] = {"cells": k, "of": n, "wilson95": wilson(k, n)}
+        out[name] = {"cells": k, "of": of, "wilson95": wilson(k, of)}
     k = sum(e["policy_n_pick"] for e in point.values())
-    out["policy_run_x_cell_picks"] = {"count": k, "of": n * len(runs), "wilson95": wilson(k, n * len(runs))}
+    out["policy_run_x_cell_picks"] = {"count": k, "of": np_ * len(runs), "wilson95": wilson(k, np_ * len(runs))}
     return out
 
 
