@@ -107,6 +107,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("mode", choices=["capped", "d9", "status"])
     ap.add_argument("--jobs", type=int, default=8)
+    ap.add_argument("--reverse", action="store_true", help="capped: work from the end of the list (a second queue beside a running one)")
+    ap.add_argument("--first-worker", type=int, default=0, help="capped: first worker number, so a second queue has its own ports and config files")
     a = ap.parse_args(argv)
     print(f"[env] {sys.executable} numpy {numpy.__version__}", flush=True)
     app_sha = json.loads(GATE.read_text())["app_sha256"]
@@ -119,6 +121,8 @@ def main(argv=None) -> int:
     ts, out = plans[a.mode]
     out.mkdir(parents=True, exist_ok=True)
     todo = [t for t in ts if not done(out, q6.name_of(*t[:5]), app_sha)]
+    if a.reverse:
+        todo.reverse()
     print(f"[queue7] {a.mode}: {len(ts)} replays, {len(todo)} to do, {a.jobs} workers", flush=True)
     t0 = time.time()
     if a.mode == "d9":
@@ -132,7 +136,7 @@ def main(argv=None) -> int:
                 print(f"{time.strftime('%H:%M:%S')} {i}/{len(todo)} {name} "
                       f"{'ok' if done(out, name, app_sha) else 'FAILED (kept, will retry)'}", flush=True)
     else:
-        workers = [Worker7(k) for k in range(a.jobs)]
+        workers = [Worker7(k) for k in range(a.first_worker, a.first_worker + a.jobs)]
         lock, it, n = threading.Lock(), iter(todo), [0]
 
         def loop(w):
@@ -141,6 +145,10 @@ def main(argv=None) -> int:
                     t = next(it, None)
                 if t is None:
                     return
+                if a.reverse:                        # never touch a replay the other queue finished or is running
+                    nm = q6.name_of(*t[:5])
+                    if done(out, nm, app_sha) or (q6.BRIDGE / f"{nm}.jsonl").exists():
+                        continue
                 name = w.run7(t, out, "--max-decisions-per-epoch", "1")
                 with lock:
                     n[0] += 1
