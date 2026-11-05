@@ -1,0 +1,51 @@
+{
+ "task": "revision7/custom_cap",
+ "git_commit": "434e0f005675afe15ddd715a8afbe1236c28b913",
+ "python": "3.12.9",
+ "numpy": "1.26.4",
+ "interpreter": "aiharp-gpu",
+ "command": "python -m experiments.revision7.custom_cap --jobs 3",
+ "config_hash": "779268ccccb7",
+ "config": {
+  "runs": [
+   "ref_s0",
+   "ref_s1",
+   "ref_s2",
+   "ref_s3",
+   "ref_s4"
+  ],
+  "cells": [
+   [
+    "rural_highway",
+    20.0
+   ],
+   [
+    "urban_nlos",
+    20.0
+   ]
+  ],
+  "biases": [
+   -2.0,
+   -1.0,
+   0.0,
+   1.0,
+   2.0,
+   3.0
+  ],
+  "max_decisions_per_epoch": 1
+ },
+ "seeds": [
+  200,
+  201,
+  202,
+  203,
+  204,
+  205,
+  206,
+  207,
+  208,
+  209
+ ],
+ "generated": "2026-11-05 16:33:17",
+ "n_runs": 600
+}
