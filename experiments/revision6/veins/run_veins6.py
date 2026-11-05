@@ -57,7 +57,7 @@ def claim_replay(name: str, app: Path, out: Path) -> Path | None:
     return None
 
 
-def run(bundle: Path, policy: str, knobs: str, seed: int, out: Path, bridge: str = "", app: Path = APP6, extra=()) -> dict:
+def run(bundle: Path, policy: str, knobs: str, seed: int, out: Path, bridge: str = "", app: Path = APP6, app_args=()) -> dict:
     b = json.loads((bundle / "bundle.json").read_text())
     v = b["veins"]
     tag = knobs.replace(",", "_").replace(" ", "")
@@ -103,7 +103,7 @@ def run(bundle: Path, policy: str, knobs: str, seed: int, out: Path, bridge: str
                    '"//AnalogueModel[@type=\'SimpleObstacleShadowing\']/obstacles")')
     else:
         cmd.append('--*.obstacles.obstacles=xml("<obstacles/>")')
-    cmd += list(extra)                                     # revision 7: the new build's parameters
+    cmd += list(app_args)                                  # revision 7: the new build's parameters
     env = dict(os.environ, PATH=f"{r5.SUMO.parent}:" + ":".join(
         p for p in os.environ.get("PATH", "").split(":") if not p.startswith("/mnt/")))
     t_wall = time.time()
@@ -145,13 +145,13 @@ if __name__ == "__main__":
         i = args.index("--bridge"); bridge = args[i + 1]; del args[i:i + 2]
     if "--app" in args:
         i = args.index("--app"); app = Path(args[i + 1]).expanduser(); del args[i:i + 2]
-    extra = []
+    app_args = []
     if "--max-decisions-per-epoch" in args:          # revision 7 (flags, not raw arguments: wsl.exe passes through a shell)
         i = args.index("--max-decisions-per-epoch")
-        extra.append(f"--*.node[*].appl.maxDecisionsPerEpoch={int(args[i + 1])}"); del args[i:i + 2]
+        app_args.append(f"--*.node[*].appl.maxDecisionsPerEpoch={int(args[i + 1])}"); del args[i:i + 2]
     if "--beacon-cam-velocity" in args:
         args.remove("--beacon-cam-velocity")
-        extra.append("--*.node[*].appl.beaconCamVelocity=true")
+        app_args.append("--*.node[*].appl.beaconCamVelocity=true")
     bdir, pol, kn, sd, od = args[:5]
     name = f"{Path(bdir).name}__{pol}_{kn.replace(',', '_').replace(' ', '')}__s{sd}"
     claim = claim_replay(name, app, Path(od))        # two queues may share the task list (D10: freed cores)
@@ -159,7 +159,7 @@ if __name__ == "__main__":
         print(json.dumps({"skipped": name}))
         raise SystemExit(0)
     try:
-        r = run(Path(bdir), pol, kn, int(sd), Path(od), bridge, app, extra)
+        r = run(Path(bdir), pol, kn, int(sd), Path(od), bridge, app, app_args)
     finally:
         claim.unlink(missing_ok=True)
     print(json.dumps({k: r[k] for k in ("bundle", "policy", "knobs", "seed", "exit_code", "wall_s", "fcd_check")}))

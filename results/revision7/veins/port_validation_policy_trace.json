@@ -1,0 +1,35 @@
+{
+ "provenance": {
+  "task": "revision7/veins/port_validation_policy_trace",
+  "git_commit": "e77929a165b645da9de385148834e38b85b4051d-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision7.veins.validate7 gate",
+  "config_hash": "5417e8413c42",
+  "config": {
+   "scenario": "rural_highway",
+   "density": 20.0,
+   "seed": 200,
+   "run": "ref_s0",
+   "bias": 1.0,
+   "tau": 0.5
+  },
+  "seeds": [
+   200
+  ],
+  "generated": "2026-11-05 16:32:44"
+ },
+ "log": "gate_rural_highway_d20_s200__ai_harp_ref_s0_b1__s200.jsonl",
+ "requests": 719,
+ "mismatches": 0,
+ "first_mismatches": [],
+ "action_mix": {
+  "broadcast": 100,
+  "suppress": 468,
+  "defer": 91,
+  "relay": 43,
+  "carry": 17
+ },
+ "pass": true
+}

@@ -1,0 +1,67 @@
+{
+ "provenance": {
+  "task": "revision7/veins/app_gate",
+  "git_commit": "e77929a165b645da9de385148834e38b85b4051d-dirty",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision7.veins.validate7 gate",
+  "config_hash": "56bc343a1d26",
+  "config": {
+   "replay": "rural_highway d=20 seed 200"
+  },
+  "seeds": null,
+  "generated": "2026-11-05 16:32:44"
+ },
+ "pass": true,
+ "app_sha256": "a1279a02643639552f7ce818291da0d77fdf4d419b4b808253357467ca14e463",
+ "revision6_app_sha256": "5d92be2ab5fd3469184c3c7e5e1b2d9bfb646e3c3b91223f58bfef018664cbe6",
+ "checks": {
+  "slotted_1p_vs_revision6_gate": {
+   "replay": "rural_highway_d20_s200__slotted_1p_8__s200",
+   "exit_code": 0,
+   "trace_identical": true,
+   "events_sha256": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8",
+   "reference_sha256": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8",
+   "pass": true
+  },
+  "dvcast_vs_revision5_replay": {
+   "replay": "rural_highway_d20_s200__dvcast_1__s200",
+   "exit_code": 0,
+   "trace_identical": true,
+   "events_sha256": "28af87f3f68799c845df617294f8008c53b52a722bf8ae7f9fce6564acc14c02",
+   "reference_sha256": "28af87f3f68799c845df617294f8008c53b52a722bf8ae7f9fce6564acc14c02",
+   "pass": true
+  },
+  "greedy_farthest_vs_revision5_replay": {
+   "replay": "rural_highway_d20_s200__greedy_farthest_1__s200",
+   "exit_code": 0,
+   "trace_identical": true,
+   "events_sha256": "5f5213fb469dcc74fd70cfb6f6f8830d76bd4ac0418c1c8cd774233c6704d140",
+   "reference_sha256": "5f5213fb469dcc74fd70cfb6f6f8830d76bd4ac0418c1c8cd774233c6704d140",
+   "pass": true
+  },
+  "policy_off_vs_revision6_replay": {
+   "replay": "rural_highway_d20_s200__ai_harp_ref_s0_b1__s200",
+   "exit_code": 0,
+   "trace_identical": true,
+   "events_sha256": "220dd1fd37f441b100eaf5419667f05783e7cca1382f22ed74a3d12cbc7ab839",
+   "reference_sha256": "220dd1fd37f441b100eaf5419667f05783e7cca1382f22ed74a3d12cbc7ab839",
+   "pass": true
+  },
+  "capped_replay_runs": {
+   "replay": "rural_highway_d20_s200__ai_harp_ref_s0_b1__s200",
+   "exit_code": 0,
+   "trace_identical": true,
+   "events_sha256": "345b2d3968be46f520e1873922c834a012420c8a4494bf2c51f708f24fe3bc3b",
+   "capped_callbacks": 1189,
+   "decisions": 719,
+   "pass": true
+  },
+  "capped_trace_check": {
+   "requests": 719,
+   "mismatches": 0,
+   "pass": true
+  }
+ }
+}

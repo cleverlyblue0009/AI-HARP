@@ -1,0 +1,42 @@
+{
+ "provenance": {
+  "task": "revision7/veins/port_validation_policy_unit",
+  "git_commit": "e77929a165b645da9de385148834e38b85b4051d",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision7.veins.validate7 unit",
+  "config_hash": "5417e8413c42",
+  "config": {
+   "scenario": "rural_highway",
+   "density": 20.0,
+   "seed": 200,
+   "run": "ref_s0",
+   "bias": 1.0,
+   "tau": 0.5
+  },
+  "seeds": [
+   200
+  ],
+  "generated": "2026-11-05 16:20:17"
+ },
+ "contexts": 1000,
+ "contexts_per_seed": {
+  "200": 419,
+  "201": 376,
+  "202": 205
+ },
+ "max_abs_diff_action_distribution": 0.0,
+ "gate_verdict_mismatches": 0,
+ "pass": true,
+ "custom_run_seed200": {
+  "rwcr": 0.8362646139434285,
+  "action_counts": {
+   "suppress": 474,
+   "broadcast": 30,
+   "defer": 70,
+   "carry": 45,
+   "relay": 16
+  }
+ }
+}
