@@ -61,6 +61,9 @@ class SimSettings:
     #: decision. They depend only on (trace, step, hazard), so the result is
     #: identical; measured at 11% of rollout time (20,242 calls in 3 updates).
     cache_step_features: bool = True
+    #: Revision 7 (results/revision7/ADDENDUM.md): 1 = a duplicate callback in an epoch where the vehicle has already
+    #: decided is answered with SUPPRESS without calling the policy. Off (0) by default; draws nothing.
+    max_decisions_per_epoch: int = 0
 
     #: Keys that used to exist and must not come back silently.
     REMOVED_KEYS = {
@@ -180,6 +183,8 @@ class DisseminationEngine:
         self._rx_pairs: list = []
         self._cbr_samples: list = []
         self._hz_busy_sum, self._n_act_steps = 0.0, 0
+        self._last_decision = np.full(self.N, NO_STEP, dtype=np.int32)
+        self._n_capped = 0
         self.policy.reset(self.N, rng_pol)
 
         N = self.N
@@ -287,6 +292,7 @@ class DisseminationEngine:
                 "cs_range_m": round(self.cs_range_m, 1),
                 "rx_prune_range_m": round(self.rx_range_m, 1),
                 **({"rx_pairs": self._rx_pairs} if cfg.record_rx_pairs else {}),
+                **({"capped_callbacks": self._n_capped} if cfg.max_decisions_per_epoch else {}),
                 **(self._sub_epoch_meta() if self.mac.timing == "sub_epoch" else {}),
             },
             **counters,
@@ -490,6 +496,12 @@ class DisseminationEngine:
                     # one that needs to know the gap has closed. A pending
                     # *transmission* does block it, since `cancel_on_duplicates`
                     # already handles that case.
+                    if self.cfg.max_decisions_per_epoch and self._last_decision[r] == step:
+                        # Answered with SUPPRESS, policy not called: no pending
+                        # transmission here, so only a carry timer is cleared.
+                        timer_sched[r] = NO_STEP
+                        self._n_capped += 1
+                        continue
                     self._decide_and_apply(
                         r, step, Trigger.RECEIVE, holds, informed_step, hops, dup_count,
                         max_sender_dist, tx_sched, timer_sched, cancel_at_dups,
@@ -717,6 +729,7 @@ class DisseminationEngine:
         origin_step, rng_pol, *, sender: int | None, sender_dist: float,
         designated: bool = False, tx_count: np.ndarray | None = None,
     ) -> None:
+        self._last_decision[i] = step
         ctx = self._context(
             i, step, trigger, hops, dup_count, max_sender_dist, informed_step,
             origin_step, rng_pol, sender, sender_dist, designated,
