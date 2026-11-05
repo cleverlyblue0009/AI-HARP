@@ -1,0 +1,1290 @@
+{
+ "provenance": {
+  "task": "revision6/analysis/veins_methods.json",
+  "git_commit": "8d2f406440f4dcd952119b54b533eea8a38de2f1",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision6.analysis.veins_methods --B 10000",
+  "config_hash": "b1c08d050eb8",
+  "config": {
+   "B": 10000,
+   "runs": [
+    "ref_s0",
+    "ref_s1",
+    "ref_s2",
+    "ref_s3",
+    "ref_s4"
+   ]
+  },
+  "seeds": [
+   200,
+   201,
+   202,
+   203,
+   204,
+   205,
+   206,
+   207,
+   208,
+   209
+  ],
+  "generated": "2026-11-05 15:25:38"
+ },
+ "label": "EVAL-hindsight comparison on Tier A seeds 200-209 (thresholds, crossings and comparison on the same seeds)",
+ "runs": [
+  "ref_s0",
+  "ref_s1",
+  "ref_s2",
+  "ref_s3",
+  "ref_s4"
+ ],
+ "seeds": [
+  200,
+  201,
+  202,
+  203,
+  204,
+  205,
+  206,
+  207,
+  208,
+  209
+ ],
+ "B": 10000,
+ "rng_seed": 20261102,
+ "policy_cells": [
+  "rural_highway d=2",
+  "rural_highway d=20",
+  "urban_nlos d=20"
+ ],
+ "scope": "Addendum D10: policy training seeds 0-4, rural d=80 not run for the policy; V2, V3 and the policy's V4 pairs cover three cells, V1 and the classical and rule methods cover four",
+ "cells": {
+  "rural_highway d=2": {
+   "q_star": 0.09466229675288977,
+   "m_star": 1.0424501424501424,
+   "classical": {
+    "flooding": null,
+    "p_persistence_03": null,
+    "slotted_1p": 1.5361367206694434,
+    "weighted_p": null,
+    "counter_based": null,
+    "greedy_farthest": null,
+    "dvcast": 1.307743583000595
+   },
+   "best_classical": {
+    "family": "dvcast",
+    "cost": 1.307743583000595
+   },
+   "rules": {
+    "rar": 1.0,
+    "scf_slotted": 1.5361367206694434
+   },
+   "best_rule": {
+    "family": "rar",
+    "cost": 1.0
+   },
+   "policy_per_run": {
+    "ref_s0": null,
+    "ref_s1": null,
+    "ref_s2": 0.86548716600119,
+    "ref_s3": null,
+    "ref_s4": null
+   },
+   "policy_n_pick": 1,
+   "policy_aggregate": null,
+   "rule_settings": {
+    "rar:0.5,0.0,-0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 1.0,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:0.5,0.0,0.0": {
+     "rwcr": 0.09964452289777871,
+     "cost": 1.35,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:0.5,0.0,0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 1.6,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:0.5,0.5,-0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 1.55,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:0.5,0.5,0.0": {
+     "rwcr": 0.09964452289777871,
+     "cost": 1.95,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:0.5,0.5,0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.25,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:0.5,1.0,-0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.25,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:0.5,1.0,0.0": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.3,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:0.5,1.0,0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.3,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,0.0,-0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 1.5,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,0.0,0.0": {
+     "rwcr": 0.09964452289777871,
+     "cost": 1.8,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,0.0,0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.1,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,0.5,-0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.1,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,0.5,0.0": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.2,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,0.5,0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.25,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,1.0,-0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.25,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,1.0,0.0": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.3,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,1.0,0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.3,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.0,-0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.1,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.0,0.0": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.1,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.0,0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.1,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.5,-0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.1,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.5,0.0": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.2,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.5,0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.25,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,1.0,-0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.25,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,1.0,0.0": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.3,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,1.0,0.25": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.3,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:20,10": {
+     "rwcr": 0.09439109435306521,
+     "cost": 1.5,
+     "miss": 0.9961538461538462,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:20,2": {
+     "rwcr": 0.09439109435306521,
+     "cost": 1.5,
+     "miss": 0.9961538461538462,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:20,5": {
+     "rwcr": 0.09439109435306521,
+     "cost": 1.5,
+     "miss": 0.9961538461538462,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:3,10": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.2,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:3,2": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.2,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:3,5": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.2,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:50,10": {
+     "rwcr": 0.09439109435306521,
+     "cost": 1.4,
+     "miss": 0.9961538461538462,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:50,2": {
+     "rwcr": 0.09439109435306521,
+     "cost": 1.4,
+     "miss": 0.9961538461538462,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:50,5": {
+     "rwcr": 0.09439109435306521,
+     "cost": 1.4,
+     "miss": 0.9961538461538462,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:8,10": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.2,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:8,2": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.2,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:8,5": {
+     "rwcr": 0.09964452289777871,
+     "cost": 2.2,
+     "miss": 0.9924501424501425,
+     "meets_q_and_m": true
+    }
+   },
+   "custom_on_sumo": {
+    "q_star": 0.24346749538765294,
+    "m_star": 0.9277777777777779,
+    "best_classical": [
+     "dvcast",
+     1.5111111111111113
+    ],
+    "best_rule": [
+     null,
+     null
+    ],
+    "policy_aggregate": null
+   }
+  },
+  "rural_highway d=20": {
+   "q_star": 0.878957805721434,
+   "m_star": 0.40386991386991383,
+   "classical": {
+    "flooding": null,
+    "p_persistence_03": null,
+    "slotted_1p": 0.2352938087933625,
+    "weighted_p": null,
+    "counter_based": null,
+    "greedy_farthest": null,
+    "dvcast": 0.22645651143531004
+   },
+   "best_classical": {
+    "family": "dvcast",
+    "cost": 0.22645651143531004
+   },
+   "rules": {
+    "rar": null,
+    "scf_slotted": null
+   },
+   "best_rule": {
+    "family": null,
+    "cost": null
+   },
+   "policy_per_run": {
+    "ref_s0": null,
+    "ref_s1": null,
+    "ref_s2": null,
+    "ref_s3": null,
+    "ref_s4": null
+   },
+   "policy_n_pick": 0,
+   "policy_aggregate": null,
+   "rule_settings": {
+    "rar:0.5,0.0,-0.25": {
+     "rwcr": 0.16423709255210625,
+     "cost": 0.3211851127595809,
+     "miss": 0.894903474903475,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.0,0.0": {
+     "rwcr": 0.3699639009246408,
+     "cost": 0.20378041535701014,
+     "miss": 0.7508895158895158,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.0,0.25": {
+     "rwcr": 0.5108024707757652,
+     "cost": 0.22922295731795422,
+     "miss": 0.6415741015741016,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.5,-0.25": {
+     "rwcr": 0.16423709255210625,
+     "cost": 0.3211851127595809,
+     "miss": 0.894903474903475,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.5,0.0": {
+     "rwcr": 0.3699639009246408,
+     "cost": 0.20378041535701014,
+     "miss": 0.7508895158895158,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.5,0.25": {
+     "rwcr": 0.5108024707757652,
+     "cost": 0.22987655208919605,
+     "miss": 0.6415741015741016,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,1.0,-0.25": {
+     "rwcr": 0.16423709255210625,
+     "cost": 0.3211851127595809,
+     "miss": 0.894903474903475,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,1.0,0.0": {
+     "rwcr": 0.3699639009246408,
+     "cost": 0.20378041535701014,
+     "miss": 0.7508895158895158,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,1.0,0.25": {
+     "rwcr": 0.5108024707757652,
+     "cost": 0.22987655208919605,
+     "miss": 0.6415741015741016,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.0,-0.25": {
+     "rwcr": 0.39337253961659335,
+     "cost": 0.25456768457879375,
+     "miss": 0.7342961092961093,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.0,0.0": {
+     "rwcr": 0.5312161231935029,
+     "cost": 0.3095032047178963,
+     "miss": 0.626877041877042,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.0,0.25": {
+     "rwcr": 0.5826155164973104,
+     "cost": 0.25979308593948625,
+     "miss": 0.5863721413721414,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.5,-0.25": {
+     "rwcr": 0.39337253961659335,
+     "cost": 0.25456768457879375,
+     "miss": 0.7342961092961093,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.5,0.0": {
+     "rwcr": 0.5312161231935029,
+     "cost": 0.31016109945473835,
+     "miss": 0.626877041877042,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.5,0.25": {
+     "rwcr": 0.5826155164973104,
+     "cost": 0.25979308593948625,
+     "miss": 0.5863721413721414,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,1.0,-0.25": {
+     "rwcr": 0.39337253961659335,
+     "cost": 0.25456768457879375,
+     "miss": 0.7342961092961093,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,1.0,0.0": {
+     "rwcr": 0.5312161231935029,
+     "cost": 0.3108189941915805,
+     "miss": 0.626877041877042,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,1.0,0.25": {
+     "rwcr": 0.5826155164973104,
+     "cost": 0.26059308593948627,
+     "miss": 0.5863721413721414,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.0,-0.25": {
+     "rwcr": 0.42899640279577494,
+     "cost": 0.3525845241208426,
+     "miss": 0.7065295515295515,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.0,0.0": {
+     "rwcr": 0.4990822603759478,
+     "cost": 0.34519654125973037,
+     "miss": 0.6514850014850015,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.0,0.25": {
+     "rwcr": 0.5926928904051164,
+     "cost": 0.26543175435837113,
+     "miss": 0.5686738936738938,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.5,-0.25": {
+     "rwcr": 0.42899640279577494,
+     "cost": 0.3525845241208426,
+     "miss": 0.7065295515295515,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.5,0.0": {
+     "rwcr": 0.4990822603759478,
+     "cost": 0.34519654125973037,
+     "miss": 0.6514850014850015,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.5,0.25": {
+     "rwcr": 0.5926928904051164,
+     "cost": 0.2621437724989607,
+     "miss": 0.5686738936738938,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,1.0,-0.25": {
+     "rwcr": 0.42899640279577494,
+     "cost": 0.3525845241208426,
+     "miss": 0.7065295515295515,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,1.0,0.0": {
+     "rwcr": 0.4990822603759478,
+     "cost": 0.34519654125973037,
+     "miss": 0.6514850014850015,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,1.0,0.25": {
+     "rwcr": 0.5926928904051164,
+     "cost": 0.263164180662226,
+     "miss": 0.5686738936738938,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:20,10": {
+     "rwcr": 0.8421730439866433,
+     "cost": 0.22054870810722207,
+     "miss": 0.3881333531333532,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:20,2": {
+     "rwcr": 0.8421730439866433,
+     "cost": 0.22054870810722207,
+     "miss": 0.3881333531333532,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:20,5": {
+     "rwcr": 0.8421730439866433,
+     "cost": 0.22054870810722207,
+     "miss": 0.3881333531333532,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:3,10": {
+     "rwcr": 0.7636376078570144,
+     "cost": 0.43326714622926216,
+     "miss": 0.4439248589248589,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:3,2": {
+     "rwcr": 0.7636376078570144,
+     "cost": 0.43326714622926216,
+     "miss": 0.4439248589248589,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:3,5": {
+     "rwcr": 0.7636376078570144,
+     "cost": 0.43326714622926216,
+     "miss": 0.4439248589248589,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:50,10": {
+     "rwcr": 0.9131571168643138,
+     "cost": 0.23673990843504872,
+     "miss": 0.5372037422037422,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:50,2": {
+     "rwcr": 0.9131571168643138,
+     "cost": 0.23673990843504872,
+     "miss": 0.5372037422037422,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:50,5": {
+     "rwcr": 0.9131571168643138,
+     "cost": 0.23673990843504872,
+     "miss": 0.5372037422037422,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:8,10": {
+     "rwcr": 0.8012750312236605,
+     "cost": 0.2640018922257612,
+     "miss": 0.4116513216513217,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:8,2": {
+     "rwcr": 0.8012750312236605,
+     "cost": 0.2640018922257612,
+     "miss": 0.4116513216513217,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:8,5": {
+     "rwcr": 0.8012750312236605,
+     "cost": 0.2640018922257612,
+     "miss": 0.4116513216513217,
+     "meets_q_and_m": false
+    }
+   },
+   "custom_on_sumo": {
+    "q_star": 0.8489284354622851,
+    "m_star": 0.3996317196317197,
+    "best_classical": [
+     "dvcast",
+     0.4932146889232493
+    ],
+    "best_rule": [
+     "rar",
+     0.4455448209653291
+    ],
+    "policy_aggregate": 0.790246580678605
+   }
+  },
+  "rural_highway d=80": {
+   "q_star": 0.8695610210034191,
+   "m_star": 0.37149322030059834,
+   "classical": {
+    "flooding": 11.478406170431313,
+    "p_persistence_03": 0.6080067847741926,
+    "slotted_1p": 0.32171743874355296,
+    "weighted_p": 0.6367479362926591,
+    "counter_based": 0.6924200028242911,
+    "greedy_farthest": 0.38236587292344815,
+    "dvcast": 0.3292035119479265
+   },
+   "best_classical": {
+    "family": "slotted_1p",
+    "cost": 0.32171743874355296
+   },
+   "rules": {
+    "rar": 0.1651456620626903,
+    "scf_slotted": 0.32171743874355296
+   },
+   "best_rule": {
+    "family": "rar",
+    "cost": 0.1651456620626903
+   },
+   "policy_per_run": {
+    "ref_s0": null,
+    "ref_s1": null,
+    "ref_s2": null,
+    "ref_s3": null,
+    "ref_s4": null
+   },
+   "policy_n_pick": 0,
+   "policy_aggregate": null,
+   "rule_settings": {
+    "rar:0.5,0.0,-0.25": {
+     "rwcr": 0.5617224022325751,
+     "cost": 0.09675752869255355,
+     "miss": 0.6263914349770122,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.0,0.0": {
+     "rwcr": 0.8147493613863095,
+     "cost": 0.12014252235646332,
+     "miss": 0.4101436419350433,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.0,0.25": {
+     "rwcr": 0.913294364210925,
+     "cost": 0.43533389913947673,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "rar:0.5,0.5,-0.25": {
+     "rwcr": 0.5617224022325751,
+     "cost": 0.09675752869255355,
+     "miss": 0.6263914349770122,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.5,0.0": {
+     "rwcr": 0.8147493613863095,
+     "cost": 0.12014252235646332,
+     "miss": 0.4101436419350433,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.5,0.25": {
+     "rwcr": 0.913294364210925,
+     "cost": 0.43533389913947673,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "rar:0.5,1.0,-0.25": {
+     "rwcr": 0.5617224022325751,
+     "cost": 0.09675752869255355,
+     "miss": 0.6263914349770122,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,1.0,0.0": {
+     "rwcr": 0.8147493613863095,
+     "cost": 0.12014252235646332,
+     "miss": 0.4101436419350433,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,1.0,0.25": {
+     "rwcr": 0.913294364210925,
+     "cost": 0.43533389913947673,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,0.0,-0.25": {
+     "rwcr": 0.8510306253951129,
+     "cost": 0.12014340881860655,
+     "miss": 0.38887389222910884,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.0,0.0": {
+     "rwcr": 0.8967722561164596,
+     "cost": 0.1651456620626903,
+     "miss": 0.3425904252699487,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,0.0,0.25": {
+     "rwcr": 0.9130063125444104,
+     "cost": 0.5378706339700174,
+     "miss": 0.32512148549614517,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,0.5,-0.25": {
+     "rwcr": 0.8510306253951129,
+     "cost": 0.12014340881860655,
+     "miss": 0.38887389222910884,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.5,0.0": {
+     "rwcr": 0.8967722561164596,
+     "cost": 0.1651456620626903,
+     "miss": 0.3425904252699487,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,0.5,0.25": {
+     "rwcr": 0.9130063125444104,
+     "cost": 0.5378706339700174,
+     "miss": 0.32512148549614517,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,1.0,-0.25": {
+     "rwcr": 0.8510306253951129,
+     "cost": 0.12014340881860655,
+     "miss": 0.38887389222910884,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,1.0,0.0": {
+     "rwcr": 0.8967722561164596,
+     "cost": 0.1651456620626903,
+     "miss": 0.3425904252699487,
+     "meets_q_and_m": true
+    },
+    "rar:1.0,1.0,0.25": {
+     "rwcr": 0.9130063125444104,
+     "cost": 0.5378706339700174,
+     "miss": 0.32512148549614517,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.0,-0.25": {
+     "rwcr": 0.8806171086591522,
+     "cost": 0.16627088658406877,
+     "miss": 0.362509797021478,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.0,0.0": {
+     "rwcr": 0.911146942543051,
+     "cost": 0.2071278435889953,
+     "miss": 0.32771426900129985,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.0,0.25": {
+     "rwcr": 0.913294364210925,
+     "cost": 0.5196431234449845,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.5,-0.25": {
+     "rwcr": 0.8806171086591522,
+     "cost": 0.16627088658406877,
+     "miss": 0.362509797021478,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.5,0.0": {
+     "rwcr": 0.911146942543051,
+     "cost": 0.2071278435889953,
+     "miss": 0.32771426900129985,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,0.5,0.25": {
+     "rwcr": 0.913294364210925,
+     "cost": 0.5196431234449845,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,1.0,-0.25": {
+     "rwcr": 0.8806171086591522,
+     "cost": 0.16627088658406877,
+     "miss": 0.362509797021478,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,1.0,0.0": {
+     "rwcr": 0.911146942543051,
+     "cost": 0.2071278435889953,
+     "miss": 0.32771426900129985,
+     "meets_q_and_m": true
+    },
+    "rar:2.0,1.0,0.25": {
+     "rwcr": 0.913294364210925,
+     "cost": 0.5196431234449845,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:20,10": {
+     "rwcr": 0.9128122328505797,
+     "cost": 0.4263716003716538,
+     "miss": 0.3241086649833247,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:20,2": {
+     "rwcr": 0.9128122328505797,
+     "cost": 0.4263716003716538,
+     "miss": 0.3241086649833247,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:20,5": {
+     "rwcr": 0.9128122328505797,
+     "cost": 0.4263716003716538,
+     "miss": 0.3241086649833247,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:3,10": {
+     "rwcr": 0.913294364210925,
+     "cost": 2.0082250623492497,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:3,2": {
+     "rwcr": 0.913294364210925,
+     "cost": 2.0082250623492497,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:3,5": {
+     "rwcr": 0.913294364210925,
+     "cost": 2.0082250623492497,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:50,10": {
+     "rwcr": 0.9073601531081511,
+     "cost": 0.32171743874355296,
+     "miss": 0.3284398557187484,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:50,2": {
+     "rwcr": 0.9073601531081511,
+     "cost": 0.32171743874355296,
+     "miss": 0.3284398557187484,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:50,5": {
+     "rwcr": 0.9073601531081511,
+     "cost": 0.32171743874355296,
+     "miss": 0.3284398557187484,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:8,10": {
+     "rwcr": 0.913294364210925,
+     "cost": 0.788101956061356,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:8,2": {
+     "rwcr": 0.913294364210925,
+     "cost": 0.788101956061356,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    },
+    "scf_slotted:8,5": {
+     "rwcr": 0.913294364210925,
+     "cost": 0.788101956061356,
+     "miss": 0.3246214854961452,
+     "meets_q_and_m": true
+    }
+   },
+   "custom_on_sumo": {
+    "q_star": 0.8676296460003787,
+    "m_star": 0.3746214854961452,
+    "best_classical": [
+     "p_persistence_03",
+     1.4200262243452286
+    ],
+    "best_rule": [
+     "rar",
+     0.35498566752995336
+    ],
+    "policy_aggregate": null
+   }
+  },
+  "urban_nlos d=20": {
+   "q_star": 0.49834999716125983,
+   "m_star": 0.6019403429624613,
+   "classical": {
+    "flooding": null,
+    "p_persistence_03": null,
+    "slotted_1p": null,
+    "weighted_p": null,
+    "counter_based": null,
+    "greedy_farthest": null,
+    "dvcast": null
+   },
+   "best_classical": {
+    "family": null,
+    "cost": null
+   },
+   "rules": {
+    "rar": null,
+    "scf_slotted": null
+   },
+   "best_rule": {
+    "family": null,
+    "cost": null
+   },
+   "policy_per_run": {
+    "ref_s0": null,
+    "ref_s1": null,
+    "ref_s2": null,
+    "ref_s3": null,
+    "ref_s4": null
+   },
+   "policy_n_pick": 0,
+   "policy_aggregate": null,
+   "rule_settings": {
+    "rar:0.5,0.0,-0.25": {
+     "rwcr": 0.07601338751439204,
+     "cost": 0.2033491314922658,
+     "miss": 0.9326232051294582,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.0,0.0": {
+     "rwcr": 0.11232282701350024,
+     "cost": 0.24374358974358978,
+     "miss": 0.9028832298109315,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.0,0.25": {
+     "rwcr": 0.3720420965880152,
+     "cost": 0.39708622669699173,
+     "miss": 0.6646002543608065,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.5,-0.25": {
+     "rwcr": 0.07449034136408711,
+     "cost": 0.21481916100577356,
+     "miss": 0.934446143150874,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.5,0.0": {
+     "rwcr": 0.10450566464409591,
+     "cost": 0.31169158136349523,
+     "miss": 0.9072012815646697,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,0.5,0.25": {
+     "rwcr": 0.39967160447713973,
+     "cost": 0.4382488386720097,
+     "miss": 0.6386983328923258,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,1.0,-0.25": {
+     "rwcr": 0.08293257873840357,
+     "cost": 0.24737517384576208,
+     "miss": 0.9266811529149542,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,1.0,0.0": {
+     "rwcr": 0.13282939045135558,
+     "cost": 0.3544852089328834,
+     "miss": 0.8826414078286138,
+     "meets_q_and_m": false
+    },
+    "rar:0.5,1.0,0.25": {
+     "rwcr": 0.43284573136498034,
+     "cost": 0.44174489950301304,
+     "miss": 0.6093911418903829,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.0,-0.25": {
+     "rwcr": 0.12082980907659095,
+     "cost": 0.2854623224025573,
+     "miss": 0.8940325002242302,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.0,0.0": {
+     "rwcr": 0.20743530654677755,
+     "cost": 0.2937618856148983,
+     "miss": 0.8152472639671382,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.0,0.25": {
+     "rwcr": 0.3905571219225074,
+     "cost": 0.4422543278549612,
+     "miss": 0.6481115664718369,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.5,-0.25": {
+     "rwcr": 0.12308129424340628,
+     "cost": 0.3292413083278788,
+     "miss": 0.8925212244816597,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.5,0.0": {
+     "rwcr": 0.22215316622546907,
+     "cost": 0.3175454735944497,
+     "miss": 0.7999867203171007,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,0.5,0.25": {
+     "rwcr": 0.4111543402829937,
+     "cost": 0.4386766675285932,
+     "miss": 0.6287989131072594,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,1.0,-0.25": {
+     "rwcr": 0.11977912570408775,
+     "cost": 0.376562417844268,
+     "miss": 0.8941741577341789,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,1.0,0.0": {
+     "rwcr": 0.24462630101908767,
+     "cost": 0.35118430282748175,
+     "miss": 0.7818270992350442,
+     "meets_q_and_m": false
+    },
+    "rar:1.0,1.0,0.25": {
+     "rwcr": 0.42696942010191014,
+     "cost": 0.4784107750989485,
+     "miss": 0.614173752821011,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.0,-0.25": {
+     "rwcr": 0.22067517854511776,
+     "cost": 0.3479228590391493,
+     "miss": 0.8049496546292201,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.0,0.0": {
+     "rwcr": 0.2363316196140895,
+     "cost": 0.38608460974941544,
+     "miss": 0.791590103566989,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.0,0.25": {
+     "rwcr": 0.42129943310978213,
+     "cost": 0.4065338403920934,
+     "miss": 0.6193850927328836,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.5,-0.25": {
+     "rwcr": 0.24407409694039311,
+     "cost": 0.3332121285663767,
+     "miss": 0.7825428869177384,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.5,0.0": {
+     "rwcr": 0.2593725765490014,
+     "cost": 0.3749923187452423,
+     "miss": 0.7687038725772937,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,0.5,0.25": {
+     "rwcr": 0.4028238891110515,
+     "cost": 0.4352971695779983,
+     "miss": 0.6365862865797117,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,1.0,-0.25": {
+     "rwcr": 0.234897289577454,
+     "cost": 0.3295892024167611,
+     "miss": 0.7911645998783041,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,1.0,0.0": {
+     "rwcr": 0.2739248269509141,
+     "cost": 0.36830659904525725,
+     "miss": 0.7574016319784039,
+     "meets_q_and_m": false
+    },
+    "rar:2.0,1.0,0.25": {
+     "rwcr": 0.4085067185622198,
+     "cost": 0.46272925229207706,
+     "miss": 0.631379180790918,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:20,10": {
+     "rwcr": 0.49265318620585796,
+     "cost": 0.45247574158306386,
+     "miss": 0.5827111479580508,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:20,2": {
+     "rwcr": 0.49265318620585796,
+     "cost": 0.45247574158306386,
+     "miss": 0.5827111479580508,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:20,5": {
+     "rwcr": 0.49265318620585796,
+     "cost": 0.45247574158306386,
+     "miss": 0.5827111479580508,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:3,10": {
+     "rwcr": 0.45259194968471306,
+     "cost": 0.7084670010154339,
+     "miss": 0.5924288337260389,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:3,2": {
+     "rwcr": 0.45259194968471306,
+     "cost": 0.7084670010154339,
+     "miss": 0.5924288337260389,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:3,5": {
+     "rwcr": 0.45259194968471306,
+     "cost": 0.7084670010154339,
+     "miss": 0.5924288337260389,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:50,10": {
+     "rwcr": 0.5171836014094315,
+     "cost": 0.5028209139949247,
+     "miss": 0.7394099665200604,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:50,2": {
+     "rwcr": 0.5171836014094315,
+     "cost": 0.5028209139949247,
+     "miss": 0.7394099665200604,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:50,5": {
+     "rwcr": 0.5171836014094315,
+     "cost": 0.5028209139949247,
+     "miss": 0.7394099665200604,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:8,10": {
+     "rwcr": 0.4737060131273836,
+     "cost": 0.554759744245533,
+     "miss": 0.5739697025100475,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:8,2": {
+     "rwcr": 0.4737060131273836,
+     "cost": 0.554759744245533,
+     "miss": 0.5739697025100475,
+     "meets_q_and_m": false
+    },
+    "scf_slotted:8,5": {
+     "rwcr": 0.4737060131273836,
+     "cost": 0.554759744245533,
+     "miss": 0.5739697025100475,
+     "meets_q_and_m": false
+    }
+   },
+   "custom_on_sumo": {
+    "q_star": 0.5280967418720219,
+    "m_star": 0.6029306931054648,
+    "best_classical": [
+     null,
+     null
+    ],
+    "best_rule": [
+     null,
+     null
+    ],
+    "policy_aggregate": null
+   }
+  }
+ },
+ "V1": {
+  "statistic_cells_rule_cheaper": 2,
+  "holds": true,
+  "p_fewer_than_2": 0.3555,
+  "holm_p": 0.48300117233294254,
+  "bootstrap_distribution": {
+   "0": 0,
+   "1": 3555,
+   "2": 5627,
+   "3": 818,
+   "4": 0
+  }
+ },
+ "V2": {
+  "statistic_pooled_relative_difference": null,
+  "per_cell": {
+   "rural_highway d=2": null,
+   "rural_highway d=20": null,
+   "rural_highway d=80": null,
+   "urban_nlos d=20": null
+  },
+  "ci95": [
+   -0.17693932515461752,
+   3.763807704544268
+  ],
+  "p_two_sided": 0.06475458308693081,
+  "holm_p": 0.19426374926079243,
+  "P_policy_cheaper": 0.03149024246008279,
+  "superiority": false,
+  "undefined_replicates": 3236
+ },
+ "V3": {
+  "statistic_pooled_relative_difference": null,
+  "per_cell": {
+   "rural_highway d=2": null,
+   "rural_highway d=20": null,
+   "rural_highway d=80": null,
+   "urban_nlos d=20": null
+  },
+  "ci95": [
+   -0.2929404236311218,
+   3.7606875262294563
+  ],
+  "p_two_sided": 0.24150058616647127,
+  "holm_p": 0.48300117233294254,
+  "P_policy_cheaper": 0.11645173896053146,
+  "superiority": false,
+  "undefined_replicates": 4882
+ },
+ "V4": {
+  "spearman_rho": 0.6140350877192983,
+  "n_pairs": 12,
+  "ci95": [
+   0.10502283105022833,
+   0.8264840182648403
+  ],
+  "undefined_replicates": 0,
+  "pairs": "(method, cell) with a finite matched cost in both simulators; methods: 7 classical families, RAR, SCF-slotted, the policy aggregate"
+ },
+ "qualification": {
+  "best_classical": {
+   "cells": 3,
+   "of": 4,
+   "wilson95": [
+    0.30064184258240184,
+    0.9544127391902995
+   ]
+  },
+  "best_rule": {
+   "cells": 2,
+   "of": 4,
+   "wilson95": [
+    0.15003898915214947,
+    0.8499610108478506
+   ]
+  },
+  "policy_aggregate": {
+   "cells": 0,
+   "of": 3,
+   "wilson95": [
+    5.551115123125783e-17,
+    0.5614970317550454
+   ]
+  },
+  "policy_run_x_cell_picks": {
+   "count": 1,
+   "of": 15,
+   "wilson95": [
+    0.011866895493268553,
+    0.2981652987378003
+   ]
+  }
+ },
+ "cross_fitted_tier_B": "not run (Tier B incomplete)"
+}
