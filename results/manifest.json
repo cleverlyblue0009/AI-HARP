@@ -413,6 +413,79 @@
     "results/revision5/analysis/secondary.json"
    ],
    "sha256": "7944ef1a40e04f7f3e5068a3a4fae5c024989493244ff113dd7056bc73eece49"
+  },
+  {
+   "output": "results/revision6/veins/veins6_rows.jsonl",
+   "exists": true,
+   "script": "experiments/revision6/veins/veins6_score.py",
+   "command": "python -m experiments.revision6.veins.veins6_score",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "cache/veins_runs/r6/ (replay records, not committed)"
+   ],
+   "sha256": "c021a6b489916d26c813e082beb80584970a660627415a4e263b04d95e492685"
+  },
+  {
+   "output": "results/revision6/analysis/veins_methods.json",
+   "exists": true,
+   "script": "experiments/revision6/analysis/veins_methods.py",
+   "command": "python -m experiments.revision6.analysis.veins_methods --B 10000",
+   "commit": "e2fd6c83cb42d663afef91cfcdf791771a2033fe-dirty",
+   "config_hash": "b1c08d050eb8",
+   "generated": "2026-11-05 15:32:51",
+   "sources": [
+    "results/revision6/veins/veins6_rows.jsonl",
+    "results/revision5/veins/veins_rows.jsonl",
+    "results/revision5/runs/classical__EVAL__headline__default__sumo.csv",
+    "results/revision5/runs/rule__EVAL__headline__default__sumo.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__sumo.csv"
+   ],
+   "sha256": "cbe6db9a1fd271acd607fbe5604bc6425712bf36d07d8b6c413134c5820e4ad6"
+  },
+  {
+   "output": "results/revision6/analysis/veins_methods_diagnostics.json",
+   "exists": true,
+   "script": "experiments/revision6/analysis/diagnostics.py",
+   "command": "python -m experiments.revision6.analysis.diagnostics",
+   "commit": "e2fd6c83cb42d663afef91cfcdf791771a2033fe-dirty",
+   "config_hash": "c9ef03b6287a",
+   "generated": "2026-11-05 15:33:21",
+   "sources": [
+    "results/revision6/veins/veins6_rows.jsonl",
+    "results/revision5/veins/veins_rows.jsonl",
+    "results/revision5/runs/classical__EVAL__headline__default__sumo.csv",
+    "results/revision5/runs/rule__EVAL__headline__default__sumo.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__sumo.csv"
+   ],
+   "sha256": "fc08bfcad4bab1e96d3d6d5dd2e2ccb7f886083ea875b64ed13b70396e7aafbc"
+  },
+  {
+   "output": "results/revision6/analysis/tables/T-veins-methods.tex",
+   "exists": true,
+   "script": "experiments/revision6/analysis/outputs.py",
+   "command": "python -m experiments.revision6.analysis.outputs",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision6/analysis/veins_methods.json"
+   ],
+   "sha256": "71e168e442bd75ee14a0b478f40ead5de7f08a0f001d6b8ece3e3732c80cee0a"
+  },
+  {
+   "output": "results/revision6/figures/fig_veins_vs_custom.pdf",
+   "exists": true,
+   "script": "experiments/revision6/analysis/outputs.py",
+   "command": "python -m experiments.revision6.analysis.outputs",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision6/analysis/veins_methods.json"
+   ],
+   "sha256": "a86352df0246cf6e39cd68ab55d3b4d34ea4296921b5bce1be6c0440e4e8a307"
   }
  ]
 }

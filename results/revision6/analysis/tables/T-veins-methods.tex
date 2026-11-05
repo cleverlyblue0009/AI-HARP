@@ -1,0 +1,23 @@
+% EVAL-hindsight comparison, Veins, Tier A seeds 200-209. Policy: training seeds 0-4; rural d=80 not run (addendum D10).
+\begin{tabular}{lrrllrr}
+\hline
+Cell & $q^*$ & $m^*$ & Best classical & Best rule & Policy picks & Policy cost \\
+\hline
+R2 & 0.095 & 1.042 & dvcast 1.308 & rar 1.000 & 1/5 & -- \\
+R20 & 0.879 & 0.404 & dvcast 0.226 & -- & 0/5 & -- \\
+R80 & 0.870 & 0.371 & slotted\_1p 0.322 & rar 0.165 & not run & not run \\
+U20 & 0.498 & 0.602 & -- & -- & 0/5 & -- \\
+\hline
+\end{tabular}
+
+% V2 and V3 intervals are conditional on the replicates in which the statistic is defined; the point statistic is not.
+\begin{tabular}{lllrr}
+\hline
+Test & Statistic & 95\% CI & $p$ & Holm $p$ \\
+\hline
+V1 & 2 cells of 4 & -- & 0.355 & 0.483 \\
+V2 & undefined (no cell where both qualify) & [-0.177, +3.764], 6764/10000 replicates defined & 0.065 & 0.194 \\
+V3 & undefined (no cell where both qualify) & [-0.293, +3.761], 5118/10000 replicates defined & 0.242 & 0.483 \\
+V4 & $\rho$ = 0.614, 12 pairs & [+0.105, +0.826] & -- & -- \\
+\hline
+\end{tabular}

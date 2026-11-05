@@ -1,7 +1,7 @@
 {
  "provenance": {
   "task": "revision6/analysis/veins_methods.json",
-  "git_commit": "8d2f406440f4dcd952119b54b533eea8a38de2f1",
+  "git_commit": "e2fd6c83cb42d663afef91cfcdf791771a2033fe-dirty",
   "python": "3.12.9",
   "numpy": "1.26.4",
   "interpreter": "aiharp-gpu",
@@ -29,7 +29,7 @@
    208,
    209
   ],
-  "generated": "2026-11-05 15:25:38"
+  "generated": "2026-11-05 15:32:51"
  },
  "label": "EVAL-hindsight comparison on Tier A seeds 200-209 (thresholds, crossings and comparison on the same seeds)",
  "runs": [
@@ -332,6 +332,19 @@
    "custom_on_sumo": {
     "q_star": 0.24346749538765294,
     "m_star": 0.9277777777777779,
+    "classical": {
+     "flooding": null,
+     "p_persistence_03": null,
+     "slotted_1p": null,
+     "weighted_p": null,
+     "counter_based": null,
+     "greedy_farthest": null,
+     "dvcast": 1.5111111111111113
+    },
+    "rules": {
+     "rar": null,
+     "scf_slotted": null
+    },
     "best_classical": [
      "dvcast",
      1.5111111111111113
@@ -615,6 +628,19 @@
    "custom_on_sumo": {
     "q_star": 0.8489284354622851,
     "m_star": 0.3996317196317197,
+    "classical": {
+     "flooding": 2.5091821639898564,
+     "p_persistence_03": 0.7857272774822291,
+     "slotted_1p": 0.4959476275896441,
+     "weighted_p": 0.6976123276164067,
+     "counter_based": 0.5399352494259271,
+     "greedy_farthest": 0.5009386942245502,
+     "dvcast": 0.4932146889232493
+    },
+    "rules": {
+     "rar": 0.4455448209653291,
+     "scf_slotted": 0.5045226984653121
+    },
     "best_classical": [
      "dvcast",
      0.4932146889232493
@@ -898,6 +924,19 @@
    "custom_on_sumo": {
     "q_star": 0.8676296460003787,
     "m_star": 0.3746214854961452,
+    "classical": {
+     "flooding": 11.489721434927064,
+     "p_persistence_03": 1.4200262243452286,
+     "slotted_1p": 1.6874007348323559,
+     "weighted_p": 1.5348414431954192,
+     "counter_based": 2.0028884720314855,
+     "greedy_farthest": 1.6352050772420372,
+     "dvcast": 1.6930008126889007
+    },
+    "rules": {
+     "rar": 0.35498566752995336,
+     "scf_slotted": 1.6874007348323559
+    },
     "best_classical": [
      "p_persistence_03",
      1.4200262243452286
@@ -1181,6 +1220,19 @@
    "custom_on_sumo": {
     "q_star": 0.5280967418720219,
     "m_star": 0.6029306931054648,
+    "classical": {
+     "flooding": null,
+     "p_persistence_03": null,
+     "slotted_1p": null,
+     "weighted_p": null,
+     "counter_based": null,
+     "greedy_farthest": null,
+     "dvcast": null
+    },
+    "rules": {
+     "rar": null,
+     "scf_slotted": null
+    },
     "best_classical": [
      null,
      null

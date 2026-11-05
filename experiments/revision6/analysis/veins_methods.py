@@ -220,6 +220,8 @@ def main(argv=None) -> int:
                           "policy_n_pick": e["policy_n_pick"], "policy_aggregate": fin(e["policy_aggregate"]),
                           "rule_settings": rule_settings_table(V[c]["rules"], e["q_star"], e["m_star"]),
                           "custom_on_sumo": {"q_star": cpoint[c]["q_star"], "m_star": cpoint[c]["m_star"],
+                                             "classical": {f: fin(v) for f, v in cpoint[c]["classical"].items()},
+                                             "rules": {f: fin(v) for f, v in cpoint[c]["rules"].items()},
                                              "best_classical": [cpoint[c]["best_classical"][0], fin(cpoint[c]["best_classical"][1])],
                                              "best_rule": [cpoint[c]["best_rule"][0], fin(cpoint[c]["best_rule"][1])],
                                              "policy_aggregate": fin(cpoint[c]["policy_aggregate"])}}

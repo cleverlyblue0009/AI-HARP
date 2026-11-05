@@ -73,3 +73,5 @@ logs/revision1/
 !results/revision5/**/*.csv
 !results/revision5/**/*.pdf
 !results/revision5/**/*.png
+!results/revision6/**/
+!results/revision6/**/*.pdf
