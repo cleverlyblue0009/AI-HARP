@@ -486,6 +486,117 @@
     "results/revision6/analysis/veins_methods.json"
    ],
    "sha256": "a86352df0246cf6e39cd68ab55d3b4d34ea4296921b5bce1be6c0440e4e8a307"
+  },
+  {
+   "output": "results/revision7/veins/app_gate.json",
+   "exists": true,
+   "script": "experiments/revision7/veins/validate7.py",
+   "command": "python -m experiments.revision7.veins.validate7 gate",
+   "commit": "e77929a165b645da9de385148834e38b85b4051d-dirty",
+   "config_hash": "56bc343a1d26",
+   "generated": "2026-11-05 16:32:44",
+   "sources": [
+    "results/revision7/veins/raw/r7_gate/"
+   ],
+   "sha256": "e11b015a05de2bfadf84fc10724adde8d7cd19b78c3896b172d57efeb43f9484"
+  },
+  {
+   "output": "results/revision7/veins/port_validation_policy_unit.json",
+   "exists": true,
+   "script": "experiments/revision7/veins/validate7.py",
+   "command": "python -m experiments.revision7.veins.validate7 unit",
+   "commit": "e77929a165b645da9de385148834e38b85b4051d",
+   "config_hash": "5417e8413c42",
+   "generated": "2026-11-05 16:20:17",
+   "sources": [],
+   "sha256": "751fbf1cfcdbe4e231bd5548a759e3b5b493c48f7b99bf12f82d4132c5e728e9"
+  },
+  {
+   "output": "results/revision7/veins/port_validation_policy_trace.json",
+   "exists": true,
+   "script": "experiments/revision7/veins/validate7.py",
+   "command": "python -m experiments.revision7.veins.validate7 gate",
+   "commit": "e77929a165b645da9de385148834e38b85b4051d-dirty",
+   "config_hash": "5417e8413c42",
+   "generated": "2026-11-05 16:32:44",
+   "sources": [
+    "results/revision7/veins/raw/r7_gate_capped/"
+   ],
+   "sha256": "339425964df88531367bb3466d75672ecc2521ed44c09f459d03b4a1a035bd22"
+  },
+  {
+   "output": "results/revision7/veins/capped_rows.jsonl",
+   "exists": true,
+   "script": "experiments/revision7/veins/score7.py",
+   "command": "python -m experiments.revision7.veins.score7 capped",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision7/veins/raw/r7_capped/ (from queue7 capped)"
+   ],
+   "sha256": "05f96bef941575d2f758651f86a34e02cc9a4f81a8c0ea8ab8f323a96c8c70b2"
+  },
+  {
+   "output": "results/revision7/veins/d9_rows.jsonl",
+   "exists": true,
+   "script": "experiments/revision7/veins/score7.py",
+   "command": "python -m experiments.revision7.veins.score7 d9",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision7/veins/raw/r7_d9/ (from queue7 d9)"
+   ],
+   "sha256": "2d32b77a6731208bf368a22929716d52924f241ce474c74e6d029cf93c5d25ca"
+  },
+  {
+   "output": "results/revision7/runs/custom_capped_rows.jsonl",
+   "exists": true,
+   "script": "experiments/revision7/custom_cap.py",
+   "command": "python -m experiments.revision7.custom_cap --jobs 3",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "SUMO trace cache"
+   ],
+   "sha256": "8f6bc386bd787590ab62afa568e2962125e96dc7cc725b2c8eb05c51dd085fe2"
+  },
+  {
+   "output": "results/revision7/analysis/exp_a.json",
+   "exists": true,
+   "script": "experiments/revision7/analysis/exp_a.py",
+   "command": "python -m experiments.revision7.analysis.exp_a",
+   "commit": "c9d3bdc891435468b1577ddacf167015cd105cd5",
+   "config_hash": "c9ef03b6287a",
+   "generated": "2026-11-05 23:53:54",
+   "sources": [
+    "results/revision7/veins/capped_rows.jsonl",
+    "results/revision7/runs/custom_capped_rows.jsonl",
+    "results/revision5/veins/veins_rows.jsonl",
+    "results/revision6/veins/veins6_rows.jsonl",
+    "results/revision5/runs/classical__EVAL__headline__default__sumo.csv",
+    "results/revision5/runs/rule__EVAL__headline__default__sumo.csv",
+    "results/revision5/runs/agent__EVAL__headline__default__sumo.csv"
+   ],
+   "sha256": "08f7baf999346321b086e7f3af2591eb48bae7789cdd47b2b6fb984e517a8c5f"
+  },
+  {
+   "output": "results/revision7/analysis/exp_b.json",
+   "exists": true,
+   "script": "experiments/revision7/analysis/exp_b.py",
+   "command": "python -m experiments.revision7.analysis.exp_b",
+   "commit": "0736abc0803ed54ee15b9559bc41fd2cb957c8f2",
+   "config_hash": "06458e4f6ed7",
+   "generated": "2026-11-06 08:51:49",
+   "sources": [
+    "results/revision7/veins/d9_rows.jsonl",
+    "results/revision5/veins/veins_rows.jsonl",
+    "results/revision6/veins/veins6_rows.jsonl",
+    "results/revision6/analysis/veins_methods.json"
+   ],
+   "sha256": "5deadfb46f04f3a837680e7e3cd26336f81e92711a7fdaed71c9bc43555c9985"
   }
  ]
 }
