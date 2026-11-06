@@ -1,0 +1,21 @@
+{
+ "provenance": {
+  "task": "revision6/veins/veins6_score",
+  "git_commit": "0736abc0803ed54ee15b9559bc41fd2cb957c8f2",
+  "python": "3.12.9",
+  "numpy": "1.26.4",
+  "interpreter": "aiharp-gpu",
+  "command": "python -m experiments.revision7.veins.score7 d9",
+  "config_hash": "0302db1c9082",
+  "config": {
+   "runs": "r7_d9",
+   "app_sha256": "a1279a02643639552f7ce818291da0d77fdf4d419b4b808253357467ca14e463"
+  },
+  "seeds": null,
+  "generated": "2026-11-06 08:50:43"
+ },
+ "merged": 450,
+ "new": 450,
+ "rejected": 0,
+ "rejected_replays": {}
+}
