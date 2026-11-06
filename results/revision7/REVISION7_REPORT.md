@@ -122,4 +122,6 @@ So V1, V2 and V3 would not change in substance. The registered analysis stays as
   901.7 MB) are not OMNeT++ outputs and are not committed.
 * Manifest: `results/MANIFEST.md`, `results/manifest.json` (`python -m experiments.revision7.manifest`).
 * Reproduce: `reproduce_revision7.ps1` / `.sh` (analysis only by default; `--from-scratch` reruns validation, replays and runs).
+  Clean-clone check: a fresh clone of d80ff39 ran `reproduce_revision7.ps1` with exit 0, and `exp_a.json` and `exp_b.json`
+  equal the committed files apart from their provenance stamps (the manifest changes only through those stamps' hashes).
 * Code: `sim/engine.py` (`max_decisions_per_epoch`, off by default), `tests/test_decision_cap.py`, `experiments/revision7/`.
