@@ -210,8 +210,10 @@ def train(arm: str, seed: int, generations: int = GENERATIONS, workers: int = 4,
                 "executable": sys.executable, "platform": platform.platform(), "cells": CELLS, "pool": [POOL[0], POOL[-1]],
                 "seeds_per_cell": SEEDS_PER_CELL, "warm_start": json.loads(WARM.read_text())}
         (out / "run_meta.json").write_text(json.dumps(meta, indent=1, default=str))
-    from multiprocessing import get_context
-    pool = get_context("fork").Pool(workers) if workers > 1 else None
+    import multiprocessing as mp
+    # fork on Linux; spawn on Windows (no fork). Workers are stateless apart from a trace cache, so results are the same.
+    method = os.environ.get("AIHARP_MP_START") or ("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    pool = mp.get_context(method).Pool(workers) if workers > 1 else None
     try:
         while gen < generations:
             t0, c0 = time.time(), time.process_time()
