@@ -1,0 +1,366 @@
+{
+ "logs": [
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s0_d-1__s227.jsonl",
+   "requests": 480,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s0_d-2__s227.jsonl",
+   "requests": 421,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s0_d0__s227.jsonl",
+   "requests": 436,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s0_d1__s227.jsonl",
+   "requests": 434,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s0_d2__s227.jsonl",
+   "requests": 33,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s0_d3__s227.jsonl",
+   "requests": 33,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s1_d-1__s227.jsonl",
+   "requests": 293,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s1_d-2__s227.jsonl",
+   "requests": 487,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s1_d0__s227.jsonl",
+   "requests": 306,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s1_d1__s227.jsonl",
+   "requests": 233,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s1_d2__s227.jsonl",
+   "requests": 172,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s1_d3__s227.jsonl",
+   "requests": 119,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s2_d-1__s227.jsonl",
+   "requests": 461,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s2_d-2__s227.jsonl",
+   "requests": 449,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s2_d0__s227.jsonl",
+   "requests": 424,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s2_d1__s227.jsonl",
+   "requests": 434,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s2_d2__s227.jsonl",
+   "requests": 429,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s2_d3__s227.jsonl",
+   "requests": 467,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s3_d-1__s227.jsonl",
+   "requests": 465,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s3_d-2__s227.jsonl",
+   "requests": 463,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s3_d0__s227.jsonl",
+   "requests": 152,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s3_d1__s227.jsonl",
+   "requests": 123,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s3_d2__s227.jsonl",
+   "requests": 168,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s3_d3__s227.jsonl",
+   "requests": 110,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s4_d-1__s227.jsonl",
+   "requests": 36,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s4_d-2__s227.jsonl",
+   "requests": 36,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s4_d0__s227.jsonl",
+   "requests": 36,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s4_d1__s227.jsonl",
+   "requests": 36,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s4_d2__s227.jsonl",
+   "requests": 36,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_plain_s4_d3__s227.jsonl",
+   "requests": 36,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s0_d-1__s227.jsonl",
+   "requests": 499,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s0_d-2__s227.jsonl",
+   "requests": 514,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s0_d0__s227.jsonl",
+   "requests": 506,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s0_d1__s227.jsonl",
+   "requests": 494,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s0_d2__s227.jsonl",
+   "requests": 513,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s0_d3__s227.jsonl",
+   "requests": 502,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s1_d-1__s227.jsonl",
+   "requests": 485,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s1_d-2__s227.jsonl",
+   "requests": 489,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s1_d0__s227.jsonl",
+   "requests": 488,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s1_d1__s227.jsonl",
+   "requests": 488,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s1_d2__s227.jsonl",
+   "requests": 503,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s1_d3__s227.jsonl",
+   "requests": 461,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s2_d-1__s227.jsonl",
+   "requests": 474,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s2_d-2__s227.jsonl",
+   "requests": 474,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s2_d0__s227.jsonl",
+   "requests": 478,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s2_d1__s227.jsonl",
+   "requests": 480,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s2_d2__s227.jsonl",
+   "requests": 482,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s2_d3__s227.jsonl",
+   "requests": 440,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s3_d-1__s227.jsonl",
+   "requests": 491,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s3_d-2__s227.jsonl",
+   "requests": 473,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s3_d0__s227.jsonl",
+   "requests": 482,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s3_d1__s227.jsonl",
+   "requests": 484,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s3_d2__s227.jsonl",
+   "requests": 481,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s3_d3__s227.jsonl",
+   "requests": 430,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s4_d-1__s227.jsonl",
+   "requests": 493,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s4_d-2__s227.jsonl",
+   "requests": 505,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s4_d0__s227.jsonl",
+   "requests": 491,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s4_d1__s227.jsonl",
+   "requests": 511,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s4_d2__s227.jsonl",
+   "requests": 501,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s227__struct_rand_s4_d3__s227.jsonl",
+   "requests": 511,
+   "mismatches": 0,
+   "pass": true
+  }
+ ],
+ "all_pass": true,
+ "n": 60
+}
