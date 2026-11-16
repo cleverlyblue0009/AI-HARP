@@ -1,0 +1,23 @@
+{
+ "expC": {
+  "merged": 30,
+  "rejected": 0,
+  "expected": 30,
+  "rejected_replays": {},
+  "trace_logs": 30,
+  "trace_all_pass": true,
+  "trace_requests": 79682,
+  "trace_mismatches": 0
+ },
+ "expD": {
+  "merged": 30,
+  "rejected": 0,
+  "expected": 30,
+  "rejected_replays": {},
+  "trace_logs": 30,
+  "trace_all_pass": true,
+  "trace_requests": 75253,
+  "trace_mismatches": 0
+ },
+ "app_sha256": "6b032de0fc13894c1d84f710e4015faa8ca1ec6566b8039c53c7549722e646b9"
+}
