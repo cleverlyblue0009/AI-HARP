@@ -1,1 +1,8 @@
-{"seeds": [], "request": 1, "note": "toolchain build only (cache); no replay"}
+{
+ "seeds": [
+  210
+ ],
+ "gate_only": true,
+ "request": 2,
+ "note": "toolchain smoke test on a runner: bundles + gate only, rural d=20 seed 210 shard and urban NLOS d=20 seed 210 shard; no STRUCT replay"
+}

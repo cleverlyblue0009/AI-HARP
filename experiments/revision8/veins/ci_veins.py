@@ -78,6 +78,7 @@ def main(argv=None) -> int:
     ap.add_argument("--cell", nargs=2, required=True)
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--gate-only", action="store_true", help="bundles + gate only (toolchain smoke test, no replay)")
     a = ap.parse_args(argv)
     sc, d, seed = a.cell[0], float(a.cell[1]), a.seed
     print(f"[env] {sys.executable} numpy {numpy.__version__}", flush=True)
@@ -97,6 +98,8 @@ def main(argv=None) -> int:
     print(json.dumps(gate), flush=True)
     if not gate["pass"]:
         return 2
+    if a.gate_only:
+        return 0
 
     # 3. replays, one broker + decision server per worker
     logs = out / "bridge_logs"

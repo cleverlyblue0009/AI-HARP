@@ -23,13 +23,14 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       seeds: ${{ steps.p.outputs.seeds }}
+      gate_only: ${{ steps.p.outputs.gate_only }}
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 1}
       - id: p
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then echo 'seeds=${{ inputs.seeds }}' >> $GITHUB_OUTPUT
-          else python3 -c "import json; print('seeds='+json.dumps(json.load(open('ci/r8-veins.json'))['seeds']))" >> $GITHUB_OUTPUT; fi
+          else python3 -c "import json; d=json.load(open('ci/r8-veins.json')); print('seeds='+json.dumps(d['seeds'])); print('gate_only='+('--gate-only' if d.get('gate_only') else ''))" >> $GITHUB_OUTPUT; fi
           cat $GITHUB_OUTPUT
 
   toolchain:
@@ -79,7 +80,7 @@ jobs:
         run: |
           source ~/veins-r5/env.sh
           export PATH=$pythonLocation/bin:$PATH
-          python -m experiments.revision8.veins.ci_veins --cell ${{ matrix.cell }} --seed ${{ matrix.seed }} --workers 4
+          python -m experiments.revision8.veins.ci_veins --cell ${{ matrix.cell }} --seed ${{ matrix.seed }} --workers 4 ${{ needs.plan.outputs.gate_only }}
       - name: push shard outputs to r8-ci
         if: always()
         run: |
