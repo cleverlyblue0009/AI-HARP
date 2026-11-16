@@ -1,0 +1,100 @@
+# Revision 8 (DEVIATIONS.md D12-D14): H5 Tier B Veins replays on GitHub-hosted runners. One shard per (cell, seed):
+# rural d=20 and urban NLOS d=20 x seeds 210-219, 60 STRUCT replays each (plain_s0-4, rand_s0-4 x delta -2..3).
+# Toolchain: OMNeT++ 6.0.3, Veins 5.3, SUMO 1.19.0 built once by the revision-5 installer, cached. Every shard runs the
+# gate (classical replay byte-identical to the revision-6 gate log) before its replays, and a full offline trace check
+# after. Outputs (results/revision8/veins/ci/<shard>/) are pushed to r8-ci. Needs the ten theta.json on revision-8.
+name: r8-veins
+on:
+  workflow_dispatch:
+    inputs:
+      seeds:
+        description: 'JSON list of Tier B replay seeds'
+        required: true
+        default: '[210,211,212,213,214,215,216,217,218,219]'
+  push:
+    branches: [revision-8]
+    paths: ['ci/r8-veins.json']
+permissions:
+  contents: write
+env:
+  PYTHONUNBUFFERED: "1"
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      seeds: ${{ steps.p.outputs.seeds }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - id: p
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then echo 'seeds=${{ inputs.seeds }}' >> $GITHUB_OUTPUT
+          else python3 -c "import json; print('seeds='+json.dumps(json.load(open('ci/r8-veins.json'))['seeds']))" >> $GITHUB_OUTPUT; fi
+          cat $GITHUB_OUTPUT
+
+  toolchain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-8, fetch-depth: 1}
+      - uses: actions/cache@v4
+        id: c
+        with: {path: ~/veins-r5, key: r8-veins-toolchain-v1}
+      - name: deps
+        run: sudo bash experiments/revision5/veins/install_wsl.sh deps
+      - name: build OMNeT++ 6.0.3, SUMO 1.19.0, Veins 5.3
+        if: steps.c.outputs.cache-hit != 'true'
+        run: |
+          J=4 bash experiments/revision5/veins/install_wsl.sh build
+          rm -f ~/veins-r5/*.tgz ~/veins-r5/*.tar.gz
+          find ~/veins-r5 -name '*.o' -delete
+
+  shard:
+    needs: [plan, toolchain]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        cell: ['rural_highway 20', 'urban_nlos 20']
+        seed: ${{ fromJSON(needs.plan.outputs.seeds) }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-8, fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/cache/restore@v4
+        with: {path: ~/veins-r5, key: r8-veins-toolchain-v1, fail-on-cache-miss: true}
+      - name: runtime deps and Python
+        run: |
+          sudo bash experiments/revision5/veins/install_wsl.sh deps
+          pip install numpy==1.26.4 scipy==1.13.1 pandas==2.3.3 pyyaml==6.0.3 cma==4.6.0 matplotlib
+      - name: build the revision-8 app
+        run: |
+          tr -d '\r' < experiments/revision5/veins/env.sh > ~/veins-r5/env.sh
+          AIHARP_SRC=$GITHUB_WORKSPACE bash experiments/revision8/veins/build_app.sh
+      - name: gate, replays, trace check, scoring
+        run: |
+          source ~/veins-r5/env.sh
+          export PATH=$pythonLocation/bin:$PATH
+          python -m experiments.revision8.veins.ci_veins --cell ${{ matrix.cell }} --seed ${{ matrix.seed }} --workers 4
+      - name: push shard outputs to r8-ci
+        if: always()
+        run: |
+          git config user.name "r8-ci"; git config user.email "r8-ci@users.noreply.github.com"
+          C=$(echo "${{ matrix.cell }}" | awk '{print $1"_d"$2}')
+          D=results/revision8/veins/ci/${C}_s${{ matrix.seed }}
+          [ -d "$D" ] || exit 0
+          rm -rf "$D/gate/" "$D"/worker*.json
+          cp -r "$D" /tmp/shard_out; rm -rf "$D"
+          git checkout -q -- results/ 2>/dev/null || true
+          for k in 1 2 3 4 5 6 7 8 9 10; do
+            if git fetch -q origin r8-ci 2>/dev/null; then git checkout -q -f -B r8-ci FETCH_HEAD; else git checkout -q -f -B r8-ci; fi
+            rm -rf "$D"; mkdir -p "$(dirname "$D")"; cp -r /tmp/shard_out "$D"
+            git add -f "$D"
+            git commit -q -m "r8-ci: veins H5 Tier B shard ${C}_s${{ matrix.seed }}" || exit 0
+            git push -q origin r8-ci && exit 0
+            sleep $((RANDOM % 30 + 5))
+          done
+          exit 1

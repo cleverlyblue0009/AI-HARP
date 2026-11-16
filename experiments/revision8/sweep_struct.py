@@ -45,6 +45,7 @@ def main(argv=None) -> int:
     ap.add_argument("--arm", required=True, choices=["plain", "rand"])
     ap.add_argument("--seedset", required=True, choices=["SEL", "EVAL"])
     ap.add_argument("--jobs", type=int, default=4)
+    ap.add_argument("--slice", default=None, help="i/n: only tasks with int(task_hash, 16) %% n == i (D14 runners)")
     a = ap.parse_args(argv)
     print(f"[env] {sys.executable} numpy {numpy.__version__}", flush=True)
     th = thetas(a.arm)
@@ -56,8 +57,11 @@ def main(argv=None) -> int:
                 for dl in DELTAS:
                     tasks.append(task(sc, d, "struct", s, param="delta", value=dl, fixed={"theta": theta},
                                       backend="fallback"))
+    if a.slice:
+        si, sn = (int(x) for x in a.slice.split("/"))
+        tasks = [t for t in tasks if int(t["task_hash"], 16) % sn == si]
     RUNS.mkdir(parents=True, exist_ok=True)
-    name = f"struct_{a.arm}__{a.seedset}__headline__default__fallback"
+    name = f"struct_{a.arm}__{a.seedset}__headline__default__fallback" + (f"__slice{si}of{sn}" if a.slice else "")
     meta = RUNS / f"{name}_meta.json"
     stamps = json.loads(meta.read_text()) if meta.exists() else []
     stamps.append(stamp(f"revision8/{name}", {"arm": a.arm, "runs": list(th), "deltas": DELTAS}, seeds=sd,
@@ -68,5 +72,34 @@ def main(argv=None) -> int:
     return 0
 
 
+def merge(arm: str, seedset: str) -> int:
+    """Concatenate the slice files of one (arm, seed set) into the canonical file; every task exactly once."""
+    import csv
+    base = f"struct_{arm}__{seedset}__headline__default__fallback"
+    parts = sorted(RUNS.glob(f"{base}__slice*of*.csv"))
+    rows, header = {}, None
+    for p in parts:
+        with open(p, newline="") as f:
+            r = csv.DictReader(f)
+            header = header or r.fieldnames
+            for row in r:
+                if row["task_hash"] in rows and rows[row["task_hash"]] != row:
+                    raise SystemExit(f"{p.name}: task {row['task_hash']} differs between slices")
+                rows[row["task_hash"]] = row
+    expected = len(thetas(arm)) * len(DELTAS) * len(HEADLINE) * len(seeds(seedset))
+    if len(rows) != expected:
+        raise SystemExit(f"{base}: {len(rows)} rows merged from {len(parts)} slices, expected {expected}")
+    with open(RUNS / f"{base}.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=header)
+        w.writeheader()
+        for k in sorted(rows):
+            w.writerow(rows[k])
+    print(f"[revision8] merged {len(parts)} slices -> {base}.csv ({len(rows)} rows)")
+    return 0
+
+
 if __name__ == "__main__":
+    import sys as _s
+    if len(_s.argv) > 1 and _s.argv[1] == "merge":
+        raise SystemExit(merge(_s.argv[2], _s.argv[3]))
     raise SystemExit(main())

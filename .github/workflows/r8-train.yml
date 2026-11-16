@@ -15,15 +15,37 @@ on:
         description: 'JSON list of STRUCT-rand training seeds, e.g. [0,1,2,3,4]'
         required: true
         default: '[]'
+  push:
+    # The main session cannot dispatch workflows (403 for its integration); it pushes ci/r8-train.json instead.
+    branches: [revision-8]
+    paths: ['ci/r8-train.json']
 permissions:
   contents: write
 env:
   PYTHONUNBUFFERED: "1"
   AIHARP_MACHINE: github-actions
 jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      plain: ${{ steps.p.outputs.plain }}
+      rand: ${{ steps.p.outputs.rand }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - id: p
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo 'plain=${{ inputs.plain }}' >> $GITHUB_OUTPUT; echo 'rand=${{ inputs.rand }}' >> $GITHUB_OUTPUT
+          else
+            python3 -c "import json; d=json.load(open('ci/r8-train.json')); print('plain='+json.dumps(d['plain'])); print('rand='+json.dumps(d['rand']))" >> $GITHUB_OUTPUT
+          fi
+          cat $GITHUB_OUTPUT
+
   sumo-traces:
     # SUMO 1.19.0 training-pool traces (seeds 100-131, four headline cells) once, shared through the Actions cache.
-    if: ${{ inputs.rand != '[]' }}
+    needs: plan
+    if: ${{ needs.plan.outputs.rand != '[]' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 300
     steps:
@@ -42,13 +64,14 @@ jobs:
           python -m experiments.revision8.traces --backend fallback --jobs 4
 
   train-plain:
-    if: ${{ inputs.plain != '[]' }}
+    needs: plan
+    if: ${{ needs.plan.outputs.plain != '[]' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 350
     strategy:
       fail-fast: false
       matrix:
-        seed: ${{ fromJSON(inputs.plain) }}
+        seed: ${{ fromJSON(needs.plan.outputs.plain) }}
     steps:
       - uses: actions/checkout@v4
         with: {ref: revision-8, fetch-depth: 1}
@@ -86,14 +109,14 @@ jobs:
           exit 1
 
   train-rand:
-    if: ${{ inputs.rand != '[]' && !cancelled() && needs.sumo-traces.result == 'success' }}
-    needs: sumo-traces
+    if: ${{ needs.plan.outputs.rand != '[]' && !cancelled() && needs.sumo-traces.result == 'success' }}
+    needs: [plan, sumo-traces]
     runs-on: ubuntu-24.04
     timeout-minutes: 350
     strategy:
       fail-fast: false
       matrix:
-        seed: ${{ fromJSON(inputs.rand) }}
+        seed: ${{ fromJSON(needs.plan.outputs.rand) }}
     steps:
       - uses: actions/checkout@v4
         with: {ref: revision-8, fetch-depth: 1}

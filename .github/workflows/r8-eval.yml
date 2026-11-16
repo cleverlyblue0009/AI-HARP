@@ -1,0 +1,67 @@
+# Revision 8 (DEVIATIONS.md D14): custom-simulator evaluation of one trained STRUCT arm (experiments/revision8/
+# sweep_struct.py), split into slices by task hash across runners. Needs results/revision8/train/<arm>_s{0..9}/theta.json
+# on revision-8. Slice files are pushed to r8-ci; the main session merges them
+# (python -m experiments.revision8.sweep_struct merge <arm> <SEL|EVAL>) into the canonical files.
+name: r8-eval
+on:
+  workflow_dispatch:
+    inputs:
+      arm:
+        description: 'plain or rand'
+        required: true
+        default: plain
+  push:
+    branches: [revision-8]
+    paths: ['ci/r8-eval.json']
+permissions:
+  contents: write
+env:
+  PYTHONUNBUFFERED: "1"
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      arm: ${{ steps.p.outputs.arm }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - id: p
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then echo 'arm=${{ inputs.arm }}' >> $GITHUB_OUTPUT
+          else python3 -c "import json; print('arm='+json.load(open('ci/r8-eval.json'))['arm'])" >> $GITHUB_OUTPUT; fi
+          cat $GITHUB_OUTPUT
+
+  slice:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        i: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-8, fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install numpy==1.26.4 scipy==1.13.1 pandas==2.3.3 pyyaml==6.0.3 cma==4.6.0
+      - name: evaluate slice
+        run: |
+          python -c "import sys, numpy; print(sys.executable, numpy.__version__)"
+          for ss in SEL EVAL; do
+            python -m experiments.revision8.sweep_struct --arm ${{ needs.plan.outputs.arm }} --seedset $ss --slice ${{ matrix.i }}/20 --jobs 4
+          done
+      - name: push slice files to r8-ci
+        run: |
+          git config user.name "r8-ci"; git config user.email "r8-ci@users.noreply.github.com"
+          mkdir -p /tmp/out; cp results/revision8/runs/*__slice${{ matrix.i }}of20* /tmp/out/
+          rm -f results/revision8/runs/*__slice${{ matrix.i }}of20*
+          for k in 1 2 3 4 5 6 7 8 9 10; do
+            if git fetch -q origin r8-ci 2>/dev/null; then git checkout -q -B r8-ci FETCH_HEAD; else git checkout -q -B r8-ci; fi
+            mkdir -p results/revision8/runs; cp /tmp/out/* results/revision8/runs/
+            git add -f results/revision8/runs/*__slice${{ matrix.i }}of20*
+            git commit -q -m "r8-ci: eval ${{ needs.plan.outputs.arm }} slice ${{ matrix.i }}/20" || exit 0
+            git push -q origin r8-ci && exit 0
+            sleep $((RANDOM % 30 + 5))
+          done
+          exit 1
