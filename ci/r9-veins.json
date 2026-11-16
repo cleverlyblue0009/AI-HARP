@@ -1,1 +1,1 @@
-{"mode": "toolchain", "seeds": [], "request": 1, "note": "build and cache the Veins toolchain on revision-9 (caches are branch-scoped)"}
+{"mode": "h6", "seeds": [220, 221, 222, 223, 224, 225, 226, 227, 228, 229], "request": 2}
