@@ -1,1 +1,1 @@
-{"arms": ["plain", "rand"], "request": 1}
+{"arms": ["plain"], "slices": [8], "request": 2, "note": "re-run plain slice 8: job 133436156271 of run 43906187897 hung in actions/checkout >50 min and cannot be cancelled (403)"}

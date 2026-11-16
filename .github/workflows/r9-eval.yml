@@ -1,5 +1,5 @@
 # Revision 9 S2 (descriptive): custom-simulator rows for STRUCT9 runs (experiments/revision9/sweep9.py), 20 slices per
-# arm. Request file ci/r9-eval.json: {"arms": ["plain", "rand"]}. Outputs pushed to r9-ci and VERIFIED there.
+# arm. Request file ci/r9-eval.json: {"arms": ["plain", "rand"], "slices": [optional subset of 0..19, default all]}. Outputs pushed to r9-ci and VERIFIED there.
 name: r9-eval
 on:
   push:
@@ -14,11 +14,13 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       arms: ${{ steps.p.outputs.arms }}
+      slices: ${{ steps.p.outputs.slices }}
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 1}
       - id: p
-        run: python3 -c "import json; print('arms='+json.dumps(json.load(open('ci/r9-eval.json'))['arms']))" >> $GITHUB_OUTPUT
+        run: |
+          python3 -c "import json; d=json.load(open('ci/r9-eval.json')); print('arms='+json.dumps(d['arms'])); print('slices='+json.dumps(d.get('slices', list(range(20)))))" >> $GITHUB_OUTPUT
   slice:
     needs: plan
     runs-on: ubuntu-24.04
@@ -27,7 +29,7 @@ jobs:
       fail-fast: false
       matrix:
         arm: ${{ fromJSON(needs.plan.outputs.arms) }}
-        i: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        i: ${{ fromJSON(needs.plan.outputs.slices) }}
     steps:
       - uses: actions/checkout@v4
         with: {ref: revision-9, fetch-depth: 1}
