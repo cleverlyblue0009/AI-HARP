@@ -1,1 +1,8 @@
-{"plain": [2,3,4,5,6,7,8,9], "rand": [0,1,2,3,4,5,6,7,8,9], "request": 1, "note": "revision-8 D14: remaining STRUCT training runs"}
+{
+ "plain": [
+  7
+ ],
+ "rand": [],
+ "request": 2,
+ "note": "rerun plain_s7: its first run (job 133172223491) finished but its push to r8-ci was refused (r8-ci did not exist; a runner may not create a branch containing workflow files), so its outputs were lost. Seen from it: only the job log while diagnosing (training-pool fitness lines); no evaluation."
+}

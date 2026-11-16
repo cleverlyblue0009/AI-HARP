@@ -94,7 +94,7 @@ jobs:
             if git fetch -q origin r8-ci 2>/dev/null; then git checkout -q -f -B r8-ci FETCH_HEAD; else git checkout -q -f -B r8-ci; fi
             rm -rf "$D"; mkdir -p "$(dirname "$D")"; cp -r /tmp/shard_out "$D"
             git add -f "$D"
-            git commit -q -m "r8-ci: veins H5 Tier B shard ${C}_s${{ matrix.seed }}" || exit 0
+            git commit -q -m "r8-ci: veins H5 Tier B shard ${C}_s${{ matrix.seed }}" || true   # nothing new is fine; a failed push is not
             git push -q origin r8-ci && exit 0
             sleep $((RANDOM % 30 + 5))
           done

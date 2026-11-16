@@ -102,7 +102,7 @@ jobs:
             if git fetch -q origin r8-ci 2>/dev/null; then git checkout -q -B r8-ci FETCH_HEAD; else git checkout -q -B r8-ci; fi
             rm -rf "$D"; mkdir -p "$(dirname "$D")"; cp -r /tmp/run_out "$D"
             git add -f "$D"
-            git commit -q -m "r8-ci: $RUN ($(tail -1 $D/history.jsonl | cut -c1-40))" || exit 0
+            git commit -q -m "r8-ci: $RUN ($(tail -1 $D/history.jsonl | cut -c1-40))" || true   # nothing new is fine; a failed push is not
             git push -q origin r8-ci && exit 0
             sleep $((RANDOM % 20 + 5))
           done
@@ -147,7 +147,7 @@ jobs:
             if git fetch -q origin r8-ci 2>/dev/null; then git checkout -q -B r8-ci FETCH_HEAD; else git checkout -q -B r8-ci; fi
             rm -rf "$D"; mkdir -p "$(dirname "$D")"; cp -r /tmp/run_out "$D"
             git add -f "$D"
-            git commit -q -m "r8-ci: $RUN ($(tail -1 $D/history.jsonl | cut -c1-40))" || exit 0
+            git commit -q -m "r8-ci: $RUN ($(tail -1 $D/history.jsonl | cut -c1-40))" || true   # nothing new is fine; a failed push is not
             git push -q origin r8-ci && exit 0
             sleep $((RANDOM % 20 + 5))
           done

@@ -60,7 +60,7 @@ jobs:
             if git fetch -q origin r8-ci 2>/dev/null; then git checkout -q -B r8-ci FETCH_HEAD; else git checkout -q -B r8-ci; fi
             mkdir -p results/revision8/runs; cp /tmp/out/* results/revision8/runs/
             git add -f results/revision8/runs/*__slice${{ matrix.i }}of20*
-            git commit -q -m "r8-ci: eval ${{ needs.plan.outputs.arm }} slice ${{ matrix.i }}/20" || exit 0
+            git commit -q -m "r8-ci: eval ${{ needs.plan.outputs.arm }} slice ${{ matrix.i }}/20" || true   # nothing new is fine; a failed push is not
             git push -q origin r8-ci && exit 0
             sleep $((RANDOM % 30 + 5))
           done
