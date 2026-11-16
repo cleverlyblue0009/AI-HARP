@@ -1,7 +1,7 @@
 # Revision 9 — pre-registration addendum: a causal deadline-miss constraint in STRUCT training
 
 Written 2026-11-16 on branch `revision-9` (from `origin/revision-8` at b67f18c), **before any revision-9 training or
-evaluation run**. Push commit of this file: `PENDING` (recorded by the next commit, which changes nothing else).
+evaluation run**. Push commit of this file: `b9feb0c`.
 Revision-5/6/7/8 results, thresholds, checkpoints, analysis files and deviations are unchanged and never edited.
 Deviations continue the revision-8 numbering (next: D16).
 
