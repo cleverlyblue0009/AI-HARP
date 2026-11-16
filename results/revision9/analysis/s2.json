@@ -1,0 +1,1085 @@
+{
+ "provenance": {
+  "task": "revision9/analysis/s2",
+  "git_commit": "9f82e403624210d47adb4327797b9205e04ae994",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision9.analysis.s2 --B 10000",
+  "config_hash": "06458e4f6ed7",
+  "config": {
+   "B": 10000
+  },
+  "seeds": null,
+  "generated": "2026-11-16 17:39:22"
+ },
+ "what": "S2, descriptive (5 training seeds per arm; H4 used 10)",
+ "arms": {
+  "plain": {
+   "A": {
+    "T": -0.2040837705010423,
+    "per_cell": {
+     "rural_highway d=20": -0.29826708229266286,
+     "rural_highway d=80": -0.23371949046789176,
+     "urban_nlos d=20": -0.08026473874257223
+    },
+    "cells_both_qualify": 3,
+    "qualifying_cells": {
+     "struct": 3,
+     "comparator": 3
+    },
+    "B": 10000,
+    "undefined_replicates": 9,
+    "infinite_replicates": 0,
+    "upper95_one_sided": 0.041734501176921956,
+    "ci95": [
+     -0.3449093711497314,
+     0.09928792979054091
+    ],
+    "p_noninferiority": 0.024622159943949555,
+    "p_two_sided_rev5": 0.16294665198678812,
+    "superiority_rev5": false,
+    "equivalence_TOST_5pct_rev5": false,
+    "decision": {
+     "i_qualification_count": true,
+     "ii_noninferiority_10pct": true,
+     "rule_met": true
+    },
+    "qualification_per_seed_cell": [
+     13,
+     20,
+     [
+      0.43285427668523624,
+      0.818808175898918
+     ]
+    ],
+    "point_detail": {
+     "rural_highway d=2": {
+      "struct": {
+       "qualifies": false,
+       "cost": 2.3790399600399597,
+       "rwcr": 0.5312347035349819,
+       "miss": 0.637322790253225,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 2.0,
+        "cost": 1.9475641025641024,
+        "rwcr": 0.5296691474904485,
+        "miss": 0.6290092226613966,
+        "qualifies": false
+       },
+       "plain_s1": {
+        "bias": -1.0,
+        "cost": 2.2619017094017093,
+        "rwcr": 0.6138956896961402,
+        "miss": 0.5933448580405102,
+        "qualifies": false
+       },
+       "plain_s2": {
+        "bias": -1.0,
+        "cost": 1.8492962592962592,
+        "rwcr": 0.48066211835704475,
+        "miss": 0.6664244595983726,
+        "qualifies": false
+       },
+       "plain_s3": {
+        "bias": 2.0,
+        "cost": 3.310712759462759,
+        "rwcr": 0.44751382656438193,
+        "miss": 0.6888163865120387,
+        "qualifies": false
+       },
+       "plain_s4": {
+        "bias": -1.0,
+        "cost": 2.525724969474969,
+        "rwcr": 0.5844327355668941,
+        "miss": 0.6090190244538071,
+        "qualifies": false
+       }
+      },
+      "comparator": {
+       "pick": [
+        "dvcast",
+        "n_slots",
+        "20"
+       ],
+       "cost": 1.6081043956043957,
+       "rwcr": 0.4417366703213065,
+       "miss": 0.710250951946604,
+       "qualifies": false
+      }
+     },
+     "rural_highway d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.4980765021870962,
+       "rwcr": 0.8908289241790044,
+       "miss": 0.3419307834224914,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 1.0,
+        "cost": 0.4818185501457749,
+        "rwcr": 0.8878163851521407,
+        "miss": 0.3409806648942169,
+        "qualifies": true
+       },
+       "plain_s1": {
+        "bias": 2.0,
+        "cost": 0.5003715819669904,
+        "rwcr": 0.9001746368655474,
+        "miss": 0.33279501906545095,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 2.0,
+        "cost": 0.38080585424238356,
+        "rwcr": 0.8628946426255368,
+        "miss": 0.3721008417759266,
+        "qualifies": false
+       },
+       "plain_s3": {
+        "bias": 3.0,
+        "cost": 0.5633223547839747,
+        "rwcr": 0.9018170154411171,
+        "miss": 0.3294825676996325,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": 3.0,
+        "cost": 0.5640641697963573,
+        "rwcr": 0.9014419408106799,
+        "miss": 0.33429482367722996,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "greedy_farthest",
+        "fallback_n_slots",
+        "32"
+       ],
+       "cost": 0.7097807294182296,
+       "rwcr": 0.905332612183695,
+       "miss": 0.3250180533651835,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=80": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.815564469277609,
+       "rwcr": 0.9082613128424353,
+       "miss": 0.3211080293299225,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 3.0,
+        "cost": 0.6128262217766349,
+        "rwcr": 0.9029715827866719,
+        "miss": 0.3258587199711196,
+        "qualifies": true
+       },
+       "plain_s1": {
+        "bias": 3.0,
+        "cost": 0.5326937395666447,
+        "rwcr": 0.9075180147302293,
+        "miss": 0.3212778157166212,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 2.0,
+        "cost": 0.5178649510089038,
+        "rwcr": 0.9070250625009697,
+        "miss": 0.3220586957056402,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": 3.0,
+        "cost": 1.2361643899430352,
+        "rwcr": 0.9126138069037932,
+        "miss": 0.31767438389848546,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": 3.0,
+        "cost": 1.1782730440928257,
+        "rwcr": 0.9111780972905119,
+        "miss": 0.3186705313577461,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "weighted_p",
+        "max_p",
+        "0.1"
+       ],
+       "cost": 1.0643158205545298,
+       "rwcr": 0.898099751050838,
+       "miss": 0.32866967782643514,
+       "qualifies": true
+      }
+     },
+     "urban_nlos d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.4981409209718856,
+       "rwcr": 0.9533463707962446,
+       "miss": 0.10344052619749289,
+       "n_pick": 4
+      },
+      "struct_per_seed": {
+       "plain_s0": null,
+       "plain_s1": {
+        "bias": 0.0,
+        "cost": 0.4344856156128209,
+        "rwcr": 0.9401165531365837,
+        "miss": 0.10286459522583535,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": -1.0,
+        "cost": 0.47467891178826926,
+        "rwcr": 0.9514205754024028,
+        "miss": 0.10278418283450423,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": -1.0,
+        "cost": 0.5422192946957212,
+        "rwcr": 0.9619602703625887,
+        "miss": 0.11035642049205699,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": 1.0,
+        "cost": 0.5411798617907311,
+        "rwcr": 0.9598880842834031,
+        "miss": 0.09775690623757496,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "counter_based",
+        "counter_threshold",
+        "1"
+       ],
+       "cost": 0.5416133771916561,
+       "rwcr": 0.942209503395541,
+       "miss": 0.10229484365598726,
+       "qualifies": true
+      }
+     }
+    }
+   },
+   "B": {
+    "T": -0.08664052258605365,
+    "per_cell": {
+     "rural_highway d=2": 0.24600053132804112,
+     "rural_highway d=20": -0.3041341176882816,
+     "rural_highway d=80": -0.21926670576086638,
+     "urban_nlos d=20": -0.06916179822310775
+    },
+    "cells_both_qualify": 4,
+    "qualifying_cells": {
+     "struct": 4,
+     "comparator": 4
+    },
+    "B": 10000,
+    "undefined_replicates": 8,
+    "infinite_replicates": 0,
+    "upper95_one_sided": 0.053238819618216776,
+    "ci95": [
+     -0.3450662987127197,
+     0.08238418100039872
+    ],
+    "p_noninferiority": 0.01711369095276221,
+    "p_two_sided_rev5": 0.24059247397918335,
+    "superiority_rev5": false,
+    "equivalence_TOST_5pct_rev5": false,
+    "decision": {
+     "i_qualification_count": true,
+     "ii_noninferiority_10pct": true,
+     "rule_met": true
+    },
+    "qualification_per_seed_cell": [
+     15,
+     20,
+     [
+      0.531299122381256,
+      0.8881382985923343
+     ]
+    ],
+    "point_detail": {
+     "rural_highway d=2": {
+      "struct": {
+       "qualifies": true,
+       "cost": 2.1971664960856137,
+       "rwcr": 0.6196822509634804,
+       "miss": 0.5689772156396871,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 2.0,
+        "cost": 1.8667309079809082,
+        "rwcr": 0.5728951739533789,
+        "miss": 0.6050850356525412,
+        "qualifies": false
+       },
+       "plain_s1": {
+        "bias": -1.0,
+        "cost": 2.423855796980797,
+        "rwcr": 0.5927100549741974,
+        "miss": 0.594465236771873,
+        "qualifies": false
+       },
+       "plain_s2": {
+        "bias": -1.0,
+        "cost": 1.927137707064178,
+        "rwcr": 0.5588632706367495,
+        "miss": 0.6058173954192261,
+        "qualifies": false
+       },
+       "plain_s3": {
+        "bias": 2.0,
+        "cost": 2.413708717752835,
+        "rwcr": 0.7425062509453152,
+        "miss": 0.4785928313783005,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": -1.0,
+        "cost": 2.354399350649351,
+        "rwcr": 0.6314365043077607,
+        "miss": 0.5609255789764943,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "dvcast",
+        "n_slots",
+        "20"
+       ],
+       "cost": 1.7633752481178953,
+       "rwcr": 0.6047111858656123,
+       "miss": 0.5723649754136024,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.453141085514339,
+       "rwcr": 0.900945481367948,
+       "miss": 0.32601664046677026,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 1.0,
+        "cost": 0.433505647775556,
+        "rwcr": 0.9143246538200677,
+        "miss": 0.30583832727397037,
+        "qualifies": true
+       },
+       "plain_s1": {
+        "bias": 2.0,
+        "cost": 0.419488249921858,
+        "rwcr": 0.8960751136190586,
+        "miss": 0.3242849336178471,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 2.0,
+        "cost": 0.35136914251109963,
+        "rwcr": 0.866509408070496,
+        "miss": 0.36014842301483097,
+        "qualifies": false
+       },
+       "plain_s3": {
+        "bias": 3.0,
+        "cost": 0.5456511235688434,
+        "rwcr": 0.9170073556915346,
+        "miss": 0.30315199598090115,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": 3.0,
+        "cost": 0.515691263794338,
+        "rwcr": 0.9108108756385835,
+        "miss": 0.33665952244630165,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "greedy_farthest",
+        "fallback_n_slots",
+        "32"
+       ],
+       "cost": 0.6511902609867443,
+       "rwcr": 0.9229557131373133,
+       "miss": 0.2974635635163674,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=80": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.7759829805484084,
+       "rwcr": 0.9075971246187541,
+       "miss": 0.3163470948641779,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 3.0,
+        "cost": 0.539047812340608,
+        "rwcr": 0.9070106686938206,
+        "miss": 0.31789233565729247,
+        "qualifies": true
+       },
+       "plain_s1": {
+        "bias": 3.0,
+        "cost": 0.5651522627793706,
+        "rwcr": 0.8979946768241008,
+        "miss": 0.324416823312164,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 2.0,
+        "cost": 0.4686310297313323,
+        "rwcr": 0.9042832470478848,
+        "miss": 0.32050670422504846,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": 3.0,
+        "cost": 1.1650579114730806,
+        "rwcr": 0.9159417861994512,
+        "miss": 0.3086854234713063,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": 3.0,
+        "cost": 1.142025886417651,
+        "rwcr": 0.9127552443285131,
+        "miss": 0.3102341876550781,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "weighted_p",
+        "max_p",
+        "0.1"
+       ],
+       "cost": 0.993915574337899,
+       "rwcr": 0.8874483042545569,
+       "miss": 0.3318871062379516,
+       "qualifies": true
+      }
+     },
+     "urban_nlos d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.49790566301077543,
+       "rwcr": 0.9482786179387241,
+       "miss": 0.1106068135282959,
+       "n_pick": 4
+      },
+      "struct_per_seed": {
+       "plain_s0": null,
+       "plain_s1": {
+        "bias": 0.0,
+        "cost": 0.436935429946992,
+        "rwcr": 0.9359145301029119,
+        "miss": 0.11027020924649282,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": -1.0,
+        "cost": 0.4716492687101578,
+        "rwcr": 0.941321568320508,
+        "miss": 0.10907289340058712,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": -1.0,
+        "cost": 0.5461026670037764,
+        "rwcr": 0.95708938759338,
+        "miss": 0.11931136133382807,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": 1.0,
+        "cost": 0.5369352863821756,
+        "rwcr": 0.9587889857380969,
+        "miss": 0.10377279013227556,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "counter_based",
+        "counter_threshold",
+        "1"
+       ],
+       "cost": 0.5349003318302957,
+       "rwcr": 0.9477355735545956,
+       "miss": 0.09801093026196173,
+       "qualifies": true
+      }
+     }
+    }
+   }
+  },
+  "rand": {
+   "A": {
+    "T": 1.101083038330243,
+    "per_cell": {
+     "rural_highway d=20": 0.9117943990251134,
+     "rural_highway d=80": 1.826677080522972,
+     "urban_nlos d=20": 0.5647776354426439
+    },
+    "cells_both_qualify": 3,
+    "qualifying_cells": {
+     "struct": 3,
+     "comparator": 3
+    },
+    "B": 10000,
+    "undefined_replicates": 1,
+    "infinite_replicates": 0,
+    "upper95_one_sided": 1.7742545574746897,
+    "ci95": [
+     0.6896215381050301,
+     1.907797386710208
+    ],
+    "p_noninferiority": 1.0,
+    "p_two_sided_rev5": 0.0,
+    "superiority_rev5": false,
+    "equivalence_TOST_5pct_rev5": false,
+    "decision": {
+     "i_qualification_count": true,
+     "ii_noninferiority_10pct": false,
+     "rule_met": false
+    },
+    "qualification_per_seed_cell": [
+     16,
+     20,
+     [
+      0.5839825677481064,
+      0.919342337420202
+     ]
+    ],
+    "point_detail": {
+     "rural_highway d=2": {
+      "struct": {
+       "qualifies": false,
+       "cost": 2.6972151737151737,
+       "rwcr": 0.5578672402144524,
+       "miss": 0.6097211078776297,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "rand_s0": {
+        "bias": 3.0,
+        "cost": 2.6871153846153844,
+        "rwcr": 0.4992817609553146,
+        "miss": 0.6452108326456153,
+        "qualifies": false
+       },
+       "rand_s1": {
+        "bias": -1.0,
+        "cost": 2.626544289044289,
+        "rwcr": 0.5584252291723222,
+        "miss": 0.6105500296804645,
+        "qualifies": false
+       },
+       "rand_s2": {
+        "bias": -1.0,
+        "cost": 2.271840659340659,
+        "rwcr": 0.5702353772165344,
+        "miss": 0.604187305448175,
+        "qualifies": false
+       },
+       "rand_s3": {
+        "bias": -1.0,
+        "cost": 2.90490675990676,
+        "rwcr": 0.6134508611969545,
+        "miss": 0.5654180746789442,
+        "qualifies": true
+       },
+       "rand_s4": {
+        "bias": -1.0,
+        "cost": 2.9956687756687757,
+        "rwcr": 0.5479429725311368,
+        "miss": 0.6232392969349492,
+        "qualifies": false
+       }
+      },
+      "comparator": {
+       "pick": [
+        "dvcast",
+        "n_slots",
+        "20"
+       ],
+       "cost": 1.6081043956043957,
+       "rwcr": 0.4417366703213065,
+       "miss": 0.710250951946604,
+       "qualifies": false
+      }
+     },
+     "rural_highway d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 1.3569548230377309,
+       "rwcr": 0.9094831238039196,
+       "miss": 0.3244085139224123,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "rand_s0": {
+        "bias": 3.0,
+        "cost": 0.7805460538717341,
+        "rwcr": 0.9099374712914837,
+        "miss": 0.3213925133461699,
+        "qualifies": true
+       },
+       "rand_s1": {
+        "bias": -1.0,
+        "cost": 1.2461781993097643,
+        "rwcr": 0.9093991362458986,
+        "miss": 0.32488473628869513,
+        "qualifies": true
+       },
+       "rand_s2": {
+        "bias": -1.0,
+        "cost": 1.3417348449190203,
+        "rwcr": 0.9093991362458986,
+        "miss": 0.32488473628869513,
+        "qualifies": true
+       },
+       "rand_s3": {
+        "bias": 3.0,
+        "cost": 1.6800100540417193,
+        "rwcr": 0.9090748754425112,
+        "miss": 0.32544029184425066,
+        "qualifies": true
+       },
+       "rand_s4": {
+        "bias": -1.0,
+        "cost": 1.7363049630464165,
+        "rwcr": 0.9096049997938062,
+        "miss": 0.32544029184425066,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "greedy_farthest",
+        "fallback_n_slots",
+        "32"
+       ],
+       "cost": 0.7097807294182296,
+       "rwcr": 0.905332612183695,
+       "miss": 0.3250180533651835,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=80": {
+      "struct": {
+       "qualifies": true,
+       "cost": 3.0084771363994895,
+       "rwcr": 0.914743699644972,
+       "miss": 0.31556362622391637,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "rand_s0": {
+        "bias": 3.0,
+        "cost": 1.689459904783212,
+        "rwcr": 0.9137738164842389,
+        "miss": 0.3140836064045292,
+        "qualifies": true
+       },
+       "rand_s1": {
+        "bias": -1.0,
+        "cost": 2.820761310707419,
+        "rwcr": 0.9148410992111626,
+        "miss": 0.31657866944708857,
+        "qualifies": true
+       },
+       "rand_s2": {
+        "bias": -1.0,
+        "cost": 3.0326600899740357,
+        "rwcr": 0.915124044007384,
+        "miss": 0.3155424000170367,
+        "qualifies": true
+       },
+       "rand_s3": {
+        "bias": 3.0,
+        "cost": 3.720453524086877,
+        "rwcr": 0.9151384393109113,
+        "miss": 0.3155529205188647,
+        "qualifies": true
+       },
+       "rand_s4": {
+        "bias": -1.0,
+        "cost": 3.7790508524459057,
+        "rwcr": 0.9148410992111626,
+        "miss": 0.31606053473206264,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "weighted_p",
+        "max_p",
+        "0.1"
+       ],
+       "cost": 1.0643158205545298,
+       "rwcr": 0.898099751050838,
+       "miss": 0.32866967782643514,
+       "qualifies": true
+      }
+     },
+     "urban_nlos d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.8475044996860646,
+       "rwcr": 0.9732481197328304,
+       "miss": 0.07903941897399978,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "rand_s0": {
+        "bias": 1.0,
+        "cost": 0.6431951225184963,
+        "rwcr": 0.9713659679980268,
+        "miss": 0.10312281122921092,
+        "qualifies": true
+       },
+       "rand_s1": {
+        "bias": -1.0,
+        "cost": 0.8912445689638847,
+        "rwcr": 0.975703902583516,
+        "miss": 0.0714276741830896,
+        "qualifies": true
+       },
+       "rand_s2": {
+        "bias": -1.0,
+        "cost": 0.8232289518723809,
+        "rwcr": 0.9705260715113008,
+        "miss": 0.07624857667376453,
+        "qualifies": true
+       },
+       "rand_s3": {
+        "bias": 3.0,
+        "cost": 0.9734592204189824,
+        "rwcr": 0.9751287364946745,
+        "miss": 0.07183970456093755,
+        "qualifies": true
+       },
+       "rand_s4": {
+        "bias": -1.0,
+        "cost": 0.9063946346565791,
+        "rwcr": 0.9735159200766341,
+        "miss": 0.0725583282229963,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "counter_based",
+        "counter_threshold",
+        "1"
+       ],
+       "cost": 0.5416133771916561,
+       "rwcr": 0.942209503395541,
+       "miss": 0.10229484365598726,
+       "qualifies": true
+      }
+     }
+    }
+   },
+   "B": {
+    "T": 0.9540055162790182,
+    "per_cell": {
+     "rural_highway d=2": 0.3965279625238196,
+     "rural_highway d=20": 0.9357120476696796,
+     "rural_highway d=80": 1.9224701933913382,
+     "urban_nlos d=20": 0.5613118615312358
+    },
+    "cells_both_qualify": 4,
+    "qualifying_cells": {
+     "struct": 4,
+     "comparator": 4
+    },
+    "B": 10000,
+    "undefined_replicates": 0,
+    "infinite_replicates": 0,
+    "upper95_one_sided": 1.5451958537475268,
+    "ci95": [
+     0.5498335280809636,
+     1.6441255593321156
+    ],
+    "p_noninferiority": 1.0,
+    "p_two_sided_rev5": 0.0,
+    "superiority_rev5": false,
+    "equivalence_TOST_5pct_rev5": false,
+    "decision": {
+     "i_qualification_count": true,
+     "ii_noninferiority_10pct": false,
+     "rule_met": false
+    },
+    "qualification_per_seed_cell": [
+     20,
+     20,
+     [
+      0.8388748419471806,
+      1.0
+     ]
+    ],
+    "point_detail": {
+     "rural_highway d=2": {
+      "struct": {
+       "qualifies": true,
+       "cost": 2.462602842419019,
+       "rwcr": 0.6686974022486336,
+       "miss": 0.5430211672343251,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "rand_s0": {
+        "bias": 3.0,
+        "cost": 2.4495831741787626,
+        "rwcr": 0.6561929240716631,
+        "miss": 0.5382553452141553,
+        "qualifies": true
+       },
+       "rand_s1": {
+        "bias": -1.0,
+        "cost": 2.4898813604695955,
+        "rwcr": 0.6606346670536329,
+        "miss": 0.5624619646816443,
+        "qualifies": true
+       },
+       "rand_s2": {
+        "bias": -1.0,
+        "cost": 2.204097152847153,
+        "rwcr": 0.6683893267316205,
+        "miss": 0.5380527217506623,
+        "qualifies": true
+       },
+       "rand_s3": {
+        "bias": -1.0,
+        "cost": 2.642940009337068,
+        "rwcr": 0.6434020338348401,
+        "miss": 0.5486880719077515,
+        "qualifies": true
+       },
+       "rand_s4": {
+        "bias": -1.0,
+        "cost": 2.5265125152625147,
+        "rwcr": 0.7148680595514109,
+        "miss": 0.5276477326174123,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "dvcast",
+        "n_slots",
+        "20"
+       ],
+       "cost": 1.7633752481178953,
+       "rwcr": 0.6047111858656123,
+       "miss": 0.5723649754136024,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 1.260516833517204,
+       "rwcr": 0.9250338967951987,
+       "miss": 0.29701446053079683,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "rand_s0": {
+        "bias": 3.0,
+        "cost": 0.7180404886732401,
+        "rwcr": 0.924908915659152,
+        "miss": 0.29433056074535713,
+        "qualifies": true
+       },
+       "rand_s1": {
+        "bias": -1.0,
+        "cost": 1.178629813931719,
+        "rwcr": 0.9251853700264558,
+        "miss": 0.2977315726821716,
+        "qualifies": true
+       },
+       "rand_s2": {
+        "bias": -1.0,
+        "cost": 1.1966647502360732,
+        "rwcr": 0.9245894371214657,
+        "miss": 0.2980835140751832,
+        "qualifies": true
+       },
+       "rand_s3": {
+        "bias": 3.0,
+        "cost": 1.6057430504517185,
+        "rwcr": 0.925031327791768,
+        "miss": 0.2977710140751832,
+        "qualifies": true
+       },
+       "rand_s4": {
+        "bias": -1.0,
+        "cost": 1.6035060642932675,
+        "rwcr": 0.9254544333771513,
+        "miss": 0.29715564107608927,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "greedy_farthest",
+        "fallback_n_slots",
+        "32"
+       ],
+       "cost": 0.6511902609867443,
+       "rwcr": 0.9229557131373133,
+       "miss": 0.2974635635163674,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=80": {
+      "struct": {
+       "qualifies": true,
+       "cost": 2.9046886407499426,
+       "rwcr": 0.9175008542657336,
+       "miss": 0.3076847244973945,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "rand_s0": {
+        "bias": 3.0,
+        "cost": 1.6622874463612098,
+        "rwcr": 0.9176121958634711,
+        "miss": 0.3057138598813203,
+        "qualifies": true
+       },
+       "rand_s1": {
+        "bias": -1.0,
+        "cost": 2.7190548300684165,
+        "rwcr": 0.9178698230758233,
+        "miss": 0.30817744065141306,
+        "qualifies": true
+       },
+       "rand_s2": {
+        "bias": -1.0,
+        "cost": 2.973850009752514,
+        "rwcr": 0.9171340366024292,
+        "miss": 0.30841898654513283,
+        "qualifies": true
+       },
+       "rand_s3": {
+        "bias": 3.0,
+        "cost": 3.5890618420969935,
+        "rwcr": 0.9177746336623054,
+        "miss": 0.30767948450128296,
+        "qualifies": true
+       },
+       "rand_s4": {
+        "bias": -1.0,
+        "cost": 3.579189075470578,
+        "rwcr": 0.917113582124639,
+        "miss": 0.3084338509078233,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "weighted_p",
+        "max_p",
+        "0.1"
+       ],
+       "cost": 0.993915574337899,
+       "rwcr": 0.8874483042545569,
+       "miss": 0.3318871062379516,
+       "qualifies": true
+      }
+     },
+     "urban_nlos d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.8351462328236348,
+       "rwcr": 0.9723566039367396,
+       "miss": 0.07958851018587183,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "rand_s0": {
+        "bias": 1.0,
+        "cost": 0.6373273454175558,
+        "rwcr": 0.9668096265013153,
+        "miss": 0.10585281452123715,
+        "qualifies": true
+       },
+       "rand_s1": {
+        "bias": -1.0,
+        "cost": 0.8876062540645385,
+        "rwcr": 0.9739958329682832,
+        "miss": 0.07190471446048365,
+        "qualifies": true
+       },
+       "rand_s2": {
+        "bias": -1.0,
+        "cost": 0.7952268380015985,
+        "rwcr": 0.9734869622146854,
+        "miss": 0.07316461970611313,
+        "qualifies": true
+       },
+       "rand_s3": {
+        "bias": 3.0,
+        "cost": 0.966552598775885,
+        "rwcr": 0.9733185989379838,
+        "miss": 0.07313746610808615,
+        "qualifies": true
+       },
+       "rand_s4": {
+        "bias": -1.0,
+        "cost": 0.8890181278585967,
+        "rwcr": 0.9741719990614305,
+        "miss": 0.07388293613343908,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "counter_based",
+        "counter_threshold",
+        "1"
+       ],
+       "cost": 0.5349003318302957,
+       "rwcr": 0.9477355735545956,
+       "miss": 0.09801093026196173,
+       "qualifies": true
+      }
+     }
+    }
+   }
+  }
+ }
+}
