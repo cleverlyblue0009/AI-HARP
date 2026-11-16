@@ -5,6 +5,7 @@ Written before any revision-8 Veins replay existed.
     python -m experiments.revision8.analysis.h5 expcd    -> results/revision8/analysis/exp_cd.json
     python -m experiments.revision8.analysis.h5 holm     -> results/revision8/analysis/holm.json (needs h4.json, h5.json)
 
+D12: Tier B = 210-219; Experiments C/D in rural d=20 only; Tier A H5 not run.
 H5 (Tier B primary): frozen Veins q*, m* from results/revision8/veins_thresholds.json (Tier A classical); a training seed
 qualifies in a cell if its Algorithm-1 matched cost over its six deltas (Tier B seed means; guard mean miss <= m*) is
 finite (revision-6 veins_methods.matched, unchanged). Per cell: rule met iff rand >= 3/5 and plain < 3/5; one-sided
@@ -28,7 +29,7 @@ from experiments.revision6.analysis.veins_methods import matched
 
 R8 = PROJECT_ROOT / "results" / "revision8"
 CELLS = (("rural_highway", 20.0), ("urban_nlos", 20.0))
-TIER_A, TIER_B = list(range(200, 210)), list(range(210, 230))
+TIER_A, TIER_B = list(range(200, 210)), list(range(210, 220))       # D12: Tier B cut to 210-219
 ARMS = {"plain": [f"plain_s{k}" for k in range(5)], "rand": [f"rand_s{k}" for k in range(5)]}
 REF = [f"ref_s{k}" for k in range(5)]
 
@@ -50,12 +51,12 @@ def load(mode: str, sep: str) -> list[dict]:
     return out
 
 
-def per_run(rows: list[dict], runs: list[str], seeds: list[int], th: dict) -> dict:
+def per_run(rows: list[dict], runs: list[str], seeds: list[int], th: dict, cells=CELLS) -> dict:
     out = {}
     for run in runs:
-        t = tables([r for r in rows if r["policy"] == run], CELLS, seeds, key=lambda r: (r["policy"], r["value"]))
+        t = tables([r for r in rows if r["policy"] == run], cells, seeds, key=lambda r: (r["policy"], r["value"]))
         out[run] = {}
-        for c in CELLS:
+        for c in cells:
             q, m = th[c]
             mc = matched(t[c], run, q, m)
             rw, co, mi = (t[c].mean(x) for x in ("rwcr", "cost", "miss"))
@@ -93,10 +94,10 @@ def expcd(th: dict) -> dict:
         if not p.exists():
             out[mode] = {"status": "not run"}
             continue
-        pr = per_run(load(mode, "_b"), REF, TIER_A, th)
+        pr = per_run(load(mode, "_b"), REF, TIER_A, th, cells=(("rural_highway", 20.0),))
         n_r = sum(pr[r]["rural_highway d=20"]["qualifies"] for r in REF)
-        n_u = sum(pr[r]["urban_nlos d=20"]["qualifies"] for r in REF)
-        out[mode] = {"what": label, "seeds": TIER_A, "rural_d20_qualifying": n_r, "urban_nlos_d20_qualifying": n_u,
+        out[mode] = {"what": label, "seeds": TIER_A, "rural_d20_qualifying": n_r,
+                     "urban_nlos_d20": "not run (D12)",
                      "baseline_revision6_7_rural_d20": "0/5",
                      "verdict": "explains the failure" if n_r >= 3 else "does not explain it", "per_run": pr}
     return out

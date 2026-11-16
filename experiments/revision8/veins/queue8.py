@@ -1,14 +1,15 @@
 """Revision 8: the Veins replays of H5 and Experiments C and D, resumably (Windows side; launches WSL jobs).
 results/revision8/ADDENDUM.md sections 6 and 8; results/revision8/LAPTOP_RUNBOOK.md.
 
-    python -m experiments.revision8.veins.queue8 gate             validation gate -> results/revision8/veins/app_gate.json
-    python -m experiments.revision8.veins.queue8 h5B --jobs 8     STRUCT plain/rand s0-4, delta -2..3, Tier B 210-229 (2,400)
-    python -m experiments.revision8.veins.queue8 h5A --jobs 8     the same on Tier A 200-209 (1,200)
-    python -m experiments.revision8.veins.queue8 expC --jobs 8    AI-HARP ref_s0-4, geometric neighbour table, Tier A (600)
-    python -m experiments.revision8.veins.queue8 expD --jobs 8    AI-HARP ref_s0-4, one-epoch lag removed, Tier A (600)
+    python -m experiments.revision8.veins.queue8 gate             validation gate without STRUCT -> app_gate.json
+    python -m experiments.revision8.veins.queue8 gate_struct      STRUCT replay + trace check -> app_gate_struct.json (H5 needs it)
+    python -m experiments.revision8.veins.queue8 h5B --jobs 8     STRUCT plain/rand s0-4, delta -2..3, Tier B 210-219 (1,200; D12)
+    python -m experiments.revision8.veins.queue8 h5A --jobs 8     the same on Tier A 200-209 (1,200; not run under D12)
+    python -m experiments.revision8.veins.queue8 expC --jobs 8    AI-HARP ref_s0-4, geometric table, rural d=20, Tier A (300; D12)
+    python -m experiments.revision8.veins.queue8 expD --jobs 8    AI-HARP ref_s0-4, lag removed, rural d=20, Tier A (300; D12)
     python -m experiments.revision8.veins.queue8 status
 
-Cells: rural d=20 and urban NLOS d=20. Binary ~/veins-r8/aiharp (sha256 in app_gate.json, written only if every gate check
+Cells: H5 rural d=20 and urban NLOS d=20; Experiments C and D rural d=20 only (D12). Binary ~/veins-r8/aiharp (sha256 in app_gate.json, written only if every gate check
 passes; no replay mode starts without it). A replay is done when its record shows exit code 0, an identical trace and
 that binary; anything else is kept and retried. Outputs: cache/veins_runs/r8_<mode>; decision logs
 D:\\aiharp-r8-bridge-logs\\<mode>.
@@ -40,7 +41,8 @@ APP = "~/veins-r8/aiharp"
 APP_ABS = "/home/upasana/veins-r8/aiharp/aiharp"
 RUNNER = f"{q6.WSL_ROOT}/experiments/revision8/veins/run_veins8.py"
 CELLS = (("rural_highway", 20.0), ("urban_nlos", 20.0))
-TIER_A, TIER_B = list(range(200, 210)), list(range(210, 230))
+TIER_A, TIER_B = list(range(200, 210)), list(range(210, 220))       # D12: Tier B cut to 210-219
+CD_CELLS = (("rural_highway", 20.0),)                                  # D12: Experiments C and D in rural d=20 only
 DELTAS = (-2.0, -1.0, 0.0, 1.0, 2.0, 3.0)
 STRUCT_RUNS = [f"{arm}_s{k}" for arm in ("plain", "rand") for k in range(5)]      # fixed in the addendum
 REF_RUNS = [f"ref_s{k}" for k in range(5)]
@@ -61,7 +63,7 @@ def tasks(mode: str) -> list[tuple]:
     flags = {"expC": ("--send-heard",), "expD": ("--step-offset", "1")}[mode]
     extra = {"neighbour_table": "geometric"} if mode == "expC" else {}
     return [(sc, d, s, "ai_harp", f"{run}_b{b:g}", {"policy": "ai_harp", "run": run, "bias": b, "tau": 0.5, **extra},
-             flags) for run in REF_RUNS for b in q6.BIASES for sc, d in CELLS for s in TIER_A]
+             flags) for run in REF_RUNS for b in q6.BIASES for sc, d in CD_CELLS for s in TIER_A]
 
 
 def name_of(t) -> str:
@@ -138,20 +140,22 @@ def wsl_sha() -> str:
     return r.stdout.split()[0]
 
 
-def gate() -> dict:
+def gate(only_struct: bool = False) -> dict:
     """Before any reported replay: every new option off reproduces stored logs byte for byte; one STRUCT replay, one
     Exp C replay and one Exp D replay run cleanly; the STRUCT and Exp C decision logs are reproduced offline exactly."""
     from experiments.revision8.veins import validate8 as v8
     out = ROOT / "r8_gate"
     out.mkdir(parents=True, exist_ok=True)
     checks: dict[str, dict] = {}
-    name = q6.name_of(SC, D, S, "slotted_1p", "8")
-    if not (out / f"{name}.events.csv.gz").exists():
-        subprocess.run(runner_cmd(q6.BUNDLES / f"{SC}_d{D:g}_s{S}", "slotted_1p", "8", S, out), capture_output=True,
-                       text=True)
-    sha = sha_events(out / f"{name}.events.csv.gz")
-    checks["slotted_1p_off_vs_revision6_gate"] = {"replay": name, "events_sha256": sha,
-                                                  "reference_sha256": GATE_SLOTTED_SHA, "pass": sha == GATE_SLOTTED_SHA}
+    if not only_struct:
+        name = q6.name_of(SC, D, S, "slotted_1p", "8")
+        if not (out / f"{name}.events.csv.gz").exists():
+            subprocess.run(runner_cmd(q6.BUNDLES / f"{SC}_d{D:g}_s{S}", "slotted_1p", "8", S, out), capture_output=True,
+                           text=True)
+        sha = sha_events(out / f"{name}.events.csv.gz")
+        checks["slotted_1p_off_vs_revision6_gate"] = {"replay": name, "events_sha256": sha,
+                                                      "reference_sha256": GATE_SLOTTED_SHA,
+                                                      "pass": sha == GATE_SLOTTED_SHA}
     w = Worker8(0, LOGS / "gate")
     try:
         cases = {
@@ -164,6 +168,9 @@ def gate() -> dict:
             "expD_replay": (SC, D, S, "ai_harp", "ref_s0_b1", {"policy": "ai_harp", "run": "ref_s0", "bias": 1.0,
                                                                "tau": 0.5}, ("--step-offset", "1")),
         }
+        # D12 scheduling: "gate" (no STRUCT; Experiments C/D may start) and "gate_struct" (once plain_s0 is trained;
+        # required before H5) are run separately; together they are the registered gate.
+        cases = {k: v for k, v in cases.items() if (k == "struct_replay") == only_struct}
         for label, t in cases.items():
             o = out / label
             o.mkdir(exist_ok=True)
@@ -196,26 +203,33 @@ def gate() -> dict:
 def main(argv=None) -> int:
     import numpy
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("mode", choices=["gate", "h5B", "h5A", "expC", "expD", "status"])
+    ap.add_argument("mode", choices=["gate", "gate_struct", "h5B", "h5A", "expC", "expD", "status"])
     ap.add_argument("--jobs", type=int, default=8)
     a = ap.parse_args(argv)
     print(f"[env] {sys.executable} numpy {numpy.__version__}", flush=True)
     os.environ.setdefault("SUMO_HOME", r"D:\sumo\sumo-1.19.0")
     OUT.mkdir(parents=True, exist_ok=True)
-    if a.mode == "gate":
-        checks = gate()
+    if a.mode in ("gate", "gate_struct"):
+        checks = gate(only_struct=a.mode == "gate_struct")
         ok = all(c["pass"] for c in checks.values())
         print(json.dumps(checks, indent=1, default=str))
         from experiments.revision1.provenance import stamp
-        payload = {"provenance": stamp("revision8/veins/app_gate", {"replay": f"{SC} d={D:g} seed {S}"}), "pass": ok,
-                   "app_sha256": wsl_sha(), "checks": checks}
-        (OUT / ("app_gate.json" if ok else "app_gate_FAILED.json")).write_text(json.dumps(payload, indent=1, default=str))
+        sha = wsl_sha()
+        if a.mode == "gate_struct" and GATE.exists() and json.loads(GATE.read_text())["app_sha256"] != sha:
+            ok = False
+            checks["same_binary_as_gate"] = {"pass": False}
+        payload = {"provenance": stamp(f"revision8/veins/{a.mode}", {"replay": f"{SC} d={D:g} seed {S}"}), "pass": ok,
+                   "app_sha256": sha, "checks": checks}
+        stem = "app_gate" if a.mode == "gate" else "app_gate_struct"
+        (OUT / (f"{stem}.json" if ok else f"{stem}_FAILED.json")).write_text(json.dumps(payload, indent=1, default=str))
         return 0 if ok else 1
     if not GATE.exists():
         raise SystemExit("no results/revision8/veins/app_gate.json: run the gate first; no replay before it passes")
+    if a.mode in ("h5A", "h5B") and not (OUT / "app_gate_struct.json").exists():
+        raise SystemExit("no results/revision8/veins/app_gate_struct.json: run `queue8 gate_struct` (needs plain_s0 trained)")
     app_sha = json.loads(GATE.read_text())["app_sha256"]
     for sc, d in CELLS:
-        for s in TIER_A + TIER_B:
+        for s in TIER_A + TIER_B:                     # r6.txt needed for 200-219 (D12)
             if not (q6.BUNDLES / f"{sc}_d{d:g}_s{s}" / "r6.txt").exists():
                 raise SystemExit(f"{sc} d={d:g} s={s}: no r6.txt (python -m experiments.revision6.veins.r6_bundle)")
     if a.mode == "status":
