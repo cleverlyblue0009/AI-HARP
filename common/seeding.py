@@ -28,6 +28,8 @@ STREAMS = (
                      # it never shifts the mac stream (keys are name hashes, so adding a
                      # stream leaves every other stream unchanged)
     "sub_epoch",     # revision-5 D6 sub-epoch timing mode (beacon schedule, backoff); own stream, off by default
+    "r8_nbtable",    # revision-8 R2 neighbour-table error; own stream, off by default
+    "r8_pdr",        # revision-8 R5 PDR-vs-distance perturbation; own stream, off by default
 )
 
 

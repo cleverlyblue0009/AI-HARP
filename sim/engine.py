@@ -64,6 +64,21 @@ class SimSettings:
     #: Revision 7 (results/revision7/ADDENDUM.md): 1 = a duplicate callback in an epoch where the vehicle has already
     #: decided is answered with SUPPRESS without calling the policy. Off (0) by default; draws nothing.
     max_decisions_per_epoch: int = 0
+    #: Revision 8 (results/revision8/ADDENDUM.md section 3): audit-informed randomisation axes, all OFF by default.
+    #: R1: count every decoded duplicate frame (Veins, AiharpApp.cc onWSM) instead of one duplicate per epoch; a fresh
+    #: receiver that decoded m frames decides, then counts m - 1 duplicates with the same cancel test. Draws nothing.
+    dup_count_per_frame: bool = False
+    #: R2: (p_miss, p_stale, ring): each geometric neighbour is missing from the decision-time neighbour table with
+    #: probability p_miss; each active vehicle at distance in (R, ring*R] is present (stale) with probability p_stale.
+    #: Own stream "r8_nbtable". None = off.
+    nb_table_error: tuple | None = None
+    #: R3: decision inputs (own state, relevance, neighbour table, sender offset/distance) taken this many epochs
+    #: earlier (0 or 1); radio and reception unchanged. Draws nothing.
+    obs_lag_steps: int = 0
+    #: R5: {"u": scale in [0, 1], "bin_m": 50.0, "gap": [per-bin PDR_veins - PDR_custom], "pdr_custom": [...]}.
+    #: In-nominal-range links: s = u * gap[bin]; s > 0 turns a failed decode into a success with probability
+    #: s / (1 - pdr_custom), s < 0 a success into a failure with probability -s / pdr_custom. Own stream "r8_pdr".
+    pdr_perturb: dict | None = None
 
     #: Keys that used to exist and must not come back silently.
     REMOVED_KEYS = {
@@ -185,6 +200,9 @@ class DisseminationEngine:
         self._hz_busy_sum, self._n_act_steps = 0.0, 0
         self._last_decision = np.full(self.N, NO_STEP, dtype=np.int32)
         self._n_capped = 0
+        # revision-8 R2/R5: own streams, created only when the axis is on (off draws nothing)
+        self._rng_nb = self.seeds.rng("r8_nbtable") if cfg.nb_table_error else None
+        self._rng_pdr = self.seeds.rng("r8_pdr") if cfg.pdr_perturb else None
         self.policy.reset(self.N, rng_pol)
 
         N = self.N
@@ -421,6 +439,8 @@ class DisseminationEngine:
             extra_ok = (self.seeds.rng("extra_loss").random(d.shape)
                         >= mac.extra_loss_probability(nb_rx)[None, :])
             decoded &= extra_ok
+        if self.cfg.pdr_perturb:
+            decoded = self._perturb_pdr(decoded, d, is_tx, tx, rx_idx)
 
         # --- accounting, restricted to the nominal-range denominator --------
         in_nominal = (d <= self.comm_range_m) & ~is_tx[None, :]
@@ -453,6 +473,8 @@ class DisseminationEngine:
 
         # --- deliver ---------------------------------------------------------
         any_decoded = decoded.any(axis=0)
+        per_frame = self.cfg.dup_count_per_frame
+        extra_dups: list[tuple[int, int]] = []
         self._begin_batch()
         for r_local in np.flatnonzero(any_decoded):
             r = int(rx_idx[r_local])
@@ -479,8 +501,10 @@ class DisseminationEngine:
                     forced_broadcast, origin_step, rng_pol, sender=s, sender_dist=dist,
                     designated=designated, tx_count=tx_count,
                 )
+                if per_frame and senders.size > 1:   # R1: the other frames decoded this epoch are duplicates
+                    extra_dups.append((r, int(senders.size) - 1))
             else:
-                dup_count[r] += 1
+                dup_count[r] += int(senders.size) if per_frame else 1
                 # Counter-based and p-persistent schemes cancel a pending
                 # rebroadcast once enough duplicates have been overheard.
                 if (
@@ -510,6 +534,11 @@ class DisseminationEngine:
                     )
 
         self._flush_batch(step, tx_sched, timer_sched, cancel_at_dups, forced_broadcast)
+        for r, k in extra_dups:      # R1, after the fresh decisions are applied (as in Veins: decide, then count)
+            dup_count[r] += k
+            if cancel_at_dups[r] != NO_STEP and dup_count[r] >= cancel_at_dups[r] and tx_sched[r] > step:
+                tx_sched[r] = NO_STEP
+                cancel_at_dups[r] = NO_STEP
 
         if self.cfg.record_transmissions:
             for k, i in enumerate(tx):
@@ -773,6 +802,11 @@ class DisseminationEngine:
         designated: bool = False, own_tx_count: int = 0,
     ) -> DecisionContext:
         tr = self.trace
+        real_step = step
+        lag = int(self.cfg.obs_lag_steps)
+        if lag and step - lag >= 0 and tr.active[step - lag, i]:
+            # revision-8 R3: the decision sees mobility one coupling lag earlier (Veins epoch k = trace k - 1)
+            step = step - lag
         act = tr.active[step]
         if self.cfg.cache_step_features:
             cached = getattr(self, "_feats_cache", None)
@@ -808,20 +842,31 @@ class DisseminationEngine:
             )
             near &= budget >= self.phy.sensitivity_dbm
 
+        if self.cfg.nb_table_error:
+            # revision-8 R2: beacon-table error -- missing entries and stale out-of-range entries (fixed draw count)
+            p_miss, p_stale, ring = (float(v) for v in self.cfg.nb_table_error)
+            u = self._rng_nb.random((2, rx_idx.size))
+            stale = ((dist > self.comm_range_m) & (dist <= ring * self.comm_range_m) & (rx_idx != i)
+                     & (u[1] < p_stale))
+            near = (near & ~(u[0] < p_miss)) | stale
+
         nb = rx_idx[near]
 
         sender_dx = sender_dy = 0.0
         if sender is not None:
-            sender_dx = float(tr.x[step, sender] - tr.x[step, i])
-            sender_dy = float(tr.y[step, sender] - tr.y[step, i])
+            ss = step if tr.active[step, sender] else real_step
+            sender_dx = float(tr.x[ss, sender] - tr.x[step, i])
+            sender_dy = float(tr.y[ss, sender] - tr.y[step, i])
+            if step != real_step:
+                sender_dist = float(np.hypot(sender_dx, sender_dy))
 
         return DecisionContext(
-            step=step, time_s=step * self.dt, dt=self.dt, index=i, trigger=trigger,
+            step=real_step, time_s=real_step * self.dt, dt=self.dt, index=i, trigger=trigger,
             hop_count=int(hops[i]), duplicate_count=int(dup_count[i]),
             own_tx_count=int(own_tx_count),
             sender_index=sender, sender_distance_m=sender_dist,
             max_sender_distance_m=float(max_sender_dist[i]),
-            age_s=(step - origin_step) * self.dt if origin_step >= 0 else 0.0,
+            age_s=(real_step - origin_step) * self.dt if origin_step >= 0 else 0.0,
             x=float(tr.x[step, i]), y=float(tr.y[step, i]),
             speed_ms=float(np.hypot(tr.vx[step, i], tr.vy[step, i])),
             heading=float(tr.heading[step, i]), direction=int(tr.direction[i]),
@@ -832,7 +877,7 @@ class DisseminationEngine:
             neighbour_vx=tr.vx[step, nb], neighbour_vy=tr.vy[step, nb],
             neighbour_relevance=feats["relevance"][nb],
             # A vehicle only knows a neighbour is informed if it heard it send.
-            neighbour_informed=(informed_step[nb] >= 0) & (informed_step[nb] <= step),
+            neighbour_informed=(informed_step[nb] >= 0) & (informed_step[nb] <= real_step),
             comm_range_m=self.comm_range_m, rng=rng_pol,
             sender_dx=sender_dx, sender_dy=sender_dy, was_designated=designated,
             # Any ``extra_*`` per-vehicle arrays a risk-field object adds to its
@@ -843,6 +888,23 @@ class DisseminationEngine:
             extras={"eta_all": feats["eta_s"], "relevance_all": feats["relevance"],
                     **{k: v for k, v in feats.items() if k.startswith("extra_")}},
         )
+
+    def _perturb_pdr(self, decoded, d, is_tx, tx, rx_idx):
+        """revision-8 R5: move in-nominal-range PDR towards the measured Veins-minus-custom gap per distance bin."""
+        cfgp = self.cfg.pdr_perturb
+        u = float(cfgp["u"])
+        bin_m = float(cfgp.get("bin_m", 50.0))
+        gap = np.asarray(cfgp["gap"], dtype=float)
+        pc = np.asarray(cfgp["pdr_custom"], dtype=float)
+        draw = self._rng_pdr.random(d.shape)                  # fixed draw count per transmission epoch
+        in_nom = (d <= self.comm_range_m) & ~is_tx[None, :] & (tx[:, None] != rx_idx[None, :])
+        b = np.minimum((d / bin_m).astype(int), gap.size - 1)
+        s = u * gap[b]
+        pcb = pc[b]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            up = in_nom & ~decoded & (s > 0) & (draw < np.where(pcb < 1, s / (1 - pcb), 0.0))
+            down = in_nom & decoded & (s < 0) & (draw < np.where(pcb > 0, -s / pcb, 0.0))
+        return (decoded | up) & ~down
 
     def _apply(
         self, action: Action, i: int, step: int, tx_sched, timer_sched, cancel_at_dups,

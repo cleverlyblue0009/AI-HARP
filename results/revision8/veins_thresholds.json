@@ -1,0 +1,114 @@
+{
+ "provenance": {
+  "task": "revision8/veins_thresholds",
+  "git_commit": "a0d94fb08c7f213db8a99c5e133d3b33fd42bd30-dirty",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision8.veins_thresholds",
+  "config_hash": "954e8774ca4f",
+  "config": {
+   "source": "veins_rows.jsonl"
+  },
+  "seeds": [
+   200,
+   201,
+   202,
+   203,
+   204,
+   205,
+   206,
+   207,
+   208,
+   209
+  ],
+  "generated": "2026-11-16 05:04:09"
+ },
+ "rule": "q* = 0.95 x max mean RWCR, m* = min mean actionable miss + 0.05, 55 classical settings, Veins Tier A 200-209; frozen, applied to Tier B (ADDENDUM section 6)",
+ "cells": {
+  "rural_highway|2": {
+   "q_star": 0.09466229675288977,
+   "m_star": 1.0424501424501424,
+   "ceiling_setting": [
+    "dvcast",
+    1.0
+   ],
+   "n_settings": 55,
+   "seeds": [
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209
+   ]
+  },
+  "rural_highway|20": {
+   "q_star": 0.878957805721434,
+   "m_star": 0.40386991386991383,
+   "ceiling_setting": [
+    "slotted_1p",
+    50.0
+   ],
+   "n_settings": 55,
+   "seeds": [
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209
+   ]
+  },
+  "rural_highway|80": {
+   "q_star": 0.8695610210034191,
+   "m_star": 0.37149322030059834,
+   "ceiling_setting": [
+    "greedy_farthest",
+    32.0
+   ],
+   "n_settings": 55,
+   "seeds": [
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209
+   ]
+  },
+  "urban_nlos|20": {
+   "q_star": 0.49834999716125983,
+   "m_star": 0.6019403429624613,
+   "ceiling_setting": [
+    "slotted_1p",
+    50.0
+   ],
+   "n_settings": 55,
+   "seeds": [
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209
+   ]
+  }
+ }
+}

@@ -79,3 +79,7 @@ logs/revision1/
 # revision 7: the custom capped rows are a result of this revision
 !results/revision7/runs/
 !results/revision7/runs/**
+
+# revision 8: rows, trained parameters, histories and checkpoints ARE committed
+!results/revision8/**/
+!results/revision8/**/*.csv

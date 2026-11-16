@@ -161,3 +161,32 @@ def test_privileged_package_is_where_the_training_side_oracle_lives():
     assert users, "privileged/ no longer imports the oracle; drop the exemption"
     doc = (ROOT / PRIVILEGED / "__init__.py").read_text(encoding="utf-8")
     assert "exemption" in doc.lower() and "NON-DEPLOYABLE" in doc
+
+
+# ---------------------------------------------------------------------------
+# Revision 8: the structured policy and its trainer are checked explicitly, including everything they import
+# transitively (the trainer computes its fitness from CAUSAL coverage; it must never reach the oracle).
+# ---------------------------------------------------------------------------
+STRUCTURED_MODULES = ("agents.structured", "agents.train_structured")
+
+
+@pytest.mark.parametrize("module", STRUCTURED_MODULES)
+def test_structured_modules_never_reach_the_oracle_transitively(module):
+    import subprocess
+    import sys
+
+    code = (f"import sys, {module}; "
+            "bad = sorted(m for m in sys.modules if m == 'hazard.oracle' or m.startswith('hazard.oracle.') "
+            "or m == 'privileged' or m.startswith('privileged.') or m == 'analysis.metrics'); "
+            "print(','.join(bad))")
+    out = subprocess.check_output([sys.executable, "-c", code], cwd=ROOT, text=True).strip()
+    assert out == "", f"{module} transitively imports {out}"
+
+
+@pytest.mark.parametrize("module", STRUCTURED_MODULES)
+def test_structured_modules_are_in_the_checked_packages(module):
+    path = ROOT / (module.replace(".", "/") + ".py")
+    assert path.exists() and path.relative_to(ROOT).parts[0] in DECISION_TIME_PACKAGES
+    src = path.read_text(encoding="utf-8")
+    for name in ORACLE_NAMES | {"extra_relevance_oracle"}:
+        assert name not in src

@@ -75,6 +75,16 @@ def _build_etsi_cbf(**params: Any) -> Policy:
     return EtsiCbf(**params)
 
 
+def _build_struct(**params: Any) -> Policy:
+    from agents.structured import StructuredPolicy
+
+    return StructuredPolicy(**params)
+
+
+# revision 8 (results/revision8/ADDENDUM.md): the structured learned policy
+_REGISTRY["struct"] = _build_struct
+
+
 # Simulator validation only (experiments/validate_amador.py); deliberately NOT
 # in BASELINE_POLICIES, so no sweep or comparison picks it up.
 _REGISTRY["etsi_cbf"] = _build_etsi_cbf
