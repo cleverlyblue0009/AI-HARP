@@ -1,0 +1,46 @@
+{
+ "provenance": {
+  "task": "revision9/miss_targets",
+  "git_commit": "9e2ab6fef7e786be6423b177a1b7bc70d568fb22",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision9.gates analyse",
+  "config_hash": "30682d513f8e",
+  "config": {
+   "rule": "b_g = min(flooding, DV-CAST default pool-mean causal actionable miss) + 0.05",
+   "seeds": [
+    100,
+    131
+   ]
+  },
+  "seeds": null,
+  "generated": "2026-11-16 14:44:41"
+ },
+ "groups": {
+  "rural_highway|2": {
+   "flooding_default_causal_miss": 0.4442163334350835,
+   "dvcast_default_causal_miss": 0.44208718943093944,
+   "b": 0.49208718943093943,
+   "coverage_target": 0.7201381510719709
+  },
+  "rural_highway|20": {
+   "flooding_default_causal_miss": 0.12093938733355458,
+   "dvcast_default_causal_miss": 0.12057768968263231,
+   "b": 0.17057768968263232,
+   "coverage_target": 0.9255570444633671
+  },
+  "rural_highway|80": {
+   "flooding_default_causal_miss": 0.003602103559716293,
+   "dvcast_default_causal_miss": 0.0014378430204417016,
+   "b": 0.0514378430204417,
+   "coverage_target": 0.9484427700859098
+  },
+  "urban_nlos|20": {
+   "flooding_default_causal_miss": 0.7356658284776122,
+   "dvcast_default_causal_miss": 0.7412732480248564,
+   "b": 0.7856658284776122,
+   "coverage_target": 0.2655741557291016
+  }
+ }
+}

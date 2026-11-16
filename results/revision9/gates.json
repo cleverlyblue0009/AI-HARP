@@ -1,0 +1,380 @@
+{
+ "provenance": {
+  "task": "revision9/gates",
+  "git_commit": "9e2ab6fef7e786be6423b177a1b7bc70d568fb22",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision9.gates analyse",
+  "config_hash": "06d10bc0b996",
+  "config": {
+   "seeds": [
+    100,
+    131
+   ],
+   "groups": [
+    "rural_highway|2",
+    "rural_highway|20",
+    "rural_highway|80",
+    "urban_nlos|20"
+   ]
+  },
+  "seeds": null,
+  "generated": "2026-11-16 14:44:41"
+ },
+ "gate_A": {
+  "pass": true,
+  "per_group": {
+   "rural_highway|2": {
+    "n_meet_both": 10,
+    "n_meet_coverage": 10,
+    "settings_meeting_both": [
+     "flooding||None",
+     "p_persistence_03|p|1.0",
+     "slotted_1p|n_slots|1",
+     "slotted_1p|n_slots|2",
+     "slotted_1p|n_slots|5",
+     "slotted_1p|n_slots|8",
+     "dvcast|n_slots|1",
+     "dvcast|n_slots|2",
+     "dvcast|n_slots|5",
+     "dvcast|n_slots|8"
+    ]
+   },
+   "rural_highway|20": {
+    "n_meet_both": 40,
+    "n_meet_coverage": 40,
+    "settings_meeting_both": [
+     "flooding||None",
+     "p_persistence_03|p|0.3",
+     "p_persistence_03|p|0.5",
+     "p_persistence_03|p|0.7",
+     "p_persistence_03|p|0.9",
+     "p_persistence_03|p|1.0",
+     "slotted_1p|n_slots|1",
+     "slotted_1p|n_slots|2",
+     "slotted_1p|n_slots|3",
+     "slotted_1p|n_slots|5",
+     "slotted_1p|n_slots|8",
+     "slotted_1p|n_slots|12",
+     "slotted_1p|n_slots|20",
+     "slotted_1p|n_slots|30",
+     "slotted_1p|n_slots|50",
+     "weighted_p|max_p|0.5",
+     "weighted_p|max_p|0.7",
+     "weighted_p|max_p|0.85",
+     "weighted_p|max_p|1.0",
+     "counter_based|counter_threshold|1",
+     "counter_based|counter_threshold|2",
+     "counter_based|counter_threshold|3",
+     "counter_based|counter_threshold|4",
+     "counter_based|counter_threshold|6",
+     "counter_based|counter_threshold|10",
+     "greedy_farthest|fallback_n_slots|1",
+     "greedy_farthest|fallback_n_slots|2",
+     "greedy_farthest|fallback_n_slots|4",
+     "greedy_farthest|fallback_n_slots|8",
+     "greedy_farthest|fallback_n_slots|16",
+     "greedy_farthest|fallback_n_slots|32",
+     "dvcast|n_slots|1",
+     "dvcast|n_slots|2",
+     "dvcast|n_slots|3",
+     "dvcast|n_slots|5",
+     "dvcast|n_slots|8",
+     "dvcast|n_slots|12",
+     "dvcast|n_slots|20",
+     "dvcast|n_slots|30",
+     "dvcast|n_slots|50"
+    ]
+   },
+   "rural_highway|80": {
+    "n_meet_both": 46,
+    "n_meet_coverage": 47,
+    "settings_meeting_both": [
+     "flooding||None",
+     "p_persistence_03|p|0.1",
+     "p_persistence_03|p|0.15",
+     "p_persistence_03|p|0.2",
+     "p_persistence_03|p|0.3",
+     "p_persistence_03|p|0.5",
+     "p_persistence_03|p|0.7",
+     "p_persistence_03|p|0.9",
+     "p_persistence_03|p|1.0",
+     "slotted_1p|n_slots|1",
+     "slotted_1p|n_slots|2",
+     "slotted_1p|n_slots|3",
+     "slotted_1p|n_slots|5",
+     "slotted_1p|n_slots|8",
+     "slotted_1p|n_slots|12",
+     "slotted_1p|n_slots|20",
+     "slotted_1p|n_slots|30",
+     "slotted_1p|n_slots|50",
+     "weighted_p|max_p|0.15",
+     "weighted_p|max_p|0.2",
+     "weighted_p|max_p|0.35",
+     "weighted_p|max_p|0.5",
+     "weighted_p|max_p|0.7",
+     "weighted_p|max_p|0.85",
+     "weighted_p|max_p|1.0",
+     "counter_based|counter_threshold|1",
+     "counter_based|counter_threshold|2",
+     "counter_based|counter_threshold|3",
+     "counter_based|counter_threshold|4",
+     "counter_based|counter_threshold|6",
+     "counter_based|counter_threshold|10",
+     "greedy_farthest|fallback_n_slots|1",
+     "greedy_farthest|fallback_n_slots|2",
+     "greedy_farthest|fallback_n_slots|4",
+     "greedy_farthest|fallback_n_slots|8",
+     "greedy_farthest|fallback_n_slots|16",
+     "greedy_farthest|fallback_n_slots|32",
+     "dvcast|n_slots|1",
+     "dvcast|n_slots|2",
+     "dvcast|n_slots|3",
+     "dvcast|n_slots|5",
+     "dvcast|n_slots|8",
+     "dvcast|n_slots|12",
+     "dvcast|n_slots|20",
+     "dvcast|n_slots|30",
+     "dvcast|n_slots|50"
+    ]
+   },
+   "urban_nlos|20": {
+    "n_meet_both": 35,
+    "n_meet_coverage": 35,
+    "settings_meeting_both": [
+     "flooding||None",
+     "p_persistence_03|p|0.5",
+     "p_persistence_03|p|0.7",
+     "p_persistence_03|p|0.9",
+     "p_persistence_03|p|1.0",
+     "slotted_1p|n_slots|1",
+     "slotted_1p|n_slots|2",
+     "slotted_1p|n_slots|3",
+     "slotted_1p|n_slots|5",
+     "slotted_1p|n_slots|8",
+     "slotted_1p|n_slots|12",
+     "slotted_1p|n_slots|20",
+     "slotted_1p|n_slots|30",
+     "slotted_1p|n_slots|50",
+     "counter_based|counter_threshold|1",
+     "counter_based|counter_threshold|2",
+     "counter_based|counter_threshold|3",
+     "counter_based|counter_threshold|4",
+     "counter_based|counter_threshold|6",
+     "counter_based|counter_threshold|10",
+     "greedy_farthest|fallback_n_slots|1",
+     "greedy_farthest|fallback_n_slots|2",
+     "greedy_farthest|fallback_n_slots|4",
+     "greedy_farthest|fallback_n_slots|8",
+     "greedy_farthest|fallback_n_slots|16",
+     "greedy_farthest|fallback_n_slots|32",
+     "dvcast|n_slots|1",
+     "dvcast|n_slots|2",
+     "dvcast|n_slots|3",
+     "dvcast|n_slots|5",
+     "dvcast|n_slots|8",
+     "dvcast|n_slots|12",
+     "dvcast|n_slots|20",
+     "dvcast|n_slots|30",
+     "dvcast|n_slots|50"
+    ]
+   }
+  }
+ },
+ "gate_B": {
+  "pass": true,
+  "ranked_by_f": [
+   "dvcast_default",
+   "slotted_1p_5",
+   "flooding",
+   "rar_warm_start",
+   "slotted_1p_50",
+   "always_suppress"
+  ],
+  "per_policy": {
+   "always_suppress": {
+    "f": 1000005.6950584591,
+    "feasible": false,
+    "cost": 0.003830385731813149,
+    "shortfall": {
+     "rural_highway|2": 0.7122404099318721,
+     "rural_highway|20": 0.8542087722573334,
+     "rural_highway|80": 0.8327337019780447,
+     "urban_nlos|20": 0.9452965624634557
+    },
+    "miss": {
+     "rural_highway|2": 0.9633507271211076,
+     "rural_highway|20": 0.97084142769629,
+     "rural_highway|80": 0.9285683490722789,
+     "urban_nlos|20": 0.9875870590885847
+    },
+    "miss_excess": {
+     "rural_highway|2": 0.47126353769016815,
+     "rural_highway|20": 0.8002637380136577,
+     "rural_highway|80": 0.8771305060518372,
+     "urban_nlos|20": 0.20192123061097245
+    }
+   },
+   "flooding": {
+    "f": 2.37379178262561,
+    "feasible": true,
+    "cost": 2.37379178262561,
+    "shortfall": {
+     "rural_highway|2": -0.0438748807320902,
+     "rural_highway|20": -0.052241908052213515,
+     "rural_highway|80": -0.05231386447428536,
+     "urban_nlos|20": -0.05263157894736851
+    },
+    "miss": {
+     "rural_highway|2": 0.4442163334350835,
+     "rural_highway|20": 0.12093938733355458,
+     "rural_highway|80": 0.003602103559716293,
+     "urban_nlos|20": 0.7356658284776122
+    },
+    "miss_excess": {
+     "rural_highway|2": -0.04787085599585594,
+     "rural_highway|20": -0.049638302349077734,
+     "rural_highway|80": -0.047835739460725404,
+     "urban_nlos|20": -0.050000000000000044
+    }
+   },
+   "slotted_1p_5": {
+    "f": 0.659903641858934,
+    "feasible": true,
+    "cost": 0.659903641858934,
+    "shortfall": {
+     "rural_highway|2": -0.04340343379429743,
+     "rural_highway|20": -0.0522677989729271,
+     "rural_highway|80": -0.05308107907315341,
+     "urban_nlos|20": -0.027003474008011542
+    },
+    "miss": {
+     "rural_highway|2": 0.44535938145992493,
+     "rural_highway|20": 0.12076212639748998,
+     "rural_highway|80": 0.001135038756107671,
+     "urban_nlos|20": 0.7420639703443677
+    },
+    "miss_excess": {
+     "rural_highway|2": -0.0467278079710145,
+     "rural_highway|20": -0.049815563285142334,
+     "rural_highway|80": -0.05030280426433403,
+     "urban_nlos|20": -0.043601858133244575
+    }
+   },
+   "slotted_1p_50": {
+    "f": 1000000.2849974058,
+    "feasible": false,
+    "cost": 0.4410030822635186,
+    "shortfall": {
+     "rural_highway|2": 0.07699426198019596,
+     "rural_highway|20": -0.04969326624580037,
+     "rural_highway|80": -0.05206029511831819,
+     "urban_nlos|20": -0.48525692121230496
+    },
+    "miss": {
+     "rural_highway|2": 0.7000903333783768,
+     "rural_highway|20": 0.1206432298102023,
+     "rural_highway|80": 0.0020714828070916777,
+     "urban_nlos|20": 0.6607891631712473
+    },
+    "miss_excess": {
+     "rural_highway|2": 0.20800314394743735,
+     "rural_highway|20": -0.04993445987243002,
+     "rural_highway|80": -0.04936636021335002,
+     "urban_nlos|20": -0.12487666530636499
+    }
+   },
+   "dvcast_default": {
+    "f": 0.6587964209833318,
+    "feasible": true,
+    "cost": 0.6587964209833318,
+    "shortfall": {
+     "rural_highway|2": -0.05263157894736813,
+     "rural_highway|20": -0.05263157894736779,
+     "rural_highway|80": -0.052631578947367454,
+     "urban_nlos|20": -0.03024845855271041
+    },
+    "miss": {
+     "rural_highway|2": 0.44208718943093944,
+     "rural_highway|20": 0.12057768968263231,
+     "rural_highway|80": 0.0014378430204417016,
+     "urban_nlos|20": 0.7412732480248564
+    },
+    "miss_excess": {
+     "rural_highway|2": -0.04999999999999999,
+     "rural_highway|20": -0.05,
+     "rural_highway|80": -0.05,
+     "urban_nlos|20": -0.04439258045275585
+    }
+   },
+   "rar_warm_start": {
+    "f": 1000000.0251615142,
+    "feasible": false,
+    "cost": 0.36756740581141334,
+    "shortfall": {
+     "rural_highway|2": -0.04340343379429728,
+     "rural_highway|20": -0.03752238515644951,
+     "rural_highway|80": -0.051510598748522395,
+     "urban_nlos|20": 0.02516151413262782
+    },
+    "miss": {
+     "rural_highway|2": 0.44535938145992493,
+     "rural_highway|20": 0.14894075607172547,
+     "rural_highway|80": 0.0057598856640085,
+     "urban_nlos|20": 0.7553680133972963
+    },
+    "miss_excess": {
+     "rural_highway|2": -0.0467278079710145,
+     "rural_highway|20": -0.02163693361090685,
+     "rural_highway|80": -0.0456779573564332,
+     "urban_nlos|20": -0.030297815080315926
+    }
+   }
+  }
+ },
+ "gate_C_descriptive": {
+  "pooled_reference_policies": {
+   "rho": 0.2981034569215069,
+   "p": 3.1605550624353094e-17,
+   "n": 768,
+   "mean_causal": 0.4420204145275359,
+   "mean_oracle": 0.4266036003228715
+  },
+  "rural_highway|2": {
+   "rho": 0.9645643365971209,
+   "p": 6.83344622603386e-112,
+   "n": 192,
+   "mean_causal": 0.5734105577142262,
+   "mean_oracle": 0.5977059038763487
+  },
+  "rural_highway|20": {
+   "rho": 0.5209257246229172,
+   "p": 9.503217624278925e-15,
+   "n": 192,
+   "mean_causal": 0.26711743616531575,
+   "mean_oracle": 0.44546144849179176
+  },
+  "rural_highway|80": {
+   "rho": 0.49190734044208023,
+   "p": 4.2987385683879434e-13,
+   "n": 192,
+   "mean_causal": 0.15709578381327413,
+   "mean_oracle": 0.42052685857177763
+  },
+  "urban_nlos|20": {
+   "rho": 0.3716159077277848,
+   "p": 1.1149312439536506e-07,
+   "n": 192,
+   "mean_causal": 0.7704578804173273,
+   "mean_oracle": 0.24272019035156775
+  },
+  "pooled_all_57_settings": {
+   "rho": 0.3943715036444373,
+   "p": 1.676316530933594e-279,
+   "n": 7552,
+   "mean_causal": 0.45735745511451237,
+   "mean_oracle": 0.44383327194210564
+  }
+ }
+}
