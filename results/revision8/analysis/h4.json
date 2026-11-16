@@ -1,0 +1,1411 @@
+{
+ "provenance": {
+  "task": "revision8/analysis/h4.json",
+  "git_commit": "f876a75158ff5fa1926982dec52e7e864cfe0fa1",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision8.analysis.h4 --B 10000",
+  "config_hash": "8ee628ee9b08",
+  "config": {
+   "B": 10000,
+   "arm": "plain"
+  },
+  "seeds": {
+   "SEL": [
+    400,
+    401,
+    402,
+    403,
+    404,
+    405,
+    406,
+    407,
+    408,
+    409,
+    410,
+    411,
+    412,
+    413,
+    414,
+    415,
+    416,
+    417,
+    418,
+    419
+   ],
+   "A": [
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209
+   ],
+   "B": [
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    219,
+    220,
+    221,
+    222,
+    223,
+    224,
+    225,
+    226,
+    227,
+    228,
+    229
+   ]
+  },
+  "generated": "2026-11-16 09:52:24"
+ },
+ "hypothesis": "H4",
+ "arm": "plain",
+ "margin": 0.1,
+ "tiers": {
+  "A": {
+   "vs_adaptive_classical": {
+    "T": -0.21892519436065744,
+    "per_cell": {
+     "rural_highway d=20": -0.15882377489703603,
+     "rural_highway d=80": -0.27902661382427885
+    },
+    "cells_both_qualify": 2,
+    "qualifying_cells": {
+     "struct": 2,
+     "comparator": 3
+    },
+    "B": 10000,
+    "undefined_replicates": 51,
+    "infinite_replicates": 0,
+    "upper95_one_sided": 0.10460638178899506,
+    "ci95": [
+     -0.511349551478232,
+     0.16789983270362363
+    ],
+    "p_noninferiority": 0.051763996381545885,
+    "p_two_sided_rev5": 0.28445069856266963,
+    "superiority_rev5": false,
+    "equivalence_TOST_5pct_rev5": false,
+    "decision": {
+     "i_qualification_count": false,
+     "ii_noninferiority_10pct": false,
+     "rule_met": false
+    },
+    "qualification_per_seed_cell": [
+     22,
+     40,
+     [
+      0.39829091798932054,
+      0.6929469218909508
+     ]
+    ],
+    "point_detail": {
+     "rural_highway d=2": {
+      "struct": {
+       "qualifies": false,
+       "cost": 2.220545399045399,
+       "rwcr": 0.5527837216964869,
+       "miss": 0.6227924915664046,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "plain_s0": null,
+       "plain_s1": {
+        "bias": -1.0,
+        "cost": 2.3392424242424243,
+        "rwcr": 0.6817438498133997,
+        "miss": 0.5360852625635234,
+        "qualifies": true
+       },
+       "plain_s2": null,
+       "plain_s3": {
+        "bias": -1.0,
+        "cost": 1.81,
+        "rwcr": 0.504002122972846,
+        "miss": 0.6506875588179934,
+        "qualifies": false
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": -1.0,
+        "cost": 2.0478571428571426,
+        "rwcr": 0.40979092906960995,
+        "miss": 0.7338860125381864,
+        "qualifies": false
+       },
+       "plain_s6": null,
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 2.6425671550671552,
+        "rwcr": 0.5449447819712703,
+        "miss": 0.6161473888430411,
+        "qualifies": false
+       },
+       "plain_s8": null,
+       "plain_s9": {
+        "bias": 2.0,
+        "cost": 2.2630602730602734,
+        "rwcr": 0.6234369246553089,
+        "miss": 0.5771562350692785,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "dvcast",
+        "n_slots",
+        "20"
+       ],
+       "cost": 1.6081043956043957,
+       "rwcr": 0.4417366703213065,
+       "miss": 0.710250951946604,
+       "qualifies": false
+      }
+     },
+     "rural_highway d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.5970506746228547,
+       "rwcr": 0.893568034541604,
+       "miss": 0.34276359948081014,
+       "n_pick": 7
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 0.0,
+        "cost": 0.4345432463908371,
+        "rwcr": 0.879004673354566,
+        "miss": 0.3731079780232006,
+        "qualifies": false
+       },
+       "plain_s1": {
+        "bias": -1.0,
+        "cost": 0.6169719984751835,
+        "rwcr": 0.8999835120065811,
+        "miss": 0.3363116146631014,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 3.0,
+        "cost": 0.6385322268727738,
+        "rwcr": 0.8925309227582636,
+        "miss": 0.3481777975307031,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": 0.0,
+        "cost": 0.3898714778378329,
+        "rwcr": 0.8773535019988025,
+        "miss": 0.35491265163543007,
+        "qualifies": true
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": 0.0,
+        "cost": 0.5543154127574113,
+        "rwcr": 0.9042265120007877,
+        "miss": 0.32773440287917854,
+        "qualifies": true
+       },
+       "plain_s6": {
+        "bias": 0.0,
+        "cost": 0.5194804564980198,
+        "rwcr": 0.898840984261609,
+        "miss": 0.3284812196451915,
+        "qualifies": true
+       },
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 1.0256399035279244,
+        "rwcr": 0.9030361354106183,
+        "miss": 0.33061953198886596,
+        "qualifies": true
+       },
+       "plain_s8": null,
+       "plain_s9": null
+      },
+      "comparator": {
+       "pick": [
+        "greedy_farthest",
+        "fallback_n_slots",
+        "32"
+       ],
+       "cost": 0.7097807294182296,
+       "rwcr": 0.905332612183695,
+       "miss": 0.3250180533651835,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=80": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.7673433811055905,
+       "rwcr": 0.9029902973435615,
+       "miss": 0.33017459209636685,
+       "n_pick": 10
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 2.0,
+        "cost": 0.4865115436307915,
+        "rwcr": 0.8971749850779981,
+        "miss": 0.3314390527342398,
+        "qualifies": true
+       },
+       "plain_s1": {
+        "bias": 1.0,
+        "cost": 0.4319087416194535,
+        "rwcr": 0.9057110058550588,
+        "miss": 0.32175764502834114,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 3.0,
+        "cost": 1.113895817464881,
+        "rwcr": 0.9118491269569915,
+        "miss": 0.3182227036076729,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": 0.0,
+        "cost": 0.8312397606129982,
+        "rwcr": 0.9041925901953329,
+        "miss": 0.32222587959983673,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": 3.0,
+        "cost": 0.8028701147952975,
+        "rwcr": 0.9016355661691617,
+        "miss": 0.32892539718667735,
+        "qualifies": true
+       },
+       "plain_s5": {
+        "bias": 1.0,
+        "cost": 0.8776910219959841,
+        "rwcr": 0.9084264987774949,
+        "miss": 0.3201957191031043,
+        "qualifies": true
+       },
+       "plain_s6": {
+        "bias": 3.0,
+        "cost": 0.31942297344721216,
+        "rwcr": 0.8914425982702658,
+        "miss": 0.3371020040768399,
+        "qualifies": true
+       },
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 2.1354822895109358,
+        "rwcr": 0.9005668144388979,
+        "miss": 0.3244322440912133,
+        "qualifies": true
+       },
+       "plain_s8": {
+        "bias": 2.0,
+        "cost": 0.37748469844753557,
+        "rwcr": 0.9060690077593934,
+        "miss": 0.3584555913811416,
+        "qualifies": true
+       },
+       "plain_s9": {
+        "bias": 1.0,
+        "cost": 0.29692684953081655,
+        "rwcr": 0.9028347799350194,
+        "miss": 0.3389896841546014,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "weighted_p",
+        "max_p",
+        "0.1"
+       ],
+       "cost": 1.0643158205545298,
+       "rwcr": 0.898099751050838,
+       "miss": 0.32866967782643514,
+       "qualifies": true
+      }
+     },
+     "urban_nlos d=20": {
+      "struct": {
+       "qualifies": false,
+       "cost": null,
+       "n_pick": 4
+      },
+      "struct_per_seed": {
+       "plain_s0": null,
+       "plain_s1": null,
+       "plain_s2": {
+        "bias": 2.0,
+        "cost": 0.4965350935936028,
+        "rwcr": 0.9457090336952403,
+        "miss": 0.11987415724985659,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": -2.0,
+        "cost": 0.4625219141677371,
+        "rwcr": 0.9412769502093914,
+        "miss": 0.10489225853747461,
+        "qualifies": true
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": -2.0,
+        "cost": 0.5153596105615293,
+        "rwcr": 0.9495679295668371,
+        "miss": 0.11314901306385812,
+        "qualifies": true
+       },
+       "plain_s6": null,
+       "plain_s7": {
+        "bias": 0.0,
+        "cost": 0.6340047562364644,
+        "rwcr": 0.9450194742724181,
+        "miss": 0.10026881156529828,
+        "qualifies": true
+       },
+       "plain_s8": null,
+       "plain_s9": null
+      },
+      "comparator": {
+       "pick": [
+        "counter_based",
+        "counter_threshold",
+        "1"
+       ],
+       "cost": 0.5416133771916561,
+       "rwcr": 0.942209503395541,
+       "miss": 0.10229484365598726,
+       "qualifies": true
+      }
+     }
+    }
+   },
+   "vs_best_rule_descriptive": {
+    "T": 0.736221990514908,
+    "per_cell": {
+     "rural_highway d=20": 0.3995580039113851,
+     "rural_highway d=80": 1.072885977118431
+    },
+    "cells_both_qualify": 2,
+    "qualifying_cells": {
+     "struct": 2,
+     "comparator": 3
+    },
+    "B": 10000,
+    "undefined_replicates": 24,
+    "infinite_replicates": 0,
+    "upper95_one_sided": 1.3534803831618074,
+    "ci95": [
+     0.12584410727493633,
+     1.5466514285159834
+    ],
+    "p_noninferiority": 0.9814554931836408,
+    "p_two_sided_rev5": 0.010625501202886928,
+    "superiority_rev5": false,
+    "equivalence_TOST_5pct_rev5": false,
+    "decision": {
+     "i_qualification_count": false,
+     "ii_noninferiority_10pct": false,
+     "rule_met": false
+    },
+    "qualification_per_seed_cell": [
+     22,
+     40,
+     [
+      0.39829091798932054,
+      0.6929469218909508
+     ]
+    ],
+    "point_detail": {
+     "rural_highway d=2": {
+      "struct": {
+       "qualifies": false,
+       "cost": 2.220545399045399,
+       "rwcr": 0.5527837216964869,
+       "miss": 0.6227924915664046,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "plain_s0": null,
+       "plain_s1": {
+        "bias": -1.0,
+        "cost": 2.3392424242424243,
+        "rwcr": 0.6817438498133997,
+        "miss": 0.5360852625635234,
+        "qualifies": true
+       },
+       "plain_s2": null,
+       "plain_s3": {
+        "bias": -1.0,
+        "cost": 1.81,
+        "rwcr": 0.504002122972846,
+        "miss": 0.6506875588179934,
+        "qualifies": false
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": -1.0,
+        "cost": 2.0478571428571426,
+        "rwcr": 0.40979092906960995,
+        "miss": 0.7338860125381864,
+        "qualifies": false
+       },
+       "plain_s6": null,
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 2.6425671550671552,
+        "rwcr": 0.5449447819712703,
+        "miss": 0.6161473888430411,
+        "qualifies": false
+       },
+       "plain_s8": null,
+       "plain_s9": {
+        "bias": 2.0,
+        "cost": 2.2630602730602734,
+        "rwcr": 0.6234369246553089,
+        "miss": 0.5771562350692785,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "scf_slotted",
+        "slots_timeout",
+        "[8, 10]"
+       ],
+       "cost": 1.7932923122629005,
+       "rwcr": 0.6061548362280073,
+       "miss": 0.5606480476045693,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.5970506746228547,
+       "rwcr": 0.893568034541604,
+       "miss": 0.34276359948081014,
+       "n_pick": 7
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 0.0,
+        "cost": 0.4345432463908371,
+        "rwcr": 0.879004673354566,
+        "miss": 0.3731079780232006,
+        "qualifies": false
+       },
+       "plain_s1": {
+        "bias": -1.0,
+        "cost": 0.6169719984751835,
+        "rwcr": 0.8999835120065811,
+        "miss": 0.3363116146631014,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 3.0,
+        "cost": 0.6385322268727738,
+        "rwcr": 0.8925309227582636,
+        "miss": 0.3481777975307031,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": 0.0,
+        "cost": 0.3898714778378329,
+        "rwcr": 0.8773535019988025,
+        "miss": 0.35491265163543007,
+        "qualifies": true
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": 0.0,
+        "cost": 0.5543154127574113,
+        "rwcr": 0.9042265120007877,
+        "miss": 0.32773440287917854,
+        "qualifies": true
+       },
+       "plain_s6": {
+        "bias": 0.0,
+        "cost": 0.5194804564980198,
+        "rwcr": 0.898840984261609,
+        "miss": 0.3284812196451915,
+        "qualifies": true
+       },
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 1.0256399035279244,
+        "rwcr": 0.9030361354106183,
+        "miss": 0.33061953198886596,
+        "qualifies": true
+       },
+       "plain_s8": null,
+       "plain_s9": null
+      },
+      "comparator": {
+       "pick": [
+        "rar",
+        "abc",
+        "[2.0, 0.0, 0.0]"
+       ],
+       "cost": 0.42659944993652277,
+       "rwcr": 0.8957124824821789,
+       "miss": 0.3415312216634,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=80": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.7673433811055905,
+       "rwcr": 0.9029902973435615,
+       "miss": 0.33017459209636685,
+       "n_pick": 10
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 2.0,
+        "cost": 0.4865115436307915,
+        "rwcr": 0.8971749850779981,
+        "miss": 0.3314390527342398,
+        "qualifies": true
+       },
+       "plain_s1": {
+        "bias": 1.0,
+        "cost": 0.4319087416194535,
+        "rwcr": 0.9057110058550588,
+        "miss": 0.32175764502834114,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 3.0,
+        "cost": 1.113895817464881,
+        "rwcr": 0.9118491269569915,
+        "miss": 0.3182227036076729,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": 0.0,
+        "cost": 0.8312397606129982,
+        "rwcr": 0.9041925901953329,
+        "miss": 0.32222587959983673,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": 3.0,
+        "cost": 0.8028701147952975,
+        "rwcr": 0.9016355661691617,
+        "miss": 0.32892539718667735,
+        "qualifies": true
+       },
+       "plain_s5": {
+        "bias": 1.0,
+        "cost": 0.8776910219959841,
+        "rwcr": 0.9084264987774949,
+        "miss": 0.3201957191031043,
+        "qualifies": true
+       },
+       "plain_s6": {
+        "bias": 3.0,
+        "cost": 0.31942297344721216,
+        "rwcr": 0.8914425982702658,
+        "miss": 0.3371020040768399,
+        "qualifies": true
+       },
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 2.1354822895109358,
+        "rwcr": 0.9005668144388979,
+        "miss": 0.3244322440912133,
+        "qualifies": true
+       },
+       "plain_s8": {
+        "bias": 2.0,
+        "cost": 0.37748469844753557,
+        "rwcr": 0.9060690077593934,
+        "miss": 0.3584555913811416,
+        "qualifies": true
+       },
+       "plain_s9": {
+        "bias": 1.0,
+        "cost": 0.29692684953081655,
+        "rwcr": 0.9028347799350194,
+        "miss": 0.3389896841546014,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "rar",
+        "abc",
+        "[1.0, 0.0, 0.0]"
+       ],
+       "cost": 0.37018118197330524,
+       "rwcr": 0.8878563070836492,
+       "miss": 0.34210148892819664,
+       "qualifies": true
+      }
+     },
+     "urban_nlos d=20": {
+      "struct": {
+       "qualifies": false,
+       "cost": null,
+       "n_pick": 4
+      },
+      "struct_per_seed": {
+       "plain_s0": null,
+       "plain_s1": null,
+       "plain_s2": {
+        "bias": 2.0,
+        "cost": 0.4965350935936028,
+        "rwcr": 0.9457090336952403,
+        "miss": 0.11987415724985659,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": -2.0,
+        "cost": 0.4625219141677371,
+        "rwcr": 0.9412769502093914,
+        "miss": 0.10489225853747461,
+        "qualifies": true
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": -2.0,
+        "cost": 0.5153596105615293,
+        "rwcr": 0.9495679295668371,
+        "miss": 0.11314901306385812,
+        "qualifies": true
+       },
+       "plain_s6": null,
+       "plain_s7": {
+        "bias": 0.0,
+        "cost": 0.6340047562364644,
+        "rwcr": 0.9450194742724181,
+        "miss": 0.10026881156529828,
+        "qualifies": true
+       },
+       "plain_s8": null,
+       "plain_s9": null
+      },
+      "comparator": {
+       "pick": [
+        "rar",
+        "abc",
+        "[1.0, 1.0, 0.25]"
+       ],
+       "cost": 0.4562148669983629,
+       "rwcr": 0.9222632490112186,
+       "miss": 0.12111369674206503,
+       "qualifies": false
+      }
+     }
+    }
+   },
+   "ai_harp_reference_descriptive": {
+    "rural_highway d=2": {
+     "qualifies": false,
+     "cost": null,
+     "n_pick": 4
+    },
+    "rural_highway d=20": {
+     "qualifies": false,
+     "cost": 0.7352397030230337,
+     "n_pick": 10
+    },
+    "rural_highway d=80": {
+     "qualifies": false,
+     "cost": null,
+     "n_pick": 3
+    },
+    "urban_nlos d=20": {
+     "qualifies": true,
+     "cost": 0.8415145505614477,
+     "n_pick": 6
+    }
+   }
+  },
+  "B": {
+   "vs_adaptive_classical": {
+    "T": -0.0698033273642991,
+    "per_cell": {
+     "rural_highway d=2": 0.20612605887951996,
+     "rural_highway d=20": -0.1546973898537357,
+     "rural_highway d=80": -0.26083865111868154
+    },
+    "cells_both_qualify": 3,
+    "qualifying_cells": {
+     "struct": 3,
+     "comparator": 4
+    },
+    "B": 10000,
+    "undefined_replicates": 188,
+    "infinite_replicates": 0,
+    "upper95_one_sided": 0.10366772060280804,
+    "ci95": [
+     -0.4562939404668981,
+     0.15755981040587264
+    ],
+    "p_noninferiority": 0.052792498980839785,
+    "p_two_sided_rev5": 0.31940481043620056,
+    "superiority_rev5": false,
+    "equivalence_TOST_5pct_rev5": false,
+    "decision": {
+     "i_qualification_count": false,
+     "ii_noninferiority_10pct": false,
+     "rule_met": false
+    },
+    "qualification_per_seed_cell": [
+     24,
+     40,
+     [
+      0.44595893660346186,
+      0.7365167431570808
+     ]
+    ],
+    "point_detail": {
+     "rural_highway d=2": {
+      "struct": {
+       "qualifies": true,
+       "cost": 2.1268528383381327,
+       "rwcr": 0.6647388148940184,
+       "miss": 0.55117789409929,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "plain_s0": null,
+       "plain_s1": {
+        "bias": -1.0,
+        "cost": 2.2133759990009994,
+        "rwcr": 0.6762903389755441,
+        "miss": 0.5211131994118265,
+        "qualifies": true
+       },
+       "plain_s2": null,
+       "plain_s3": {
+        "bias": -1.0,
+        "cost": 1.8341425241425242,
+        "rwcr": 0.6210360039793488,
+        "miss": 0.5993423560294271,
+        "qualifies": false
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": -1.0,
+        "cost": 1.6816225441225445,
+        "rwcr": 0.5467669326319172,
+        "miss": 0.6392924447787147,
+        "qualifies": false
+       },
+       "plain_s6": null,
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 2.5567942106912698,
+        "rwcr": 0.7007518783446038,
+        "miss": 0.5104833889095903,
+        "qualifies": true
+       },
+       "plain_s8": null,
+       "plain_s9": {
+        "bias": 2.0,
+        "cost": 2.348328913733326,
+        "rwcr": 0.7788489205386783,
+        "miss": 0.4856580813668915,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "dvcast",
+        "n_slots",
+        "20"
+       ],
+       "cost": 1.7633752481178953,
+       "rwcr": 0.6047111858656123,
+       "miss": 0.5723649754136024,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.550452827313922,
+       "rwcr": 0.9055992606127151,
+       "miss": 0.3220350478475248,
+       "n_pick": 7
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 0.0,
+        "cost": 0.4054677129479575,
+        "rwcr": 0.9037536804547726,
+        "miss": 0.32625299670099267,
+        "qualifies": true
+       },
+       "plain_s1": {
+        "bias": -1.0,
+        "cost": 0.5587362113890082,
+        "rwcr": 0.9212968801363017,
+        "miss": 0.3207614167523701,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 3.0,
+        "cost": 0.5818536405021197,
+        "rwcr": 0.8921982515982503,
+        "miss": 0.34195470806991934,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": 0.0,
+        "cost": 0.3810606314526799,
+        "rwcr": 0.8763734026494397,
+        "miss": 0.34459203039944625,
+        "qualifies": true
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": 0.0,
+        "cost": 0.5023716855975138,
+        "rwcr": 0.9182856052403695,
+        "miss": 0.30412404188598396,
+        "qualifies": true
+       },
+       "plain_s6": {
+        "bias": 0.0,
+        "cost": 0.46714073037027903,
+        "rwcr": 0.9125212516317605,
+        "miss": 0.3105883211957794,
+        "qualifies": true
+       },
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 0.9565391789378953,
+        "rwcr": 0.9147657525781117,
+        "miss": 0.3059718199281819,
+        "qualifies": true
+       },
+       "plain_s8": null,
+       "plain_s9": null
+      },
+      "comparator": {
+       "pick": [
+        "greedy_farthest",
+        "fallback_n_slots",
+        "32"
+       ],
+       "cost": 0.6511902609867443,
+       "rwcr": 0.9229557131373133,
+       "miss": 0.2974635635163674,
+       "qualifies": true
+      }
+     },
+     "rural_highway d=80": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.7346639766017518,
+       "rwcr": 0.9039730543954624,
+       "miss": 0.32495383082653395,
+       "n_pick": 10
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 2.0,
+        "cost": 0.44866727812675106,
+        "rwcr": 0.8931287986136642,
+        "miss": 0.3309909469686668,
+        "qualifies": true
+       },
+       "plain_s1": {
+        "bias": 1.0,
+        "cost": 0.39624448290665426,
+        "rwcr": 0.9063054809367743,
+        "miss": 0.31496365678645744,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 3.0,
+        "cost": 1.0787616585047175,
+        "rwcr": 0.9156455400767379,
+        "miss": 0.30945382210369543,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": 0.0,
+        "cost": 0.805566721272022,
+        "rwcr": 0.910786992039276,
+        "miss": 0.31175179835863226,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": 3.0,
+        "cost": 0.7681565180157718,
+        "rwcr": 0.9039162741637574,
+        "miss": 0.32181171422125165,
+        "qualifies": true
+       },
+       "plain_s5": {
+        "bias": 1.0,
+        "cost": 0.837851551663056,
+        "rwcr": 0.9074732649982117,
+        "miss": 0.31600271588878537,
+        "qualifies": true
+       },
+       "plain_s6": {
+        "bias": 3.0,
+        "cost": 0.3124661054717509,
+        "rwcr": 0.8920953596918629,
+        "miss": 0.33191978392698107,
+        "qualifies": true
+       },
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 2.0623816024275534,
+        "rwcr": 0.9048100978246174,
+        "miss": 0.31778289796473286,
+        "qualifies": true
+       },
+       "plain_s8": {
+        "bias": 2.0,
+        "cost": 0.3555933783953468,
+        "rwcr": 0.9043146050724303,
+        "miss": 0.3546734965933319,
+        "qualifies": true
+       },
+       "plain_s9": {
+        "bias": 1.0,
+        "cost": 0.28095046923389455,
+        "rwcr": 0.9012541305372903,
+        "miss": 0.34018747545280503,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "weighted_p",
+        "max_p",
+        "0.1"
+       ],
+       "cost": 0.993915574337899,
+       "rwcr": 0.8874483042545569,
+       "miss": 0.3318871062379516,
+       "qualifies": true
+      }
+     },
+     "urban_nlos d=20": {
+      "struct": {
+       "qualifies": false,
+       "cost": null,
+       "n_pick": 4
+      },
+      "struct_per_seed": {
+       "plain_s0": null,
+       "plain_s1": null,
+       "plain_s2": {
+        "bias": 2.0,
+        "cost": 0.49065304875219634,
+        "rwcr": 0.9502338515012448,
+        "miss": 0.11179747934535869,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": -2.0,
+        "cost": 0.4584360196325923,
+        "rwcr": 0.9391771596979458,
+        "miss": 0.10468159655170883,
+        "qualifies": true
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": -2.0,
+        "cost": 0.5096182781626984,
+        "rwcr": 0.9537824579846287,
+        "miss": 0.11061662585653986,
+        "qualifies": true
+       },
+       "plain_s6": null,
+       "plain_s7": {
+        "bias": 0.0,
+        "cost": 0.6120555921194728,
+        "rwcr": 0.9366516142765116,
+        "miss": 0.10895933095521351,
+        "qualifies": true
+       },
+       "plain_s8": null,
+       "plain_s9": null
+      },
+      "comparator": {
+       "pick": [
+        "counter_based",
+        "counter_threshold",
+        "1"
+       ],
+       "cost": 0.5349003318302957,
+       "rwcr": 0.9477355735545956,
+       "miss": 0.09801093026196173,
+       "qualifies": true
+      }
+     }
+    }
+   },
+   "vs_best_rule_descriptive": {
+    "T": 1.1187462074229773,
+    "per_cell": {
+     "rural_highway d=80": 1.1187462074229773
+    },
+    "cells_both_qualify": 1,
+    "qualifying_cells": {
+     "struct": 3,
+     "comparator": 2
+    },
+    "B": 10000,
+    "undefined_replicates": 2,
+    "infinite_replicates": 0,
+    "upper95_one_sided": 1.3575288127733987,
+    "ci95": [
+     0.09514041549085395,
+     1.5461154518703597
+    ],
+    "p_noninferiority": 0.9736947389477896,
+    "p_two_sided_rev5": 0.014602920584116823,
+    "superiority_rev5": false,
+    "equivalence_TOST_5pct_rev5": false,
+    "decision": {
+     "i_qualification_count": true,
+     "ii_noninferiority_10pct": false,
+     "rule_met": false
+    },
+    "qualification_per_seed_cell": [
+     24,
+     40,
+     [
+      0.44595893660346186,
+      0.7365167431570808
+     ]
+    ],
+    "point_detail": {
+     "rural_highway d=2": {
+      "struct": {
+       "qualifies": true,
+       "cost": 2.1268528383381327,
+       "rwcr": 0.6647388148940184,
+       "miss": 0.55117789409929,
+       "n_pick": 5
+      },
+      "struct_per_seed": {
+       "plain_s0": null,
+       "plain_s1": {
+        "bias": -1.0,
+        "cost": 2.2133759990009994,
+        "rwcr": 0.6762903389755441,
+        "miss": 0.5211131994118265,
+        "qualifies": true
+       },
+       "plain_s2": null,
+       "plain_s3": {
+        "bias": -1.0,
+        "cost": 1.8341425241425242,
+        "rwcr": 0.6210360039793488,
+        "miss": 0.5993423560294271,
+        "qualifies": false
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": -1.0,
+        "cost": 1.6816225441225445,
+        "rwcr": 0.5467669326319172,
+        "miss": 0.6392924447787147,
+        "qualifies": false
+       },
+       "plain_s6": null,
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 2.5567942106912698,
+        "rwcr": 0.7007518783446038,
+        "miss": 0.5104833889095903,
+        "qualifies": true
+       },
+       "plain_s8": null,
+       "plain_s9": {
+        "bias": 2.0,
+        "cost": 2.348328913733326,
+        "rwcr": 0.7788489205386783,
+        "miss": 0.4856580813668915,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "scf_slotted",
+        "slots_timeout",
+        "[8, 10]"
+       ],
+       "cost": 1.7239197607947605,
+       "rwcr": 0.5894064563336815,
+       "miss": 0.5903669806547381,
+       "qualifies": false
+      }
+     },
+     "rural_highway d=20": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.550452827313922,
+       "rwcr": 0.9055992606127151,
+       "miss": 0.3220350478475248,
+       "n_pick": 7
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 0.0,
+        "cost": 0.4054677129479575,
+        "rwcr": 0.9037536804547726,
+        "miss": 0.32625299670099267,
+        "qualifies": true
+       },
+       "plain_s1": {
+        "bias": -1.0,
+        "cost": 0.5587362113890082,
+        "rwcr": 0.9212968801363017,
+        "miss": 0.3207614167523701,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 3.0,
+        "cost": 0.5818536405021197,
+        "rwcr": 0.8921982515982503,
+        "miss": 0.34195470806991934,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": 0.0,
+        "cost": 0.3810606314526799,
+        "rwcr": 0.8763734026494397,
+        "miss": 0.34459203039944625,
+        "qualifies": true
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": 0.0,
+        "cost": 0.5023716855975138,
+        "rwcr": 0.9182856052403695,
+        "miss": 0.30412404188598396,
+        "qualifies": true
+       },
+       "plain_s6": {
+        "bias": 0.0,
+        "cost": 0.46714073037027903,
+        "rwcr": 0.9125212516317605,
+        "miss": 0.3105883211957794,
+        "qualifies": true
+       },
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 0.9565391789378953,
+        "rwcr": 0.9147657525781117,
+        "miss": 0.3059718199281819,
+        "qualifies": true
+       },
+       "plain_s8": null,
+       "plain_s9": null
+      },
+      "comparator": {
+       "pick": [
+        "rar",
+        "abc",
+        "[2.0, 0.0, 0.0]"
+       ],
+       "cost": 0.4104908055020281,
+       "rwcr": 0.8615496061834318,
+       "miss": 0.36457874582789207,
+       "qualifies": false
+      }
+     },
+     "rural_highway d=80": {
+      "struct": {
+       "qualifies": true,
+       "cost": 0.7346639766017518,
+       "rwcr": 0.9039730543954624,
+       "miss": 0.32495383082653395,
+       "n_pick": 10
+      },
+      "struct_per_seed": {
+       "plain_s0": {
+        "bias": 2.0,
+        "cost": 0.44866727812675106,
+        "rwcr": 0.8931287986136642,
+        "miss": 0.3309909469686668,
+        "qualifies": true
+       },
+       "plain_s1": {
+        "bias": 1.0,
+        "cost": 0.39624448290665426,
+        "rwcr": 0.9063054809367743,
+        "miss": 0.31496365678645744,
+        "qualifies": true
+       },
+       "plain_s2": {
+        "bias": 3.0,
+        "cost": 1.0787616585047175,
+        "rwcr": 0.9156455400767379,
+        "miss": 0.30945382210369543,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": 0.0,
+        "cost": 0.805566721272022,
+        "rwcr": 0.910786992039276,
+        "miss": 0.31175179835863226,
+        "qualifies": true
+       },
+       "plain_s4": {
+        "bias": 3.0,
+        "cost": 0.7681565180157718,
+        "rwcr": 0.9039162741637574,
+        "miss": 0.32181171422125165,
+        "qualifies": true
+       },
+       "plain_s5": {
+        "bias": 1.0,
+        "cost": 0.837851551663056,
+        "rwcr": 0.9074732649982117,
+        "miss": 0.31600271588878537,
+        "qualifies": true
+       },
+       "plain_s6": {
+        "bias": 3.0,
+        "cost": 0.3124661054717509,
+        "rwcr": 0.8920953596918629,
+        "miss": 0.33191978392698107,
+        "qualifies": true
+       },
+       "plain_s7": {
+        "bias": 3.0,
+        "cost": 2.0623816024275534,
+        "rwcr": 0.9048100978246174,
+        "miss": 0.31778289796473286,
+        "qualifies": true
+       },
+       "plain_s8": {
+        "bias": 2.0,
+        "cost": 0.3555933783953468,
+        "rwcr": 0.9043146050724303,
+        "miss": 0.3546734965933319,
+        "qualifies": true
+       },
+       "plain_s9": {
+        "bias": 1.0,
+        "cost": 0.28095046923389455,
+        "rwcr": 0.9012541305372903,
+        "miss": 0.34018747545280503,
+        "qualifies": true
+       }
+      },
+      "comparator": {
+       "pick": [
+        "rar",
+        "abc",
+        "[1.0, 0.0, 0.0]"
+       ],
+       "cost": 0.3467446804283939,
+       "rwcr": 0.8849779628810174,
+       "miss": 0.339221677893135,
+       "qualifies": true
+      }
+     },
+     "urban_nlos d=20": {
+      "struct": {
+       "qualifies": false,
+       "cost": null,
+       "n_pick": 4
+      },
+      "struct_per_seed": {
+       "plain_s0": null,
+       "plain_s1": null,
+       "plain_s2": {
+        "bias": 2.0,
+        "cost": 0.49065304875219634,
+        "rwcr": 0.9502338515012448,
+        "miss": 0.11179747934535869,
+        "qualifies": true
+       },
+       "plain_s3": {
+        "bias": -2.0,
+        "cost": 0.4584360196325923,
+        "rwcr": 0.9391771596979458,
+        "miss": 0.10468159655170883,
+        "qualifies": true
+       },
+       "plain_s4": null,
+       "plain_s5": {
+        "bias": -2.0,
+        "cost": 0.5096182781626984,
+        "rwcr": 0.9537824579846287,
+        "miss": 0.11061662585653986,
+        "qualifies": true
+       },
+       "plain_s6": null,
+       "plain_s7": {
+        "bias": 0.0,
+        "cost": 0.6120555921194728,
+        "rwcr": 0.9366516142765116,
+        "miss": 0.10895933095521351,
+        "qualifies": true
+       },
+       "plain_s8": null,
+       "plain_s9": null
+      },
+      "comparator": {
+       "pick": [
+        "rar",
+        "abc",
+        "[1.0, 1.0, 0.25]"
+       ],
+       "cost": 0.44748985332353264,
+       "rwcr": 0.9273936842866488,
+       "miss": 0.11680437047998868,
+       "qualifies": true
+      }
+     }
+    }
+   },
+   "ai_harp_reference_descriptive": {
+    "rural_highway d=2": {
+     "qualifies": false,
+     "cost": null,
+     "n_pick": 4
+    },
+    "rural_highway d=20": {
+     "qualifies": true,
+     "cost": 0.6946616390956876,
+     "n_pick": 10
+    },
+    "rural_highway d=80": {
+     "qualifies": false,
+     "cost": null,
+     "n_pick": 3
+    },
+    "urban_nlos d=20": {
+     "qualifies": true,
+     "cost": 0.8404805906376426,
+     "n_pick": 6
+    }
+   }
+  }
+ }
+}
