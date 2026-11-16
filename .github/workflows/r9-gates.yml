@@ -1,0 +1,42 @@
+# Revision 9 step 1: the training-pool episodes behind miss_targets.json and gates A-C (experiments/revision9/gates.py),
+# split into 20 slices by key hash. Training-pool seeds 100-131 only. Outputs pushed to r9-ci and VERIFIED there.
+name: r9-gates
+on:
+  push:
+    branches: [revision-9]
+    paths: ['ci/r9-gates.json']
+permissions:
+  contents: write
+env:
+  PYTHONUNBUFFERED: "1"
+jobs:
+  slice:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        i: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-9, fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install numpy==1.26.4 scipy==1.13.1 pandas==2.3.3 pyyaml==6.0.3 cma==4.6.0 matplotlib
+      - name: episodes
+        run: python -m experiments.revision9.gates run --jobs 4 --slice ${{ matrix.i }}/20
+      - name: push to r9-ci and verify
+        run: |
+          git config user.name "r9-ci"; git config user.email "r9-ci@users.noreply.github.com"
+          F=results/revision9/gates_runs_slice${{ matrix.i }}of20.csv
+          cp $F /tmp/out.csv
+          for k in 1 2 3 4 5 6 7 8 9 10; do
+            git fetch -q origin r9-ci && git checkout -q -f -B r9-ci FETCH_HEAD || exit 1
+            mkdir -p results/revision9; cp /tmp/out.csv $F
+            git add -f $F; git commit -q -m "r9-ci: gates slice ${{ matrix.i }}" || true
+            if git push -q origin r9-ci; then
+              git fetch -q origin r9-ci && git show FETCH_HEAD:$F | cmp - /tmp/out.csv && exit 0
+            fi
+            sleep $((RANDOM % 30 + 5))
+          done
+          exit 1

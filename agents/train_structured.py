@@ -40,6 +40,7 @@ GENERATIONS = 80
 BATCH_SALT, AXES_SALT = 0x5752, 0x52
 INFEASIBLE = 1e6
 OUT = PROJECT_ROOT / "results" / "revision8" / "train"
+OUT9 = PROJECT_ROOT / "results" / "revision9" / "train"
 H3 = PROJECT_ROOT / "results" / "revision5" / "analysis" / "h3.json"
 WARM = PROJECT_ROOT / "results" / "revision8" / "warm_start.json"
 SUMO_HOME_DEFAULT = None
@@ -138,8 +139,9 @@ def _world(scenario: str, density: float, seed: int, backend: str):
     return _CACHE[key]
 
 
-def run_episode(theta, ep: dict) -> tuple[float, int, int]:
-    """(causal coverage, causal at-risk count, transmissions) of STRUCT(theta) on one episode."""
+def run_episode(theta, ep: dict, with_miss: bool = False) -> tuple:
+    """(causal coverage, causal at-risk count, transmissions) of STRUCT(theta) on one episode; with ``with_miss``
+    (revision 9) also the causal actionable miss rate (agents/causal_miss.py), NaN when nobody is actionable."""
     from common.seeding import SeedBundle
     from sim.engine import DisseminationEngine, SimSettings
     ax = ep["axes"]
@@ -151,21 +153,35 @@ def run_episode(theta, ep: dict) -> tuple[float, int, int]:
     pol = StructuredPolicy(theta=list(theta))
     res = DisseminationEngine(tr, phy, mac, risk, hz, pol, SeedBundle(master_seed=int(ep["seed"])), st).run()
     peak, at_risk, warned = warned_at_risk(rel, res.informed_step, risk.at_risk_threshold)
-    return causal_coverage(peak, at_risk, warned), int(at_risk.sum()), int(res.n_transmissions)
+    out = (causal_coverage(peak, at_risk, warned), int(at_risk.sum()), int(res.n_transmissions))
+    if with_miss:
+        from agents.causal_miss import causal_actionable_miss
+        miss, _ = causal_actionable_miss(rel, res.informed_step, res.origin_step, tr, risk, hz,
+                                         load_yaml("hazard.yaml")["deadlines"])
+        out = out + (miss,)
+    return out
 
 
 def _job(args):
     import logging
     logging.disable(logging.WARNING)
-    k, theta, ep = args
-    return k, run_episode(theta, ep)
+    k, theta, ep = args[:3]
+    return k, run_episode(theta, ep, *args[3:])
 
 
-def fitness(outcomes: list[tuple[float, int, int]], eps: list[dict], targets: CoverageTargets) -> dict:
-    """Deb's rule as a scalar: cost if feasible, else 1e6 + summed positive group shortfall."""
+def fitness(outcomes: list[tuple], eps: list[dict], targets: CoverageTargets,
+            miss_bounds: dict[str, float] | None = None) -> dict:
+    """Deb's rule as a scalar: cost if feasible, else 1e6 + summed positive group shortfall.
+
+    Revision 9 (``miss_bounds`` given, results/revision9/ADDENDUM.md): feasible additionally requires, in every group with
+    at least one actionable episode, the group's mean causal actionable miss <= b_g; infeasible candidates score
+    1e6 + summed positive coverage shortfall + summed positive miss excess (unscaled; both are fractions in [0, 1]).
+    Without ``miss_bounds`` the result is exactly revision 8's."""
     groups: dict[str, list[float]] = {}
+    misses: dict[str, list[float]] = {}
     tx = n_ar = 0
-    for (cov, nar, ntx), ep in zip(outcomes, eps):
+    for o, ep in zip(outcomes, eps):
+        cov, nar, ntx = o[:3]
         sc, d = ep["cell"]
         g = f"{sc}|{d:g}"
         tgt = targets.target(sc, d, "clear", "fog_bank")
@@ -173,14 +189,24 @@ def fitness(outcomes: list[tuple[float, int, int]], eps: list[dict], targets: Co
         if np.isfinite(cov) and nar > 0:
             t_c[0] += tgt
             t_c[1] += cov
+        if miss_bounds is not None and len(o) > 3 and np.isfinite(o[3]):
+            misses.setdefault(g, []).append(float(o[3]))
         tx += ntx
         n_ar += nar
     short = {g: ((t - c) / t if t > 0 else 0.0) for g, (t, c) in groups.items()}
     cost = tx / n_ar if n_ar > 0 else float("inf")
     feasible = all(s <= 0 for s in short.values())
     pos = float(sum(max(s, 0.0) for s in short.values()))
-    f = cost if feasible else INFEASIBLE + pos
-    return {"f": float(f), "feasible": feasible, "cost": float(cost), "shortfall": short, "pos_shortfall": pos}
+    if miss_bounds is None:
+        f = cost if feasible else INFEASIBLE + pos
+        return {"f": float(f), "feasible": feasible, "cost": float(cost), "shortfall": short, "pos_shortfall": pos}
+    gm = {g: float(np.mean(v)) for g, v in misses.items()}
+    excess = {g: m - miss_bounds[g] for g, m in gm.items()}
+    pos_miss = float(sum(max(e, 0.0) for e in excess.values()))
+    feasible = feasible and all(e <= 0 for e in excess.values())
+    f = cost if feasible else INFEASIBLE + pos + pos_miss
+    return {"f": float(f), "feasible": feasible, "cost": float(cost), "shortfall": short, "pos_shortfall": pos,
+            "miss": gm, "miss_excess": excess, "pos_miss_excess": pos_miss}
 
 
 # ------------------------------------------------------------------------------------------------- train --
@@ -192,9 +218,12 @@ def warm_theta() -> np.ndarray:
 
 
 def train(arm: str, seed: int, generations: int = GENERATIONS, workers: int = 4, out: Path | None = None,
-          stop_after: int | None = None) -> Path:
+          stop_after: int | None = None, miss_targets: Path | None = None) -> Path:
     import cma
-    out = out or OUT / f"{arm}_s{seed}"
+    bounds = None
+    if miss_targets is not None:                      # revision 9: the causal deadline-miss constraint
+        bounds = {k: float(v["b"]) for k, v in json.loads(Path(miss_targets).read_text())["groups"].items()}
+    out = out or (OUT9 if bounds is not None else OUT) / f"{arm}_s{seed}"
     out.mkdir(parents=True, exist_ok=True)
     ck, hist = out / "ckpt.pkl", out / "history.jsonl"
     cfg = load_yaml("agent.yaml")["objective"]
@@ -220,7 +249,8 @@ def train(arm: str, seed: int, generations: int = GENERATIONS, workers: int = 4,
                 "cma_version": cma.__version__, "numpy": np.__version__, "python": sys.version.split()[0],
                 "executable": sys.executable, "platform": platform.platform(), "cpu": _cpu_model(),
                 "machine": os.environ.get("AIHARP_MACHINE", "cloud-session"), "cells": CELLS, "pool": [POOL[0], POOL[-1]],
-                "seeds_per_cell": SEEDS_PER_CELL, "warm_start": json.loads(WARM.read_text())}
+                "seeds_per_cell": SEEDS_PER_CELL, "warm_start": json.loads(WARM.read_text()),
+                **({"miss_targets": str(miss_targets), "miss_bounds": bounds} if bounds is not None else {})}
         (out / "run_meta.json").write_text(json.dumps(meta, indent=1, default=str))
     import multiprocessing as mp
     # fork on Linux; spawn on Windows (no fork). Workers are stateless apart from a trace cache, so results are the same.
@@ -231,9 +261,10 @@ def train(arm: str, seed: int, generations: int = GENERATIONS, workers: int = 4,
             t0, c0 = time.time(), time.process_time()
             eps = batch(seed, gen, arm, r5)
             X = es.ask()
-            jobs = [((ci, ei), x, ep) for ci, x in enumerate(X) for ei, ep in enumerate(eps)]
+            jobs = [((ci, ei), x, ep) + ((True,) if bounds is not None else ())
+                    for ci, x in enumerate(X) for ei, ep in enumerate(eps)]
             res = dict(pool.imap_unordered(_job, jobs, chunksize=2) if pool else map(_job, jobs))
-            fits = [fitness([res[(ci, ei)] for ei in range(len(eps))], eps, targets) for ci in range(len(X))]
+            fits = [fitness([res[(ci, ei)] for ei in range(len(eps))], eps, targets, bounds) for ci in range(len(X))]
             es.tell(X, [f["f"] for f in fits])
             gen += 1
             fs = np.array([f["f"] for f in fits])
@@ -243,7 +274,9 @@ def train(arm: str, seed: int, generations: int = GENERATIONS, workers: int = 4,
                     "feasibility_rate": float(np.mean([f["feasible"] for f in fits])),
                     "best_cost": fits[b]["cost"], "median_feasible_cost": (float(np.median(feas_costs))
                                                                           if feas_costs else None),
-                    "best_shortfall_by_group": fits[b]["shortfall"], "mean": [float(v) for v in es.mean],
+                    "best_shortfall_by_group": fits[b]["shortfall"],
+                    **({"best_miss_by_group": fits[b]["miss"]} if bounds is not None else {}),
+                    "mean": [float(v) for v in es.mean],
                     "sigma": float(es.sigma), "episodes": [[e["cell"][0], e["cell"][1], e["seed"]] for e in eps],
                     "wall_s": round(time.time() - t0, 2), "main_cpu_s": round(time.process_time() - c0, 2)}
             with hist.open("a") as fh:
@@ -273,13 +306,16 @@ def main(argv=None) -> int:
     ap.add_argument("--workers", type=int, default=os.cpu_count() or 1)
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--stop-after", type=int, default=None, help="stop cleanly after this generation (smoke/resume)")
+    ap.add_argument("--miss-targets", type=Path, default=None,
+                    help="revision 9: results/revision9/miss_targets.json enables the causal deadline-miss constraint "
+                         "(default: off = revision-8 behaviour); outputs then go to results/revision9/train/")
     a = ap.parse_args(argv)
     print(f"[env] {sys.executable} numpy {np.__version__}", flush=True)
     if a.generations != GENERATIONS and a.out is None:
         raise SystemExit("the pre-registered budget is 80 generations; other values only with --out (smoke runs)")
     if a.arm == "rand" and not os.environ.get("SUMO_HOME"):
         raise SystemExit("STRUCT-rand samples the SUMO backend (R4): set SUMO_HOME")
-    train(a.arm, a.seed, a.generations, a.workers, a.out, a.stop_after)
+    train(a.arm, a.seed, a.generations, a.workers, a.out, a.stop_after, a.miss_targets)
     return 0
 
 

@@ -190,3 +190,10 @@ def test_structured_modules_are_in_the_checked_packages(module):
     src = path.read_text(encoding="utf-8")
     for name in ORACLE_NAMES | {"extra_relevance_oracle"}:
         assert name not in src
+
+
+# Revision 9: the causal deadline-miss module is training-side and checked the same way.
+@pytest.mark.parametrize("module", ["agents.causal_miss"])
+def test_causal_miss_never_reaches_the_oracle_transitively(module):
+    test_structured_modules_never_reach_the_oracle_transitively(module)
+    test_structured_modules_are_in_the_checked_packages(module)
