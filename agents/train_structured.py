@@ -121,7 +121,7 @@ def _world(scenario: str, density: float, seed: int, backend: str):
     mac = build_mac(phy_cfg, phy)
     risk = build_risk_field(hz_cfg, tr, hz)
     rel = risk.relevance_matrix(tr, hz)                       # CAUSAL
-    if len(_CACHE) > 64:
+    if len(_CACHE) >= 24:                                   # memory bound (about 0.1 GB per d=80 entry); no effect on results
         _CACHE.clear()
     _CACHE[key] = (tr, hz, phy, mac, risk, rel)
     return _CACHE[key]

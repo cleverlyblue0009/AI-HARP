@@ -39,3 +39,29 @@ def test_h4_machinery_on_standin_data():
         assert res["p_noninferiority"] == 1.0 and not res["decision"]["ii_noninferiority_10pct"]
     else:
         assert isinstance(res["T"], float) and math.isfinite(res["T"]) or res["T"] == "inf"
+
+
+def test_h5_machinery_on_standin_data(tmp_path, monkeypatch):
+    """Committed revision-6 AI-HARP Veins rows (ref_s0-4, Tier A) relabelled as plain_s0-4 and rand_s0-4."""
+    import shutil
+    from common.config import PROJECT_ROOT
+    from experiments.revision8.analysis import h5
+    (tmp_path / "veins").mkdir()
+    shutil.copy(PROJECT_ROOT / "results" / "revision8" / "veins_thresholds.json", tmp_path / "veins_thresholds.json")
+    src = PROJECT_ROOT / "results" / "revision6" / "veins" / "veins6_rows.jsonl"
+    with open(tmp_path / "veins" / "h5B_rows.jsonl", "w") as fo:
+        for line in src.open(encoding="utf-8"):
+            r = json.loads(line)["row"]
+            if r["policy"] != "ai_harp" or (r["scenario"], r["density"]) not in h5.CELLS:
+                continue
+            run, b = r["knobs"].rsplit("_b", 1)
+            for arm in ("plain", "rand"):
+                fo.write(json.dumps({"row": {**r, "knobs": f"{arm}_s{run[-1]}_d{b}"}}) + "\n")
+    monkeypatch.setattr(h5, "R8", tmp_path)
+    res = h5.h5_tier("h5B", h5.TIER_A, h5.frozen())
+    for c in res["cells"].values():
+        assert c["rand_qualifying"] == c["plain_qualifying"] and not c["rule_met"]
+        assert c["p_fisher_one_sided"] == 1.0 or c["rand_qualifying"] in (0, 5)
+    # revision-6 result: the policy qualifies 0/5 at rural d=20 in Veins (REVISION6_REPORT.md)
+    assert res["cells"]["rural_highway d=20"]["plain_qualifying"] == 0
+    assert 0.0 <= res["p_H5"] <= 1.0

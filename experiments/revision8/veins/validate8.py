@@ -138,6 +138,7 @@ def trace(path: Path) -> dict:
 def main(argv=None) -> int:
     a = list(sys.argv[1:] if argv is None else argv)
     print(f"[env] {sys.executable} numpy {np.__version__}", flush=True)
+    OUT.mkdir(parents=True, exist_ok=True)
     if a[0] == "unit":
         r = unit(a[a.index("--run") + 1])
     elif a[0] == "geometric":

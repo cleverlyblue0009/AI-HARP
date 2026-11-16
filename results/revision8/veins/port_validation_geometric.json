@@ -1,0 +1,18 @@
+{
+ "provenance": {
+  "task": "revision8/veins/validate8 geometric",
+  "git_commit": "7a35673445b755f129304677fc9011926bbf7c83-dirty",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision8.veins.validate8 geometric",
+  "config_hash": "e10808d43975",
+  "config": {},
+  "seeds": null,
+  "generated": "2026-11-16 05:12:47"
+ },
+ "contexts": 1789,
+ "mismatches": 0,
+ "examples": [],
+ "pass": true
+}
