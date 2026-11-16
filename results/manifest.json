@@ -597,6 +597,288 @@
     "results/revision6/analysis/veins_methods.json"
    ],
    "sha256": "5deadfb46f04f3a837680e7e3cd26336f81e92711a7fdaed71c9bc43555c9985"
+  },
+  {
+   "output": "results/revision8/probe_heads.json",
+   "exists": true,
+   "script": "experiments/revision8/probe_heads.py",
+   "command": "python -m experiments.revision8.probe_heads",
+   "commit": "a6dea217212726a24525a8a50c881529d56f98ee",
+   "config_hash": "69590bfd4669",
+   "generated": "2026-11-16 04:26:42",
+   "sources": [
+    "training-pool seeds 100-103"
+   ],
+   "sha256": "87cfea505dd64b1c7269fd454edaea88aeffba4ff249537a637c01083af8b7d0"
+  },
+  {
+   "output": "results/revision8/warm_start.json",
+   "exists": true,
+   "script": "experiments/revision8/warm_start.py",
+   "command": "python -m experiments.revision8.warm_start",
+   "commit": "a0d94fb08c7f213db8a99c5e133d3b33fd42bd30-dirty",
+   "config_hash": "1abaa411e4ec",
+   "generated": "2026-11-16 04:56:46",
+   "sources": [
+    "results/revision5/runs/classical__SEL__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__SEL__grid24__default__fallback.csv",
+    "results/revision5/thresholds.json"
+   ],
+   "sha256": "8c238a4a13b0bcd57bdea12fcacc59ced1b3db7333061da7003b11fded26fbde"
+  },
+  {
+   "output": "results/revision8/veins_thresholds.json",
+   "exists": true,
+   "script": "experiments/revision8/veins_thresholds.py",
+   "command": "python -m experiments.revision8.veins_thresholds",
+   "commit": "a0d94fb08c7f213db8a99c5e133d3b33fd42bd30-dirty",
+   "config_hash": "954e8774ca4f",
+   "generated": "2026-11-16 05:04:09",
+   "sources": [
+    "results/revision5/veins/veins_rows.jsonl (seeds 200-209)"
+   ],
+   "sha256": "fb27d67a535cdbf65d2cc45108a9ce5e64c2c18685002dc32f8abf9c1b0c701d"
+  },
+  {
+   "output": "results/revision8/train/",
+   "exists": true,
+   "script": "agents/train_structured.py",
+   "command": "bash experiments/revision8/train_all.sh",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/coverage_targets.json",
+    "results/revision8/warm_start.json",
+    "results/revision5/analysis/h3.json (R5)",
+    "training-pool traces 100-131"
+   ],
+   "sha256": "8380f997b5d3fb9aa27d2abb6c6954ef50f8c2d173b213624d240cd4f8e451cc"
+  },
+  {
+   "output": "results/revision8/runs/struct_plain__SEL__headline__default__fallback.csv",
+   "exists": true,
+   "script": "experiments/revision8/sweep_struct.py",
+   "command": "python -m experiments.revision8.sweep_struct --arm plain --seedset SEL",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision8/train/plain_s*/theta.json"
+   ],
+   "sha256": "0333e1f13f076cd59ca8db87745e32254d37407fe1969333d366c2dfdccc910b"
+  },
+  {
+   "output": "results/revision8/runs/struct_plain__EVAL__headline__default__fallback.csv",
+   "exists": true,
+   "script": "experiments/revision8/sweep_struct.py",
+   "command": "python -m experiments.revision8.sweep_struct --arm plain --seedset EVAL",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision8/train/plain_s*/theta.json"
+   ],
+   "sha256": "85662f0880c76fc0499627659e70a57d165a6142d232f76031442795911124da"
+  },
+  {
+   "output": "results/revision8/runs/struct_rand__SEL__headline__default__fallback.csv",
+   "exists": true,
+   "script": "experiments/revision8/sweep_struct.py",
+   "command": "python -m experiments.revision8.sweep_struct --arm rand --seedset SEL",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision8/train/rand_s*/theta.json"
+   ],
+   "sha256": "51f49ef0c4cbaf7accfbefea69748e1c3279b340109c2ae4d2baba28e30b2584"
+  },
+  {
+   "output": "results/revision8/runs/struct_rand__EVAL__headline__default__fallback.csv",
+   "exists": true,
+   "script": "experiments/revision8/sweep_struct.py",
+   "command": "python -m experiments.revision8.sweep_struct --arm rand --seedset EVAL",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision8/train/rand_s*/theta.json"
+   ],
+   "sha256": "b1b4ea4719455b4ce49d35e3f26697c4beee6d0310dba6ef293692b52494e8a7"
+  },
+  {
+   "output": "results/revision8/analysis/h4.json",
+   "exists": true,
+   "script": "experiments/revision8/analysis/h4.py",
+   "command": "python -m experiments.revision8.analysis.h4 --B 10000",
+   "commit": "f876a75158ff5fa1926982dec52e7e864cfe0fa1",
+   "config_hash": "8ee628ee9b08",
+   "generated": "2026-11-16 09:52:24",
+   "sources": [
+    "results/revision8/runs/struct_plain__{SEL,EVAL}__headline__default__fallback.csv",
+    "results/revision5/runs/classical__{SEL,EVAL}__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__{SEL,EVAL}__grid24__default__fallback.csv",
+    "results/revision5/thresholds.json"
+   ],
+   "sha256": "7d9f2befe37913ec92789904bbdb328fae9d0bfd7cdc982246effb655627b140"
+  },
+  {
+   "output": "results/revision8/analysis/h4_rand_descriptive.json",
+   "exists": true,
+   "script": "experiments/revision8/analysis/h4.py",
+   "command": "python -m experiments.revision8.analysis.h4 --B 10000 --arm rand",
+   "commit": "bf31f71a2dce00ddd2ed792f97e97992bcc81f1a",
+   "config_hash": "7d7a8e49a2cb",
+   "generated": "2026-11-16 10:20:36",
+   "sources": [
+    "results/revision8/runs/struct_rand__{SEL,EVAL}__headline__default__fallback.csv"
+   ],
+   "sha256": "ba8eaf834aaafe3dd51074c37192f918f97f8463a9f62be340ae9d934459550a"
+  },
+  {
+   "output": "results/revision8/veins/port_validation_geometric.json",
+   "exists": true,
+   "script": "experiments/revision8/veins/validate8.py",
+   "command": "python -m experiments.revision8.veins.validate8 geometric",
+   "commit": "7a35673445b755f129304677fc9011926bbf7c83-dirty",
+   "config_hash": "e10808d43975",
+   "generated": "2026-11-16 05:12:47",
+   "sources": [],
+   "sha256": "495f7ae418915ebb05f552088bb719cba561ca494381040f1a9b51e3f5eb5df1"
+  },
+  {
+   "output": "results/revision8/veins/port_validation_unit_plain_s0.json",
+   "exists": false,
+   "script": "experiments/revision8/veins/validate8.py",
+   "command": "python -m experiments.revision8.veins.validate8 unit --run plain_s0",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision8/train/plain_s0/theta.json"
+   ],
+   "sha256": null
+  },
+  {
+   "output": "results/revision8/veins/port_validation_unit_rand_s0.json",
+   "exists": false,
+   "script": "experiments/revision8/veins/validate8.py",
+   "command": "python -m experiments.revision8.veins.validate8 unit --run rand_s0",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision8/train/rand_s0/theta.json"
+   ],
+   "sha256": null
+  },
+  {
+   "output": "results/revision8/veins/app_gate.json",
+   "exists": false,
+   "script": "experiments/revision8/veins/queue8.py",
+   "command": "python -m experiments.revision8.veins.queue8 gate",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "laptop"
+   ],
+   "sha256": null
+  },
+  {
+   "output": "results/revision8/veins/h5B_rows.jsonl",
+   "exists": true,
+   "script": "experiments/revision8/veins/score8.py",
+   "command": "python -m experiments.revision8.veins.score8 h5B",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "laptop"
+   ],
+   "sha256": "8111cbe55f7915cfd18059058e5a5fe9a902fb4f8552eaa310b178a153ddf28f"
+  },
+  {
+   "output": "results/revision8/veins/h5A_rows.jsonl",
+   "exists": false,
+   "script": "experiments/revision8/veins/score8.py",
+   "command": "python -m experiments.revision8.veins.score8 h5A",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "laptop"
+   ],
+   "sha256": null
+  },
+  {
+   "output": "results/revision8/veins/expC_rows.jsonl",
+   "exists": false,
+   "script": "experiments/revision8/veins/score8.py",
+   "command": "python -m experiments.revision8.veins.score8 expC",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "laptop"
+   ],
+   "sha256": null
+  },
+  {
+   "output": "results/revision8/veins/expD_rows.jsonl",
+   "exists": false,
+   "script": "experiments/revision8/veins/score8.py",
+   "command": "python -m experiments.revision8.veins.score8 expD",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "laptop"
+   ],
+   "sha256": null
+  },
+  {
+   "output": "results/revision8/analysis/h5.json",
+   "exists": true,
+   "script": "experiments/revision8/analysis/h5.py",
+   "command": "python -m experiments.revision8.analysis.h5 h5",
+   "commit": "51bc239a6234bbc2bab07257b4ec731bfc2e079d",
+   "config_hash": "5d7035428b84",
+   "generated": "2026-11-16 11:26:29",
+   "sources": [
+    "results/revision8/veins/h5{A,B}_rows.jsonl",
+    "results/revision8/veins_thresholds.json"
+   ],
+   "sha256": "2fd077c446265bd766039557de614822174a5089d18252577ad1b041dc0bdd13"
+  },
+  {
+   "output": "results/revision8/analysis/exp_cd.json",
+   "exists": true,
+   "script": "experiments/revision8/analysis/h5.py",
+   "command": "python -m experiments.revision8.analysis.h5 expcd",
+   "commit": "6bedf1d97a1e4bf679bc03b979408e7778eb8855",
+   "config_hash": "f0194f0c2c15",
+   "generated": "2026-11-16 11:32:47",
+   "sources": [
+    "results/revision8/veins/exp{C,D}_rows.jsonl",
+    "results/revision8/veins_thresholds.json"
+   ],
+   "sha256": "5864c896d0956ea9b217d4869eb0936147db2d1e0d2b43d8849f8bc77a717bee"
+  },
+  {
+   "output": "results/revision8/analysis/holm.json",
+   "exists": true,
+   "script": "experiments/revision8/analysis/h5.py",
+   "command": "python -m experiments.revision8.analysis.h5 holm",
+   "commit": "51bc239a6234bbc2bab07257b4ec731bfc2e079d",
+   "config_hash": "d0b307e9f69e",
+   "generated": "2026-11-16 11:26:30",
+   "sources": [
+    "results/revision8/analysis/h4.json",
+    "results/revision8/analysis/h5.json"
+   ],
+   "sha256": "68f6fb68d838797ab53a4404749bcb1b9c51ba000e40e32289b74ac096c994b2"
   }
  ]
 }

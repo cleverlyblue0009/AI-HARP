@@ -1,0 +1,22 @@
+{
+ "provenance": {
+  "task": "revision8/analysis/exp_cd.json",
+  "git_commit": "6bedf1d97a1e4bf679bc03b979408e7778eb8855",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision8.analysis.h5 expcd",
+  "config_hash": "f0194f0c2c15",
+  "config": {
+   "mode": "expcd"
+  },
+  "seeds": null,
+  "generated": "2026-11-16 11:32:47"
+ },
+ "expC": {
+  "status": "not run"
+ },
+ "expD": {
+  "status": "not run"
+ }
+}
