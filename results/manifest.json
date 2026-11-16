@@ -879,6 +879,204 @@
     "results/revision8/analysis/h5.json"
    ],
    "sha256": "68f6fb68d838797ab53a4404749bcb1b9c51ba000e40e32289b74ac096c994b2"
+  },
+  {
+   "output": "results/revision9/miss_targets.json",
+   "exists": true,
+   "script": "experiments/revision9/gates.py",
+   "command": "python -m experiments.revision9.gates analyse",
+   "commit": "9e2ab6fef7e786be6423b177a1b7bc70d568fb22",
+   "config_hash": "30682d513f8e",
+   "generated": "2026-11-16 14:44:41",
+   "sources": [
+    "results/revision9/gates_runs_slice{0..19}of20.csv",
+    "results/coverage_targets.json",
+    "training-pool seeds 100-131"
+   ],
+   "sha256": "da596549eeeb2640d3931c896e5ceab0f2f40df5d5c0eae6604195c81dfbdf90"
+  },
+  {
+   "output": "results/revision9/gates.json",
+   "exists": true,
+   "script": "experiments/revision9/gates.py",
+   "command": "python -m experiments.revision9.gates analyse",
+   "commit": "9e2ab6fef7e786be6423b177a1b7bc70d568fb22",
+   "config_hash": "06d10bc0b996",
+   "generated": "2026-11-16 14:44:41",
+   "sources": [
+    "results/revision9/gates_runs_slice{0..19}of20.csv",
+    "results/coverage_targets.json",
+    "results/revision9/miss_targets.json"
+   ],
+   "sha256": "cb6385a44239c0683b29b9b4a748599536e77368f9678dbe2bd845177a9b6149"
+  },
+  {
+   "output": "results/revision9/train/",
+   "exists": true,
+   "script": "agents/train_structured.py",
+   "command": "python -m agents.train_structured --arm {plain,rand} --seed {0..4} --miss-targets results/revision9/miss_targets.json",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/coverage_targets.json",
+    "results/revision8/warm_start.json",
+    "results/revision9/miss_targets.json",
+    "training-pool traces 100-131"
+   ],
+   "sha256": "d778a1d876837bcffbdafcddb5f354386f4f3142508fb98ae10b6a221b630ca8"
+  },
+  {
+   "output": "results/revision9/train_summary.json",
+   "exists": true,
+   "script": "experiments/revision9/train_summary9.py",
+   "command": "python -m experiments.revision9.train_summary9",
+   "commit": "7770d5c8be5308c9c966d65a841110fbed4a309f",
+   "config_hash": "e10808d43975",
+   "generated": "2026-11-16 16:19:43",
+   "sources": [
+    "results/revision9/train/*/history.jsonl",
+    "results/revision9/train/*/run_meta.json"
+   ],
+   "sha256": "c1c9c4af61ee4188d199b814bc6bf57299c6072765b5256e7b3df6c7bba3eac6"
+  },
+  {
+   "output": "results/revision9/veins/h6_rows.jsonl",
+   "exists": true,
+   "script": "experiments/revision9/analysis/veins9.py",
+   "command": "python -m experiments.revision9.analysis.veins9 assemble h6",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision9/veins/h6/<cell>_s<seed>/ (20 runner shards, ci9.py h6)"
+   ],
+   "sha256": "7355e13a70819ab71b5ba7478f671664559b037363cb36708deb498c34fc8af6"
+  },
+  {
+   "output": "results/revision9/veins/c1_rows.jsonl",
+   "exists": false,
+   "script": "experiments/revision9/analysis/veins9.py",
+   "command": "python -m experiments.revision9.analysis.veins9 assemble c1",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision9/veins/c1/<cell>_s<seed>/ (20 runner shards, ci9.py c1)"
+   ],
+   "sha256": null
+  },
+  {
+   "output": "results/revision9/analysis/h6.json",
+   "exists": true,
+   "script": "experiments/revision9/analysis/veins9.py",
+   "command": "python -m experiments.revision9.analysis.veins9 h6",
+   "commit": "a440fce893f493a3a2b77286621a0cfbfa7d9bc2",
+   "config_hash": "e10808d43975",
+   "generated": "2026-11-16 18:02:02",
+   "sources": [
+    "results/revision9/veins/h6_rows.jsonl",
+    "results/revision8/veins_thresholds.json"
+   ],
+   "sha256": "9993d284cb4ab6d8f9af4a3c75f4ab92e8493de8db4374ae7551dc1f7790beeb"
+  },
+  {
+   "output": "results/revision9/analysis/c1.json",
+   "exists": false,
+   "script": "experiments/revision9/analysis/veins9.py",
+   "command": null,
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision9/veins/c1_rows.jsonl",
+    "results/revision8/veins/h5B_rows.jsonl",
+    "results/revision8/veins_thresholds.json"
+   ],
+   "sha256": null
+  },
+  {
+   "output": "results/revision9/analysis/s1.json",
+   "exists": false,
+   "script": "experiments/revision9/analysis/veins9.py",
+   "command": null,
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision9/veins/h6_rows.jsonl",
+    "results/revision9/veins/c1_rows.jsonl",
+    "results/revision8/veins_thresholds.json"
+   ],
+   "sha256": null
+  },
+  {
+   "output": "results/revision9/runs/struct9_plain__SEL__headline__default__fallback.csv",
+   "exists": true,
+   "script": "experiments/revision9/sweep9.py",
+   "command": "python -m experiments.revision9.sweep9 merge plain SEL",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision9/train/plain_s*/theta.json"
+   ],
+   "sha256": "6c594dd374cb2e47f117822a587e00736341683c484d9c07bd92257c2f76baf3"
+  },
+  {
+   "output": "results/revision9/runs/struct9_plain__EVAL__headline__default__fallback.csv",
+   "exists": true,
+   "script": "experiments/revision9/sweep9.py",
+   "command": "python -m experiments.revision9.sweep9 merge plain EVAL",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision9/train/plain_s*/theta.json"
+   ],
+   "sha256": "66b4b61f17e0b405d77cdc7546593f8614b877156dfe24d8686b1a52d860c67a"
+  },
+  {
+   "output": "results/revision9/runs/struct9_rand__SEL__headline__default__fallback.csv",
+   "exists": true,
+   "script": "experiments/revision9/sweep9.py",
+   "command": "python -m experiments.revision9.sweep9 merge rand SEL",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision9/train/rand_s*/theta.json"
+   ],
+   "sha256": "8d909a1c46c022291c4cf6c3d8c8cf3ff62cd15787ea0d9d511b9d11e2b870c7"
+  },
+  {
+   "output": "results/revision9/runs/struct9_rand__EVAL__headline__default__fallback.csv",
+   "exists": true,
+   "script": "experiments/revision9/sweep9.py",
+   "command": "python -m experiments.revision9.sweep9 merge rand EVAL",
+   "commit": null,
+   "config_hash": null,
+   "generated": null,
+   "sources": [
+    "results/revision9/train/rand_s*/theta.json"
+   ],
+   "sha256": "c391a4081d296deee963272c0d393efd8bef6e05379ec10ac85c01fb93b93ffb"
+  },
+  {
+   "output": "results/revision9/analysis/s2.json",
+   "exists": true,
+   "script": "experiments/revision9/analysis/s2.py",
+   "command": "python -m experiments.revision9.analysis.s2 --B 10000",
+   "commit": "9f82e403624210d47adb4327797b9205e04ae994",
+   "config_hash": "06458e4f6ed7",
+   "generated": "2026-11-16 17:39:22",
+   "sources": [
+    "results/revision9/runs/struct9_{plain,rand}__{SEL,EVAL}__headline__default__fallback.csv",
+    "results/revision5/runs/classical__{SEL,EVAL}__grid24__default__fallback.csv",
+    "results/revision5/runs/rule__{SEL,EVAL}__grid24__default__fallback.csv",
+    "results/revision5/thresholds.json"
+   ],
+   "sha256": "39abc3e83b7e50485ac5ee26dd23adb0cb6def07c1089d43c15264f3d92a568e"
   }
  ]
 }
