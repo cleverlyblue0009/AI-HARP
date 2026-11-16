@@ -167,6 +167,16 @@ STRUCT can represent that, but not CBF's x-coordinate area test.
 
 ## 9. Other points the addendum must settle (proposals, not decisions)
 
+**Resolved by the author (2026-11-16), recorded in `ADDENDUM.md` §1.** Both heads are clipped-linear:
+p = clip(w·x − 0.15·δ, 0, 1) and delay = 1 + clip(round(w·x'), 0, 50), with the 50-slot index as the slot feature.
+The sigmoid design of the instruction was dropped because it cannot contain RAR or slotted_1p, which is the point of
+STRUCT. In `probe_heads.json` the best-fit sigmoid p head mismatches RAR in 72 of 1,698 decisions. The sigmoid delay
+head with one slot term mismatches slotted_1p n=5 in at least 484 decisions, or n=50 in 844. Clipped-linear heads
+mismatch in 0. STRUCT always draws one uniform (RAR's convention), and slotted_1p equivalence is also tested as
+byte-identical whole runs. The proposals below were accepted as written, except: 10 training seeds per arm and a
++10 % non-inferiority margin for H4; Veins H5 on training seeds 0–4; R2 checked against the raw outputs first (no
+neighbour counts recorded, so it is [ASSUMED]); R4 kept (SUMO 1.19.0 runs here).
+
 * **H5 thresholds in Veins.** The custom CAL thresholds cannot be used in Veins: revision 6 recomputed them inside Veins
   because H3 failed. "No threshold may be fitted on Tier B" then implies: fit Veins q*, m* per cell on the Tier A
   classical replays (`veins_rows.jsonl`, 200–209) and apply them to STRUCT's Tier B replays. The Tier A
