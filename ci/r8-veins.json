@@ -1,8 +1,16 @@
 {
  "seeds": [
-  210
+  210,
+  211,
+  212,
+  213,
+  214,
+  215,
+  216,
+  217,
+  218,
+  219
  ],
- "gate_only": true,
- "request": 2,
- "note": "toolchain smoke test on a runner: bundles + gate only, rural d=20 seed 210 shard and urban NLOS d=20 seed 210 shard; no STRUCT replay"
+ "request": 3,
+ "note": "H5 Tier B (D12): 20 shards, plain_s0-4 and rand_s0-4 x delta -2..3; gate on every runner"
 }
