@@ -1,0 +1,10 @@
+[env] /opt/hostedtoolcache/Python/3.12.16/x64/bin/python numpy 1.26.4
+16:42:43 INFO    aiharp.mobility.generate +------------------------------------------------------------+
+16:42:43 INFO    aiharp.mobility.generate | MOBILITY BACKEND: SUMO                                     |
+16:42:43 INFO    aiharp.mobility.generate +------------------------------------------------------------+
+16:42:43 INFO    aiharp.mobility.generate | binary      : /home/runner/veins-r5/sumo-1.19.0/bin/sumo   |
+16:42:43 INFO    aiharp.mobility.generate | SUMO_HOME   : /home/runner/veins-r5/sumo-1.19.0            |
+16:42:43 INFO    aiharp.mobility.generate | car-following: Krauss (SUMO default)                       |
+16:42:43 INFO    aiharp.mobility.generate +------------------------------------------------------------+
+16:42:43 INFO    aiharp.mobility.generate Trace cache HIT  rural_highway_d20_s200_cdc58ce94268.npz | dt_s=0.1 steps=1199 duration_s=119.9 vehicle_slots=524 concurrent_mean=424.4 concurrent_min=422 concurrent_max=428 speed_mean_ms=19.25 speed_min_ms=15.41 speed_max_ms=27.78 truck_share=0.218
+[env] /opt/hostedtoolcache/Python/3.12.16/x64/bin/python numpy 1.26.4
