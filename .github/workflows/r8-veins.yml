@@ -52,6 +52,7 @@ jobs:
 
   shard:
     needs: [plan, toolchain]
+    if: ${{ needs.plan.outputs.seeds != '[]' }}      # seeds [] = build and cache the toolchain only
     runs-on: ubuntu-24.04
     timeout-minutes: 350
     strategy:
