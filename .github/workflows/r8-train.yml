@@ -1,0 +1,132 @@
+# Revision 8 (results/revision8/DEVIATIONS.md D14): train STRUCT runs on GitHub-hosted runners, one run per runner.
+# Unchanged code, budget (80 generations), seeds and configuration (ADDENDUM section 4). Each run's outputs
+# (results/revision8/train/<arm>_s<k>/: history.jsonl, ckpt.pkl, theta.json, run_meta.json with the runner's CPU) are
+# pushed to the branch r8-ci; the main session merges them into revision-8.
+# Manual start only: inputs are JSON lists of training seeds per arm, e.g. plain = [2,3,4], rand = [0,1,2,3,4].
+name: r8-train
+on:
+  workflow_dispatch:
+    inputs:
+      plain:
+        description: 'JSON list of STRUCT-plain training seeds, e.g. [2,3,4]'
+        required: true
+        default: '[]'
+      rand:
+        description: 'JSON list of STRUCT-rand training seeds, e.g. [0,1,2,3,4]'
+        required: true
+        default: '[]'
+permissions:
+  contents: write
+env:
+  PYTHONUNBUFFERED: "1"
+  AIHARP_MACHINE: github-actions
+jobs:
+  sumo-traces:
+    # SUMO 1.19.0 training-pool traces (seeds 100-131, four headline cells) once, shared through the Actions cache.
+    if: ${{ inputs.rand != '[]' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-8, fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install numpy==1.26.4 scipy==1.13.1 pandas==2.3.3 pyyaml==6.0.3 cma==4.6.0 eclipse-sumo==1.19.0
+      - uses: actions/cache@v4
+        id: c
+        with: {path: cache/traces, key: r8-traces-sumo-v1}
+      - if: steps.c.outputs.cache-hit != 'true'
+        run: |
+          export SUMO_HOME=$(python -c "import sumo; print(sumo.SUMO_HOME)")
+          python -m experiments.revision8.traces --backend sumo --jobs 4
+          python -m experiments.revision8.traces --backend fallback --jobs 4
+
+  train-plain:
+    if: ${{ inputs.plain != '[]' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: ${{ fromJSON(inputs.plain) }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-8, fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install numpy==1.26.4 scipy==1.13.1 pandas==2.3.3 pyyaml==6.0.3 cma==4.6.0 eclipse-sumo==1.19.0
+      - uses: actions/cache/restore@v4
+        with: {path: cache/traces, key: r8-traces-sumo-v1}
+      - name: train
+        run: |
+          ARM=${{ github.job == 'train-plain' && 'plain' || 'rand' }}
+          export SUMO_HOME=$(python -c "import sumo; print(sumo.SUMO_HOME)")
+          # sumo's pip wrappers on PATH would make backend "auto" pick SUMO (revision-5 D2); training always names its
+          # backend explicitly, so only SUMO_HOME is used
+          python -c "import sys, numpy, cma; print(sys.executable, numpy.__version__, cma.__version__)"
+          python -m experiments.revision8.traces --backend fallback --jobs 4
+          python -m agents.train_structured --arm $ARM --seed ${{ matrix.seed }} --workers 4
+          echo "RUN=${ARM}_s${{ matrix.seed }}" >> $GITHUB_ENV
+      - name: push results to r8-ci
+        if: always()
+        run: |
+          git config user.name "r8-ci"; git config user.email "r8-ci@users.noreply.github.com"
+          D=results/revision8/train/$RUN
+          [ -d "$D" ] || exit 0
+          cp -r "$D" /tmp/run_out
+          rm -rf "$D"
+          for i in 1 2 3 4 5 6 7 8; do
+            if git fetch -q origin r8-ci 2>/dev/null; then git checkout -q -B r8-ci FETCH_HEAD; else git checkout -q -B r8-ci; fi
+            rm -rf "$D"; mkdir -p "$(dirname "$D")"; cp -r /tmp/run_out "$D"
+            git add -f "$D"
+            git commit -q -m "r8-ci: $RUN ($(tail -1 $D/history.jsonl | cut -c1-40))" || exit 0
+            git push -q origin r8-ci && exit 0
+            sleep $((RANDOM % 20 + 5))
+          done
+          exit 1
+
+  train-rand:
+    if: ${{ inputs.rand != '[]' && !cancelled() && needs.sumo-traces.result == 'success' }}
+    needs: sumo-traces
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: ${{ fromJSON(inputs.rand) }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-8, fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install numpy==1.26.4 scipy==1.13.1 pandas==2.3.3 pyyaml==6.0.3 cma==4.6.0 eclipse-sumo==1.19.0
+      - uses: actions/cache/restore@v4
+        with: {path: cache/traces, key: r8-traces-sumo-v1}
+      - name: train
+        run: |
+          ARM=${{ github.job == 'train-plain' && 'plain' || 'rand' }}
+          export SUMO_HOME=$(python -c "import sumo; print(sumo.SUMO_HOME)")
+          # sumo's pip wrappers on PATH would make backend "auto" pick SUMO (revision-5 D2); training always names its
+          # backend explicitly, so only SUMO_HOME is used
+          python -c "import sys, numpy, cma; print(sys.executable, numpy.__version__, cma.__version__)"
+          python -m experiments.revision8.traces --backend fallback --jobs 4
+          python -m agents.train_structured --arm $ARM --seed ${{ matrix.seed }} --workers 4
+          echo "RUN=${ARM}_s${{ matrix.seed }}" >> $GITHUB_ENV
+      - name: push results to r8-ci
+        if: always()
+        run: |
+          git config user.name "r8-ci"; git config user.email "r8-ci@users.noreply.github.com"
+          D=results/revision8/train/$RUN
+          [ -d "$D" ] || exit 0
+          cp -r "$D" /tmp/run_out
+          rm -rf "$D"
+          for i in 1 2 3 4 5 6 7 8; do
+            if git fetch -q origin r8-ci 2>/dev/null; then git checkout -q -B r8-ci FETCH_HEAD; else git checkout -q -B r8-ci; fi
+            rm -rf "$D"; mkdir -p "$(dirname "$D")"; cp -r /tmp/run_out "$D"
+            git add -f "$D"
+            git commit -q -m "r8-ci: $RUN ($(tail -1 $D/history.jsonl | cut -c1-40))" || exit 0
+            git push -q origin r8-ci && exit 0
+            sleep $((RANDOM % 20 + 5))
+          done
+          exit 1
+

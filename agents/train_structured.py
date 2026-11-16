@@ -45,6 +45,17 @@ WARM = PROJECT_ROOT / "results" / "revision8" / "warm_start.json"
 SUMO_HOME_DEFAULT = None
 
 
+def _cpu_model() -> str:
+    """CPU model for run_meta (D14: runs train on different machines)."""
+    try:
+        for line in open("/proc/cpuinfo", encoding="utf-8"):
+            if line.startswith("model name"):
+                return line.split(":", 1)[1].strip()
+    except OSError:
+        pass
+    return platform.processor() or "unknown"
+
+
 def cma_stds() -> np.ndarray:
     """Initial per-coordinate scale (ADDENDUM section 4), sigma0 = 1."""
     return np.array([0.2] * 4 + [2.0, 2.0, 2.0, 2.0, 0.2] + [0.5] * 12)
@@ -207,7 +218,8 @@ def train(arm: str, seed: int, generations: int = GENERATIONS, workers: int = 4,
         gen = 0
         meta = {"arm": arm, "seed": seed, "generations": generations, "popsize": es.popsize, "x0": x0.tolist(),
                 "cma_version": cma.__version__, "numpy": np.__version__, "python": sys.version.split()[0],
-                "executable": sys.executable, "platform": platform.platform(), "cells": CELLS, "pool": [POOL[0], POOL[-1]],
+                "executable": sys.executable, "platform": platform.platform(), "cpu": _cpu_model(),
+                "machine": os.environ.get("AIHARP_MACHINE", "cloud-session"), "cells": CELLS, "pool": [POOL[0], POOL[-1]],
                 "seeds_per_cell": SEEDS_PER_CELL, "warm_start": json.loads(WARM.read_text())}
         (out / "run_meta.json").write_text(json.dumps(meta, indent=1, default=str))
     import multiprocessing as mp
