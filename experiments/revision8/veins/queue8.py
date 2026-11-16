@@ -47,6 +47,21 @@ DELTAS = (-2.0, -1.0, 0.0, 1.0, 2.0, 3.0)
 STRUCT_RUNS = [f"{arm}_s{k}" for arm in ("plain", "rand") for k in range(5)]      # fixed in the addendum
 REF_RUNS = [f"ref_s{k}" for k in range(5)]
 GATE_SLOTTED_SHA = "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8"   # revision-6 gate log
+# Committed reference logs (revision-7 gate, options off; byte-identical to the revision-6 replays by revision-7 checks
+# 1 and 3), used so the gate does not depend on the uncommitted cache/veins_runs/r6.
+R7_GATE_RAW = PROJECT_ROOT / "results" / "revision7" / "veins" / "raw" / "r7_gate"
+
+
+def need_bundles(seeds) -> None:
+    """Refuse to start unless every bundle (bundle.json + r6.txt) the run needs exists; say how to make them."""
+    miss = [f"{sc}_d{d:g}_s{s}" for sc, d in CELLS for s in seeds
+            if not (q6.BUNDLES / f"{sc}_d{d:g}_s{s}" / "bundle.json").exists()
+            or not (q6.BUNDLES / f"{sc}_d{d:g}_s{s}" / "r6.txt").exists()]
+    if miss:
+        raise SystemExit(f"{len(miss)} bundles missing or without r6.txt in {q6.BUNDLES} (e.g. {miss[:3]}). Regenerate "
+                         "(LAPTOP_RUNBOOK step 1): SUMO_HOME set, then `python -m experiments.revision5.veins.export "
+                         "rural_highway 20 <seeds>` and `... urban_nlos 20 <seeds>`, then "
+                         "`python -m experiments.revision6.veins.r6_bundle --seeds 200-219`")
 SC, D, S = "rural_highway", 20.0, 200
 
 
@@ -144,14 +159,17 @@ def gate(only_struct: bool = False) -> dict:
     """Before any reported replay: every new option off reproduces stored logs byte for byte; one STRUCT replay, one
     Exp C replay and one Exp D replay run cleanly; the STRUCT and Exp C decision logs are reproduced offline exactly."""
     from experiments.revision8.veins import validate8 as v8
+    need_bundles([S])
     out = ROOT / "r8_gate"
     out.mkdir(parents=True, exist_ok=True)
     checks: dict[str, dict] = {}
     if not only_struct:
         name = q6.name_of(SC, D, S, "slotted_1p", "8")
         if not (out / f"{name}.events.csv.gz").exists():
-            subprocess.run(runner_cmd(q6.BUNDLES / f"{SC}_d{D:g}_s{S}", "slotted_1p", "8", S, out), capture_output=True,
-                           text=True)
+            r = subprocess.run(runner_cmd(q6.BUNDLES / f"{SC}_d{D:g}_s{S}", "slotted_1p", "8", S, out),
+                               capture_output=True, text=True)
+            if not (out / f"{name}.events.csv.gz").exists():
+                raise SystemExit(f"gate replay produced no event log; runner said:\n{r.stdout[-2000:]}\n{r.stderr[-2000:]}")
         sha = sha_events(out / f"{name}.events.csv.gz")
         checks["slotted_1p_off_vs_revision6_gate"] = {"replay": name, "events_sha256": sha,
                                                       "reference_sha256": GATE_SLOTTED_SHA,
@@ -182,7 +200,8 @@ def gate(only_struct: bool = False) -> dict:
             c = {"replay": nm, "exit_code": rec["exit_code"], "trace_identical": rec["fcd_check"].get("identical"),
                  "events_sha256": sha_events(o / f"{nm}.events.csv.gz")}
             if label == "ai_harp_off_vs_revision6_replay":
-                c["reference_sha256"] = sha_events(q6.RUNS / f"{nm}.events.csv.gz")
+                c["reference_sha256"] = sha_events(R7_GATE_RAW / f"{nm}.events.csv.gz")
+                c["reference_file"] = str((R7_GATE_RAW / f"{nm}.events.csv.gz").relative_to(PROJECT_ROOT))
                 c["pass"] = c["events_sha256"] == c["reference_sha256"]
             else:
                 c["pass"] = c["exit_code"] == 0 and bool(c["trace_identical"])
@@ -228,10 +247,7 @@ def main(argv=None) -> int:
     if a.mode in ("h5A", "h5B") and not (OUT / "app_gate_struct.json").exists():
         raise SystemExit("no results/revision8/veins/app_gate_struct.json: run `queue8 gate_struct` (needs plain_s0 trained)")
     app_sha = json.loads(GATE.read_text())["app_sha256"]
-    for sc, d in CELLS:
-        for s in TIER_A + TIER_B:                     # r6.txt needed for 200-219 (D12)
-            if not (q6.BUNDLES / f"{sc}_d{d:g}_s{s}" / "r6.txt").exists():
-                raise SystemExit(f"{sc} d={d:g} s={s}: no r6.txt (python -m experiments.revision6.veins.r6_bundle)")
+    need_bundles(TIER_A + TIER_B)                     # bundles and r6.txt for 200-219 (D12)
     if a.mode == "status":
         for m in ("h5B", "h5A", "expC", "expD"):
             ts = tasks(m)

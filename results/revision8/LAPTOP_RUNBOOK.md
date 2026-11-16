@@ -32,16 +32,31 @@ in the addendum), `results/revision8/veins_thresholds.json` (frozen Veins q*, m*
 **Gate 0:** `D:\aiharp-gpu\Scripts\python.exe -m pytest tests/test_structured.py tests/test_randomisation_flags.py tests/test_oracle_isolation.py tests/test_revision8_analysis.py -q`
 must pass (about 3 min). Output: none (console).
 
-## 1. Bundles for Tier B (about 10 min)
+## 1. Bundles (about 30–45 min; regenerate if `cache\veins` is gone)
 
-The revision-5 audit bundles for seeds 200–229 are in `cache\veins`; revision 6 added `r6.txt` only for 200–209.
+`cache\` is git-ignored, so a fresh clone has no bundles. Regenerate the ones revision 8 needs: rural d=20 and urban NLOS
+d=20, seeds 200–219 (seed 200 is also the gate replay). `export` regenerates the SUMO trace with SUMO 1.19.0 and refuses
+the bundle unless it matches the canonical trace; `r6_bundle` adds `r6.txt` and refuses if the custom run does not match
+the bundle. Two windows in parallel:
 
 ```powershell
-D:\aiharp-gpu\Scripts\python.exe -m experiments.revision6.veins.r6_bundle --seeds 210-219
+$env:SUMO_HOME = "D:\sumo\sumo-1.19.0"          # your SUMO 1.19.0 folder (the one revision 5-7 used)
+D:\aiharp-gpu\Scripts\python.exe -m experiments.revision5.veins.export rural_highway 20 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215 216 217 218 219
+```
+```powershell
+$env:SUMO_HOME = "D:\sumo\sumo-1.19.0"
+D:\aiharp-gpu\Scripts\python.exe -m experiments.revision5.veins.export urban_nlos 20 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215 216 217 218 219
+```
+then, once both finish:
+```powershell
+D:\aiharp-gpu\Scripts\python.exe -m experiments.revision6.veins.r6_bundle --seeds 200-219
+Remove-Item Env:SUMO_HOME
 ```
 
-Output: `cache\veins\<cell>_s{210..229}\r6.txt` (refuses to overwrite a differing file). `queue8` refuses to start if any
-`r6.txt` for 200–229 in rural d=20 / urban NLOS d=20 is missing.
+Output: `cache\veins\{rural_highway_d20,urban_nlos_d20}_s{200..219}\` with `bundle.json` and `r6.txt` ("no bundle" lines
+for rural d=2 / d=80 are expected and harmless). `queue8` refuses to start if any of them is missing. The gate (step 4)
+then shows whether the regenerated bundles reproduce the revision-6/7 replays byte for byte (its references are the
+committed logs in `results/revision7/veins/raw/r7_gate/`, sha256 `707d6533…` and `220dd1fd…`).
 
 ## 2. Build the revision-8 app (about 5 min)
 
