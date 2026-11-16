@@ -16,13 +16,15 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       runs: ${{ steps.p.outputs.runs }}
+      plain: ${{ steps.p.outputs.plain }}
+      rand: ${{ steps.p.outputs.rand }}
       need_sumo: ${{ steps.p.outputs.need_sumo }}
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 1}
       - id: p
         run: |
-          python3 -c "import json; d=json.load(open('ci/r9-train.json')); r=[f'{a}:{k}' for a in ('plain','rand') for k in d[a]]; print('runs='+json.dumps(r)); print('need_sumo='+('yes' if d['rand'] else 'no'))" >> $GITHUB_OUTPUT
+          python3 -c "import json; d=json.load(open('ci/r9-train.json')); r=[f'{a}:{k}' for a in ('plain','rand') for k in d[a]]; print('runs='+json.dumps(r)); print('plain='+json.dumps([x for x in r if x.startswith('plain')])); print('rand='+json.dumps([x for x in r if x.startswith('rand')])); print('need_sumo='+('yes' if d['rand'] else 'no'))" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
 
   sumo-traces:
@@ -45,15 +47,60 @@ jobs:
           python -m experiments.revision8.traces --backend sumo --jobs 4
           python -m experiments.revision8.traces --backend fallback --jobs 4
 
-  train:
-    needs: [plan, sumo-traces]
-    if: ${{ !cancelled() && (needs.sumo-traces.result == 'success' || needs.sumo-traces.result == 'skipped') }}
+  train-plain:
+    needs: plan
+    if: ${{ contains(needs.plan.outputs.runs, 'plain') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 350
     strategy:
       fail-fast: false
       matrix:
-        run: ${{ fromJSON(needs.plan.outputs.runs) }}
+        run: ${{ fromJSON(needs.plan.outputs.plain) }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-9, fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install numpy==1.26.4 scipy==1.13.1 pandas==2.3.3 pyyaml==6.0.3 cma==4.6.0 eclipse-sumo==1.19.0
+      - uses: actions/cache/restore@v4
+        with: {path: cache/traces, key: r8-traces-sumo-v1}
+      - name: train
+        run: |
+          ARM=${MATRIX_RUN%%:*}; K=${MATRIX_RUN##*:}
+          export SUMO_HOME=$(python -c "import sumo; print(sumo.SUMO_HOME)")
+          python -c "import sys, numpy, cma; print(sys.executable, numpy.__version__, cma.__version__)"
+          python -m experiments.revision8.traces --backend fallback --jobs 4
+          python -m agents.train_structured --arm $ARM --seed $K --workers 4 --miss-targets results/revision9/miss_targets.json
+          echo "RUN=${ARM}_s${K}" >> $GITHUB_ENV
+        env:
+          MATRIX_RUN: ${{ matrix.run }}
+      - name: push to r9-ci and verify
+        if: always()
+        run: |
+          git config user.name "r9-ci"; git config user.email "r9-ci@users.noreply.github.com"
+          D=results/revision9/train/$RUN
+          [ -n "$RUN" ] && [ -f "$D/theta.json" ] || { echo "no finished run to push"; exit 1; }
+          cp -r "$D" /tmp/run_out; rm -rf "$D"
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            git fetch -q origin r9-ci && git checkout -q -f -B r9-ci FETCH_HEAD || exit 1
+            rm -rf "$D"; mkdir -p "$(dirname "$D")"; cp -r /tmp/run_out "$D"
+            git add -f "$D"; git commit -q -m "r9-ci: $RUN" || true
+            if git push -q origin r9-ci; then
+              git fetch -q origin r9-ci && git show FETCH_HEAD:$D/theta.json | cmp - /tmp/run_out/theta.json && exit 0
+            fi
+            sleep $((RANDOM % 20 + 5))
+          done
+          exit 1
+
+  train-rand:
+    needs: [plan, sumo-traces]
+    if: ${{ !cancelled() && needs.sumo-traces.result == 'success' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        run: ${{ fromJSON(needs.plan.outputs.rand) }}
     steps:
       - uses: actions/checkout@v4
         with: {ref: revision-9, fetch-depth: 1}
