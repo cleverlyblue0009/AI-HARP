@@ -1,0 +1,58 @@
+[
+ {
+  "task": "revision8/struct_rand__SEL__headline__default__fallback__slice3of20",
+  "git_commit": "2d4424100ea5f77a97b5071ab6d6efd699019e76",
+  "python": "3.12.16",
+  "numpy": "1.26.4",
+  "interpreter": "x64",
+  "command": "python -m experiments.revision8.sweep_struct --arm rand --seedset SEL --slice 3/20 --jobs 4",
+  "config_hash": "d5a97c395306",
+  "config": {
+   "arm": "rand",
+   "runs": [
+    "rand_s0",
+    "rand_s1",
+    "rand_s2",
+    "rand_s3",
+    "rand_s4",
+    "rand_s5",
+    "rand_s6",
+    "rand_s7",
+    "rand_s8",
+    "rand_s9"
+   ],
+   "deltas": [
+    -2.0,
+    -1.0,
+    0.0,
+    1.0,
+    2.0,
+    3.0
+   ]
+  },
+  "seeds": [
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   408,
+   409,
+   410,
+   411,
+   412,
+   413,
+   414,
+   415,
+   416,
+   417,
+   418,
+   419
+  ],
+  "generated": "2026-11-16 10:02:46",
+  "n_runs": 226
+ }
+]
