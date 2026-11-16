@@ -1,0 +1,8 @@
+{
+ "replay": "rural_highway_d20_s200__slotted_1p_8__s200",
+ "exit_code": 0,
+ "events_sha256": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8",
+ "reference_sha256": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8",
+ "app_sha256": "6b032de0fc13894c1d84f710e4015faa8ca1ec6566b8039c53c7549722e646b9",
+ "pass": true
+}

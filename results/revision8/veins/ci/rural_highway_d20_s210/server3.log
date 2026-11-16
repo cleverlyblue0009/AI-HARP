@@ -1,0 +1,31 @@
+[env] /opt/hostedtoolcache/Python/3.12.16/x64/bin/python numpy 1.26.4
+[server8] replay rural_highway_d20_s210__struct_plain_s0_d-2__s210
+[server8] replay rural_highway_d20_s210__struct_plain_s0_d-2__s210 done: 425 decisions
+[server8] replay rural_highway_d20_s210__struct_plain_s1_d-2__s210
+[server8] replay rural_highway_d20_s210__struct_plain_s1_d-2__s210 done: 320 decisions
+[server8] replay rural_highway_d20_s210__struct_plain_s1_d1__s210
+[server8] replay rural_highway_d20_s210__struct_plain_s1_d1__s210 done: 319 decisions
+[server8] replay rural_highway_d20_s210__struct_plain_s2_d-1__s210
+[server8] replay rural_highway_d20_s210__struct_plain_s2_d-1__s210 done: 335 decisions
+[server8] replay rural_highway_d20_s210__struct_plain_s2_d3__s210
+[server8] replay rural_highway_d20_s210__struct_plain_s2_d3__s210 done: 314 decisions
+[server8] replay rural_highway_d20_s210__struct_plain_s3_d1__s210
+[server8] replay rural_highway_d20_s210__struct_plain_s3_d1__s210 done: 188 decisions
+[server8] replay rural_highway_d20_s210__struct_plain_s4_d-1__s210
+[server8] replay rural_highway_d20_s210__struct_plain_s4_d-1__s210 done: 127 decisions
+[server8] replay rural_highway_d20_s210__struct_plain_s4_d3__s210
+[server8] replay rural_highway_d20_s210__struct_plain_s4_d3__s210 done: 128 decisions
+[server8] replay rural_highway_d20_s210__struct_rand_s0_d1__s210
+[server8] replay rural_highway_d20_s210__struct_rand_s0_d1__s210 done: 441 decisions
+[server8] replay rural_highway_d20_s210__struct_rand_s1_d-2__s210
+[server8] replay rural_highway_d20_s210__struct_rand_s1_d-2__s210 done: 450 decisions
+[server8] replay rural_highway_d20_s210__struct_rand_s1_d2__s210
+[server8] replay rural_highway_d20_s210__struct_rand_s1_d2__s210 done: 198 decisions
+[server8] replay rural_highway_d20_s210__struct_rand_s2_d-2__s210
+[server8] replay rural_highway_d20_s210__struct_rand_s2_d-2__s210 done: 443 decisions
+[server8] replay rural_highway_d20_s210__struct_rand_s3_d-2__s210
+[server8] replay rural_highway_d20_s210__struct_rand_s3_d-2__s210 done: 444 decisions
+[server8] replay rural_highway_d20_s210__struct_rand_s3_d3__s210
+[server8] replay rural_highway_d20_s210__struct_rand_s3_d3__s210 done: 349 decisions
+[server8] replay rural_highway_d20_s210__struct_rand_s4_d1__s210
+[server8] replay rural_highway_d20_s210__struct_rand_s4_d1__s210 done: 447 decisions

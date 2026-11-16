@@ -1,0 +1,31 @@
+[env] /opt/hostedtoolcache/Python/3.12.16/x64/bin/python numpy 1.26.4
+[server8] replay urban_nlos_d20_s210__struct_plain_s0_d0__s210
+[server8] replay urban_nlos_d20_s210__struct_plain_s0_d0__s210 done: 266 decisions
+[server8] replay urban_nlos_d20_s210__struct_plain_s0_d2__s210
+[server8] replay urban_nlos_d20_s210__struct_plain_s0_d2__s210 done: 309 decisions
+[server8] replay urban_nlos_d20_s210__struct_plain_s1_d0__s210
+[server8] replay urban_nlos_d20_s210__struct_plain_s1_d0__s210 done: 495 decisions
+[server8] replay urban_nlos_d20_s210__struct_plain_s2_d-2__s210
+[server8] replay urban_nlos_d20_s210__struct_plain_s2_d-2__s210 done: 483 decisions
+[server8] replay urban_nlos_d20_s210__struct_plain_s2_d2__s210
+[server8] replay urban_nlos_d20_s210__struct_plain_s2_d2__s210 done: 478 decisions
+[server8] replay urban_nlos_d20_s210__struct_plain_s3_d0__s210
+[server8] replay urban_nlos_d20_s210__struct_plain_s3_d0__s210 done: 54 decisions
+[server8] replay urban_nlos_d20_s210__struct_plain_s4_d-2__s210
+[server8] replay urban_nlos_d20_s210__struct_plain_s4_d-2__s210 done: 347 decisions
+[server8] replay urban_nlos_d20_s210__struct_rand_s0_d-2__s210
+[server8] replay urban_nlos_d20_s210__struct_rand_s0_d-2__s210 done: 527 decisions
+[server8] replay urban_nlos_d20_s210__struct_rand_s0_d2__s210
+[server8] replay urban_nlos_d20_s210__struct_rand_s0_d2__s210 done: 511 decisions
+[server8] replay urban_nlos_d20_s210__struct_rand_s1_d-1__s210
+[server8] replay urban_nlos_d20_s210__struct_rand_s1_d-1__s210 done: 550 decisions
+[server8] replay urban_nlos_d20_s210__struct_rand_s2_d0__s210
+[server8] replay urban_nlos_d20_s210__struct_rand_s2_d0__s210 done: 504 decisions
+[server8] replay urban_nlos_d20_s210__struct_rand_s3_d0__s210
+[server8] replay urban_nlos_d20_s210__struct_rand_s3_d0__s210 done: 502 decisions
+[server8] replay urban_nlos_d20_s210__struct_rand_s3_d3__s210
+[server8] replay urban_nlos_d20_s210__struct_rand_s3_d3__s210 done: 510 decisions
+[server8] replay urban_nlos_d20_s210__struct_rand_s4_d0__s210
+[server8] replay urban_nlos_d20_s210__struct_rand_s4_d0__s210 done: 543 decisions
+[server8] replay urban_nlos_d20_s210__struct_rand_s4_d3__s210
+[server8] replay urban_nlos_d20_s210__struct_rand_s4_d3__s210 done: 519 decisions

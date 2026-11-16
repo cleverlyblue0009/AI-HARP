@@ -1,0 +1,27 @@
+{
+ "provenance": {
+  "task": "revision8/analysis/holm.json",
+  "git_commit": "51bc239a6234bbc2bab07257b4ec731bfc2e079d",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision8.analysis.h5 holm",
+  "config_hash": "d0b307e9f69e",
+  "config": {
+   "mode": "holm"
+  },
+  "seeds": null,
+  "generated": "2026-11-16 11:26:30"
+ },
+ "raw": {
+  "H4": 0.052792498980839785,
+  "H5": 1.0
+ },
+ "holm_adjusted": {
+  "H4": 0.10558499796167957,
+  "H5": 1.0
+ },
+ "alpha": 0.05,
+ "H4_supported": false,
+ "H5_supported": false
+}

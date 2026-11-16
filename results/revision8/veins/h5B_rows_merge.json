@@ -1,0 +1,29 @@
+{
+ "provenance": {
+  "task": "revision8/veins/assemble_ci",
+  "git_commit": "51bc239a6234bbc2bab07257b4ec731bfc2e079d",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision8.veins.assemble_ci",
+  "config_hash": "3f4906116411",
+  "config": {
+   "cells": [
+    "rural_highway_d20",
+    "urban_nlos_d20"
+   ],
+   "seeds": [
+    210,
+    219
+   ]
+  },
+  "seeds": null,
+  "generated": "2026-11-16 11:26:28"
+ },
+ "shards_accepted": 20,
+ "shards_rejected": {},
+ "rows": 1200,
+ "runner_app_sha256": [
+  "6b032de0fc13894c1d84f710e4015faa8ca1ec6566b8039c53c7549722e646b9"
+ ]
+}
