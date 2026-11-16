@@ -814,7 +814,7 @@
   },
   {
    "output": "results/revision8/veins/expC_rows.jsonl",
-   "exists": false,
+   "exists": true,
    "script": "experiments/revision8/veins/score8.py",
    "command": "python -m experiments.revision8.veins.score8 expC",
    "commit": null,
@@ -823,11 +823,11 @@
    "sources": [
     "laptop"
    ],
-   "sha256": null
+   "sha256": "5c59d5963b2e994d6c3915f6365108da88298a7c2d69a16ff093c46bf461cf4a"
   },
   {
    "output": "results/revision8/veins/expD_rows.jsonl",
-   "exists": false,
+   "exists": true,
    "script": "experiments/revision8/veins/score8.py",
    "command": "python -m experiments.revision8.veins.score8 expD",
    "commit": null,
@@ -836,7 +836,7 @@
    "sources": [
     "laptop"
    ],
-   "sha256": null
+   "sha256": "10318201315422c6f37e2db305ef3aaf6a6a7f00f396355ea828dbbeba3b0860"
   },
   {
    "output": "results/revision8/analysis/h5.json",
@@ -857,14 +857,14 @@
    "exists": true,
    "script": "experiments/revision8/analysis/h5.py",
    "command": "python -m experiments.revision8.analysis.h5 expcd",
-   "commit": "6bedf1d97a1e4bf679bc03b979408e7778eb8855",
+   "commit": "313641cf2d742c7769b65e316f3449eb5f92f399",
    "config_hash": "f0194f0c2c15",
-   "generated": "2026-11-16 11:32:47",
+   "generated": "2026-11-16 12:41:16",
    "sources": [
     "results/revision8/veins/exp{C,D}_rows.jsonl",
     "results/revision8/veins_thresholds.json"
    ],
-   "sha256": "5864c896d0956ea9b217d4869eb0936147db2d1e0d2b43d8849f8bc77a717bee"
+   "sha256": "b3f1e2ce9fd9c89e4b9061c34396ff726d91a991a3dcc783a5a72950e0c0ae89"
   },
   {
    "output": "results/revision8/analysis/holm.json",

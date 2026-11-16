@@ -2,7 +2,7 @@
 
 Branch `revision-8` (from `origin/revision-7` at a6dea21). **Addendum push commit: `53eefc3`**
 (`results/revision8/ADDENDUM.md`; hash recorded in its header by a0d94fb, which changes nothing else). Deviations:
-`results/revision8/DEVIATIONS.md` (D12–D14). Every number below is read from the committed file named next to it.
+`results/revision8/DEVIATIONS.md` (D12–D15). Every number below is read from the committed file named next to it.
 
 ## Answers
 
@@ -10,7 +10,8 @@ Branch `revision-8` (from `origin/revision-7` at a6dea21). **Addendum push commi
 |---|---|---|
 | **H4** STRUCT-plain vs the revision-5 adaptive classical comparator (custom simulator, Tier B 210–229) | **not supported**: (i) qualifying cells 3 vs 4 fails; (ii) one-sided 95 % upper bound of T +0.104 ≥ +0.10 fails; raw p 0.053, Holm 0.106 | `analysis/h4.json`, `analysis/holm.json` |
 | **H5** STRUCT-rand survives Veins where STRUCT-plain does not (Tier B 210–219, D12) | **not supported**: rule met in neither cell (rural d=20: rand 0/5, plain 0/5; urban NLOS d=20: rand 1/5, plain 0/5); p_H5 1.0, Holm 1.0 | `analysis/h5.json`, `analysis/holm.json` |
-| Experiments C, D | **not run** (D13: the five AI-HARP checkpoints are lost) | `DEVIATIONS.md` D13 |
+| Experiment C: geometric neighbour table (AI-HARP, Veins rural d=20, Tier A) | **does not explain the failure**: qualification 0/5 (rule: ≥ 3/5) | `analysis/exp_cd.json` |
+| Experiment D: one-epoch coupling lag removed (same) | **does not explain the failure**: 0/5 | `analysis/exp_cd.json` |
 
 ## 1. What was implemented
 
@@ -145,11 +146,33 @@ mean RWCR above q* in Veins (best 0.897–0.933 per seed; STRUCT-plain 0.632–0
 actionable deadline-miss rate is 0.54–0.85 in every setting, above m* = 0.404, so no matched cost is finite: randomised
 training restored reach in Veins, not timeliness. Per-setting RWCR, cost and miss: `h5.json` `per_run`.
 
+## 6b. Experiments C and D (`results/revision8/analysis/exp_cd.json`; D12 scope, D15)
+
+Runner shards (10, seeds 200–209, rural d=20): all accepted (`veins/exp{C,D}_rows_merge.json`): gate check 1
+(classical, `707d6533…`) and **gate check 2 (AI-HARP ref_s0, bias +1, every new option off, byte-identical to the
+revision-6 replay `220dd1fd…`) passed on every runner**; checkpoints restored from `results/revision1/checkpoints/` with
+hashes equal to `checkpoint_shas.json`; 300 + 300 replays accepted; every logged decision re-sent offline (C 773,544,
+D 759,634 requests; 0 mismatches). Raw OMNeT++ outputs (168 MB) in `veins/ci_cd/*/raw/`. Thresholds: the frozen Veins
+q* 0.879, m* 0.404 (Tier A, `veins_thresholds.json`).
+
+| Experiment | Rural d=20 qualifying (ref_s0–s4) | Best mean RWCR per seed | Verdict |
+|---|---|---|---|
+| C, geometric neighbour table | 0 / 5 | 0.817, 0.862, 0.864, 0.864, 0.864 | does not explain the failure |
+| D, coupling lag removed | 0 / 5 | 0.809, 0.844, 0.864, 0.864, 0.864 | does not explain the failure |
+
+In both, AI-HARP's reach stays at or below 0.864 (flooding's value in this cell, as in revisions 6 and 7) and below
+q* = 0.879, so no bias setting can qualify. As pre-registered, "does not explain it" does not show that the neighbour table
+or the lag plays no part.
+
 ## 7. Deviations (`results/revision8/DEVIATIONS.md`)
 
 * **D12** (2026-11-16T05:31Z, author): Veins scope cut to fit one day — H5 Tier B seeds 210–219 (not 210–229), no H5
   Tier A, Experiments C/D rural d=20 only. Before any result.
-* **D13** (author): AI-HARP checkpoints lost on the laptop → Experiments C and D and gate check 2 not run. Before any result.
+* **D13** (author): AI-HARP checkpoints believed lost → Experiments C and D and gate check 2 not run. Before any result.
+  **Wrong premise** — see D15.
+* **D15** (author): D13 reversed; the checkpoints are committed in `results/revision1/checkpoints/` (hashes match).
+  Experiments C and D and gate check 2 run on runners. Written after H4 and H5 had been seen (stated in D15); C and D are
+  descriptive and outside Holm.
 * **D14** (author): compute on GitHub Actions — training (one run per runner), custom evaluation (20 slices), Veins H5
   (20 shards, each gated). Before any evaluation result.
 * **Not deviations, disclosed:** the training order; the worker trace-cache bound (memory only); plain_s7 trained twice
@@ -158,10 +181,9 @@ training restored reach in Veins, not timeliness. Per-setting RWCR, cost and mis
 
 ## 8. What remains (none of it needed for H4/H5)
 
-1. Experiments C and D: need the five AI-HARP checkpoints (lost, D13); retraining them bit-identically is the only route.
-2. H5 Tier A (200–209; 1,200 replays, descriptive) and H5 Tier B seeds 220–229: dropped by D12; `ci/r8-veins.json`
+1. H5 Tier A (200–209; 1,200 replays, descriptive) and H5 Tier B seeds 220–229: dropped by D12; `ci/r8-veins.json`
    with those seeds would run them on runners in about 1 h each.
-3. Clean-clone reproduction check on the laptop. Done here (cloud, working tree): `AIHARP_PY=/root/r8env/bin/python ./reproduce_revision8.sh`
+2. Clean-clone reproduction check on the laptop. Done here (cloud, working tree): `AIHARP_PY=/root/r8env/bin/python ./reproduce_revision8.sh`
    exit 0; `h4.json`, `h4_rand_descriptive.json`, `h5.json`, `holm.json` regenerated identical apart from their provenance
    stamps; `exp_cd.json` records C and D as not run.
 

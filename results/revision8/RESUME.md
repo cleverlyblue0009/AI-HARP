@@ -9,10 +9,12 @@ Everything below is pushed to `origin/revision-8`. Long jobs run on GitHub Actio
 | 20 STRUCT training runs | done | `train/<run>/` |
 | H4 (custom simulator) | done: not supported | `analysis/h4.json` |
 | H5 (Veins, Tier B 210–219) | done: not supported | `analysis/h5.json`, `analysis/holm.json` |
-| Status report | done except Experiments C/D | `REVISION8_STATUS.md` |
-| **Experiments C and D (D15)** | **running** on GitHub, workflow `r8-cd` (run 43860150185, 10 shards, seeds 200–209) | outputs land in `results/revision8/veins/ci_cd/rural_highway_d20_s<seed>/` on branch `r8-ci` |
+| Status report | done | `REVISION8_STATUS.md` |
+| Experiments C and D (D15) | done: neither explains the failure (0/5 each) | `analysis/exp_cd.json` |
 
-## Remaining steps (in order)
+## Remaining steps
+
+**None: revision 8 is complete** (2026-11-16 ~12:45 UTC). The steps below are kept as the record of how C/D were finished.
 
 1. Check the run: https://github.com/cleverlyblue0009/AI-HARP/actions (workflow `r8-cd`). If it failed, read the failing
    shard's log. If **gate check 2** failed (`gate.json` → `check2.pass: false`), D15 says those runners contribute nothing

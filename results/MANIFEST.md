@@ -90,8 +90,8 @@ Pre-registration: `results/revision8/ADDENDUM.md`. Outputs marked *(not yet)* ar
 | `results/revision8/veins/app_gate.json` *(not yet)* | `python -m experiments.revision8.veins.queue8 gate` | – | – | `laptop` |
 | `results/revision8/veins/h5B_rows.jsonl` | `python -m experiments.revision8.veins.score8 h5B` | – | – | `laptop` |
 | `results/revision8/veins/h5A_rows.jsonl` *(not yet)* | `python -m experiments.revision8.veins.score8 h5A` | – | – | `laptop` |
-| `results/revision8/veins/expC_rows.jsonl` *(not yet)* | `python -m experiments.revision8.veins.score8 expC` | – | – | `laptop` |
-| `results/revision8/veins/expD_rows.jsonl` *(not yet)* | `python -m experiments.revision8.veins.score8 expD` | – | – | `laptop` |
+| `results/revision8/veins/expC_rows.jsonl` | `python -m experiments.revision8.veins.score8 expC` | – | – | `laptop` |
+| `results/revision8/veins/expD_rows.jsonl` | `python -m experiments.revision8.veins.score8 expD` | – | – | `laptop` |
 | `results/revision8/analysis/h5.json` | `python -m experiments.revision8.analysis.h5 h5` | 51bc239a6234 | 5d7035428b84 | `results/revision8/veins/h5{A,B}_rows.jsonl`<br>`results/revision8/veins_thresholds.json` |
-| `results/revision8/analysis/exp_cd.json` | `python -m experiments.revision8.analysis.h5 expcd` | 6bedf1d97a1e | f0194f0c2c15 | `results/revision8/veins/exp{C,D}_rows.jsonl`<br>`results/revision8/veins_thresholds.json` |
+| `results/revision8/analysis/exp_cd.json` | `python -m experiments.revision8.analysis.h5 expcd` | 313641cf2d74 | f0194f0c2c15 | `results/revision8/veins/exp{C,D}_rows.jsonl`<br>`results/revision8/veins_thresholds.json` |
 | `results/revision8/analysis/holm.json` | `python -m experiments.revision8.analysis.h5 holm` | 51bc239a6234 | d0b307e9f69e | `results/revision8/analysis/h4.json`<br>`results/revision8/analysis/h5.json` |

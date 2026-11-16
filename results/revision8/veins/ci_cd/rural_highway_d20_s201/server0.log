@@ -1,0 +1,50 @@
+[env] /opt/hostedtoolcache/Python/3.12.16/x64/bin/python numpy 1.26.4
+11:48:29 INFO    aiharp.mobility.generate +------------------------------------------------------------+
+11:48:29 INFO    aiharp.mobility.generate | MOBILITY BACKEND: SUMO                                     |
+11:48:29 INFO    aiharp.mobility.generate +------------------------------------------------------------+
+11:48:29 INFO    aiharp.mobility.generate | binary      : /home/runner/veins-r5/sumo-1.19.0/bin/sumo   |
+11:48:29 INFO    aiharp.mobility.generate | SUMO_HOME   : /home/runner/veins-r5/sumo-1.19.0            |
+11:48:29 INFO    aiharp.mobility.generate | car-following: Krauss (SUMO default)                       |
+11:48:29 INFO    aiharp.mobility.generate +------------------------------------------------------------+
+11:48:29 INFO    aiharp.mobility.generate Trace cache HIT  rural_highway_d20_s200_cdc58ce94268.npz | dt_s=0.1 steps=1199 duration_s=119.9 vehicle_slots=524 concurrent_mean=424.4 concurrent_min=422 concurrent_max=428 speed_mean_ms=19.25 speed_min_ms=15.41 speed_max_ms=27.78 truck_share=0.218
+[server8] replay rural_highway_d20_s200__ai_harp_ref_s0_b1__s200
+[server8] replay rural_highway_d20_s200__ai_harp_ref_s0_b1__s200 done: 2223 decisions
+[env] /opt/hostedtoolcache/Python/3.12.16/x64/bin/python numpy 1.26.4
+11:49:50 INFO    aiharp.mobility.generate +------------------------------------------------------------+
+11:49:50 INFO    aiharp.mobility.generate | MOBILITY BACKEND: SUMO                                     |
+11:49:50 INFO    aiharp.mobility.generate +------------------------------------------------------------+
+11:49:50 INFO    aiharp.mobility.generate | binary      : /home/runner/veins-r5/sumo-1.19.0/bin/sumo   |
+11:49:50 INFO    aiharp.mobility.generate | SUMO_HOME   : /home/runner/veins-r5/sumo-1.19.0            |
+11:49:50 INFO    aiharp.mobility.generate | car-following: Krauss (SUMO default)                       |
+11:49:50 INFO    aiharp.mobility.generate +------------------------------------------------------------+
+11:49:50 INFO    aiharp.mobility.generate Trace cache HIT  rural_highway_d20_s201_ed57d0dba490.npz | dt_s=0.1 steps=1199 duration_s=119.9 vehicle_slots=524 concurrent_mean=424.5 concurrent_min=422 concurrent_max=428 speed_mean_ms=19.48 speed_min_ms=15.44 speed_max_ms=27.78 truck_share=0.218
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s0_b-1__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s0_b-1__s201 done: 2442 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s1_b-2__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s1_b-2__s201 done: 2870 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s1_b3__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s1_b3__s201 done: 1750 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s2_b1__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s2_b1__s201 done: 2358 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s3_b-2__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s3_b-2__s201 done: 3162 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s3_b3__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s3_b3__s201 done: 2200 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s4_b1__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s4_b1__s201 done: 2733 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s0_b-2__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s0_b-2__s201 done: 2155 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s0_b2__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s0_b2__s201 done: 1914 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s1_b1__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s1_b1__s201 done: 1839 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s2_b-1__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s2_b-1__s201 done: 2735 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s2_b3__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s2_b3__s201 done: 1828 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s3_b1__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s3_b1__s201 done: 2603 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s4_b-1__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s4_b-1__s201 done: 3148 decisions
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s4_b3__s201
+[server8] replay rural_highway_d20_s201__ai_harp_ref_s4_b3__s201 done: 2083 decisions

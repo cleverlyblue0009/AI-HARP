@@ -1,0 +1,17 @@
+{
+ "provenance": {
+  "task": "revision8/veins/assemble_cd/expD",
+  "git_commit": "313641cf2d742c7769b65e316f3449eb5f92f399",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision8.veins.assemble_cd",
+  "config_hash": "e10808d43975",
+  "config": {},
+  "seeds": null,
+  "generated": "2026-11-16 12:41:16"
+ },
+ "shards_accepted": 10,
+ "shards_rejected": {},
+ "rows": 300
+}
