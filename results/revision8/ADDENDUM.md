@@ -1,7 +1,7 @@
 # Revision 8 — pre-registration addendum: one strong structured learned policy, and audit-informed randomisation
 
 Written 2026-11-16 on branch `revision-8` (from `origin/revision-7` at a6dea21), **before any revision-8 training or
-evaluation run**. Push commit of this file: `PENDING` (filled in by the next commit, which changes nothing else).
+evaluation run**. Push commit of this file: `53eefc3`.
 
 Registered analyses of revisions 5–7 stay as they are. No revision-5/6/7 result, threshold, checkpoint or analysis
 file is changed. Interpreters: cloud `/root/r8env` (Python 3.12, NumPy 1.26.4), laptop `D:\aiharp-gpu\Scripts\python.exe`
