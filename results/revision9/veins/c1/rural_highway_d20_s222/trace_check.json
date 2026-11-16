@@ -1,0 +1,366 @@
+{
+ "logs": [
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s0_d-1__s222.jsonl",
+   "requests": 340,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s0_d-2__s222.jsonl",
+   "requests": 432,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s0_d0__s222.jsonl",
+   "requests": 163,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s0_d1__s222.jsonl",
+   "requests": 338,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s0_d2__s222.jsonl",
+   "requests": 123,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s0_d3__s222.jsonl",
+   "requests": 121,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s1_d-1__s222.jsonl",
+   "requests": 426,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s1_d-2__s222.jsonl",
+   "requests": 339,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s1_d0__s222.jsonl",
+   "requests": 124,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s1_d1__s222.jsonl",
+   "requests": 123,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s1_d2__s222.jsonl",
+   "requests": 123,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s1_d3__s222.jsonl",
+   "requests": 143,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s2_d-1__s222.jsonl",
+   "requests": 297,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s2_d-2__s222.jsonl",
+   "requests": 383,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s2_d0__s222.jsonl",
+   "requests": 208,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s2_d1__s222.jsonl",
+   "requests": 179,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s2_d2__s222.jsonl",
+   "requests": 330,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s2_d3__s222.jsonl",
+   "requests": 196,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s3_d-1__s222.jsonl",
+   "requests": 425,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s3_d-2__s222.jsonl",
+   "requests": 211,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s3_d0__s222.jsonl",
+   "requests": 427,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s3_d1__s222.jsonl",
+   "requests": 169,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s3_d2__s222.jsonl",
+   "requests": 125,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s3_d3__s222.jsonl",
+   "requests": 66,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s4_d-1__s222.jsonl",
+   "requests": 117,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s4_d-2__s222.jsonl",
+   "requests": 119,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s4_d0__s222.jsonl",
+   "requests": 207,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s4_d1__s222.jsonl",
+   "requests": 118,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s4_d2__s222.jsonl",
+   "requests": 120,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_plain_s4_d3__s222.jsonl",
+   "requests": 119,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s0_d-1__s222.jsonl",
+   "requests": 443,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s0_d-2__s222.jsonl",
+   "requests": 443,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s0_d0__s222.jsonl",
+   "requests": 454,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s0_d1__s222.jsonl",
+   "requests": 451,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s0_d2__s222.jsonl",
+   "requests": 442,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s0_d3__s222.jsonl",
+   "requests": 437,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s1_d-1__s222.jsonl",
+   "requests": 438,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s1_d-2__s222.jsonl",
+   "requests": 438,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s1_d0__s222.jsonl",
+   "requests": 426,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s1_d1__s222.jsonl",
+   "requests": 447,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s1_d2__s222.jsonl",
+   "requests": 437,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s1_d3__s222.jsonl",
+   "requests": 430,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s2_d-1__s222.jsonl",
+   "requests": 437,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s2_d-2__s222.jsonl",
+   "requests": 437,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s2_d0__s222.jsonl",
+   "requests": 441,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s2_d1__s222.jsonl",
+   "requests": 442,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s2_d2__s222.jsonl",
+   "requests": 426,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s2_d3__s222.jsonl",
+   "requests": 208,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s3_d-1__s222.jsonl",
+   "requests": 408,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s3_d-2__s222.jsonl",
+   "requests": 462,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s3_d0__s222.jsonl",
+   "requests": 446,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s3_d1__s222.jsonl",
+   "requests": 444,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s3_d2__s222.jsonl",
+   "requests": 433,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s3_d3__s222.jsonl",
+   "requests": 159,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s4_d-1__s222.jsonl",
+   "requests": 427,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s4_d-2__s222.jsonl",
+   "requests": 427,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s4_d0__s222.jsonl",
+   "requests": 427,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s4_d1__s222.jsonl",
+   "requests": 427,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s4_d2__s222.jsonl",
+   "requests": 435,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "rural_highway_d20_s222__struct_rand_s4_d3__s222.jsonl",
+   "requests": 437,
+   "mismatches": 0,
+   "pass": true
+  }
+ ],
+ "all_pass": true,
+ "n": 60
+}
