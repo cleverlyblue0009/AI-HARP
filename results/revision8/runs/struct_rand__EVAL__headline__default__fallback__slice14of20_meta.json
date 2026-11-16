@@ -1,0 +1,68 @@
+[
+ {
+  "task": "revision8/struct_rand__EVAL__headline__default__fallback__slice14of20",
+  "git_commit": "2d4424100ea5f77a97b5071ab6d6efd699019e76",
+  "python": "3.12.16",
+  "numpy": "1.26.4",
+  "interpreter": "x64",
+  "command": "python -m experiments.revision8.sweep_struct --arm rand --seedset EVAL --slice 14/20 --jobs 4",
+  "config_hash": "d5a97c395306",
+  "config": {
+   "arm": "rand",
+   "runs": [
+    "rand_s0",
+    "rand_s1",
+    "rand_s2",
+    "rand_s3",
+    "rand_s4",
+    "rand_s5",
+    "rand_s6",
+    "rand_s7",
+    "rand_s8",
+    "rand_s9"
+   ],
+   "deltas": [
+    -2.0,
+    -1.0,
+    0.0,
+    1.0,
+    2.0,
+    3.0
+   ]
+  },
+  "seeds": [
+   200,
+   201,
+   202,
+   203,
+   204,
+   205,
+   206,
+   207,
+   208,
+   209,
+   210,
+   211,
+   212,
+   213,
+   214,
+   215,
+   216,
+   217,
+   218,
+   219,
+   220,
+   221,
+   222,
+   223,
+   224,
+   225,
+   226,
+   227,
+   228,
+   229
+  ],
+  "generated": "2026-11-16 10:08:42",
+  "n_runs": 349
+ }
+]
