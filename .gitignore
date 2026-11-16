@@ -86,3 +86,4 @@ logs/revision1/
 
 # revision 8: decision-server logs of the runner shards stay on branch r8-ci (revision-7 rule: not committed)
 results/revision8/veins/ci/*/bridge_logs/
+results/revision8/veins/ci_cd/*/bridge_logs/

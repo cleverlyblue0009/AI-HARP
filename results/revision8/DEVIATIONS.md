@@ -66,3 +66,25 @@ d=20, seed 200) must be byte-identical to `707d6533…`; a runner that fails it 
 identical SUMO trace, gated binary of that runner).
 
 **Seen:** as for D13.
+
+## D15 — D13 reversed: the AI-HARP checkpoints were never lost; Experiments C and D run on runners (written 2026-11-16T11:39Z, author decision)
+
+**What was wrong in D13:** the five checkpoints are committed in the repository as
+`results/revision1/checkpoints/ref_s{0..4}_ckpt_final.pt`; their `checkpoint_sha` values (b589be512827fcbb, 4867ffabbdf23aac,
+0b5fa61c06396e28, 2c2434ab9ed05da2, 3cb2a44fef5bde6b) equal `results/revision5/checkpoint_shas.json` exactly. D13 was
+written after a search of the laptop's git-ignored `checkpoints/` folder only; the assistant did not search the
+repository first.
+
+**Changed to:** Experiments C and D and gate check 2 are run as registered under D12 (rural d=20 only, Tier A seeds
+200–209, AI-HARP ref_s0–ref_s4, biases −2..3, τ = 0.5), on GitHub runners as under D14: the committed checkpoint files
+are copied to the paths the code reads (`experiments/revision5/sweep.py` `checkpoint_for`), and each file's hash is
+checked against `checkpoint_shas.json` before any replay. Every runner first runs gate check 1 (classical replay
+byte-identical to `707d6533…`) and gate check 2 (AI-HARP ref_s0, bias +1, every new option off, byte-identical to the
+revision-6/7 replay `220dd1fd…`, committed in `results/revision7/veins/raw/r7_gate/`). If check 2 fails on a runner
+(for example through last-bit differences of torch on Linux vs the Windows decision server that produced the reference),
+that runner contributes no replay and the experiments move to the laptop as in LAPTOP_RUNBOOK.md. Decision rule unchanged
+("explains the failure" iff rural d=20 qualification rises from 0/5 to ≥ 3/5).
+
+**Seen when this was decided:** every revision-8 result: H4 (not supported), H5 (not supported), the STRUCT-rand
+descriptive results and the post-hoc observation in REVISION8_STATUS.md §6. Experiments C and D concern only the existing
+AI-HARP checkpoints and are descriptive and outside the Holm family; none of their replays exists.

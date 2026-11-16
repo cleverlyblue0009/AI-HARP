@@ -1,0 +1,75 @@
+# Revision 8 (DEVIATIONS.md D15): Experiments C and D on GitHub-hosted runners, one shard per Tier A seed (200-209),
+# rural d=20, AI-HARP ref_s0-4 x biases -2..3: 30 replays with the geometric neighbour table (C) and 30 with the
+# one-epoch coupling lag removed (D). Every shard first restores the committed checkpoints (hash-checked) and runs gate
+# checks 1 (classical, 707d6533...) and 2 (AI-HARP, every new option off, 220dd1fd...). Outputs pushed to r8-ci.
+name: r8-cd
+on:
+  workflow_dispatch:
+  push:
+    branches: [revision-8]
+    paths: ['ci/r8-cd.json']
+permissions:
+  contents: write
+env:
+  PYTHONUNBUFFERED: "1"
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      seeds: ${{ steps.p.outputs.seeds }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - id: p
+        run: python3 -c "import json; print('seeds='+json.dumps(json.load(open('ci/r8-cd.json'))['seeds']))" >> $GITHUB_OUTPUT
+
+  shard:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: ${{ fromJSON(needs.plan.outputs.seeds) }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-8, fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/cache/restore@v4
+        with: {path: ~/veins-r5, key: r8-veins-toolchain-v1, fail-on-cache-miss: true}
+      - name: runtime deps and Python (ENVIRONMENT.md pins)
+        run: |
+          sudo bash experiments/revision5/veins/install_wsl.sh deps
+          pip install numpy==1.26.4
+          pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
+          pip install torch-geometric==2.8.0 scipy==1.13.1 pandas==2.3.3 pyyaml==6.0.3 cma==4.6.0 matplotlib
+          pip install --force-reinstall --no-deps numpy==1.26.4
+          python -c "import numpy, torch, torch_geometric; print(numpy.__version__, torch.__version__, torch_geometric.__version__); assert numpy.__version__ == '1.26.4'"
+      - name: build the revision-8 app
+        run: |
+          tr -d '\r' < experiments/revision5/veins/env.sh > ~/veins-r5/env.sh
+          AIHARP_SRC=$GITHUB_WORKSPACE bash experiments/revision8/veins/build_app.sh
+      - name: checkpoints, gate, replays, trace check, scoring
+        run: |
+          source ~/veins-r5/env.sh
+          export PATH=$pythonLocation/bin:$PATH
+          python -m experiments.revision8.veins.ci_veins cd --seed ${{ matrix.seed }} --workers 4
+      - name: push shard outputs to r8-ci
+        if: always()
+        run: |
+          git config user.name "r8-ci"; git config user.email "r8-ci@users.noreply.github.com"
+          D=results/revision8/veins/ci_cd/rural_highway_d20_s${{ matrix.seed }}
+          [ -d "$D" ] || exit 0
+          rm -rf "$D"/worker*.json
+          cp -r "$D" /tmp/shard_out; rm -rf "$D"
+          git checkout -q -- results/ 2>/dev/null || true
+          for k in 1 2 3 4 5 6 7 8 9 10; do
+            if git fetch -q origin r8-ci 2>/dev/null; then git checkout -q -f -B r8-ci FETCH_HEAD; else git checkout -q -f -B r8-ci; fi
+            rm -rf "$D"; mkdir -p "$(dirname "$D")"; cp -r /tmp/shard_out "$D"
+            git add -f "$D"
+            git commit -q -m "r8-ci: Experiments C/D shard s${{ matrix.seed }}" || true
+            git push -q origin r8-ci && exit 0
+            sleep $((RANDOM % 30 + 5))
+          done
+          exit 1
