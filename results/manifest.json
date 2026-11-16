@@ -955,7 +955,7 @@
   },
   {
    "output": "results/revision9/veins/c1_rows.jsonl",
-   "exists": false,
+   "exists": true,
    "script": "experiments/revision9/analysis/veins9.py",
    "command": "python -m experiments.revision9.analysis.veins9 assemble c1",
    "commit": null,
@@ -964,7 +964,7 @@
    "sources": [
     "results/revision9/veins/c1/<cell>_s<seed>/ (20 runner shards, ci9.py c1)"
    ],
-   "sha256": null
+   "sha256": "28d12c7a65629d6295ae724804168f14d26f80379cc511111e75bdb81e7bc7d2"
   },
   {
    "output": "results/revision9/analysis/h6.json",
@@ -982,33 +982,33 @@
   },
   {
    "output": "results/revision9/analysis/c1.json",
-   "exists": false,
+   "exists": true,
    "script": "experiments/revision9/analysis/veins9.py",
-   "command": null,
-   "commit": null,
-   "config_hash": null,
-   "generated": null,
+   "command": "python -m experiments.revision9.analysis.veins9 c1",
+   "commit": "90bb8430ff7f4d7ac5e1e0d036ac555e87782cb1",
+   "config_hash": "e10808d43975",
+   "generated": "2026-11-16 19:50:12",
    "sources": [
     "results/revision9/veins/c1_rows.jsonl",
     "results/revision8/veins/h5B_rows.jsonl",
     "results/revision8/veins_thresholds.json"
    ],
-   "sha256": null
+   "sha256": "37c84f24b84bdec9191f23a31e49931e25864064545f4f299617e3978b00d76b"
   },
   {
    "output": "results/revision9/analysis/s1.json",
-   "exists": false,
+   "exists": true,
    "script": "experiments/revision9/analysis/veins9.py",
-   "command": null,
-   "commit": null,
-   "config_hash": null,
-   "generated": null,
+   "command": "python -m experiments.revision9.analysis.veins9 s1",
+   "commit": "90bb8430ff7f4d7ac5e1e0d036ac555e87782cb1",
+   "config_hash": "e10808d43975",
+   "generated": "2026-11-16 19:50:12",
    "sources": [
     "results/revision9/veins/h6_rows.jsonl",
     "results/revision9/veins/c1_rows.jsonl",
     "results/revision8/veins_thresholds.json"
    ],
-   "sha256": null
+   "sha256": "bbbbc3be45b0caa847d55bc6228151556f435ac0aad9ddce74d75a326ca0e08a"
   },
   {
    "output": "results/revision9/runs/struct9_plain__SEL__headline__default__fallback.csv",
