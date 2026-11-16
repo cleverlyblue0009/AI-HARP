@@ -1,0 +1,98 @@
+{
+ "provenance": {
+  "task": "revision8/probe_heads",
+  "git_commit": "a6dea217212726a24525a8a50c881529d56f98ee",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision8.probe_heads",
+  "config_hash": "69590bfd4669",
+  "config": {
+   "seeds": [
+    100,
+    101,
+    102,
+    103
+   ]
+  },
+  "seeds": [
+   100,
+   101,
+   102,
+   103
+  ],
+  "generated": "2026-11-16 04:26:42"
+ },
+ "contexts": 1698,
+ "seeds": [
+  100,
+  101,
+  102,
+  103
+ ],
+ "cells": [
+  [
+   "rural_highway",
+   20.0
+  ],
+  [
+   "urban_nlos",
+   20.0
+  ],
+  [
+   "rural_highway",
+   2.0
+  ]
+ ],
+ "p_head": {
+  "sigmoid_best_fit_w": [
+   0.1594450764417722,
+   5.713860880346437,
+   -3.185744914365806,
+   -0.034005558574453226
+  ],
+  "sigmoid_max_abs_dp": 0.09412315969469534,
+  "sigmoid_decision_mismatches": 72,
+  "clipped_linear_w": [
+   0.5,
+   1.0,
+   -0.5,
+   0.0
+  ],
+  "clipped_linear_max_abs_dp": 0.0,
+  "clipped_linear_decision_mismatches": 0,
+  "share_rar_p_clipped_to_0_or_1": 0.5182567726737338
+ },
+ "delay_head": {
+  "n_slots=5|sigmoid|s50": {
+   "min_mismatches": 565,
+   "a": 0.05500000000000016,
+   "b": -4.74
+  },
+  "n_slots=5|sigmoid|logit_s50": {
+   "min_mismatches": 484,
+   "a": 0.4950000000000001,
+   "b": -3.2800000000000002
+  },
+  "n_slots=5|clipped_linear|s50": {
+   "mismatches": 0,
+   "a": 0.1,
+   "b": -0.45
+  },
+  "n_slots=50|sigmoid|s50": {
+   "min_mismatches": 844,
+   "a": 0.08499999999999996,
+   "b": -2.13
+  },
+  "n_slots=50|sigmoid|logit_s50": {
+   "min_mismatches": 0,
+   "a": 0.9650000000000003,
+   "b": -0.02999999999999936
+  },
+  "n_slots=50|clipped_linear|s50": {
+   "mismatches": 0,
+   "a": 1.0,
+   "b": 0.0
+  }
+ }
+}
