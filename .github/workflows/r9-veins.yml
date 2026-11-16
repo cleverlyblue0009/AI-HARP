@@ -1,0 +1,99 @@
+# Revision 9: Veins shards for H6 (STRUCT9, results/revision9/train) and C1 (revision-8 STRUCT, results/revision8/train),
+# one shard per (cell, seed), Tier B seeds 220-229. Every shard runs gate checks 1 AND 2 before any replay
+# (experiments/revision9/veins/ci9.py). Toolchain (OMNeT++ 6.0.3, SUMO 1.19.0, Veins 5.3) built once per branch by the
+# revision-5 installer and cached. Outputs pushed to r9-ci and VERIFIED; decision-server logs are pushed to r9-ci only.
+# Request file ci/r9-veins.json: {"mode": "h6" | "c1" | "toolchain", "seeds": [...]}.
+name: r9-veins
+on:
+  push:
+    branches: [revision-9]
+    paths: ['ci/r9-veins.json']
+permissions:
+  contents: write
+env:
+  PYTHONUNBUFFERED: "1"
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      mode: ${{ steps.p.outputs.mode }}
+      seeds: ${{ steps.p.outputs.seeds }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - id: p
+        run: |
+          python3 -c "import json; d=json.load(open('ci/r9-veins.json')); print('mode='+d['mode']); print('seeds='+json.dumps(d['seeds']))" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+
+  toolchain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-9, fetch-depth: 1}
+      - uses: actions/cache@v4
+        id: c
+        with: {path: ~/veins-r5, key: r9-veins-toolchain-v1}
+      - name: deps
+        run: sudo bash experiments/revision5/veins/install_wsl.sh deps
+      - name: build OMNeT++ 6.0.3, SUMO 1.19.0, Veins 5.3
+        if: steps.c.outputs.cache-hit != 'true'
+        run: |
+          J=4 bash experiments/revision5/veins/install_wsl.sh build
+          rm -f ~/veins-r5/*.tgz ~/veins-r5/*.tar.gz
+          find ~/veins-r5 -name '*.o' -delete
+
+  shard:
+    needs: [plan, toolchain]
+    if: ${{ needs.plan.outputs.mode != 'toolchain' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        cell: ['rural_highway 20', 'urban_nlos 20']
+        seed: ${{ fromJSON(needs.plan.outputs.seeds) }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: revision-9, fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/cache/restore@v4
+        with: {path: ~/veins-r5, key: r9-veins-toolchain-v1, fail-on-cache-miss: true}
+      - name: runtime deps and Python (ENVIRONMENT.md pins)
+        run: |
+          sudo bash experiments/revision5/veins/install_wsl.sh deps
+          pip install numpy==1.26.4
+          pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
+          pip install torch-geometric==2.8.0 scipy==1.13.1 pandas==2.3.3 pyyaml==6.0.3 cma==4.6.0 matplotlib
+          pip install --force-reinstall --no-deps numpy==1.26.4
+          python -c "import numpy, torch, torch_geometric; print(numpy.__version__, torch.__version__, torch_geometric.__version__); assert numpy.__version__ == '1.26.4'"
+      - name: build the revision-8 app
+        run: |
+          tr -d '\r' < experiments/revision5/veins/env.sh > ~/veins-r5/env.sh
+          AIHARP_SRC=$GITHUB_WORKSPACE bash experiments/revision8/veins/build_app.sh
+      - name: checkpoints, gates 1 and 2, replays, trace check, scoring
+        run: |
+          source ~/veins-r5/env.sh
+          export PATH=$pythonLocation/bin:$PATH
+          python -m experiments.revision9.veins.ci9 ${{ needs.plan.outputs.mode }} --cell ${{ matrix.cell }} --seed ${{ matrix.seed }} --workers 4
+      - name: push shard outputs to r9-ci and verify
+        if: always()
+        run: |
+          git config user.name "r9-ci"; git config user.email "r9-ci@users.noreply.github.com"
+          C=$(echo "${{ matrix.cell }}" | awk '{print $1"_d"$2}')
+          D=results/revision9/veins/${{ needs.plan.outputs.mode }}/${C}_s${{ matrix.seed }}
+          [ -f "$D/gate.json" ] || { echo "shard produced no gate.json"; exit 1; }
+          rm -f "$D"/worker*.json
+          cp -r "$D" /tmp/shard_out; rm -rf "$D"
+          for k in 1 2 3 4 5 6 7 8 9 10; do
+            git fetch -q origin r9-ci && git checkout -q -f -B r9-ci FETCH_HEAD || exit 1
+            rm -rf "$D"; mkdir -p "$(dirname "$D")"; cp -r /tmp/shard_out "$D"
+            git add -f "$D"; git commit -q -m "r9-ci: ${{ needs.plan.outputs.mode }} shard ${C}_s${{ matrix.seed }}" || true
+            if git push -q origin r9-ci; then
+              git fetch -q origin r9-ci && git show FETCH_HEAD:$D/gate.json | cmp - /tmp/shard_out/gate.json && exit 0
+            fi
+            sleep $((RANDOM % 30 + 5))
+          done
+          exit 1
