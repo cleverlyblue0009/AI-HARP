@@ -93,3 +93,8 @@ results/revision8/veins/ci_cd/*/bridge_logs/
 !results/revision9/**/*.csv
 results/revision9/veins/*/*/bridge_logs/
 results/revision9/veins/*/*/gate2_logs/
+!results/revision10/**/
+!results/revision10/**/*.csv
+results/revision10/gate/*_work/
+results/revision10/veins/*/*/bridge_logs/
+results/revision10/veins/*/*/gate2_logs/

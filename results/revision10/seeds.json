@@ -1,0 +1,43 @@
+{
+ "provenance": {
+  "task": "revision10/seeds",
+  "git_commit": "f1c89495b298b49aa15291ea6b731ec5bb12689f",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision10.seed_inventory",
+  "config_hash": "b95ce1bf2fb6",
+  "config": {
+   "start": 230,
+   "n": 20
+  },
+  "seeds": null,
+  "generated": "2026-11-17 08:20:15"
+ },
+ "rule": "first 20 integers >= 230 that appear nowhere in results/revision10/seed_inventory.json (data seeds, Veins path seeds on revision-10/r8-ci/r9-ci, integers >= 230 on seed lines of code)",
+ "R_A": [
+  230,
+  231,
+  232,
+  233,
+  234,
+  235,
+  236,
+  237,
+  238,
+  239
+ ],
+ "R_B": [
+  240,
+  241,
+  242,
+  243,
+  244,
+  245,
+  246,
+  247,
+  248,
+  249
+ ],
+ "skipped": {}
+}
