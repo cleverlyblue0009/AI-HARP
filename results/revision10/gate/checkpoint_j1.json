@@ -1,0 +1,104 @@
+{
+ "env": {
+  "python": "3.12.16",
+  "numpy": "1.26.4",
+  "cpu": "Intel(R) Xeon(R) 6975P-C",
+  "host": "ip-10-0-134-178"
+ },
+ "struct9_theta_sha256": {
+  "plain_s0": "0e59c4d3c2eb25711b943600da81a3ccf37a56f874989d0607aafb451b2f9de4",
+  "plain_s1": "8dc4d5f9343cfc0c3fbd8b4410611ab3835eca5aa44fd959f31aa47ed9a740eb",
+  "plain_s2": "88bf3d5de85c027b09586bad249a202599a43d5ac0772e3af5b9eaec593acb70",
+  "plain_s3": "b1ba433a22b10b94eef5d6e5b23ba80c90b6c6eb28a1d1cc6253209c2f203be7",
+  "plain_s4": "e4fc6c0b114e7306c1fe208cff35e7fde344b7a8469c3e16fd2403366296f75c",
+  "rand_s0": "4f957993b2a95608079be8f473d5678261a83f0a952e0787ea2b245d1f601aa7",
+  "rand_s1": "ec82ea75f855fbe6a47c4e72178c30c9d0c53fced80410ae9693a77530bad875",
+  "rand_s2": "a13108c2c9d044a8fd88c44d113208be1b5b4cedca75ea392dd8cbe8440c2b72",
+  "rand_s3": "25b1b8f497e0f3f1d235e1443b854891f0fd31ad8a765e1fb95ecfa4255f6adc",
+  "rand_s4": "3626a2bf1aa82020ea7d1f0cbb1967775b4fb30ce30ab061d4eb2d5725826a24"
+ },
+ "struct9_generations": {
+  "plain_s0": 80,
+  "plain_s1": 80,
+  "plain_s2": 80,
+  "plain_s3": 80,
+  "plain_s4": 80,
+  "rand_s0": 80,
+  "rand_s1": 80,
+  "rand_s2": 80,
+  "rand_s3": 80,
+  "rand_s4": 80
+ },
+ "aiharp_checkpoints": {
+  "ref_s0": "b589be512827fcbb",
+  "ref_s1": "4867ffabbdf23aac",
+  "ref_s2": "0b5fa61c06396e28",
+  "ref_s3": "2c2434ab9ed05da2",
+  "ref_s4": "3cb2a44fef5bde6b"
+ },
+ "app_sha256": "6b032de0fc13894c1d84f710e4015faa8ca1ec6566b8039c53c7549722e646b9",
+ "check1": {
+  "events_sha256": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8",
+  "reference_sha256": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8",
+  "pass": true
+ },
+ "check2": {
+  "events_sha256": "220dd1fd37f441b100eaf5419667f05783e7cca1382f22ed74a3d12cbc7ab839",
+  "reference_sha256": "220dd1fd37f441b100eaf5419667f05783e7cca1382f22ed74a3d12cbc7ab839",
+  "pass": true
+ },
+ "h6_replay": {
+  "replay": "urban_nlos_d20_s220__struct_rand_s0_d0__s220",
+  "events_sha256": "116f850ba67021dec37044b71d1bcb986ed323cbe94a9b2ab02c8bbd57f7ccea",
+  "committed_events_sha256": "116f850ba67021dec37044b71d1bcb986ed323cbe94a9b2ab02c8bbd57f7ccea",
+  "pass": true,
+  "exit_code": 0,
+  "fcd_check": {
+   "identical": true,
+   "rows": 98293,
+   "ids_equal": true,
+   "max_abs_dx_m": 0.0,
+   "max_abs_dy_m": 0.0,
+   "covered_until_s": 175.3
+  },
+  "bundle_trace_sha256": "e38b8fa0508298f362c2051f200efae981e1c0667da5ccb8a745367fe0214c96",
+  "trace_check": [
+   {
+    "log": "urban_nlos_d20_s220__struct_rand_s0_d0__s220.jsonl",
+    "requests": 436,
+    "mismatches": 0,
+    "pass": true
+   }
+  ],
+  "trace_pass": true
+ },
+ "veins_source": {
+  "analogueModel_dir": "/home/runner/veins-r5/veins-veins-5.3/src/veins/modules/analogueModel",
+  "analogueModel_listing": [
+   "BreakpointPathlossModel.cc",
+   "BreakpointPathlossModel.h",
+   "NakagamiFading.cc",
+   "NakagamiFading.h",
+   "PERModel.cc",
+   "PERModel.h",
+   "SimpleObstacleShadowing.cc",
+   "SimpleObstacleShadowing.h",
+   "SimplePathlossModel.cc",
+   "SimplePathlossModel.h",
+   "TwoRayInterferenceModel.cc",
+   "TwoRayInterferenceModel.h",
+   "VehicleObstacleShadowing.cc",
+   "VehicleObstacleShadowing.h"
+  ],
+  "lognormal_grep_src": [],
+  "omnetpp_ini_lines": [
+   "experiments/revision8/veins/aiharp/omnetpp.ini:2: # playground) are passed on the command line by run_veins.py; config.xml is written per scenario.",
+   "experiments/revision8/veins/aiharp/omnetpp.ini:12: *.obstacles.obstacles = xmldoc(\"config.xml\", \"//AnalogueModel[@type='SimpleObstacleShadowing']/obstacles\")",
+   "experiments/revision8/veins/aiharp/omnetpp.ini:29: *.**.nic.phy80211p.decider = xmldoc(\"config.xml\")",
+   "experiments/revision8/veins/aiharp/omnetpp.ini:30: *.**.nic.phy80211p.analogueModels = xmldoc(\"config.xml\")"
+  ],
+  "config_xml_urban_nlos_d20_s220": "<root><AnalogueModels><AnalogueModel type=\"BreakpointPathlossModel\"><parameter name=\"alpha1\" type=\"double\" value=\"2.0\"/><parameter name=\"alpha2\" type=\"double\" value=\"4.2\"/><parameter name=\"L01\" type=\"double\" value=\"41.86482345472626\"/><parameter name=\"L02\" type=\"double\" value=\"86.8302998177971\"/><parameter name=\"breakpointDistance\" type=\"double\" value=\"177.12253455021875\"/></AnalogueModel><AnalogueModel type=\"NakagamiFading\"><parameter name=\"constM\" type=\"bool\" value=\"true\"/><parameter name=\"m\" type=\"double\" value=\"1.0\"/></AnalogueModel><AnalogueModel type=\"SimpleObstacleShadowing\" thresholding=\"true\"><obstacles><type id=\"building\" db-per-cut=\"9\" db-per-meter=\"0.4\"/></obstacles></AnalogueModel></AnalogueModels><Decider type=\"Decider80211p\"><parameter name=\"centerFrequency\" type=\"double\" value=\"5900000000.0\"/></Decider></root>",
+  "config_xml_source": "experiments/revision5/veins/run_veins.py:47-58 (config_xml), written per replay"
+ },
+ "pass": true
+}

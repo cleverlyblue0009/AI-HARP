@@ -1,0 +1,94 @@
+{
+ "env": {
+  "python": "3.12.16",
+  "numpy": "1.26.4",
+  "cpu": "AMD EPYC 9V74 80-Core Processor",
+  "host": "runnervm8axu0"
+ },
+ "seeds": [
+  241
+ ],
+ "bundles": {
+  "urban_nlos_d20_s241": {
+   "digest": {
+    "files": {
+     "buildings.poly.xml": "0db541be2eb4b97a09a4e304d419f32b4d962b0df0f2659802899e7938c263a6",
+     "demand.rou.xml": "fc0290a8476f3668cac7a8cf4be09af96affac6cd7d359f79cb12ef713f129ce",
+     "fcd_ref.npz": "81ef8bbbe1a780a5fdecfdbc23da5e0f97b20aef8990cbc9b695453b38e07c63",
+     "net.net.xml": "66d64549ca13edd80793359bac8c08f3ff17dae5d974a7a977b8f65756d9cd1b",
+     "r6.txt": "9a04d0c60eb07c6d9983b8862f343391f0e7a313555dd9ecf6ffb2e6abc0cd59",
+     "run.sumocfg": "213ba4621dc6699386ff19d50b6db7d5dff527f64332c2a5c0349144b644dcc5",
+     "trips.trips.xml": "d4ad7431ac6b52e94e73b6eb8ea71a26bf6b993eec8967197307df3d76b49131",
+     "veins.sumocfg": "5aa8c55cbe5c9b7469496b11b406ad121510356f953ce1a7264492dc0cb0dfbf",
+     "bundle.json(content)": "f201259bf201fe99f9cbc56e758ddbb36c750e2e418b5e4f000f34414dcd0d28"
+    },
+    "content_sha256": "0350e8bf9793b306da7d5e394fd8661c7a71530d1a681cae93f1ee42a6e2ca9b",
+    "trace_sha256": "8471c91543d0008126c1cbe39d599570d2b0b0a61ede14645a8d1272d72fcccd",
+    "t0_sumo_s": 155.3,
+    "n_vehicles": 882,
+    "n_steps": 1199,
+    "maxInterfDist_m": 1888.5,
+    "playground_m": [
+     1200,
+     1200
+    ]
+   },
+   "mobility": {
+    "n_vehicles": 882,
+    "mean_active": 584.5471226021684,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 20.297,
+    "rel_error": 0.0148,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 163,
+     "step": 50,
+     "sumo_id": "286"
+    }
+   }
+  },
+  "rural_highway_d20_s241": {
+   "digest": {
+    "files": {
+     "corridor.edg.xml": "eebc568e8b4f71566c5318eeba84281816c91fc663e96eb24d77e5754f7f0d9a",
+     "corridor.nod.xml": "a444f7317c93d00d6f91a94bc2eec03a2ef78a8137cc92f55e95f6bd02acdcd3",
+     "demand.rou.xml": "d9117c14c07de71e372e5440aa0dca2ad071c1ddbb04fc5bddac93e59079f02d",
+     "fcd_ref.npz": "1888ce8b08bf2dab4b8e4158843e7e73d644b9192e94561f7884506f61994e2e",
+     "net.net.xml": "0b56a4e72ae23f3139d5356a5adac0a1d5fa51680bd6325bffd5c2b8c79331c8",
+     "r6.txt": "404611b1bfee20fe3d33314476c1fd1df5ac6237990fbbb288b0c8ca2db1a777",
+     "run.sumocfg": "3cfc9db5602c0e414861ed168e31c8b95e29407863b70eed1bc67e48079950f5",
+     "veins.sumocfg": "f0c769c5aa2834d36c1eaa9d96717295aa091e6f5713feca879df1ed607bdb5c",
+     "bundle.json(content)": "6cee60e3636aeaa591ede357e3adbae75174c518996bb4a765df99f2bb0a0ab4"
+    },
+    "content_sha256": "4e08c0e0ac043c6e1f09282224eca4369452d7337c9a0836841d74571593fb4d",
+    "trace_sha256": "0fe2d4ae5a54d26eb2b10772ef6ac4a5b10620baa96253de23de0189c2ccd555",
+    "t0_sumo_s": 724.9,
+    "n_vehicles": 524,
+    "n_steps": 1199,
+    "maxInterfDist_m": 2776.4,
+    "playground_m": [
+     10200,
+     200
+    ]
+   },
+   "mobility": {
+    "n_vehicles": 524,
+    "mean_active": 424.4403669724771,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.222,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   }
+  }
+ },
+ "note": "bundles only: no policy or classical replay was run on these seeds"
+}

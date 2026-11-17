@@ -80,6 +80,9 @@ rural d=20 q* = 0.878958, m* = 0.403870; urban NLOS d=20 q* = 0.498350, m* = 0.6
   checkpoint-gate replay, whose events must be byte-identical to the committed H6 replay (that replay ran on the
   regenerated bundle, so it tests the bundle end to end). The local export already reproduced trace_sha256 `e38b8fa0…`,
   t0, minEnd, playground and maxInterfDist.
+  *Added after the step-1 runs (2026-11-17):* the two runner regenerations (source-built SUMO 1.19.0, as H6) gave the
+  same digest `5f07c276…`; the local cloud-session export (pip SUMO 1.19.0) gave `b91ce19e…` with the same trace_sha256 —
+  the two SUMO builds differ in some exported file content. Only the runner pipeline (H6's) is used for any replay.
 
 ## 4. Complete seed inventory
 

@@ -1,0 +1,884 @@
+{
+ "provenance": {
+  "task": "revision10/gates",
+  "git_commit": "ada082d21f4ad57bb051f9f6db7b2a5e9fc8b743",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision10.veins.gate10 assemble",
+  "config_hash": "e10808d43975",
+  "config": {},
+  "seeds": null,
+  "generated": "2026-11-17 09:02:08"
+ },
+ "seeds": {
+  "R_A": [
+   230,
+   231,
+   232,
+   233,
+   234,
+   235,
+   236,
+   237,
+   238,
+   239
+  ],
+  "R_B": [
+   240,
+   241,
+   242,
+   243,
+   244,
+   245,
+   246,
+   247,
+   248,
+   249
+  ]
+ },
+ "pipeline_gate": {
+  "runs": {
+   "pipeline_j1": {
+    "env": {
+     "python": "3.12.16",
+     "numpy": "1.26.4",
+     "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+     "host": "runnervm8axu0"
+    },
+    "content_sha256": "5f07c276103d98426c70235b4673d0dd5039eb98ba7758002d9cd4efd47296d5",
+    "checks": {
+     "trace_sha256": true,
+     "t0_sumo_s": true,
+     "min_end_s": true,
+     "playground_m": true,
+     "maxInterfDist_m": true
+    },
+    "pass": true
+   },
+   "pipeline_j2": {
+    "env": {
+     "python": "3.12.16",
+     "numpy": "1.26.4",
+     "cpu": "Intel(R) Xeon(R) 6975P-C",
+     "host": "ip-10-0-136-40"
+    },
+    "content_sha256": "5f07c276103d98426c70235b4673d0dd5039eb98ba7758002d9cd4efd47296d5",
+    "checks": {
+     "trace_sha256": true,
+     "t0_sumo_s": true,
+     "min_end_s": true,
+     "playground_m": true,
+     "maxInterfDist_m": true
+    },
+    "pass": true
+   }
+  },
+  "h6_identity": {
+   "trace_sha256": "e38b8fa0508298f362c2051f200efae981e1c0667da5ccb8a745367fe0214c96",
+   "t0_sumo_s": 155.3,
+   "min_end_s": 175.3,
+   "playground_m": [
+    1200,
+    1200
+   ],
+   "maxInterfDist_m": 1888.5
+  },
+  "independent_runs": 2,
+  "digests_identical": true,
+  "pass": true
+ },
+ "bundles": {
+  "expected": 40,
+  "present": 40,
+  "missing": [],
+  "per_bundle": {
+   "urban_nlos_d20_s230": {
+    "content_sha256": "2e50297e2ae604ac8868245a768c1097f2c24d5414abaffd432e4e36f9d92781",
+    "trace_sha256": "2a0e9ed80a9780ce4442260ae9dd005c31a4c23d3e376af270f2d84a8d81011d",
+    "n_vehicles": 872,
+    "mean_active": 569.628857381151,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.779,
+    "rel_error": 0.0111,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 416,
+     "step": 50,
+     "sumo_id": "541"
+    }
+   },
+   "urban_nlos_d20_s231": {
+    "content_sha256": "ef802e9968e60820a220431b00b486f7a7e22a97efe5b70801350a9ce152d7dd",
+    "trace_sha256": "84e8fd4cd010f5434a24ed1fc6694d4fe660258bc127dbb9ef9edd7ab7582ca6",
+    "n_vehicles": 868,
+    "mean_active": 568.1684737281067,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.728,
+    "rel_error": 0.0136,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 340,
+     "step": 50,
+     "sumo_id": "470"
+    }
+   },
+   "urban_nlos_d20_s232": {
+    "content_sha256": "3ae564687696f2befc65fa62aa17814129d3b2edca4e11357dcaa3dd5905b4e2",
+    "trace_sha256": "55bbe0b16861e7ad2a45da539087817443dde2e101c0bfe4f7e73d1574d6ea15",
+    "n_vehicles": 858,
+    "mean_active": 571.791492910759,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.854,
+    "rel_error": 0.0073,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 171,
+     "step": 50,
+     "sumo_id": "304"
+    }
+   },
+   "urban_nlos_d20_s233": {
+    "content_sha256": "54790ac6dd257ac68ce1ff61d919d28df7d0e87b74fa23129576b90e066c3a0b",
+    "trace_sha256": "fc5e1f046b02ea42b02cbcd6ba84346a79de13dd22833ab5bd4b53b082bb0ccd",
+    "n_vehicles": 874,
+    "mean_active": 574.9858215179316,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.965,
+    "rel_error": 0.0018,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 177,
+     "step": 50,
+     "sumo_id": "300"
+    }
+   },
+   "urban_nlos_d20_s234": {
+    "content_sha256": "8d7765d55c50a56c6840a3769b5f047ccc1f3ce41909dc6452643764b9840af2",
+    "trace_sha256": "36617f4c3ec074f2e3950b00de188252f43c56f20505d4304628e6fa2d08ddc2",
+    "n_vehicles": 875,
+    "mean_active": 586.0984153461218,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 20.351,
+    "rel_error": 0.0175,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 73,
+     "step": 50,
+     "sumo_id": "190"
+    }
+   },
+   "urban_nlos_d20_s235": {
+    "content_sha256": "a58579be8696374b54de30e962ae86f51c62df7a7842259c65ecc25b151ebf8a",
+    "trace_sha256": "64f07b7d0c42ef34f32077e68ec5d33be4785fb6f0042cc175c25170d4e64a24",
+    "n_vehicles": 866,
+    "mean_active": 568.5713094245205,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.742,
+    "rel_error": 0.0129,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 160,
+     "step": 50,
+     "sumo_id": "289"
+    }
+   },
+   "urban_nlos_d20_s236": {
+    "content_sha256": "02fdb8090cbe747e50149efe758b31f651095c014991f71d0a3d8cc3eb82ba6e",
+    "trace_sha256": "f0cd282b3681202e3d53af6c949ac0b654f77fb9251fc93b751cf4215c77c5b8",
+    "n_vehicles": 878,
+    "mean_active": 567.3469557964971,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.7,
+    "rel_error": 0.015,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 293,
+     "step": 50,
+     "sumo_id": "432"
+    }
+   },
+   "urban_nlos_d20_s237": {
+    "content_sha256": "ae67d06d2059085be75a41fd8d0289a8115f78f51e3b002810cb57adfb7e41a6",
+    "trace_sha256": "bf2233436089dfc1a9e83b2f344891ac5008c66e2a1080f4be288bb0bcfd40b4",
+    "n_vehicles": 862,
+    "mean_active": 571.487072560467,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.843,
+    "rel_error": 0.0078,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 274,
+     "step": 50,
+     "sumo_id": "416"
+    }
+   },
+   "urban_nlos_d20_s238": {
+    "content_sha256": "a610c794a4a48e09f8531760eb44d91211532a498ca69e184d3c36ac558577b1",
+    "trace_sha256": "e56c972da92bb52229c173db86c35855987bddb3902ee65505ddfa627b0a3298",
+    "n_vehicles": 881,
+    "mean_active": 584.4603836530442,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 20.294,
+    "rel_error": 0.0147,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 340,
+     "step": 50,
+     "sumo_id": "462"
+    }
+   },
+   "urban_nlos_d20_s239": {
+    "content_sha256": "954e89c68d8fb716f0941ce3dcec023e755800813544fc6d59b6b4c6d8ba6942",
+    "trace_sha256": "527871daa5b0a312fe9ade6e93c1d66adde49dfb63835709ad788435a5803e85",
+    "n_vehicles": 864,
+    "mean_active": 563.9382819015847,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.581,
+    "rel_error": 0.0209,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 434,
+     "step": 50,
+     "sumo_id": "82"
+    }
+   },
+   "urban_nlos_d20_s240": {
+    "content_sha256": "42344d6a72b44464e133e7ed3bed42aed548b79c692ac99c50abd913d9bad6ac",
+    "trace_sha256": "04cb0e8f4a5373c4aa1af421cacaef05d7a251ab9fe5381f3c70b7883bce1aee",
+    "n_vehicles": 862,
+    "mean_active": 583.0742285237698,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 20.246,
+    "rel_error": 0.0123,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 393,
+     "step": 50,
+     "sumo_id": "514"
+    }
+   },
+   "urban_nlos_d20_s241": {
+    "content_sha256": "0350e8bf9793b306da7d5e394fd8661c7a71530d1a681cae93f1ee42a6e2ca9b",
+    "trace_sha256": "8471c91543d0008126c1cbe39d599570d2b0b0a61ede14645a8d1272d72fcccd",
+    "n_vehicles": 882,
+    "mean_active": 584.5471226021684,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 20.297,
+    "rel_error": 0.0148,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 163,
+     "step": 50,
+     "sumo_id": "286"
+    }
+   },
+   "urban_nlos_d20_s242": {
+    "content_sha256": "6418f85aba63c226b46cacab33fce64e6bb9b1be3ad5ec8cbab4241ef627f47a",
+    "trace_sha256": "ae51dd7d7fc23ef18829b2342cc7e40516db11142b92f899afbb8e729b273967",
+    "n_vehicles": 855,
+    "mean_active": 568.3185988323603,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.733,
+    "rel_error": 0.0133,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 346,
+     "step": 50,
+     "sumo_id": "486"
+    }
+   },
+   "urban_nlos_d20_s243": {
+    "content_sha256": "2e1aa86c9247196843cd6943e04267df0b272c1be671794043da62054cf23aeb",
+    "trace_sha256": "a5181e03178dd4153caf55b319ae221aa2312704bb1ceb04d4b5b1dfe46467d4",
+    "n_vehicles": 873,
+    "mean_active": 580.1075896580484,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 20.143,
+    "rel_error": 0.0071,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 6,
+     "step": 50,
+     "sumo_id": "108"
+    }
+   },
+   "urban_nlos_d20_s244": {
+    "content_sha256": "b258f1aa63d7e3d3678c53d39d950596c548ddbf72e2789842ee6db28277eec3",
+    "trace_sha256": "340f0b014ed27f44aa47807f3feb904cbaa7766e91d7499d2b4824e04a0328d1",
+    "n_vehicles": 860,
+    "mean_active": 573.7364470391993,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.921,
+    "rel_error": 0.0039,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 454,
+     "step": 50,
+     "sumo_id": "530"
+    }
+   },
+   "urban_nlos_d20_s245": {
+    "content_sha256": "94f55c80504b4a6a905747220bb8580eb1ef28e30373711174944ea93bbe07b3",
+    "trace_sha256": "130be57580c93616da43c3d42f0e5ca6569d8d6c17596ad9914d5fdf6b4ab6d9",
+    "n_vehicles": 871,
+    "mean_active": 573.068390325271,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.898,
+    "rel_error": 0.0051,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 205,
+     "step": 50,
+     "sumo_id": "34"
+    }
+   },
+   "urban_nlos_d20_s246": {
+    "content_sha256": "72dc9ebb79cbbbc7238e3413c867b83d9bb3d3cd7abc48326c4ed76959eef206",
+    "trace_sha256": "a83e2d797d137560c4204f77d6a0436470642d1263aca8788326cf1c82d0e49c",
+    "n_vehicles": 875,
+    "mean_active": 574.4245204336947,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.945,
+    "rel_error": 0.0027,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 256,
+     "step": 50,
+     "sumo_id": "391"
+    }
+   },
+   "urban_nlos_d20_s247": {
+    "content_sha256": "5634c07231dbfd7f4117bac9e930861c1a7842ca4db5463ff3dbe9e3aa8a2fc3",
+    "trace_sha256": "877b5172ba888a0024b6791bbd3d518a3758c57fe4b4f1eb2602405739c09951",
+    "n_vehicles": 860,
+    "mean_active": 565.1426188490409,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 19.623,
+    "rel_error": 0.0188,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 340,
+     "step": 50,
+     "sumo_id": "470"
+    }
+   },
+   "urban_nlos_d20_s248": {
+    "content_sha256": "5d05790ca31a133c561c07d7ff835de1e149441e7478879a66715299219a06ef",
+    "trace_sha256": "b9d143df12c24e02b5951c938e84eb0eaca8bc1b989b266b94c8eb71bc9d44b5",
+    "n_vehicles": 876,
+    "mean_active": 579.1551292743953,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 20.11,
+    "rel_error": 0.0055,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 384,
+     "step": 50,
+     "sumo_id": "507"
+    }
+   },
+   "urban_nlos_d20_s249": {
+    "content_sha256": "87a1414f0aad93dc1309f4c057fbce207a421cdf1f5e4fc92c6290d4afcea905",
+    "trace_sha256": "b9696e8dd2de2990772d2238157395b619b94f54f11bab4d9e9cf3db775c28a3",
+    "n_vehicles": 874,
+    "mean_active": 588.9833194328608,
+    "lane_km": 28.8,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 20.451,
+    "rel_error": 0.0225,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 106,
+     "step": 50,
+     "sumo_id": "233"
+    }
+   },
+   "rural_highway_d20_s230": {
+    "content_sha256": "d92b57e25d1f6eeff6af0678166bf36d4c781967b999f6c97727feea237d5445",
+    "trace_sha256": "a6c34f936adba9bca1d8fa872fdaa911b286234bd61d82c7d2cd456cceab1cea",
+    "n_vehicles": 524,
+    "mean_active": 424.45621351125936,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s231": {
+    "content_sha256": "362aea6e08b86fb77357b00977ef047156bc01925e633965df5472e221b02b14",
+    "trace_sha256": "1386eaaf32006be10630f26e0e92648aaeace959aa2b3e150fc37fece2eb2811",
+    "n_vehicles": 524,
+    "mean_active": 424.4595496246872,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s232": {
+    "content_sha256": "4059437b81e85aaf9d76d054df3b8646a26b89c5b85682a2a15a8ede4681b699",
+    "trace_sha256": "bd4cd13c35be752ca0fefe778ba0d2793715024ba5ddc48f9ede6df72dc7edef",
+    "n_vehicles": 524,
+    "mean_active": 424.4628857381151,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0612,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s233": {
+    "content_sha256": "301a822e5f82c4eb470aa71af0560ced5ad75064227dd7d5b9ea249f41fcf438",
+    "trace_sha256": "ad2ba46bb3b6517b6ca7efb5c58aab107ec0233fd6ebeefc8c85fadb0c9af33a",
+    "n_vehicles": 524,
+    "mean_active": 424.4537114261885,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s234": {
+    "content_sha256": "130a9a0770c2256a16246e0a628d7590df31b362048fa49ad946a733bf76defb",
+    "trace_sha256": "441598c2c702e0ae05318a874cb45c4fe6b4a964d19768f0e7ad3592d14fc5df",
+    "n_vehicles": 524,
+    "mean_active": 424.4678899082569,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0612,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s235": {
+    "content_sha256": "56f7989077176d737ac65df597c6845aaeba13ffffb2b6089fb67bc4ef7c3723",
+    "trace_sha256": "f6aeee5f578426efb2e6c810dc16ac7b924d7a427d916d9bbb814c9b71129904",
+    "n_vehicles": 524,
+    "mean_active": 424.9699749791493,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.248,
+    "rel_error": 0.0624,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s236": {
+    "content_sha256": "343eacd880aabc54610ab6124ae738a21fa07984364d711cf214a84550e7512a",
+    "trace_sha256": "99e2684ec6662e40750736219b62c23b7a5c65931612e49b8b03c554c74b1364",
+    "n_vehicles": 524,
+    "mean_active": 424.4637197664721,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0612,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s237": {
+    "content_sha256": "1be77bea8195321863d86a5e4af8e16cfafddf7cfce997689e5c0d9d75139eb2",
+    "trace_sha256": "dbd4d4ecca3f7a0ab0163bc96f0e93da3335b07aaeffe9cabbbdc4b7d9de3cd6",
+    "n_vehicles": 524,
+    "mean_active": 424.4578815679733,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s238": {
+    "content_sha256": "defec83fd8409080b965c0b5587e1e0b7ba450100bd64f120d4763e3de657e69",
+    "trace_sha256": "0d99f6c4b7e6aec376677e9d9d396fb6413ac683a17d741eb4c1379d27f3d1a0",
+    "n_vehicles": 524,
+    "mean_active": 424.4787322768974,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.224,
+    "rel_error": 0.0612,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s239": {
+    "content_sha256": "1cd8767143d1473c463f52ea7df3e4e10b10e7fa4324575e8e78bb59bdc82b95",
+    "trace_sha256": "1720e729b2519fa51bbbe15bdd4ce8a6b5f4afeef0e601e3070a74e82869b4de",
+    "n_vehicles": 524,
+    "mean_active": 424.4578815679733,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s240": {
+    "content_sha256": "79461fb1c1877d088242178fc40aecf65494e661a2e9ac8beb9ef032c7d9585c",
+    "trace_sha256": "ed0575ee9b4c0dc4402d56fe6c486d665ba1ce3daf6a94de86edade85f2a91a5",
+    "n_vehicles": 524,
+    "mean_active": 424.4603836530442,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0612,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s241": {
+    "content_sha256": "4e08c0e0ac043c6e1f09282224eca4369452d7337c9a0836841d74571593fb4d",
+    "trace_sha256": "0fe2d4ae5a54d26eb2b10772ef6ac4a5b10620baa96253de23de0189c2ccd555",
+    "n_vehicles": 524,
+    "mean_active": 424.4403669724771,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.222,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s242": {
+    "content_sha256": "f1785e1f2160e58b1b052dca6ff357f30900ab5f8a9feec0666a2183125ec330",
+    "trace_sha256": "2400e61e0b97636fa981ceb6fdf2864fbde733a6535cc03370e76f2478fdc134",
+    "n_vehicles": 524,
+    "mean_active": 424.45454545454544,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s243": {
+    "content_sha256": "57147dde3b956630f3b30e5b75913ed8d68ed90ed12d12c04ee7f2cbaa8f382c",
+    "trace_sha256": "ae4cc6c0abcf9ecd0b12cd253aba12414b957aa7f7d167276d971b69b823aa2d",
+    "n_vehicles": 524,
+    "mean_active": 424.44286905754797,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.222,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s244": {
+    "content_sha256": "3d361347bf61ccb4188898eae9c522d1861c2d7223b0aecdf0959e7756cdde30",
+    "trace_sha256": "3f6c62c0879c6576d40c223b56fff28b6966d8cae722055c36de2072d483daba",
+    "n_vehicles": 524,
+    "mean_active": 424.4528773978315,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s245": {
+    "content_sha256": "3d85f095568da411b871125a9a20c58d22f222c2ff65c22ddecb431ef91568fd",
+    "trace_sha256": "8c272eaf89680b539b488e321d711db7391d518d6bf8d4e51949e8852745029a",
+    "n_vehicles": 524,
+    "mean_active": 424.4703919933278,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.224,
+    "rel_error": 0.0612,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s246": {
+    "content_sha256": "934877325766a3b147710d915df1ddd9bb46db4578526e8ac4491bb7658374e6",
+    "trace_sha256": "a802b1ee0f7de0a5e3bb4a160e5e16f61bc42ab852f4b0069c358b8819c60c5a",
+    "n_vehicles": 524,
+    "mean_active": 424.5421184320267,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.227,
+    "rel_error": 0.0614,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s247": {
+    "content_sha256": "bfbec55aaf2b5eb93fb4041acc5daf8c151b36254f6b7dcd45686e70c0d451de",
+    "trace_sha256": "59c342fe4d463aa08250da758634eb77cf2b916c2d2204dbda0d151c24e2243f",
+    "n_vehicles": 524,
+    "mean_active": 424.5237698081735,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.226,
+    "rel_error": 0.0613,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s248": {
+    "content_sha256": "8e6919ca37968888774b54cf978ca2700b3117d4c5bb4a43d9620858144e8fba",
+    "trace_sha256": "ba38083cbb261fa5f8c4bdfd6512ca56b55a4319307952846a41419e3a0aea40",
+    "n_vehicles": 524,
+    "mean_active": 424.44370308590493,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.222,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   },
+   "rural_highway_d20_s249": {
+    "content_sha256": "df0aea789248c83c16555b0d250ecc7a71587623a8735828eea95a01a251548f",
+    "trace_sha256": "07ab0f0072461531038cf4d80098558f9d2ed079f313f8b129d0c29c570dd59d",
+    "n_vehicles": 524,
+    "mean_active": 424.4578815679733,
+    "lane_km": 20.0,
+    "commanded": 20.0,
+    "achieved_veh_km_lane": 21.223,
+    "rel_error": 0.0611,
+    "within_tolerance": true,
+    "tolerance": 0.25,
+    "origin": {
+     "index": 64,
+     "step": 50,
+     "sumo_id": "f-1_car.164"
+    }
+   }
+  },
+  "mobility_all_within_tolerance": true
+ },
+ "checkpoint_gate": {
+  "env": {
+   "python": "3.12.16",
+   "numpy": "1.26.4",
+   "cpu": "Intel(R) Xeon(R) 6975P-C",
+   "host": "ip-10-0-134-178"
+  },
+  "struct9_theta_sha256": {
+   "plain_s0": "0e59c4d3c2eb25711b943600da81a3ccf37a56f874989d0607aafb451b2f9de4",
+   "plain_s1": "8dc4d5f9343cfc0c3fbd8b4410611ab3835eca5aa44fd959f31aa47ed9a740eb",
+   "plain_s2": "88bf3d5de85c027b09586bad249a202599a43d5ac0772e3af5b9eaec593acb70",
+   "plain_s3": "b1ba433a22b10b94eef5d6e5b23ba80c90b6c6eb28a1d1cc6253209c2f203be7",
+   "plain_s4": "e4fc6c0b114e7306c1fe208cff35e7fde344b7a8469c3e16fd2403366296f75c",
+   "rand_s0": "4f957993b2a95608079be8f473d5678261a83f0a952e0787ea2b245d1f601aa7",
+   "rand_s1": "ec82ea75f855fbe6a47c4e72178c30c9d0c53fced80410ae9693a77530bad875",
+   "rand_s2": "a13108c2c9d044a8fd88c44d113208be1b5b4cedca75ea392dd8cbe8440c2b72",
+   "rand_s3": "25b1b8f497e0f3f1d235e1443b854891f0fd31ad8a765e1fb95ecfa4255f6adc",
+   "rand_s4": "3626a2bf1aa82020ea7d1f0cbb1967775b4fb30ce30ab061d4eb2d5725826a24"
+  },
+  "struct9_generations": {
+   "plain_s0": 80,
+   "plain_s1": 80,
+   "plain_s2": 80,
+   "plain_s3": 80,
+   "plain_s4": 80,
+   "rand_s0": 80,
+   "rand_s1": 80,
+   "rand_s2": 80,
+   "rand_s3": 80,
+   "rand_s4": 80
+  },
+  "aiharp_checkpoints": {
+   "ref_s0": "b589be512827fcbb",
+   "ref_s1": "4867ffabbdf23aac",
+   "ref_s2": "0b5fa61c06396e28",
+   "ref_s3": "2c2434ab9ed05da2",
+   "ref_s4": "3cb2a44fef5bde6b"
+  },
+  "app_sha256": "6b032de0fc13894c1d84f710e4015faa8ca1ec6566b8039c53c7549722e646b9",
+  "check1": {
+   "events_sha256": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8",
+   "reference_sha256": "707d65331f9ecee307f321b38f6c6ded9989bec47320a4a844616875ccf2fba8",
+   "pass": true
+  },
+  "check2": {
+   "events_sha256": "220dd1fd37f441b100eaf5419667f05783e7cca1382f22ed74a3d12cbc7ab839",
+   "reference_sha256": "220dd1fd37f441b100eaf5419667f05783e7cca1382f22ed74a3d12cbc7ab839",
+   "pass": true
+  },
+  "h6_replay": {
+   "replay": "urban_nlos_d20_s220__struct_rand_s0_d0__s220",
+   "events_sha256": "116f850ba67021dec37044b71d1bcb986ed323cbe94a9b2ab02c8bbd57f7ccea",
+   "committed_events_sha256": "116f850ba67021dec37044b71d1bcb986ed323cbe94a9b2ab02c8bbd57f7ccea",
+   "pass": true,
+   "exit_code": 0,
+   "fcd_check": {
+    "identical": true,
+    "rows": 98293,
+    "ids_equal": true,
+    "max_abs_dx_m": 0.0,
+    "max_abs_dy_m": 0.0,
+    "covered_until_s": 175.3
+   },
+   "bundle_trace_sha256": "e38b8fa0508298f362c2051f200efae981e1c0667da5ccb8a745367fe0214c96",
+   "trace_check": [
+    {
+     "log": "urban_nlos_d20_s220__struct_rand_s0_d0__s220.jsonl",
+     "requests": 436,
+     "mismatches": 0,
+     "pass": true
+    }
+   ],
+   "trace_pass": true
+  },
+  "pass": true
+ },
+ "veins_source_check_report_only": {
+  "analogueModel_dir": "/home/runner/veins-r5/veins-veins-5.3/src/veins/modules/analogueModel",
+  "analogueModel_listing": [
+   "BreakpointPathlossModel.cc",
+   "BreakpointPathlossModel.h",
+   "NakagamiFading.cc",
+   "NakagamiFading.h",
+   "PERModel.cc",
+   "PERModel.h",
+   "SimpleObstacleShadowing.cc",
+   "SimpleObstacleShadowing.h",
+   "SimplePathlossModel.cc",
+   "SimplePathlossModel.h",
+   "TwoRayInterferenceModel.cc",
+   "TwoRayInterferenceModel.h",
+   "VehicleObstacleShadowing.cc",
+   "VehicleObstacleShadowing.h"
+  ],
+  "lognormal_grep_src": [],
+  "omnetpp_ini_lines": [
+   "experiments/revision8/veins/aiharp/omnetpp.ini:2: # playground) are passed on the command line by run_veins.py; config.xml is written per scenario.",
+   "experiments/revision8/veins/aiharp/omnetpp.ini:12: *.obstacles.obstacles = xmldoc(\"config.xml\", \"//AnalogueModel[@type='SimpleObstacleShadowing']/obstacles\")",
+   "experiments/revision8/veins/aiharp/omnetpp.ini:29: *.**.nic.phy80211p.decider = xmldoc(\"config.xml\")",
+   "experiments/revision8/veins/aiharp/omnetpp.ini:30: *.**.nic.phy80211p.analogueModels = xmldoc(\"config.xml\")"
+  ],
+  "config_xml_urban_nlos_d20_s220": "<root><AnalogueModels><AnalogueModel type=\"BreakpointPathlossModel\"><parameter name=\"alpha1\" type=\"double\" value=\"2.0\"/><parameter name=\"alpha2\" type=\"double\" value=\"4.2\"/><parameter name=\"L01\" type=\"double\" value=\"41.86482345472626\"/><parameter name=\"L02\" type=\"double\" value=\"86.8302998177971\"/><parameter name=\"breakpointDistance\" type=\"double\" value=\"177.12253455021875\"/></AnalogueModel><AnalogueModel type=\"NakagamiFading\"><parameter name=\"constM\" type=\"bool\" value=\"true\"/><parameter name=\"m\" type=\"double\" value=\"1.0\"/></AnalogueModel><AnalogueModel type=\"SimpleObstacleShadowing\" thresholding=\"true\"><obstacles><type id=\"building\" db-per-cut=\"9\" db-per-meter=\"0.4\"/></obstacles></AnalogueModel></AnalogueModels><Decider type=\"Decider80211p\"><parameter name=\"centerFrequency\" type=\"double\" value=\"5900000000.0\"/></Decider></root>",
+  "config_xml_source": "experiments/revision5/veins/run_veins.py:47-58 (config_xml), written per replay"
+ },
+ "all_gates_pass": true
+}
