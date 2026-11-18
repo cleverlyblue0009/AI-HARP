@@ -29,6 +29,13 @@ def test_digest_ignores_comments_and_provenance_only(tmp_path):
     assert a["content_sha256"] != c["content_sha256"]
 
 
-@pytest.mark.parametrize("rand,plain,p", [(3, 0, 0.0833), (4, 0, 0.0238), (5, 0, 0.0040), (5, 1, 0.0238), (4, 1, 0.1032)])
+@pytest.mark.parametrize("rand,plain,p", [(3, 0, 0.0833), (4, 0, 0.0238), (5, 0, 0.0040), (5, 1, 0.0238), (4, 1, 0.1032),
+                                           (3, 1, 0.2619), (5, 2, 0.0833)])
 def test_preregistered_fisher_values(rand, plain, p):
     assert round(fisher_greater(rand, 5, plain, 5), 4) == p
+
+
+def test_only_three_splits_support_h7():
+    ok = sorted((r, q) for r in range(6) for q in range(6) if r >= 3 and q < 3 and fisher_greater(r, 5, q, 5) < 0.05)
+    assert ok == [(4, 0), (5, 0), (5, 1)]
+    assert min(fisher_greater(r, 5, 2, 5) for r in (3, 4, 5)) >= 0.0833
