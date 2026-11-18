@@ -12,10 +12,12 @@ If the session ends, continue from here. Branch `revision-10`; runner outputs on
 | 2: ADDENDUM.md pushed (before any replay on 230–249) | `27aea29`; header records it in `738dd3e` |
 | 3: analysis code `experiments/revision10/analysis/veins10.py` + test, `ci10.py`, `r10-veins.yml`, reproduce scripts | `f9e4388` |
 | 4a: H7 requested (`ci/r10-veins.json` mode h7, seeds 230–239) | `48f7883`, run 44368078403 |
+| 4a: **H7 done**: 10/10 shards accepted; h7.json (NOT supported, 0/5 vs 0/5, p = 1.0) and s4.json | `e887d04` |
+| 4b: S3 requested (mode s3, seeds 240–249) | `c72a3e4` |
 
 ## Remaining, in order (ADDENDUM §7: H7 → S3 → S5)
 
-1. When H7's 10 shards are on `r10-ci` (`git ls-tree -r --name-only origin/r10-ci results/revision10/veins/h7/ | grep -c
+1. *(done)* When H7's 10 shards are on `r10-ci` (`git ls-tree -r --name-only origin/r10-ci results/revision10/veins/h7/ | grep -c
    gate.json` = 10) and the run has finished:
    ```
    git fetch origin r10-ci
