@@ -14,6 +14,8 @@ If the session ends, continue from here. Branch `revision-10`; runner outputs on
 | 4a: H7 requested (`ci/r10-veins.json` mode h7, seeds 230–239) | `48f7883`, run 44368078403 |
 | 4a: **H7 done**: 10/10 shards accepted; h7.json (NOT supported, 0/5 vs 0/5, p = 1.0) and s4.json | `e887d04` |
 | 4b: S3 requested (mode s3, seeds 240–249) | `c72a3e4` |
+| 4b: **S3 done**: 10/10 accepted; s3.json | `0839c72` |
+| 4c: S5 requested (mode s5, seeds 230–239), run 44409896065 | `cdfddd5` |
 
 ## Remaining, in order (ADDENDUM §7: H7 → S3 → S5)
 
@@ -31,7 +33,7 @@ If the session ends, continue from here. Branch `revision-10`; runner outputs on
    ```
    A rejected shard: re-run it once on a fresh runner (bump "request", seeds = that seed only) and log a deviation
    (D18…); a gate failure on every runner or a second failure = STOP and report.
-2. S3: `ci/r10-veins.json` = `{"mode": "s3", "seeds": [240, …, 249], "request": 2}`, push; then as step 1 with `s3`, and
+2. *(done)* S3: `ci/r10-veins.json` = `{"mode": "s3", "seeds": [240, …, 249], "request": 2}`, push; then as step 1 with `s3`, and
    `python -m experiments.revision10.analysis.veins10 s3`.
 3. S5: `{"mode": "s5", "seeds": [230, …, 239], "request": 3}`; then as step 1 with `s5`, and `veins10 s5`.
 4. `results/revision10/REVISION10_STATUS.md` (addendum hash, gates incl. the Veins analogue-model result, H7, S3, S4, S5,
