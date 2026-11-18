@@ -1,0 +1,366 @@
+{
+ "logs": [
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s0_d-1__s249.jsonl",
+   "requests": 490,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s0_d-2__s249.jsonl",
+   "requests": 478,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s0_d0__s249.jsonl",
+   "requests": 392,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s0_d1__s249.jsonl",
+   "requests": 481,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s0_d2__s249.jsonl",
+   "requests": 282,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s0_d3__s249.jsonl",
+   "requests": 237,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s1_d-1__s249.jsonl",
+   "requests": 460,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s1_d-2__s249.jsonl",
+   "requests": 477,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s1_d0__s249.jsonl",
+   "requests": 476,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s1_d1__s249.jsonl",
+   "requests": 286,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s1_d2__s249.jsonl",
+   "requests": 475,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s1_d3__s249.jsonl",
+   "requests": 356,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s2_d-1__s249.jsonl",
+   "requests": 490,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s2_d-2__s249.jsonl",
+   "requests": 479,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s2_d0__s249.jsonl",
+   "requests": 441,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s2_d1__s249.jsonl",
+   "requests": 447,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s2_d2__s249.jsonl",
+   "requests": 469,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s2_d3__s249.jsonl",
+   "requests": 323,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s3_d-1__s249.jsonl",
+   "requests": 471,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s3_d-2__s249.jsonl",
+   "requests": 482,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s3_d0__s249.jsonl",
+   "requests": 490,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s3_d1__s249.jsonl",
+   "requests": 454,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s3_d2__s249.jsonl",
+   "requests": 222,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s3_d3__s249.jsonl",
+   "requests": 482,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s4_d-1__s249.jsonl",
+   "requests": 490,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s4_d-2__s249.jsonl",
+   "requests": 485,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s4_d0__s249.jsonl",
+   "requests": 498,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s4_d1__s249.jsonl",
+   "requests": 514,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s4_d2__s249.jsonl",
+   "requests": 490,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_plain_s4_d3__s249.jsonl",
+   "requests": 496,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s0_d-1__s249.jsonl",
+   "requests": 485,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s0_d-2__s249.jsonl",
+   "requests": 485,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s0_d0__s249.jsonl",
+   "requests": 485,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s0_d1__s249.jsonl",
+   "requests": 495,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s0_d2__s249.jsonl",
+   "requests": 495,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s0_d3__s249.jsonl",
+   "requests": 359,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s1_d-1__s249.jsonl",
+   "requests": 504,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s1_d-2__s249.jsonl",
+   "requests": 504,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s1_d0__s249.jsonl",
+   "requests": 504,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s1_d1__s249.jsonl",
+   "requests": 504,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s1_d2__s249.jsonl",
+   "requests": 504,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s1_d3__s249.jsonl",
+   "requests": 504,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s2_d-1__s249.jsonl",
+   "requests": 493,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s2_d-2__s249.jsonl",
+   "requests": 493,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s2_d0__s249.jsonl",
+   "requests": 493,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s2_d1__s249.jsonl",
+   "requests": 493,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s2_d2__s249.jsonl",
+   "requests": 493,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s2_d3__s249.jsonl",
+   "requests": 493,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s3_d-1__s249.jsonl",
+   "requests": 482,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s3_d-2__s249.jsonl",
+   "requests": 482,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s3_d0__s249.jsonl",
+   "requests": 482,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s3_d1__s249.jsonl",
+   "requests": 482,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s3_d2__s249.jsonl",
+   "requests": 482,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s3_d3__s249.jsonl",
+   "requests": 482,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s4_d-1__s249.jsonl",
+   "requests": 480,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s4_d-2__s249.jsonl",
+   "requests": 480,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s4_d0__s249.jsonl",
+   "requests": 480,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s4_d1__s249.jsonl",
+   "requests": 480,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s4_d2__s249.jsonl",
+   "requests": 480,
+   "mismatches": 0,
+   "pass": true
+  },
+  {
+   "log": "urban_nlos_d20_s249__struct_rand_s4_d3__s249.jsonl",
+   "requests": 480,
+   "mismatches": 0,
+   "pass": true
+  }
+ ],
+ "all_pass": true,
+ "n": 60
+}

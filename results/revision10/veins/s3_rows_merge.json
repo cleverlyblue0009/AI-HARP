@@ -1,0 +1,17 @@
+{
+ "provenance": {
+  "task": "revision10/veins/assemble/s3",
+  "git_commit": "cdfddd55155cf474cd6320dcfad042d4e008bf10",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision10.analysis.veins10 assemble s3",
+  "config_hash": "e10808d43975",
+  "config": {},
+  "seeds": null,
+  "generated": "2026-11-18 22:16:04"
+ },
+ "shards_accepted": 10,
+ "shards_rejected": {},
+ "rows": 600
+}
