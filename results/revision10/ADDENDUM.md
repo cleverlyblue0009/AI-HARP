@@ -1,7 +1,7 @@
 # Revision 10 — pre-registration addendum: replication of revision-9 H6 on fresh Veins seeds
 
 Written 2026-11-18 on branch `revision-10` (from `origin/revision-9` at f1c8949), **before any policy or classical
-replay on Veins seeds 230–249**. Push commit of this file: `(recorded in the next commit)`.
+replay on Veins seeds 230–249**. Push commit of this file: `27aea29`.
 Revision 5–9 results, thresholds, checkpoints, analysis files and deviations are unchanged and never edited.
 Nothing is retrained, retuned or redesigned. Deviations are numbered from **D18**.
 
