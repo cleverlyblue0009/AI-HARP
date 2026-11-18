@@ -1,0 +1,17 @@
+{
+ "provenance": {
+  "task": "revision10/veins/assemble/h7",
+  "git_commit": "c72a3e45c28b22ba5831328a85e80331db318126",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision10.analysis.veins10 assemble h7",
+  "config_hash": "e10808d43975",
+  "config": {},
+  "seeds": null,
+  "generated": "2026-11-18 19:47:31"
+ },
+ "shards_accepted": 10,
+ "shards_rejected": {},
+ "rows": 600
+}
