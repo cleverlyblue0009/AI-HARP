@@ -1,8 +1,5 @@
 # Revision 10 — status
 
-> **DRAFT** — S5 (rural d=20, R-A) is still running; the fields S5_ACCEPTED, S5_SECTION, REPRO_LINE and TESTS_LINE are
-> filled when it lands. Every other number is final.
-
 Branch `revision-10` (from `origin/revision-9` at f1c8949). Runner outputs on branch `r10-ci`, merged here.
 Revision 10 is a pre-registered **replication** of revision-9 H6 on Veins seeds that no STRUCT policy had seen. Nothing was
 retrained, retuned or redesigned; revision 5–9 files are unchanged. Every number below is read from the committed file
@@ -57,7 +54,7 @@ were completed by the analyst before any replay and are marked as such in the ad
 |---|---|---|---|---|---|
 | H7 | urban NLOS d=20 | R-A 230–239 | 10/10 | 600 | `veins/h7_rows.jsonl` |
 | S3 | urban NLOS d=20 | R-B 240–249 | 10/10 | 600 | `veins/s3_rows.jsonl` |
-| S5 | rural d=20 | R-A 230–239 | S5_ACCEPTED | 600 | `veins/s5_rows.jsonl` |
+| S5 | rural d=20 | R-A 230–239 | 10/10 | 600 | `veins/s5_rows.jsonl` |
 
 Every accepted shard: gate checks 1 and 2 passed, regenerated bundle digest equal to `gates.json`, 60/60 replays merged,
 60/60 decision logs re-sent offline with 0 mismatches (`veins/<mode>_rows_merge.json`, per-shard `gate.json`,
@@ -106,7 +103,26 @@ around q*, and which 10 mobility seeds are drawn moves the outcome.
 
 ## 7. S5 — rural d=20 on R-A (`results/revision10/analysis/s5.json`, descriptive)
 
-S5_SECTION
+Rural d=20, R-A, q* 0.879, m* 0.404. **STRUCT9-rand 0/5, STRUCT9-plain 0/5** (rule not met, Fisher p = 1.0) — the same
+as H6's rural cell on 220–229 (0/5 vs 0/5). Best mean RWCR and the actionable miss at that δ:
+
+| Training seed | H6 220–229 | R-A 230–239 | Reach ≥ q* with miss > m* on R-A |
+|---|---|---|---|
+| rand_s0 | 0.835 / 0.555 | 0.868 / 0.592 | no (reach below q*) |
+| rand_s1 | 0.888 / 0.414 | 0.896 / 0.437 | **yes** |
+| rand_s2 | 0.877 / 0.389 | 0.875 / 0.350 | no (miss < m*, reach 0.004 below q*) |
+| rand_s3 | 0.871 / 0.354 | 0.872 / 0.354 | no (miss < m*, reach 0.007 below q*) |
+| rand_s4 | 0.859 / 0.375 | 0.875 / 0.352 | no (miss < m*, reach 0.004 below q*) |
+| plain_s0 | 0.836 / 0.523 | 0.738 / 0.594 | no |
+| plain_s1 | 0.826 / 0.395 | 0.832 / 0.383 | no |
+| plain_s2 | 0.711 / 0.511 | 0.668 / 0.554 | no |
+| plain_s3 | 0.776 / 0.519 | 0.813 / 0.472 | no |
+| plain_s4 | 0.871 / 0.495 | 0.860 / 0.496 | no |
+
+Reading (descriptive): the revision-8 "reach without timeliness" pattern (RWCR above q* while miss stays above m*)
+repeats for one STRUCT9 seed (rand_s1). The other STRUCT9-rand seeds show the opposite near-miss, as on 220–229: miss
+under m* (0.350–0.354) with best reach 0.004–0.007 below q* (cost at that δ 0.47–0.81). The rural cell remains unsolved
+by every STRUCT variant on every seed set examined.
 
 ## 8. Deviations (`results/revision10/DEVIATIONS.md`)
 
@@ -117,13 +133,16 @@ was changed.
 
 * `./reproduce_revision10.sh` (default: analysis only; NumPy 1.26.4 via `AIHARP_PY`) regenerates `gates.json` and
   `analysis/h7.json`, `s3.json`, `s4.json`, `s5.json` (and the assembled `veins/<mode>_rows.jsonl`) from committed files.
-  REPRO_LINE
+  **Checked 2026-11-19: exit 0; all 11 outputs identical to the committed files apart from `provenance`** (the three
+  assembled row files byte-identical).
 * `reproduce_revision10.ps1`: the same steps for Windows; not executed here (no PowerShell in the cloud container).
 * `--from-scratch` prints how to rerun the runner work (`ci/r10-gates.json`, `ci/r10-veins.json` on `revision-10`;
   outputs on `r10-ci`; never commit `bridge_logs/` or `gate2_logs/`).
 * `experiments.revision10.seed_inventory` is not part of the script (it fetches `r8-ci` / `r9-ci`); run it by hand to
   re-derive `seeds.json`.
-* Tests: TESTS_LINE
+* Tests: 692 passed, 2 skipped (full suite, before every code push), including `tests/test_revision10_analysis.py`
+  (the H7 code reproduces `h6.json`'s urban cell from the committed 220–229 rows) and `tests/test_revision10_gate.py`
+  (bundle digest invariances; the pre-registered Fisher table).
 
 ## 10. Open questions
 

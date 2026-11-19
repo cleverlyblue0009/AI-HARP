@@ -1,5 +1,8 @@
 # Revision 10 — resume point
 
+**Revision 10 is complete** (2026-11-19): H7, S3, S4, S5 committed; `REVISION10_STATUS.md` final; reproduction checked.
+Nothing remains to run.
+
 If the session ends, continue from here. Branch `revision-10`; runner outputs on `r10-ci`. Interpreter with NumPy 1.26.4
 (cloud: `/root/r8env/bin/python`; laptop: `AIHARP_PY`).
 
@@ -35,7 +38,7 @@ If the session ends, continue from here. Branch `revision-10`; runner outputs on
    (D18…); a gate failure on every runner or a second failure = STOP and report.
 2. *(done)* S3: `ci/r10-veins.json` = `{"mode": "s3", "seeds": [240, …, 249], "request": 2}`, push; then as step 1 with `s3`, and
    `python -m experiments.revision10.analysis.veins10 s3`.
-3. S5: `{"mode": "s5", "seeds": [230, …, 239], "request": 3}`; then as step 1 with `s5`, and `veins10 s5`.
-4. `results/revision10/REVISION10_STATUS.md` (addendum hash, gates incl. the Veins analogue-model result, H7, S3, S4, S5,
+3. *(done)* S5: `{"mode": "s5", "seeds": [230, …, 239], "request": 3}`; then as step 1 with `s5`, and `veins10 s5`.
+4. *(done)* `results/revision10/REVISION10_STATUS.md` (addendum hash, gates incl. the Veins analogue-model result, H7, S3, S4, S5,
    deviations, reproduction, open questions); `./reproduce_revision10.sh` must exit 0 with outputs identical apart from
    provenance; full test suite before every push. Never commit `bridge_logs/` or `gate2_logs/`.
