@@ -1,0 +1,8 @@
+{
+ "merged": 60,
+ "rejected": 0,
+ "expected": 60,
+ "rejected_replays": {},
+ "app_sha256": "6b032de0fc13894c1d84f710e4015faa8ca1ec6566b8039c53c7549722e646b9",
+ "train_dir": "results/revision9/train"
+}

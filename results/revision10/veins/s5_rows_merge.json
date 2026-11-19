@@ -1,0 +1,17 @@
+{
+ "provenance": {
+  "task": "revision10/veins/assemble/s5",
+  "git_commit": "f7bf893f99cf1762a0bcd302a5afc83d32c65ca8",
+  "python": "3.12.3",
+  "numpy": "1.26.4",
+  "interpreter": "r8env",
+  "command": "python -m experiments.revision10.analysis.veins10 assemble s5",
+  "config_hash": "e10808d43975",
+  "config": {},
+  "seeds": null,
+  "generated": "2026-11-19 00:33:03"
+ },
+ "shards_accepted": 10,
+ "shards_rejected": {},
+ "rows": 600
+}
